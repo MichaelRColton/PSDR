@@ -4,6 +4,7 @@
 #include "stm32f4xx.h"
 //#include "core_cmInstr.h"
 #include <stdio.h>
+#include "stddef.h"
 #include "diag/Trace.h"
 #include "hal.h"
 #include "adc.h"
@@ -24,3 +25,4 @@
 #include "stm32f4xx_hal_cortex.h"
 #include "misc.h"
 
+TIM_HandleTypeDef    TimHandle;

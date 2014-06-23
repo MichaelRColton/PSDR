@@ -288,9 +288,9 @@ Adafruit_GFX_drawTriangle(121,119,131,124,131,114,ILI9340_WHITE);
 	Adafruit_GFX_write('.');
 
 
-TIM_setup();
-TIM_Config();
-
+//TIM_setup();
+//TIM_Config();
+TIM_Try();
 	Adafruit_ILI9340_setVerticalScrollDefinition(200,120,0);
 	long long timeMeasurement = 0;
 while(1)
@@ -506,8 +506,9 @@ counter = 0;
 }
 
 //TIM_TimeBaseInitTypeDef timeBaseStructure;
-TIM_HandleTypeDef    TimHandle;
-//TIM_OC_InitTypeDef   tsConfig;
+
+TIM_OC_InitTypeDef   tsConfig;
+#define  PULSE1_VALUE       40961       /* Capture Compare 1 Value  */
 uint32_t uwPrescalerValue = 0;
 void TIM_setup()
 {
@@ -555,6 +556,30 @@ void TIM_setup()
 	  doNothing();
   }
 
+  /*##-2- Configure the PWM channels #########################################*/
+  /* Common configuration */
+  tsConfig.OCMode = TIM_OCMODE_TIMING;
+  tsConfig.OCPolarity = TIM_OCPOLARITY_HIGH;
+  tsConfig.OCFastMode = TIM_OCFAST_DISABLE;
+
+  /* Set the pulse value for channel 1 */
+  tsConfig.Pulse = PULSE1_VALUE;
+  if(HAL_TIM_OC_ConfigChannel(&TimHandle, &tsConfig, TIM_CHANNEL_1) != HAL_OK)
+  {
+    /* Initialization Error */
+    //Error_Handler();
+	  doNothing();
+  }
+
+  /*##-4- Start the Output Compare mode in interrupt mode ####################*/
+  /* Start Channel1 */
+  if(HAL_TIM_OC_Start_IT(&TimHandle, TIM_CHANNEL_1) != HAL_OK)
+  {
+    /* Initialization Error */
+    //Error_Handler();
+	  doNothing();
+  }
+
 }
 
 
@@ -581,7 +606,58 @@ void TIM_Config(void)
 
 }
 
+TIM_TypeDef timTimBase;
+//TIM_HandleTypeDef timHandle;
+/* Definition for TIMx's NVIC */
+#define TIMx_IRQn                      TIM3_IRQn
+#define TIMx_IRQHandler                TIM3_IRQHandler
+void TIM_Try(void)
+{
 
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock/2) / 60000) - 1;
+
+    //NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+	__TIM3_CLK_ENABLE();
+	TimHandle.Instance = TIM3;
+	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	TimHandle.Init.Period = 65535;
+	TimHandle.Init.Prescaler = uwPrescalerValue;
+	TimHandle.Init.ClockDivision = 0;
+	HAL_TIM_Base_Init(&TimHandle);
+
+	HAL_TIM_Base_Start_IT(&TimHandle);
+
+	  /*##-2- Configure the NVIC for TIMx #########################################*/
+	  /* Set the TIMx priority */
+	  HAL_NVIC_SetPriority(TIMx_IRQn, 0, 1);
+
+	  /* Enable the TIMx global Interrupt */
+	  HAL_NVIC_EnableIRQ(TIMx_IRQn);
+
+
+//	int tim3;
+//	while(1)
+//	{
+//		 tim3 = timTryHandle.Instance->CNT;
+//	}
+
+}
+
+int ledState = 0;
+HAL_TIM_PeriodElapsedCallback(htim)
+{
+	doNothing();
+	if(ledState)
+	{
+		blink_led_off();
+		ledState = 0;
+	}
+	else
+	{
+		blink_led_on();
+		ledState = 1;
+	}
+}
 
 #pragma GCC diagnostic pop
 

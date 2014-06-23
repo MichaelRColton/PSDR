@@ -149,6 +149,8 @@ __attribute__((weak)) void SysTick_Handler(void)
 /*            STM32F4xx Peripherals Interrupt Handlers                        */
 /******************************************************************************/
 
+extern TIM_HandleTypeDef    TimHandle;
+
 /**
   * @brief  This function handles TIM3 global interrupt request.
   * @param  None
@@ -156,44 +158,54 @@ __attribute__((weak)) void SysTick_Handler(void)
   */
 void TIM3_IRQHandler(void)
 {
-	doNothing();
-//  if (TIM_GetITStatus(TIM3, TIM_IT_CC1) != RESET)
-//  {
-//    TIM_ClearITPendingBit(TIM3, TIM_IT_CC1);
-//
-//    /* LED1 toggling with frequency = 73.24 Hz */
-//    //STM_EVAL_LEDToggle(LED1);
-//	capture = TIM_GetCapture1(TIM3);
-//    TIM_SetCompare1(TIM3, capture + CCR1_Val);
-//  }
-//  else if (TIM_GetITStatus(TIM3, TIM_IT_CC2) != RESET)
-//  {
-//    TIM_ClearITPendingBit(TIM3, TIM_IT_CC2);
-//
-//    /* LED2 toggling with frequency = 109.8 Hz */
-//    //STM_EVAL_LEDToggle(LED2);
-//    capture = TIM_GetCapture2(TIM3);
-//    TIM_SetCompare2(TIM3, capture + CCR2_Val);
-//  }
-//  else if (TIM_GetITStatus(TIM3, TIM_IT_CC3) != RESET)
-//  {
-//    TIM_ClearITPendingBit(TIM3, TIM_IT_CC3);
-//
-//    /* LED3 toggling with frequency = 219.7 Hz */
-//    //STM_EVAL_LEDToggle(LED3);
-//    capture = TIM_GetCapture3(TIM3);
-//    TIM_SetCompare3(TIM3, capture + CCR3_Val);
-//  }
-//  else
-//  {
-//    TIM_ClearITPendingBit(TIM3, TIM_IT_CC4);
-//
-//    /* LED4 toggling with frequency = 439.4 Hz */
-//   // STM_EVAL_LEDToggle(LED4);
-//    capture = TIM_GetCapture4(TIM3);
-//    TIM_SetCompare4(TIM3, capture + CCR4_Val);
-//  }
+  HAL_TIM_IRQHandler(&TimHandle);
 }
+//void TIM3_IRQHandler(void)
+//{
+//    __HAL_TIM_CLEAR_IT(htim, TIM_IT_UPDATE);
+//	doNothing();
+////  if (TIM_GetITStatus(TIM3, TIM_IT_CC1) != RESET)
+////  {
+////    TIM_ClearITPendingBit(TIM3, TIM_IT_CC1);
+////
+////    /* LED1 toggling with frequency = 73.24 Hz */
+////    //STM_EVAL_LEDToggle(LED1);
+////	capture = TIM_GetCapture1(TIM3);
+////    TIM_SetCompare1(TIM3, capture + CCR1_Val);
+////  }
+////  else if (TIM_GetITStatus(TIM3, TIM_IT_CC2) != RESET)
+////  {
+////    TIM_ClearITPendingBit(TIM3, TIM_IT_CC2);
+////
+////    /* LED2 toggling with frequency = 109.8 Hz */
+////    //STM_EVAL_LEDToggle(LED2);
+////    capture = TIM_GetCapture2(TIM3);
+////    TIM_SetCompare2(TIM3, capture + CCR2_Val);
+////  }
+////  else if (TIM_GetITStatus(TIM3, TIM_IT_CC3) != RESET)
+////  {
+////    TIM_ClearITPendingBit(TIM3, TIM_IT_CC3);
+////
+////    /* LED3 toggling with frequency = 219.7 Hz */
+////    //STM_EVAL_LEDToggle(LED3);
+////    capture = TIM_GetCapture3(TIM3);
+////    TIM_SetCompare3(TIM3, capture + CCR3_Val);
+////  }
+////  else
+////  {
+////    TIM_ClearITPendingBit(TIM3, TIM_IT_CC4);
+////
+////    /* LED4 toggling with frequency = 439.4 Hz */
+////   // STM_EVAL_LEDToggle(LED4);
+////    capture = TIM_GetCapture4(TIM3);
+////    TIM_SetCompare4(TIM3, capture + CCR4_Val);
+////  }
+//}
+
+//void TIM3_IRQn(void)
+//{
+//	doNothing();
+//}
 
 /******************************************************************************/
 /*                 STM32F4xx Peripherals Interrupt Handlers                   */
