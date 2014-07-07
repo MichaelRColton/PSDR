@@ -93,6 +93,8 @@
     extern const Gpio_Pin encoderA;
     extern const Gpio_Pin encoderB;
     extern const Gpio_Pin encoderP;
+    extern const Gpio_Pin dac1;
+    extern const Gpio_Pin dac2;
 
 
 //    extern const Gpio_Pin NC_1;

@@ -74,6 +74,8 @@ const Gpio_Pin encoderB             = { GPIOC, GPIO_PIN_3  };
 const Gpio_Pin encoderP             = { GPIOC, GPIO_PIN_15 };
 const Gpio_Pin ADC_1				= { GPIOA, GPIO_PIN_1  };
 const Gpio_Pin ADC_2				= { GPIOA, GPIO_PIN_2  };
+const Gpio_Pin dac1					= { GPIOA, GPIO_PIN_4  };
+const Gpio_Pin dac2					= { GPIOA, GPIO_PIN_5  };
 
 //const Gpio_Pin NC_1                 = { GPIOC, GPIO_Pin_0  };	// this is the Closure Sensor Pin near the 3v3 regulator, fyi
 //const Gpio_Pin DAC_SWITCHES         = { GPIOC, GPIO_Pin_5  };   // currently labeled LIGHT_SENSOR on schem (TODO)
@@ -353,6 +355,11 @@ void hal_setupPins(void)
         HAL_GPIO_WritePin(dds2Nss.port, dds2Nss.pin, 1);
 
 
+
+        gpioInitStructure.Pin = dac1.pin | dac2.pin;
+        gpioInitStructure.Mode = GPIO_MODE_ANALOG;
+        gpioInitStructure.Pull = GPIO_NOPULL;
+        HAL_GPIO_Init(dac1.port, &gpioInitStructure);
 
     // Power Switch
 //    gpioInitStructure.GPIO_Pin   = POWER_SWITCH.pin;

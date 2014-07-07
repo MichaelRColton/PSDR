@@ -88,24 +88,8 @@ void initAdc()
 		  }
 	}
 
-
-
-	void adcStartConversion()
+	void adcGetConversion()
 	{
-		  if(HAL_ADC_Start(&AdcHandle) != HAL_OK)
-		  {
-		    /* Start Conversation Error */
-		    //Error_Handler();
-		    wrongThings++;
-		  }
-
-		  if(HAL_ADC_Start(&AdcHandle2) != HAL_OK)
-		  {
-		    /* Start Conversation Error */
-		    //Error_Handler();
-		    wrongThings++;
-		  }
-
 		  HAL_ADC_PollForConversion(&AdcHandle, 10);
 		  HAL_ADC_PollForConversion(&AdcHandle2, 10);
 
@@ -116,15 +100,24 @@ void initAdc()
 		      uhADCxConvertedValue = HAL_ADC_GetValue(&AdcHandle);
 		      uhADCxConvertedValue2 = HAL_ADC_GetValue(&AdcHandle2);
 		    }
+	}
 
 
+	void adcStartConversion()
+	{
+		if(HAL_ADC_Start(&AdcHandle) != HAL_OK)
+		{
+			/* Start Conversation Error */
+			//Error_Handler();
+			wrongThings++;
+		}
 
-//		  if(HAL_ADC_Start_IT(&AdcHandle) != HAL_OK)
-//		  {
-//		    /* Start Conversation Error */
-//		    //Error_Handler();
-//			  wrongThings++;
-//		  }
+		if(HAL_ADC_Start(&AdcHandle2) != HAL_OK)
+		{
+			/* Start Conversation Error */
+			//Error_Handler();
+			wrongThings++;
+		}
 	}
 
 
