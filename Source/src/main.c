@@ -45,7 +45,7 @@
 
 void dac1SetValue(uint16_t value);
 void dac2SetValue(uint16_t value);
-void ddsPrefix();
+void ddsPrefix(void);
 void sendToDds(uint16_t data1, uint16_t data2);
 #define FFT_SIZE 256 //supported sizes are 16, 64, 256, 1024
 #define FFT_BUFFER_SIZE  512 //double the FFT_SIZE above.
@@ -60,8 +60,15 @@ uint16_t filterKernelLength = 100; //what's a good value? How does it relate to 
 
 uint16_t menuState = 0;
 uint16_t menuLastState = 1;
-uint16_t menuCount = 8;
+uint16_t menuCount = 10;
 uint32_t frequencyDialMultiplier = 1;
+
+long vfoAFrequency = 7260000;
+long vfoALastFreq = 7260000;
+int encoderPos, encoderLastPos;
+
+uint16_t filterUpperLimit = 10;
+uint16_t filterLowerLimit = 0;
 
 void polarToRect(float m, float a, float32_t* x, float32_t* y)
 {
@@ -427,7 +434,7 @@ main(int argc, char* argv[])
 	uint32_t seconds = 0;
 
 
-	populateCoeficients(100, 0, 00);
+	populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
 
 
 	//  float real = 3, imag = 2;
@@ -452,11 +459,10 @@ main(int argc, char* argv[])
 	Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
 	char freqChar[14];
 	sprintf(&freqChar, "%8d", 28000000);
-	long counter = 7260000;
 
 
-	long lastCounter = counter;
-	int encoderPos, encoderLastPos;
+
+
 	char lastFreqChar[] = {'$','$','$','$','$','$','$','$','$','$','$','$','$','$',};
 
 
@@ -547,66 +553,151 @@ main(int argc, char* argv[])
 			case 0: //1,000,000 place
 				frequencyDialMultiplier = 1000000;
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 33, ILI9340_RED);
+				updateVfo();
 				break;
 			case 1: //100,000 place
 				frequencyDialMultiplier = 100000;
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(freqHOffset + 18*3, freqVOffset + 25, 15, ILI9340_RED);
+				updateVfo();
 				break;
 			case 2: //10,000 place
 				frequencyDialMultiplier = 10000;
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(freqHOffset + 18*4, freqVOffset + 25, 15, ILI9340_RED);
+				updateVfo();
 				break;
 			case 3: //1,000 place
 				frequencyDialMultiplier = 1000;
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(freqHOffset + 18*5, freqVOffset + 25, 15, ILI9340_RED);
+				updateVfo();
 				break;
 			case 4: //100 place
 				frequencyDialMultiplier = 100;
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(freqHOffset + 18*7, freqVOffset + 25, 15, ILI9340_RED);
+				updateVfo();
 				break;
 			case 5: //10 place
 				frequencyDialMultiplier = 10;
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(freqHOffset + 18*8, freqVOffset + 25, 15, ILI9340_RED);
+				updateVfo();
 				break;
 			case 6: //1 place
 				frequencyDialMultiplier = 1;
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(freqHOffset + 18*9, freqVOffset + 25, 15, ILI9340_RED);
+				updateVfo();
 				break;
+			case 7: //Filter Lower
+				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_RED);
+				break;
+			case 8: //Filter Upper
+				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_RED);
+				break;
+			case 9: //Mode
 			default:
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				break;
 			}
-			//		sprintf(&freqChar, "%8d", getMenuPos());
-			//		Adafruit_GFX_setTextSize(1);
-			//		Adafruit_GFX_setCursor(150, 150 );
-			//		int i;
-			//		for(i = 0; i < 8; i++)
-			//		{
-			//			Adafruit_GFX_write(freqChar[i]);
-			//		}
-			//		sprintf(&freqChar, "%8d", frequencyDialMultiplier);
-			//		Adafruit_GFX_setTextSize(1);
-			//		Adafruit_GFX_setCursor(150, 170 );
-			//		for(i = 0; i < 8; i++)
-			//		{
-			//			Adafruit_GFX_write(freqChar[i]);
-			//		}
-			//		Adafruit_GFX_setTextSize(3);
+
+
 
 			menuLastState = getMenuPos();
 		}
 
+		switch(getMenuPos())
+		{
+		case 0: //1,000,000 place
+			updateVfo();
+			break;
+		case 1: //100,000 place
+			updateVfo();
+			break;
+		case 2: //10,000 place
+			updateVfo();
+			break;
+		case 3: //1,000 place
+			updateVfo();
+			break;
+		case 4: //100 place
+			updateVfo();
+			break;
+		case 5: //10 place
+			updateVfo();
+			break;
+		case 6: //1 place
+			updateVfo();
+			break;
+		case 7: //Filter Lower
+			encoderPos = getPos();
+			if(encoderPos != encoderLastPos)
+			{
+				filterLowerLimit += 5 * (encoderLastPos - encoderPos);
+				if(filterLowerLimit <= 0) filterLowerLimit = 0;
+				if(filterLowerLimit >= 10000) filterLowerLimit = 10000;
+				if(filterLowerLimit >= filterUpperLimit) filterLowerLimit = filterUpperLimit - 10;
+				encoderLastPos = encoderPos;
+				populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
+				sprintf(&freqChar, "%5d", filterLowerLimit * 4);
+				Adafruit_GFX_setTextSize(1);
+				Adafruit_GFX_setCursor(150, 150 );
+				int i;
+				for(i = 0; i < 5; i++)
+				{
+					Adafruit_GFX_write(freqChar[i]);
+				}
+				Adafruit_GFX_setTextSize(3);
+			}
+			break;
+		case 8: //Filter Upper
+			encoderPos = getPos();
+			if(encoderPos != encoderLastPos)
+			{
+				filterUpperLimit += 5 * (encoderLastPos - encoderPos);
+				if(filterUpperLimit <= 0) filterUpperLimit = 0;
+				if(filterUpperLimit >= 10000) filterUpperLimit = 10000;
+				if(filterUpperLimit <= filterLowerLimit) filterUpperLimit = filterLowerLimit + 10;
+				encoderLastPos = encoderPos;
+				populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
+				sprintf(&freqChar, "%5d", filterUpperLimit * 4);
+				Adafruit_GFX_setTextSize(1);
+				Adafruit_GFX_setCursor(150, 170 );
+				int i;
+				for(i = 0; i < 5; i++)
+				{
+					Adafruit_GFX_write(freqChar[i]);
+				}
+				Adafruit_GFX_setTextSize(3);
+			}
+			break;
+		case 9: //Mode
+		default:
+			break;
+		}
 
 
-
-		//captureSamples();
 
 		float fftMaxMax = 0;
 		if(sampleRun)
@@ -638,7 +729,8 @@ main(int argc, char* argv[])
 
 				sampleBankAReady = 0;
 				blink_led_off();
-			} else if(sampleBankBReady == 1)
+			}
+			else if(sampleBankBReady == 1)
 			{
 				blink_led_on();
 				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
@@ -655,7 +747,8 @@ main(int argc, char* argv[])
 				sampleBankBReady = 0;
 				blink_led_off();
 
-			}  else if (sampleBankCReady == 1)
+			}
+			else if (sampleBankCReady == 1)
 			{
 				blink_led_on();
 				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
@@ -718,11 +811,11 @@ main(int argc, char* argv[])
 			sampleRun = 0;
 		}
 
-		if(counter != lastCounter)
+		if(vfoAFrequency != vfoALastFreq)
 		{
 
-			setFreq(counter);
-			sprintf(&freqChar, "%8d", counter);
+			setFreq(vfoAFrequency);
+			sprintf(&freqChar, "%8d", vfoAFrequency);
 
 			if(freqChar[0] != lastFreqChar[0])
 			{
@@ -767,22 +860,27 @@ main(int argc, char* argv[])
 				Adafruit_GFX_write(freqChar[7]);
 			}
 
-			lastCounter = counter;
+			vfoALastFreq = vfoAFrequency;
 			strcpy(lastFreqChar, freqChar);
 		}
 
 
-		encoderPos = getPos();
-		if(encoderPos != encoderLastPos)
-		{
 
-			counter += frequencyDialMultiplier * (encoderLastPos - encoderPos);
+	}
+}
 
-			if(counter < 1) counter = 1;
-			if(counter > 37500000) counter = 37500000;
+void updateVfo()
+{
+	encoderPos = getPos();
+	if(encoderPos != encoderLastPos)
+	{
 
-			encoderLastPos = encoderPos;
-		}
+		vfoAFrequency += frequencyDialMultiplier * (encoderLastPos - encoderPos);
+
+		if(vfoAFrequency < 1) vfoAFrequency = 1;
+		if(vfoAFrequency > 37500000) vfoAFrequency = 37500000;
+
+		encoderLastPos = encoderPos;
 	}
 }
 
