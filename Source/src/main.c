@@ -67,8 +67,10 @@ long vfoAFrequency = 7260000;
 long vfoALastFreq = 7260000;
 int encoderPos, encoderLastPos;
 
-uint16_t filterUpperLimit = 10;
-uint16_t filterLowerLimit = 0;
+int16_t filterUpperLimit = 10;
+int16_t filterLowerLimit = 0;
+
+float agcLevel = 0;
 
 void polarToRect(float m, float a, float32_t* x, float32_t* y)
 {
@@ -188,7 +190,6 @@ void applyCoeficient(float *samples)
 	int i;
 	for(i = 0; i < FFT_SIZE; i++)
 	{
-		//samples[i] = samples[i] * fftFilterCoeficient[i];
 		filterTemp[i * 2] = samples[i * 2] * fftFilterCoeficient[i * 2] - samples[i * 2 + 1] * fftFilterCoeficient[i * 2 + 1];
 		filterTemp[i * 2 + 1] = samples[i * 2 + 1] * fftFilterCoeficient[i * 2 + 1] + samples[i * 2] * fftFilterCoeficient[i * 2];
 	}
@@ -324,27 +325,38 @@ int isFwd;
 
 					samplesA[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
 					samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
-					dac1SetValue(samplesB[sampleIndex*2] * 4096 * gain + 2048);
-					dac2SetValue(samplesB[sampleIndex*2+1] * 4096 * gain + 2048);
+
+					if(samplesB[sampleIndex*2] > agcLevel) agcLevel = samplesB[sampleIndex*2];
+					if(samplesB[sampleIndex*2+1] > agcLevel) agcLevel = samplesB[sampleIndex*2+1];
+					dac1SetValue(samplesB[sampleIndex*2] / (agcLevel * 40) * 4096 * gain + 2048);
+					dac2SetValue(samplesB[sampleIndex*2+1] / (agcLevel * 40) * 4096 * gain + 2048);
 					break;
 
 				case 1:
 
 					samplesB[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
 					samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
-					dac1SetValue(samplesC[sampleIndex*2] * 4096 * gain + 2048);
-					dac2SetValue(samplesC[sampleIndex*2+1] * 4096 * gain + 2048);
+
+					if(samplesC[sampleIndex*2] > agcLevel) agcLevel =samplesC[sampleIndex*2];
+					if(samplesC[sampleIndex*2+1] > agcLevel) agcLevel = samplesC[sampleIndex*2+1];
+					dac1SetValue(samplesC[sampleIndex*2] / (agcLevel * 40) * 4096 * gain + 2048);
+					dac2SetValue(samplesC[sampleIndex*2+1] / (agcLevel * 40) * 4096 * gain + 2048);
 					break;
 
 				case 2:
 
 					samplesC[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
 					samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
-					dac1SetValue(samplesA[sampleIndex*2] * 4096 * gain + 2048);
-					dac2SetValue(samplesA[sampleIndex*2+1] * 4096 * gain + 2048);
+
+					if(samplesA[sampleIndex*2] > agcLevel) agcLevel = samplesA[sampleIndex*2];
+					if(samplesA[sampleIndex*2+1] > agcLevel) agcLevel = samplesA[sampleIndex*2+1];
+					dac1SetValue(samplesA[sampleIndex*2] / (agcLevel * 40) * 4096 * gain + 2048);
+					dac2SetValue(samplesA[sampleIndex*2+1] / (agcLevel * 40) * 4096 * gain + 2048);
 					break;
 				}
 				//dac1SetValue(outputSamplesA[sampleIndex*2]);
+
+				agcLevel = agcLevel * (1 - 0.0001);
 
 				sampleIndex++;
 				if(sampleIndex >= FFT_SIZE - filterKernelLength)
@@ -654,13 +666,13 @@ main(int argc, char* argv[])
 			encoderPos = getPos();
 			if(encoderPos != encoderLastPos)
 			{
-				filterLowerLimit += 5 * (encoderLastPos - encoderPos);
+				filterLowerLimit += 1 * (encoderLastPos - encoderPos);
 				if(filterLowerLimit <= 0) filterLowerLimit = 0;
-				if(filterLowerLimit >= 10000) filterLowerLimit = 10000;
-				if(filterLowerLimit >= filterUpperLimit) filterLowerLimit = filterUpperLimit - 10;
+				if(filterLowerLimit >= 100) filterLowerLimit = 100;
+				if(filterLowerLimit >= filterUpperLimit) filterLowerLimit = filterUpperLimit - 1;
 				encoderLastPos = encoderPos;
 				populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
-				sprintf(&freqChar, "%5d", filterLowerLimit * 4);
+				sprintf(&freqChar, "%5d", filterLowerLimit * 40);
 				Adafruit_GFX_setTextSize(1);
 				Adafruit_GFX_setCursor(150, 150 );
 				int i;
@@ -675,13 +687,13 @@ main(int argc, char* argv[])
 			encoderPos = getPos();
 			if(encoderPos != encoderLastPos)
 			{
-				filterUpperLimit += 5 * (encoderLastPos - encoderPos);
+				filterUpperLimit += 1 * (encoderLastPos - encoderPos);
 				if(filterUpperLimit <= 0) filterUpperLimit = 0;
-				if(filterUpperLimit >= 10000) filterUpperLimit = 10000;
-				if(filterUpperLimit <= filterLowerLimit) filterUpperLimit = filterLowerLimit + 10;
+				if(filterUpperLimit >= 100) filterUpperLimit = 100;
+				if(filterUpperLimit <= filterLowerLimit) filterUpperLimit = filterLowerLimit + 1;
 				encoderLastPos = encoderPos;
 				populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
-				sprintf(&freqChar, "%5d", filterUpperLimit * 4);
+				sprintf(&freqChar, "%5d", filterUpperLimit * 40);
 				Adafruit_GFX_setTextSize(1);
 				Adafruit_GFX_setCursor(150, 170 );
 				int i;
