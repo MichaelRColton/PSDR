@@ -119,7 +119,7 @@ const Gpio_Pin dac2					= { GPIOA, GPIO_PIN_5  };
 //};
 
 static uint32_t halMilliseconds;
-static uint32_t timingDelay;
+//static uint32_t timingDelay;
 
 static hal_sysTickCallback sysTickCallback = 0; //Was NULL, but NULL isn't defined? Where is it defined?
 
@@ -164,14 +164,14 @@ void hal_delay_ms(uint32_t ms)
 {
     // busy wait for ms milliseconds
 
-	//TEMP
-	int delay, extra;
-	for(delay = 0; delay < ms; delay++)
-		for(extra = 0; extra < 1000; extra++);
+	////TEMP
+	//int delay, extra;
+	//for(delay = 0; delay < ms; delay++)
+	//	for(extra = 0; extra < 1000; extra++);
 
-//    timingDelay = ms;
-//    while (timingDelay)
-//        ;
+    timingDelay = ms;
+    while (timingDelay)
+    	;
 }
 
 

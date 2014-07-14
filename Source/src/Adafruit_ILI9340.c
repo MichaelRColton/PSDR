@@ -244,6 +244,8 @@ void Adafruit_ILI9340_begin(void) {
   HAL_GPIO_WritePin(LCD_RESET.port, LCD_RESET.pin, 1);
   hal_delay_ms(150);
 
+  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0); //I'm going to try leaving this low the WHOLE TIME!
+
   /*
   uint8_t x = readcommand8(ILI9340_RDMODE);
   Serial.print("\nDisplay Power Mode: 0x"); Serial.println(x, HEX);

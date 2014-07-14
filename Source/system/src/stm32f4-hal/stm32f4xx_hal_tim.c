@@ -2885,6 +2885,11 @@ void HAL_TIM_IRQHandler(TIM_HandleTypeDef *htim)
   }
 }
 
+void clearTimUpdateFlag(TIM_HandleTypeDef *htim)
+{
+	__HAL_TIM_CLEAR_IT(htim, TIM_IT_UPDATE);
+}
+
 /**
   * @}
   */

@@ -160,6 +160,21 @@ void TIM3_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&TimHandle);
 }
+
+/**
+  * @brief  This function handles TIM4 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM4_IRQHandler(void)
+{
+  //HAL_TIM_IRQHandler(&TimHandle);
+//	  HAL_TIM_IRQHandler(&TimHandle);
+processStream();
+ //clearTimUpdateFlag(&TimHandle);
+ //__HAL_TIM_CLEAR_IT(htim, TIM_IT_UPDATE);
+}
+
 //void TIM3_IRQHandler(void)
 //{
 //    __HAL_TIM_CLEAR_IT(htim, TIM_IT_UPDATE);

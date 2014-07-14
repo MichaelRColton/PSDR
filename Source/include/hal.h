@@ -50,6 +50,9 @@
 
 
 
+    __IO uint32_t timingDelay;
+
+
     // gpio pins
 //    extern const Gpio_Pin RX_TO_GSM;
 //    extern const Gpio_Pin TX_FROM_GSM;

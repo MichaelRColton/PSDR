@@ -16,6 +16,8 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9340.h"
 #include "stm32f4xx_hal.h"
+//#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_def.h"
 #include "string.h"
 #include "math.h"
 #include "arm_math.h"
@@ -28,3 +30,4 @@
 #include "stm32f4xx_hal_dac.h"
 
 TIM_HandleTypeDef    TimHandle;
+TIM_HandleTypeDef    TimHandle4;

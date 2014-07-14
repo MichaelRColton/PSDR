@@ -9,63 +9,23 @@
 #include <hal.h>
 #include <stm32f4xx_hal_spi.h>
 #include <stm32f4xx_hal_gpio.h>
-//#include <stm32f415xx.h>
 #include <stm32f4xx_hal.h>
 
 
-//static int spi2Semaphore;
-
-//SPI_HandleTypeDef SpiHandle;
-
 void spi_init(void)
 {
-    // set up the used SPI (SPI2) and pins
-
-
-
-
     SPI_InitTypeDef  spiInitStructure;
     GPIO_InitTypeDef gpioInitStructure;
 
     HAL_SPI_MspInit(&SpiHandle);
 
-
     __SPI1_CLK_ENABLE();
-
-
-
-
-
-//    // SPI2 SCK and MOSI
-//    gpioInitStructure.GPIO_Pin   = SPI1_SCK.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;
-//    GPIO_Init(SPI1_SCK.port, &gpioInitStructure);
-//
-//    gpioInitStructure.GPIO_Pin   = SPI1_MOSI.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;
-//    GPIO_Init(SPI1_MOSI.port, &gpioInitStructure);
-//
-//    // SPI2 MISO
-//    gpioInitStructure.GPIO_Pin   = SPI1_MISO.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_IPU;
-//    GPIO_Init(SPI1_MISO.port, &gpioInitStructure);
-//
-//    // RFID NSS
-//    gpioInitStructure.GPIO_Pin   = LCD_NSS.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-//    GPIO_Init(LCD_NSS.port, &gpioInitStructure);
-//    GPIO_WriteBit(LCD_NSS.port, LCD_NSS.pin, (BitAction)1);       // TBD - should this be before init?
 
     // SPI2 SCK and MOSI
     gpioInitStructure.Pin   = SPI1_SCK.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
-    //gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
     gpioInitStructure.Pull  = GPIO_NOPULL;
     //gpioInitStructure.Alternate = 1;
     HAL_GPIO_Init(SPI1_SCK.port, &gpioInitStructure);
@@ -73,7 +33,6 @@ void spi_init(void)
     gpioInitStructure.Pin   = SPI1_MOSI.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
-    //gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
     gpioInitStructure.Pull  = GPIO_NOPULL;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
     HAL_GPIO_Init(SPI1_MOSI.port, &gpioInitStructure);
@@ -95,36 +54,26 @@ void spi_init(void)
     HAL_GPIO_Init(LCD_NSS.port, &gpioInitStructure);
     HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);       // TBD - should this be before init?
 
+//    gpioInitStructure.Pin   = LCD_NSS.pin;
+//    gpioInitStructure.Speed = GPIO_SPEED_FAST;
+//    gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
+//    gpioInitStructure.Pull  = GPIO_NOPULL;
+//    gpioInitStructure.Alternate = GPIO_AF5_SPI1;
+//    HAL_GPIO_Init(LCD_NSS.port, &gpioInitStructure);
+//    //HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);       // TBD - should this be before init?
 
-    // Accelerometer NSS
-//    gpioInitStructure.GPIO_Pin   = ACCEL_NSS.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-//    GPIO_Init(ACCEL_NSS.port, &gpioInitStructure);
-//    GPIO_WriteBit(ACCEL_NSS.port, ACCEL_NSS.pin, (BitAction)1);     // TBD - should this be before init?
 
-    // init semaphore
-//    spi2Semaphore = 1;
-
-    //GPIO_PinRemapConfig(GPIO_Remap_SPI1, ENABLE); //So I can use the other SPI1 pins? (To keep the DACs availble)
-    //GPIO_Remap_SPI1
-
-    // SPI 1
-    // SPI_StructInit(&spiInitStructure);
-    //spiInitStructure.
-    //HAL_SPI_
-
-    SpiHandle.Instance = SPI1;
-    SpiHandle.Init.Direction = SPI_DIRECTION_2LINES;//   SPI_Direction_2Lines_FullDuplex;
-    SpiHandle.Init.Mode               = SPI_MODE_MASTER; //  SPI_Mode_Master;
-    SpiHandle.Init.DataSize           = SPI_DATASIZE_8BIT; //  SPI_DataSize_8b;
-    SpiHandle.Init.CLKPolarity /*CPOL*/               =  SPI_POLARITY_HIGH; // SPI_C SPI_CPOL_High;
-    SpiHandle.Init.CLKPhase /*CPHA*/               = SPI_PHASE_2EDGE; // SPI_CPHA_2Edge;
-    SpiHandle.Init.NSS                = SPI_NSS_SOFT; // SPI_NSS_Soft;
-    SpiHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_2; //SPI_BaudRatePrescaler_2;
-    SpiHandle.Init.FirstBit           = SPI_FIRSTBIT_MSB; // SPI_FirstBit_MSB;
-    SpiHandle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLED;
-    SpiHandle.Init.TIMode = SPI_TIMODE_DISABLED;
+    SpiHandle.Instance 				  = SPI1;
+    SpiHandle.Init.Direction 		  = SPI_DIRECTION_2LINES;
+    SpiHandle.Init.Mode               = SPI_MODE_MASTER;
+    SpiHandle.Init.DataSize           = SPI_DATASIZE_8BIT;
+    SpiHandle.Init.CLKPolarity 		  = SPI_POLARITY_HIGH;
+    SpiHandle.Init.CLKPhase			  = SPI_PHASE_2EDGE;
+    SpiHandle.Init.NSS                = SPI_NSS_SOFT; //SPI_NSS_SOFT;
+    SpiHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_2;
+    SpiHandle.Init.FirstBit           = SPI_FIRSTBIT_MSB;
+    SpiHandle.Init.CRCCalculation 	  = SPI_CRCCALCULATION_DISABLED;
+    SpiHandle.Init.TIMode 			  = SPI_TIMODE_DISABLED;
     SpiHandle.Init.CRCPolynomial      = 7;
 
     if(HAL_SPI_Init(&SpiHandle) != HAL_OK)
@@ -132,9 +81,6 @@ void spi_init(void)
       /* Initialization Error */
       //Error_Handler();
     }
-    //HAL_SPI_TransmitReceive();
-
-    //SPI_Cmd(SPI2, ENABLE);
 }
 
 

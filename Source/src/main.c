@@ -60,17 +60,18 @@ uint16_t filterKernelLength = 100; //what's a good value? How does it relate to 
 
 uint16_t menuState = 0;
 uint16_t menuLastState = 1;
-uint16_t menuCount = 10;
+uint16_t menuCount = 9;
 uint32_t frequencyDialMultiplier = 1;
 
-long vfoAFrequency = 7260000;
-long vfoALastFreq = 7260000;
+long vfoAFrequency = 7058960;
+long vfoALastFreq = 0;
 int encoderPos, encoderLastPos;
 
-int16_t filterUpperLimit = 10;
+int16_t filterUpperLimit = 68;
 int16_t filterLowerLimit = 0;
 
 float agcLevel = 0;
+float agcScale = 160; //Higher is lower volume.. for now
 
 void polarToRect(float m, float a, float32_t* x, float32_t* y)
 {
@@ -224,6 +225,7 @@ SysTick_Handler (void)
 	millis++;
   timer_tick ();
   Tick();
+  if(timingDelay > 0) timingDelay--;
 }
 
 int clickMultiply;
@@ -302,9 +304,13 @@ int isFwd;
 	float samplesA[FFT_BUFFER_SIZE];
 	float samplesB[FFT_BUFFER_SIZE];
 	float samplesC[FFT_BUFFER_SIZE];
+	float samplesDisplay[FFT_BUFFER_SIZE];
 	int     sampleBankAReady = 0;
 	int 	sampleBankBReady = 0;
 	int		sampleBankCReady = 0;
+
+	uint8_t waterfallBusy = 0;
+
 	//float   outputSamplesA[512];
 	//float   outputSamplesB[512];
 	int     sampleBank = 0;
@@ -328,8 +334,16 @@ int isFwd;
 
 					if(samplesB[sampleIndex*2] > agcLevel) agcLevel = samplesB[sampleIndex*2];
 					if(samplesB[sampleIndex*2+1] > agcLevel) agcLevel = samplesB[sampleIndex*2+1];
-					dac1SetValue(samplesB[sampleIndex*2] / (agcLevel * 40) * 4096 * gain + 2048);
-					dac2SetValue(samplesB[sampleIndex*2+1] / (agcLevel * 40) * 4096 * gain + 2048);
+//					if(sampleIndex < filterKernelLength)
+//					{
+//						dac1SetValue(samplesB[sampleIndex*2] + samplesA[(FFT_SIZE - filterKernelLength)
+//								+ sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+//						dac2SetValue(samplesB[sampleIndex*2+1] + samplesA[(FFT_SIZE - filterKernelLength)
+//						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+//					} else {
+						dac1SetValue(samplesB[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+						dac2SetValue(samplesB[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+//					}
 					break;
 
 				case 1:
@@ -339,8 +353,16 @@ int isFwd;
 
 					if(samplesC[sampleIndex*2] > agcLevel) agcLevel =samplesC[sampleIndex*2];
 					if(samplesC[sampleIndex*2+1] > agcLevel) agcLevel = samplesC[sampleIndex*2+1];
-					dac1SetValue(samplesC[sampleIndex*2] / (agcLevel * 40) * 4096 * gain + 2048);
-					dac2SetValue(samplesC[sampleIndex*2+1] / (agcLevel * 40) * 4096 * gain + 2048);
+//					if(sampleIndex < filterKernelLength)
+//					{
+//						dac1SetValue(samplesC[sampleIndex*2] + samplesB[(FFT_SIZE - filterKernelLength)
+//								+ sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+//						dac2SetValue(samplesC[sampleIndex*2+1] + samplesB[(FFT_SIZE - filterKernelLength)
+//						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+//					} else {
+						dac1SetValue(samplesC[sampleIndex*2] / (agcLevel * agcScale) * 4096 * gain + 2048);
+						dac2SetValue(samplesC[sampleIndex*2+1] / (agcLevel * agcScale) * 4096 * gain + 2048);
+//					}
 					break;
 
 				case 2:
@@ -350,8 +372,16 @@ int isFwd;
 
 					if(samplesA[sampleIndex*2] > agcLevel) agcLevel = samplesA[sampleIndex*2];
 					if(samplesA[sampleIndex*2+1] > agcLevel) agcLevel = samplesA[sampleIndex*2+1];
-					dac1SetValue(samplesA[sampleIndex*2] / (agcLevel * 40) * 4096 * gain + 2048);
-					dac2SetValue(samplesA[sampleIndex*2+1] / (agcLevel * 40) * 4096 * gain + 2048);
+//					if(sampleIndex < filterKernelLength)
+//					{
+//						dac1SetValue(samplesA[sampleIndex*2] + samplesC[(FFT_SIZE - filterKernelLength)
+//								+ sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+//						dac2SetValue(samplesA[sampleIndex*2+1] + samplesC[(FFT_SIZE - filterKernelLength)
+//						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+//					} else {
+						dac1SetValue(samplesA[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+						dac2SetValue(samplesA[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+//					}
 					break;
 				}
 				//dac1SetValue(outputSamplesA[sampleIndex*2]);
@@ -359,7 +389,7 @@ int isFwd;
 				agcLevel = agcLevel * (1 - 0.0001);
 
 				sampleIndex++;
-				if(sampleIndex >= FFT_SIZE - filterKernelLength)
+				if(sampleIndex >= FFT_SIZE /*- filterKernelLength*/)
 				{
 					sampleRun = 1;
 					sampleIndex = 0;
@@ -407,7 +437,6 @@ void zeroSampleBank(float *samples)
 	uint16_t i;
 	for(i = 0; i < FFT_BUFFER_SIZE; i++) samples[i] = 0;
 }
-
 
 int
 main(int argc, char* argv[])
@@ -711,117 +740,122 @@ main(int argc, char* argv[])
 
 
 
-		float fftMaxMax = 0;
-		if(sampleRun)
-		{
+//		float fftMaxMax = 0;
+//		if(sampleRun)
+//		{
+//
+//			timeMeasurement = millis;
+//			arm_cfft_radix4_instance_f32 fft_inst;
+//			//arm_cfft_radix4_init_q31(&fft_inst, FFT_SIZE, 0, 1);
+//			//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+//
+//			if (sampleBankAReady == 1)
+//			{
+//				blink_led_on();
+//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+//
+//
+//				//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
+//
+//				arm_cfft_radix4_f32(&fft_inst, samplesA);
+//				// Calculate magnitude of complex numbers output by the FFT.
+//				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
+//
+//				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
+//
+//				//applyCoeficient(samplesA);
+//
+//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
+//				arm_cfft_radix4_f32(&fft_inst, samplesA);
+//
+//				sampleBankAReady = 0;
+//				blink_led_off();
+//			}
+//			else if(sampleBankBReady == 1)
+//			{
+//				blink_led_on();
+//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+//
+//				//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
+//
+//				arm_cfft_radix4_f32(&fft_inst, samplesB);
+//				// Calculate magnitude of complex numbers output by the FFT.
+//				//arm_cmplx_mag_f32(samplesB, magnitudes, FFT_SIZE);
+//				//applyCoeficient(samplesB);
+//
+//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
+//				arm_cfft_radix4_f32(&fft_inst, samplesB);
+//				sampleBankBReady = 0;
+//				blink_led_off();
+//
+//			}
+//			else if (sampleBankCReady == 1)
+//			{
+//				blink_led_on();
+//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+//
+//
+//				//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
+//
+//				arm_cfft_radix4_f32(&fft_inst, samplesC);
+//				// Calculate magnitude of complex numbers output by the FFT.
+//				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
+//
+//				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
+//				//applyCoeficient(samplesC);
+//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
+//				arm_cfft_radix4_f32(&fft_inst, samplesC);
+//
+//				sampleBankCReady = 0;
+//				blink_led_off();
+//			}
+//			timeMeasurement = millis - timeMeasurement;
+//
 
-			timeMeasurement = millis;
-			arm_cfft_radix4_instance_f32 fft_inst;
-			//arm_cfft_radix4_init_q31(&fft_inst, FFT_SIZE, 0, 1);
-			//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
-
-			if (sampleBankAReady == 1)
-			{
-				blink_led_on();
-				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
-
-
-				//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
-
-				arm_cfft_radix4_f32(&fft_inst, samplesA);
-				// Calculate magnitude of complex numbers output by the FFT.
-				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-
-				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-
-				applyCoeficient(samplesA);
-
-				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
-				arm_cfft_radix4_f32(&fft_inst, samplesA);
-
-				sampleBankAReady = 0;
-				blink_led_off();
-			}
-			else if(sampleBankBReady == 1)
-			{
-				blink_led_on();
-				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
-
-				//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
-
-				arm_cfft_radix4_f32(&fft_inst, samplesB);
-				// Calculate magnitude of complex numbers output by the FFT.
-				//arm_cmplx_mag_f32(samplesB, magnitudes, FFT_SIZE);
-				applyCoeficient(samplesB);
-
-				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
-				arm_cfft_radix4_f32(&fft_inst, samplesB);
-				sampleBankBReady = 0;
-				blink_led_off();
-
-			}
-			else if (sampleBankCReady == 1)
-			{
-				blink_led_on();
-				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
-
-
-				//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
-
-				arm_cfft_radix4_f32(&fft_inst, samplesC);
-				// Calculate magnitude of complex numbers output by the FFT.
-				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-
-				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-				applyCoeficient(samplesC);
-				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
-				arm_cfft_radix4_f32(&fft_inst, samplesC);
-
-				sampleBankCReady = 0;
-				blink_led_off();
-			}
-			timeMeasurement = millis - timeMeasurement;
+		arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
 
 			float fftMax = 0;
-			//					float fftMin = 100;
-			//					float logMax;
-			//					uint8_t i;
-			//					for(i = 0; i < 255; i++)
-			//					{
-			//						float mags = magnitudes[i];
-			//						if(mags > fftMax) fftMax = mags;
-			//						if(mags < fftMin) fftMin = mags;
-			//					}
-			//					//logMax = log2(fftMax);
-			//
-			//					if(fftMax > fftMaxMax) fftMaxMax = fftMax;
-			//					logMax = log2(fftMaxMax);
+								float fftMin = 100;
+								float fftMaxMax = 0;
+								float logMax;
+								uint8_t i;
+								for(i = 0; i < 255; i++)
+								{
+									float mags = magnitudes[i];
+									if(mags > fftMax) fftMax = mags;
+									if(mags < fftMin) fftMin = mags;
+								}
+								//logMax = log2(fftMax);
+
+								if(fftMax > fftMaxMax) fftMaxMax = fftMax;
+								logMax = log2(fftMaxMax);
 
 
-			//TODOne: SWITCH THESE AND FLIP THEM. So that higher frequencies appear higher on screen.
-			//TODO: Got rid of the first bin because it's just DC offset, right?
-			//but now narrow signal can disappear when they are right at the center....
-			//Will that be better when I lower the sample frequency? Maybe I should do that next.
-			//				for(i = 1; i < 120; i++)
-			//				{
-			//					mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
-			//					//mags = magnitudes[i] / fftMaxMax * 32;
-			//					Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
-			//				}
-			//
-			//				for(i = 135; i < 255; i++)
-			//				{
-			//					mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
-			//					//mags = magnitudes[i] / fftMaxMax * 32;
-			//					Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
-			//				}
-			//
-			//				waterfallScanLine++;
-			//				if(waterfallScanLine > 119) waterfallScanLine = 0;
-			//				Adafruit_ILI9340_setVertialScrollStartAddress((119 - waterfallScanLine) + 200);
+//			TODOne: SWITCH THESE AND FLIP THEM. So that higher frequencies appear higher on screen.
+//			TODO: Got rid of the first bin because it's just DC offset, right?
+//			but now narrow signal can disappear when they are right at the center....
+//			Will that be better when I lower the sample frequency? Maybe I should do that next.
+			//uint16_t i;
+							for(i = 1; i < 120; i++)
+							{
+								mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
+								//mags = magnitudes[i] / fftMaxMax * 32;
+								Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
+							}
 
-			sampleRun = 0;
-		}
+							for(i = 135; i < 255; i++)
+							{
+								mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
+								//mags = magnitudes[i] / fftMaxMax * 32;
+								Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
+							}
+
+							waterfallScanLine++;
+							if(waterfallScanLine > 119) waterfallScanLine = 0;
+							Adafruit_ILI9340_setVertialScrollStartAddress((119 - waterfallScanLine) + 200);
+//
+//			sampleRun = 0;
+//		}
 
 		if(vfoAFrequency != vfoALastFreq)
 		{
@@ -881,6 +915,140 @@ main(int argc, char* argv[])
 	}
 }
 
+void processStream()
+{
+
+
+
+	float fftMaxMax = 0;
+	if(sampleRun)
+	{
+
+		//timeMeasurement = millis;
+		arm_cfft_radix4_instance_f32 fft_inst;
+		//arm_cfft_radix4_init_q31(&fft_inst, FFT_SIZE, 0, 1);
+		//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+
+		if (sampleBankAReady == 1)
+		{
+			blink_led_on();
+			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+
+
+			//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
+
+			arm_cfft_radix4_f32(&fft_inst, samplesA);
+			// Calculate magnitude of complex numbers output by the FFT.
+			if(waterfallBusy != 1)
+			{
+				uint16_t i;
+				for(i = 0; i < FFT_BUFFER_SIZE; i++) samplesDisplay[i] = samplesA[i];
+				//waterfallBusy = 1;
+			}
+			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
+
+			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
+
+			applyCoeficient(samplesA);
+
+			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
+			arm_cfft_radix4_f32(&fft_inst, samplesA);
+
+			sampleBankAReady = 0;
+			blink_led_off();
+		}
+		else if(sampleBankBReady == 1)
+		{
+			blink_led_on();
+			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+
+			//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
+
+			arm_cfft_radix4_f32(&fft_inst, samplesB);
+			// Calculate magnitude of complex numbers output by the FFT.
+			//arm_cmplx_mag_f32(samplesB, magnitudes, FFT_SIZE);
+			applyCoeficient(samplesB);
+
+			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
+			arm_cfft_radix4_f32(&fft_inst, samplesB);
+			sampleBankBReady = 0;
+			blink_led_off();
+
+		}
+		else if (sampleBankCReady == 1)
+		{
+			blink_led_on();
+			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+
+
+			//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
+
+			arm_cfft_radix4_f32(&fft_inst, samplesC);
+			// Calculate magnitude of complex numbers output by the FFT.
+			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
+
+			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
+			applyCoeficient(samplesC);
+			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
+			arm_cfft_radix4_f32(&fft_inst, samplesC);
+
+			sampleBankCReady = 0;
+			blink_led_off();
+		}
+		//timeMeasurement = millis - timeMeasurement;
+
+		float fftMax = 0;
+		//					float fftMin = 100;
+		//					float logMax;
+		//					uint8_t i;
+		//					for(i = 0; i < 255; i++)
+		//					{
+		//						float mags = magnitudes[i];
+		//						if(mags > fftMax) fftMax = mags;
+		//						if(mags < fftMin) fftMin = mags;
+		//					}
+		//					//logMax = log2(fftMax);
+		//
+		//					if(fftMax > fftMaxMax) fftMaxMax = fftMax;
+		//					logMax = log2(fftMaxMax);
+
+
+		//TODOne: SWITCH THESE AND FLIP THEM. So that higher frequencies appear higher on screen.
+		//TODO: Got rid of the first bin because it's just DC offset, right?
+		//but now narrow signal can disappear when they are right at the center....
+		//Will that be better when I lower the sample frequency? Maybe I should do that next.
+		//				for(i = 1; i < 120; i++)
+		//				{
+		//					mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
+		//					//mags = magnitudes[i] / fftMaxMax * 32;
+		//					Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
+		//				}
+		//
+		//				for(i = 135; i < 255; i++)
+		//				{
+		//					mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
+		//					//mags = magnitudes[i] / fftMaxMax * 32;
+		//					Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
+		//				}
+		//
+		//				waterfallScanLine++;
+		//				if(waterfallScanLine > 119) waterfallScanLine = 0;
+		//				Adafruit_ILI9340_setVertialScrollStartAddress((119 - waterfallScanLine) + 200);
+
+		sampleRun = 0;
+	}
+
+
+
+
+
+
+
+	//wrongThings++;
+    //__HAL_TIM_CLEAR_IT(htim, TIM_IT_UPDATE);
+	clearTimUpdateFlag(&TimHandle4);
+}
+
 void updateVfo()
 {
 	encoderPos = getPos();
@@ -897,105 +1065,105 @@ void updateVfo()
 }
 
 //TIM_TimeBaseInitTypeDef timeBaseStructure;
-
-TIM_OC_InitTypeDef   tsConfig;
-#define  PULSE1_VALUE       40961       /* Capture Compare 1 Value  */
+//
+//TIM_OC_InitTypeDef   tsConfig;
+//#define  PULSE1_VALUE       40961       /* Capture Compare 1 Value  */
 uint32_t uwPrescalerValue = 0;
-void TIM_setup()
-{
-	  /*##-1- Configure the TIM peripheral #######################################*/
-  /* -----------------------------------------------------------------------
-    In this example TIM3 input clock (TIM3CLK) is set to 2 * APB1 clock (PCLK1),
-    since APB1 prescaler is different from 1.
-      TIM3CLK = 2 * PCLK1
-      PCLK1 = HCLK / 4
-      => TIM3CLK = HCLK / 2 = SystemCoreClock /2
-    To get TIM3 counter clock at 60 KHz, the Prescaler is computed as following:
-    Prescaler = (TIM3CLK / TIM3 counter clock) - 1
-    Prescaler = ((SystemCoreClock /2) /60 KHz) - 1
-
-    Note:
-     SystemCoreClock variable holds HCLK frequency and is defined in system_stm32f4xx.c file.
-     Each time the core clock (HCLK) changes, user had to update SystemCoreClock
-     variable value. Otherwise, any configuration based on this variable will be incorrect.
-     This variable is updated in three ways:
-      1) by calling CMSIS function SystemCoreClockUpdate()
-      2) by calling HAL API function HAL_RCC_GetSysClockFreq()
-      3) each time HAL_RCC_ClockConfig() is called to configure the system clock frequency
-  ----------------------------------------------------------------------- */
-
-  /* Compute the prescaler value to have TIM3 counter clock equal to 60 KHz */
-  uwPrescalerValue = (uint32_t) ((SystemCoreClock/2) / 60000) - 1;
-
-  /* Set TIMx instance */
-    TimHandle.Instance = TIM3; //TIMx;
-
-  /* Initialize TIM3 peripheral as follow:
-       + Period = 65535
-       + Prescaler = (SystemCoreClock/2)/60000
-       + ClockDivision = 0
-       + Counter direction = Up
-  */
-  TimHandle.Init.Period = 65535;
-  TimHandle.Init.Prescaler = uwPrescalerValue;
-  TimHandle.Init.ClockDivision = 0;
-  TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
-  if(HAL_TIM_OC_Init(&TimHandle) != HAL_OK)
-  {
-    /* Initialization Error */
-    //Error_Handler();
-	  doNothing();
-  }
-
-  /*##-2- Configure the PWM channels #########################################*/
-  /* Common configuration */
-  tsConfig.OCMode = TIM_OCMODE_TIMING;
-  tsConfig.OCPolarity = TIM_OCPOLARITY_HIGH;
-  tsConfig.OCFastMode = TIM_OCFAST_DISABLE;
-
-  /* Set the pulse value for channel 1 */
-  tsConfig.Pulse = PULSE1_VALUE;
-  if(HAL_TIM_OC_ConfigChannel(&TimHandle, &tsConfig, TIM_CHANNEL_1) != HAL_OK)
-  {
-    /* Initialization Error */
-    //Error_Handler();
-	  doNothing();
-  }
-
-  /*##-4- Start the Output Compare mode in interrupt mode ####################*/
-  /* Start Channel1 */
-  if(HAL_TIM_OC_Start_IT(&TimHandle, TIM_CHANNEL_1) != HAL_OK)
-  {
-    /* Initialization Error */
-    //Error_Handler();
-	  doNothing();
-  }
-
-}
-
-
-///**
-//  * @brief  Configures the TIM IRQ Handler.
-//  * @param  None
-//  * @retval None
+//void TIM_setup()
+//{
+//	  /*##-1- Configure the TIM peripheral #######################################*/
+//  /* -----------------------------------------------------------------------
+//    In this example TIM3 input clock (TIM3CLK) is set to 2 * APB1 clock (PCLK1),
+//    since APB1 prescaler is different from 1.
+//      TIM3CLK = 2 * PCLK1
+//      PCLK1 = HCLK / 4
+//      => TIM3CLK = HCLK / 2 = SystemCoreClock /2
+//    To get TIM3 counter clock at 60 KHz, the Prescaler is computed as following:
+//    Prescaler = (TIM3CLK / TIM3 counter clock) - 1
+//    Prescaler = ((SystemCoreClock /2) /60 KHz) - 1
+//
+//    Note:
+//     SystemCoreClock variable holds HCLK frequency and is defined in system_stm32f4xx.c file.
+//     Each time the core clock (HCLK) changes, user had to update SystemCoreClock
+//     variable value. Otherwise, any configuration based on this variable will be incorrect.
+//     This variable is updated in three ways:
+//      1) by calling CMSIS function SystemCoreClockUpdate()
+//      2) by calling HAL API function HAL_RCC_GetSysClockFreq()
+//      3) each time HAL_RCC_ClockConfig() is called to configure the system clock frequency
+//  ----------------------------------------------------------------------- */
+//
+//  /* Compute the prescaler value to have TIM3 counter clock equal to 60 KHz */
+//  uwPrescalerValue = (uint32_t) ((SystemCoreClock/2) / 60000) - 1;
+//
+//  /* Set TIMx instance */
+//    TimHandle.Instance = TIM3; //TIMx;
+//
+//  /* Initialize TIM3 peripheral as follow:
+//       + Period = 65535
+//       + Prescaler = (SystemCoreClock/2)/60000
+//       + ClockDivision = 0
+//       + Counter direction = Up
 //  */
-void TIM_Config(void)
-{
-  NVIC_InitTypeDef NVIC_InitStructure;
+//  TimHandle.Init.Period = 65535;
+//  TimHandle.Init.Prescaler = uwPrescalerValue;
+//  TimHandle.Init.ClockDivision = 0;
+//  TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
+//  if(HAL_TIM_OC_Init(&TimHandle) != HAL_OK)
+//  {
+//    /* Initialization Error */
+//    //Error_Handler();
+//	  doNothing();
+//  }
+//
+//  /*##-2- Configure the PWM channels #########################################*/
+//  /* Common configuration */
+//  tsConfig.OCMode = TIM_OCMODE_TIMING;
+//  tsConfig.OCPolarity = TIM_OCPOLARITY_HIGH;
+//  tsConfig.OCFastMode = TIM_OCFAST_DISABLE;
+//
+//  /* Set the pulse value for channel 1 */
+//  tsConfig.Pulse = PULSE1_VALUE;
+//  if(HAL_TIM_OC_ConfigChannel(&TimHandle, &tsConfig, TIM_CHANNEL_1) != HAL_OK)
+//  {
+//    /* Initialization Error */
+//    //Error_Handler();
+//	  doNothing();
+//  }
+//
+//  /*##-4- Start the Output Compare mode in interrupt mode ####################*/
+//  /* Start Channel1 */
+//  if(HAL_TIM_OC_Start_IT(&TimHandle, TIM_CHANNEL_1) != HAL_OK)
+//  {
+//    /* Initialization Error */
+//    //Error_Handler();
+//	  doNothing();
+//  }
+//
+//}
 
-  /* TIM3 clock enable */
-  //RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-  __TIM3_CLK_ENABLE();
 
-  /* Enable the TIM3 gloabal Interrupt */
-  NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-
-
-}
+/////**
+////  * @brief  Configures the TIM IRQ Handler.
+////  * @param  None
+////  * @retval None
+////  */
+//void TIM_Config(void)
+//{
+//  NVIC_InitTypeDef NVIC_InitStructure;
+//
+//  /* TIM3 clock enable */
+//  //RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+//  __TIM3_CLK_ENABLE();
+//
+//  /* Enable the TIM3 gloabal Interrupt */
+//  NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+//  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+//  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+//  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//  NVIC_Init(&NVIC_InitStructure);
+//
+//
+//}
 
 TIM_TypeDef timTimBase;
 //TIM_HandleTypeDef timHandle;
@@ -1009,12 +1177,15 @@ void TIM_Try(void)
 
     //NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 	__TIM3_CLK_ENABLE();
+
 	TimHandle.Instance = TIM3;
 	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
 	TimHandle.Init.Period = 1050;
 	TimHandle.Init.Prescaler = uwPrescalerValue;
 	TimHandle.Init.ClockDivision = 0;
 	HAL_TIM_Base_Init(&TimHandle);
+
+
 
 	HAL_TIM_Base_Start_IT(&TimHandle);
 
@@ -1024,6 +1195,27 @@ void TIM_Try(void)
 
 	  /* Enable the TIMx global Interrupt */
 	  HAL_NVIC_EnableIRQ(TIMx_IRQn);
+
+
+
+
+	  __TIM4_CLK_ENABLE();
+		TimHandle4.Instance = TIM4;
+		TimHandle4.Init.CounterMode = TIM_COUNTERMODE_UP;
+		TimHandle4.Init.Period = 1050;
+		TimHandle4.Init.Prescaler = uwPrescalerValue;
+		TimHandle4.Init.ClockDivision = 0;
+
+	HAL_TIM_Base_Init(&TimHandle4);
+	HAL_TIM_Base_Start_IT(&TimHandle4);
+
+	  /*##-2- Configure the NVIC for TIMx #########################################*/
+	  /* Set the TIMx priority */
+	  HAL_NVIC_SetPriority(TIM4_IRQn, 2, 4);
+
+	  /* Enable the TIMx global Interrupt */
+	  HAL_NVIC_EnableIRQ(TIM4_IRQn);
+
 
 
 //	int tim3;
