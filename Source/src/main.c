@@ -69,6 +69,7 @@ int encoderPos, encoderLastPos;
 
 int16_t filterUpperLimit = 68;
 int16_t filterLowerLimit = 0;
+uint8_t mode = 0;
 
 float agcLevel = 0;
 float agcScale = 160; //Higher is lower volume.. for now
@@ -305,6 +306,7 @@ int isFwd;
 	float samplesB[FFT_BUFFER_SIZE];
 	float samplesC[FFT_BUFFER_SIZE];
 	float samplesDisplay[FFT_BUFFER_SIZE];
+	float samplesDemod[FFT_BUFFER_SIZE];
 	int     sampleBankAReady = 0;
 	int 	sampleBankBReady = 0;
 	int		sampleBankCReady = 0;
@@ -389,7 +391,7 @@ int isFwd;
 				agcLevel = agcLevel * (1 - 0.0001);
 
 				sampleIndex++;
-				if(sampleIndex >= FFT_SIZE /*- filterKernelLength*/)
+				if(sampleIndex >= FFT_SIZE - filterKernelLength)
 				{
 					sampleRun = 1;
 					sampleIndex = 0;
@@ -514,7 +516,7 @@ main(int argc, char* argv[])
 
 	adcStartConversion();
 
-	float magnitudes[256];
+	float magnitudes[FFT_SIZE];
 
 	uint8_t rawGradient[96] =
 	{
@@ -565,7 +567,7 @@ main(int argc, char* argv[])
 	uint8_t waterfallScanLine = 0;
 
 
-	Adafruit_GFX_drawTriangle(121,119,131,124,131,114,ILI9340_WHITE);
+	Adafruit_GFX_drawTriangle(126,119,136,124,136,114,ILI9340_WHITE);
 
 
 	uint16_t freqVOffset = 120 - (8*3/2);
@@ -697,7 +699,7 @@ main(int argc, char* argv[])
 			{
 				filterLowerLimit += 1 * (encoderLastPos - encoderPos);
 				if(filterLowerLimit <= 0) filterLowerLimit = 0;
-				if(filterLowerLimit >= 100) filterLowerLimit = 100;
+				if(filterLowerLimit >= 200) filterLowerLimit = 100;
 				if(filterLowerLimit >= filterUpperLimit) filterLowerLimit = filterUpperLimit - 1;
 				encoderLastPos = encoderPos;
 				populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
@@ -710,6 +712,9 @@ main(int argc, char* argv[])
 					Adafruit_GFX_write(freqChar[i]);
 				}
 				Adafruit_GFX_setTextSize(3);
+
+				Adafruit_GFX_fillRect(120, 120, 4, 100 , ILI9340_BLACK);
+				Adafruit_GFX_fillRect(120, filterLowerLimit/2 + 120, 4, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
 			}
 			break;
 		case 8: //Filter Upper
@@ -718,7 +723,7 @@ main(int argc, char* argv[])
 			{
 				filterUpperLimit += 1 * (encoderLastPos - encoderPos);
 				if(filterUpperLimit <= 0) filterUpperLimit = 0;
-				if(filterUpperLimit >= 100) filterUpperLimit = 100;
+				if(filterUpperLimit >= 200) filterUpperLimit = 100;
 				if(filterUpperLimit <= filterLowerLimit) filterUpperLimit = filterLowerLimit + 1;
 				encoderLastPos = encoderPos;
 				populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
@@ -731,6 +736,10 @@ main(int argc, char* argv[])
 					Adafruit_GFX_write(freqChar[i]);
 				}
 				Adafruit_GFX_setTextSize(3);
+
+				Adafruit_GFX_fillRect(120, 120, 4, 100 , ILI9340_BLACK);
+				Adafruit_GFX_fillRect(120, filterLowerLimit/2 + 120, 4, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
+
 			}
 			break;
 		case 9: //Mode
@@ -954,6 +963,19 @@ void processStream()
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesA);
 
+			if(mode == 2) //Try to demodulate AM
+			{
+				arm_cmplx_mag_f32(samplesA, samplesDemod, FFT_SIZE);
+
+				uint16_t i;
+				for(i = 0; i < FFT_SIZE; i++)
+				{
+					samplesA[i * 2] = samplesDemod[i];
+					samplesA[i * 2 + 1] = 0; //samplesDemod[i];
+				}
+			}
+
+
 			sampleBankAReady = 0;
 			blink_led_off();
 		}
@@ -971,6 +993,19 @@ void processStream()
 
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesB);
+
+			if(mode == 2) //Try to demodulate AM
+			{
+				arm_cmplx_mag_f32(samplesB, samplesDemod, FFT_SIZE);
+
+				uint16_t i;
+				for(i = 0; i < FFT_SIZE; i++)
+				{
+					samplesB[i * 2] = samplesDemod[i];
+					samplesB[i * 2 + 1] = 0; //samplesDemod[i];
+				}
+			}
+
 			sampleBankBReady = 0;
 			blink_led_off();
 
@@ -991,6 +1026,18 @@ void processStream()
 			applyCoeficient(samplesC);
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesC);
+
+			if(mode == 2) //Try to demodulate AM
+			{
+				arm_cmplx_mag_f32(samplesC, samplesDemod, FFT_SIZE);
+
+				uint16_t i;
+				for(i = 0; i < FFT_SIZE; i++)
+				{
+					samplesC[i * 2] = samplesDemod[i];
+					samplesC[i * 2 + 1] = 0; //samplesDemod[i];
+				}
+			}
 
 			sampleBankCReady = 0;
 			blink_led_off();
