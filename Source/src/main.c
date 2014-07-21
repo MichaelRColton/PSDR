@@ -60,10 +60,10 @@ uint16_t filterKernelLength = 100; //what's a good value? How does it relate to 
 
 uint16_t menuState = 0;
 uint16_t menuLastState = 1;
-uint16_t menuCount = 9;
+uint16_t menuCount = 10;
 uint32_t frequencyDialMultiplier = 1;
 
-long vfoAFrequency = 7058960;
+long vfoAFrequency = 10001460;
 long vfoALastFreq = 0;
 int encoderPos, encoderLastPos;
 
@@ -128,7 +128,7 @@ void populateCoeficients(int bandwidth, int sideband, int offset)
 	fftFilterCoeficient[FFT_BUFFER_SIZE / 2] = 0;
 	fftFilterCoeficient[FFT_BUFFER_SIZE - 1] = 0;
 
-	return;
+	return; //Skipping all the later stuff doesn't seem to make a huge difference yet...
 
 	//2:
 	float x, y;
@@ -307,6 +307,7 @@ int isFwd;
 	float samplesC[FFT_BUFFER_SIZE];
 	float samplesDisplay[FFT_BUFFER_SIZE];
 	float samplesDemod[FFT_BUFFER_SIZE];
+	float samplesOverlap[100];
 	int     sampleBankAReady = 0;
 	int 	sampleBankBReady = 0;
 	int		sampleBankCReady = 0;
@@ -346,6 +347,13 @@ int isFwd;
 						dac1SetValue(samplesB[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 						dac2SetValue(samplesB[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					}
+
+					if(sampleIndex > FFT_SIZE - filterKernelLength - 1)
+					{
+						samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength))*2] = samplesA[sampleIndex*2];
+						samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength)) * 2 +1] = samplesA[sampleIndex*2+1];
+					}
+
 					break;
 
 				case 1:
@@ -362,9 +370,16 @@ int isFwd;
 //						dac2SetValue(samplesC[sampleIndex*2+1] + samplesB[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesC[sampleIndex*2] / (agcLevel * agcScale) * 4096 * gain + 2048);
-						dac2SetValue(samplesC[sampleIndex*2+1] / (agcLevel * agcScale) * 4096 * gain + 2048);
+						dac1SetValue(samplesC[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+						dac2SetValue(samplesC[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					}
+
+						if(sampleIndex > FFT_SIZE - filterKernelLength - 1)
+						{
+							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength))*2] = samplesB[sampleIndex*2];
+							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength)) * 2 +1] = samplesB[sampleIndex*2+1];
+						}
+
 					break;
 
 				case 2:
@@ -384,6 +399,13 @@ int isFwd;
 						dac1SetValue(samplesA[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 						dac2SetValue(samplesA[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					}
+
+						if(sampleIndex > FFT_SIZE - filterKernelLength - 1)
+						{
+							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength))*2] = samplesC[sampleIndex*2];
+							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength)) * 2 +1] = samplesC[sampleIndex*2+1];
+						}
+
 					break;
 				}
 				//dac1SetValue(outputSamplesA[sampleIndex*2]);
@@ -391,10 +413,10 @@ int isFwd;
 				agcLevel = agcLevel * (1 - 0.0001);
 
 				sampleIndex++;
-				if(sampleIndex >= FFT_SIZE - filterKernelLength)
+				if(sampleIndex >= FFT_SIZE - (filterKernelLength/2))
 				{
 					sampleRun = 1;
-					sampleIndex = 0;
+					sampleIndex = filterKernelLength/2; //0;
 					switch(sampleBank)
 					{
 					case 0:
@@ -437,7 +459,8 @@ int isFwd;
 void zeroSampleBank(float *samples)
 {
 	uint16_t i;
-	for(i = 0; i < FFT_BUFFER_SIZE; i++) samples[i] = 0;
+	for(i = 0; i < filterKernelLength; i++) samples[i] = samplesOverlap[i];
+	for(; i < FFT_BUFFER_SIZE; i++) samples[i] = 0;
 }
 
 int
@@ -501,6 +524,7 @@ main(int argc, char* argv[])
 	Adafruit_GFX_setTextWrap(1);
 	Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
 	char freqChar[14];
+	char modeChar[3];
 	sprintf(&freqChar, "%8d", 28000000);
 
 
@@ -652,14 +676,22 @@ main(int argc, char* argv[])
 			case 7: //Filter Lower
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 199, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_RED);
 				break;
 			case 8: //Filter Upper
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 199, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_RED);
 				break;
-			case 9: //Mode
+			case 9:
+				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
+				Adafruit_GFX_drawFastHLine(150, 199, 30, ILI9340_RED);
+				break;
+				//Mode
 			default:
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				break;
@@ -743,6 +775,39 @@ main(int argc, char* argv[])
 			}
 			break;
 		case 9: //Mode
+			encoderPos = getPos();
+			if(encoderPos != encoderLastPos)
+			{
+				mode = (encoderLastPos - encoderPos) % 3;
+				Adafruit_GFX_setTextSize(1);
+				Adafruit_GFX_setCursor(150, 190);
+				int i;
+				//TODO: CHANGE THE FILTER SO IT MAKES SENSE!
+				//Right now all this does is turns the AM decoder on and off, I guess.
+
+				switch(mode)
+				{
+				case 0: //LSB
+					modeChar[0] = 'L';
+					modeChar[1] = 'S';
+					modeChar[2] = 'B';
+					break;
+				case 1: //USB
+					modeChar[0] = 'U';
+					modeChar[1] = 'S';
+					modeChar[2] = 'B';
+					break;
+				case 2: //AM
+					modeChar[0] = 'A';
+					modeChar[1] = 'M';
+					modeChar[2] = ' ';
+				}
+				for(i = 0; i < 3; i++)
+				{
+					Adafruit_GFX_write(modeChar[i]);
+				}
+				Adafruit_GFX_setTextSize(3);
+			}
 		default:
 			break;
 		}
@@ -971,7 +1036,7 @@ void processStream()
 				for(i = 0; i < FFT_SIZE; i++)
 				{
 					samplesA[i * 2] = samplesDemod[i];
-					samplesA[i * 2 + 1] = 0; //samplesDemod[i];
+					samplesA[i * 2 + 1] = samplesDemod[i];
 				}
 			}
 
@@ -1002,7 +1067,7 @@ void processStream()
 				for(i = 0; i < FFT_SIZE; i++)
 				{
 					samplesB[i * 2] = samplesDemod[i];
-					samplesB[i * 2 + 1] = 0; //samplesDemod[i];
+					samplesB[i * 2 + 1] = samplesDemod[i];
 				}
 			}
 
@@ -1035,7 +1100,7 @@ void processStream()
 				for(i = 0; i < FFT_SIZE; i++)
 				{
 					samplesC[i * 2] = samplesDemod[i];
-					samplesC[i * 2 + 1] = 0; //samplesDemod[i];
+					samplesC[i * 2 + 1] = samplesDemod[i];
 				}
 			}
 
