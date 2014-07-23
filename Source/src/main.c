@@ -522,6 +522,11 @@ main(int argc, char* argv[])
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
 
+	Adafruit_GFX_drawColorBitmap(150, 0, psdrLogo, 69,33);
+	Adafruit_GFX_drawColorBitmap(190, 40, psdrLogo, 69,33);
+	Adafruit_GFX_drawColorBitmap(240, 180, psdrLogo, 69,33);
+	Adafruit_GFX_drawColorBitmap(150, 210, bitmapMode, 40,12);
+
 	Encoder();
 
 	char chrisABaby[] = "Chris a baby!";
@@ -784,7 +789,8 @@ main(int argc, char* argv[])
 			encoderPos = getPos();
 			if(encoderPos != encoderLastPos)
 			{
-				mode += (encoderLastPos - encoderPos) % 3;
+				mode = (mode + (encoderLastPos - encoderPos)) % 3;
+				encoderLastPos = encoderPos;
 				Adafruit_GFX_setTextSize(1);
 				Adafruit_GFX_setCursor(150, 190);
 				int i;

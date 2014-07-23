@@ -372,6 +372,17 @@ void Adafruit_GFX_drawBitmap(int16_t x, int16_t y,
   }
 }
 
+void Adafruit_GFX_drawColorBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h)
+{
+	int16_t i, j;
+
+	for(j=0; j<h; j++) {
+		for(i=0; i<w; i++) {
+			Adafruit_ILI9340_drawPixel(x+i, y+j, bitmap[i+w*j]);
+		}
+	}
+}
+
 #if ARDUINO >= 100
 size_t Adafruit_GFX_write(uint8_t c) {
 #else

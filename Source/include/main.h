@@ -29,5 +29,7 @@
 #include "misc.h"
 #include "stm32f4xx_hal_dac.h"
 
+#include "images.h"
+
 TIM_HandleTypeDef    TimHandle;
 TIM_HandleTypeDef    TimHandle4;
