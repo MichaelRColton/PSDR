@@ -39,14 +39,14 @@
 // Sample pragmas to cope with warnings. Please note the related line at
 // the end of this function, used to pop the compiler diagnostics status.
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wmissing-declarations"
-#pragma GCC diagnostic ignored "-Wreturn-type"
+//#pragma GCC diagnostic ignored "-Wunused-parameter"
+//#pragma GCC diagnostic ignored "-Wmissing-declarations"
+//#pragma GCC diagnostic ignored "-Wreturn-type"
 
 void dac1SetValue(uint16_t value);
 void dac2SetValue(uint16_t value);
-void ddsPrefix(void);
-void sendToDds(uint16_t data1, uint16_t data2);
+//void ddsPrefix(void);
+//void sendToDds(uint16_t data1, uint16_t data2);
 #define FFT_SIZE 256 //supported sizes are 16, 64, 256, 1024
 #define FFT_BUFFER_SIZE  512 //double the FFT_SIZE above.
 __IO long long millis = 0;
@@ -63,7 +63,7 @@ uint16_t menuLastState = 1;
 uint16_t menuCount = 10;
 uint32_t frequencyDialMultiplier = 1;
 
-long vfoAFrequency = 10001460;
+long vfoAFrequency = 7236400;
 long vfoALastFreq = 0;
 int encoderPos, encoderLastPos;
 
@@ -73,6 +73,8 @@ uint8_t mode = 0;
 
 float agcLevel = 0;
 float agcScale = 160; //Higher is lower volume.. for now
+
+int ifShift = 0;
 
 void polarToRect(float m, float a, float32_t* x, float32_t* y)
 {
@@ -131,13 +133,13 @@ void populateCoeficients(int bandwidth, int sideband, int offset)
 	return; //Skipping all the later stuff doesn't seem to make a huge difference yet...
 
 	//2:
-	float x, y;
-	for(i = 0; i < FFT_SIZE; i++)
-	{
-		polarToRect(fftFilterCoeficient[i], fftFilterCoeficient[FFT_BUFFER_SIZE - 1 - i], &x, &y);
-		fftFilterCoeficient[i] = x;
-		fftFilterCoeficient[FFT_BUFFER_SIZE - 1 - i] = y;
-	}
+//	float x, y;
+//	for(i = 0; i < FFT_SIZE; i++)
+//	{
+//		polarToRect(fftFilterCoeficient[i], fftFilterCoeficient[FFT_BUFFER_SIZE - 1 - i], &x, &y);
+//		fftFilterCoeficient[i] = x;
+//		fftFilterCoeficient[FFT_BUFFER_SIZE - 1 - i] = y;
+//	}
 
 	//3:
 	arm_cfft_radix4_instance_f32 fft_co;
@@ -186,7 +188,7 @@ void populateCoeficients(int bandwidth, int sideband, int offset)
 }
 
 
-void applyCoeficient(float *samples)
+void applyCoeficient(float *samples, int shift)
 {
 	//See DSP Guide Chapter 9 (Equation 9-1)
 	int i;
@@ -196,9 +198,13 @@ void applyCoeficient(float *samples)
 		filterTemp[i * 2 + 1] = samples[i * 2 + 1] * fftFilterCoeficient[i * 2 + 1] + samples[i * 2] * fftFilterCoeficient[i * 2];
 	}
 
+	int shifter;
 	for(i = 0; i < FFT_BUFFER_SIZE; i++)
 	{
-		samples[i] = filterTemp[i];
+		shifter = i + 2 * shift;
+		if(i < 0) samples[i] = 0;
+		if(i > FFT_BUFFER_SIZE - 1) samples[i] = 0;
+		samples[i] = filterTemp[i + 2 * shift];
 	}
 }
 
@@ -778,7 +784,7 @@ main(int argc, char* argv[])
 			encoderPos = getPos();
 			if(encoderPos != encoderLastPos)
 			{
-				mode = (encoderLastPos - encoderPos) % 3;
+				mode += (encoderLastPos - encoderPos) % 3;
 				Adafruit_GFX_setTextSize(1);
 				Adafruit_GFX_setCursor(150, 190);
 				int i;
@@ -886,14 +892,26 @@ main(int argc, char* argv[])
 //			timeMeasurement = millis - timeMeasurement;
 //
 
+
+		//TODO: Should I shift away from 0Htz? to get away from 1/f noise? It didn's LOOK bad, but maybe it is negatively effecting things.
+		//I could do something where the dial moves around on screen, but if you get too close to the edge, the DDSs start moving the frequency
+		//Hmm, I think that's kind of a cool idea. It would be cool in two ways: it would allow you to shift the IF so you could get away from
+		//birdies, and it would mean that while tuning around locally, the waterfall would stay aligned in a useful way. Eventually, when I have
+		//sufficient display performance, I'd like to move (and scale, if applicable) the waterfall so it is properly aligned.
+
+		//Speaking of 1/f noise. It doesn't seem to be much of an issue on this radio, I wonder why? Did I design something right?
+		//Also, early on, I thought it had an issue with microphonics, but it turned out that it was the connection to the computer.
+		//Also since this is a form of direct conversion receiver (two of them together) I was worried about AM broadcast interference
+		//but I haven't noticed any, again, maybe I did something right? Beginner's luck?
+
 		arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
 
-			float fftMax = 0;
-								float fftMin = 100;
-								float fftMaxMax = 0;
-								float logMax;
+								float fftMax = 0; //AH! These are being reset each time! Static makes them persistant right? Does it also ensure they are
+								float fftMin = 100; //only initialized once? Have to try it when I get home. It would certainly be nice if the waterfall
+								static float fftMaxMax = 0; //didn't change in brightness so much. Later, I may want to fix these values, or at least, make them
+								static float logMax; //manually controllable, sorta, you know?
 								uint8_t i;
-								for(i = 0; i < 255; i++)
+								for(i = 1; i < 255; i++) //If bin 0 is the DC offset, should we skip it in this calculation?
 								{
 									float mags = magnitudes[i];
 									if(mags > fftMax) fftMax = mags;
@@ -901,9 +919,9 @@ main(int argc, char* argv[])
 								}
 								//logMax = log2(fftMax);
 
-								if(fftMax > fftMaxMax) fftMaxMax = fftMax;
+								if(fftMax > fftMaxMax) fftMaxMax += fftMax * 0.1;
 								logMax = log2(fftMaxMax);
-
+								fftMaxMax *= 0.99;
 
 //			TODOne: SWITCH THESE AND FLIP THEM. So that higher frequencies appear higher on screen.
 //			TODO: Got rid of the first bin because it's just DC offset, right?
@@ -912,7 +930,7 @@ main(int argc, char* argv[])
 			//uint16_t i;
 							for(i = 1; i < 120; i++)
 							{
-								mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
+								mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32; //Log needs to be at least 1 right? We could do a + (1-fftMin) maybe? Worth it?
 								//mags = magnitudes[i] / fftMaxMax * 32;
 								Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
 							}
@@ -1023,7 +1041,7 @@ void processStream()
 
 			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
 
-			applyCoeficient(samplesA);
+			applyCoeficient(samplesA, ifShift);
 
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesA);
@@ -1054,7 +1072,7 @@ void processStream()
 			arm_cfft_radix4_f32(&fft_inst, samplesB);
 			// Calculate magnitude of complex numbers output by the FFT.
 			//arm_cmplx_mag_f32(samplesB, magnitudes, FFT_SIZE);
-			applyCoeficient(samplesB);
+			applyCoeficient(samplesB, ifShift);
 
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesB);
@@ -1088,7 +1106,7 @@ void processStream()
 			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
 
 			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-			applyCoeficient(samplesC);
+			applyCoeficient(samplesC, ifShift);
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesC);
 
