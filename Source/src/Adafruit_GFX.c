@@ -372,13 +372,14 @@ void Adafruit_GFX_drawBitmap(int16_t x, int16_t y,
   }
 }
 
-void Adafruit_GFX_drawColorBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h)
+void Adafruit_GFX_drawColorBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h, uint16_t tintMask)
 {
-	int16_t i, j;
+	int16_t i, j, bmIndex;
 
 	for(j=0; j<h; j++) {
 		for(i=0; i<w; i++) {
-			Adafruit_ILI9340_drawPixel(x+i, y+j, bitmap[i+w*j]);
+			bmIndex = i+w*j;
+			Adafruit_ILI9340_drawPixel(x+i, y+j, bitmap[bmIndex] & tintMask);
 		}
 	}
 }

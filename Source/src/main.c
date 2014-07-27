@@ -59,6 +59,7 @@ float filterTemp[FFT_BUFFER_SIZE];
 uint16_t filterKernelLength = 100; //what's a good value? How does it relate to the FFT size?
 
 uint16_t menuState = 0;
+uint16_t menuEncoderTicks = 0;
 uint16_t menuLastState = 1;
 uint16_t menuCount = 10;
 uint32_t frequencyDialMultiplier = 1;
@@ -75,6 +76,9 @@ float agcLevel = 0;
 float agcScale = 160; //Higher is lower volume.. for now
 
 int ifShift = 0;
+
+float fftMaxMaxMax = 20;
+float fftMaxMaxMin = 0.2;
 
 void polarToRect(float m, float a, float32_t* x, float32_t* y)
 {
@@ -266,9 +270,10 @@ int isFwd;
 				((Position == 3) && (Position2 == 2)) || ((Position == 2) && (Position2 == 0));
 			if (!HAL_GPIO_ReadPin(encoderP.port, encoderP.pin))
 			{
-				if (isFwd) menuState = (menuState + 1);
-				else menuState = (menuState - 1);
-				menuState = menuState % (menuCount * 2);
+				if (isFwd) menuEncoderTicks += 1;
+				else menuEncoderTicks -= 1;
+				menuState = menuEncoderTicks/2;
+				menu
 			}
 			else
 			{
@@ -509,11 +514,6 @@ main(int argc, char* argv[])
 	populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
 
 
-	//  float real = 3, imag = 2;
-	//  float mag = 0, angle = 0;
-	//  rectToPolar(real, imag, mag, angle);
-	//  polarToRect(mag, angle, real, imag);
-
 
 	initDac1();
 
@@ -522,20 +522,17 @@ main(int argc, char* argv[])
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
 
-	Adafruit_GFX_drawColorBitmap(150, 0, psdrLogo, 69,33);
-	Adafruit_GFX_drawColorBitmap(190, 40, psdrLogo, 69,33);
-	Adafruit_GFX_drawColorBitmap(240, 180, psdrLogo, 69,33);
-	Adafruit_GFX_drawColorBitmap(150, 210, bitmapMode, 40,12);
+	Adafruit_GFX_drawColorBitmap(180, 2, psdrLogo, 86,20, MASKWHITE);
+	Adafruit_GFX_drawColorBitmap(150, 90, bitmapMode, 40,12, MASKWHITE);
 
 	Encoder();
 
-	char chrisABaby[] = "Chris a baby!";
 	int j;
 	Adafruit_GFX_setTextSize(3);
 	Adafruit_GFX_setTextWrap(1);
 	Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
 	char freqChar[14];
-	char modeChar[3];
+
 	sprintf(&freqChar, "%8d", 28000000);
 
 
@@ -551,68 +548,23 @@ main(int argc, char* argv[])
 
 	adcStartConversion();
 
-	float magnitudes[FFT_SIZE];
-
-	uint8_t rawGradient[96] =
-	{
-			30,30,11,
-			13,13,100,
-			18,13,107,
-			27,13,122,
-			40,13,140,
-			56,13,160,
-			72,13,175,
-			88,13,188,
-			106,13,201,
-			125,13,214,
-			145,13,226,
-			163,13,234,
-			177,15,238,
-			185,25,237,
-			192,41,233,
-			198,58,227,
-			205,78,219,
-			209,98,210,
-			215,120,202,
-			219,141,193,
-			224,162,186,
-			228,181,180,
-			231,197,176,
-			236,210,175,
-			240,225,180,
-			244,234,190,
-			247,242,203,
-			249,246,217,
-			251,249,232,
-			253,252,245,
-			255,254,253,
-			255,255,254
-	};
-
-	uint16_t gradient[32];
-
-	int k;
-	for(k = 0; k <32; k++)
-	{
-		gradient[k] = Adafruit_ILI9340_Color565(0.5 * rawGradient[k*3], 0.5 * rawGradient[k*3+1], 0.5 * rawGradient[k*3+2]);
-	}
 
 
-	float mags;
-	uint8_t waterfallScanLine = 0;
 
 
-	Adafruit_GFX_drawTriangle(126,119,136,124,136,114,ILI9340_WHITE);
+
+
+
+	Adafruit_GFX_fillTriangle(126,119,136,124,136,114,ILI9340_WHITE);
 
 
 	uint16_t freqVOffset = 120 - (8*3/2);
 	uint16_t freqHOffset = 142;
 
 
-	Adafruit_GFX_setCursor(freqHOffset + 18*2, freqVOffset + 0);
-	Adafruit_GFX_write('.');
-	Adafruit_GFX_setCursor(freqHOffset + 18*6, freqVOffset + 0);
-	Adafruit_GFX_write('.');
+
+	drawNumber('.', freqHOffset + 16*2, freqVOffset + 0, MASKWHITE);
+	drawNumber('.', freqHOffset + 16*6, freqVOffset + 0, MASKWHITE);
 
 
 	//TIM_setup();
@@ -620,6 +572,9 @@ main(int argc, char* argv[])
 	TIM_Try();
 	Adafruit_ILI9340_setVerticalScrollDefinition(200,120,0);
 	long long timeMeasurement = 0;
+
+
+	//MAIN LOOP - Lowest Priority
 	while(1)
 	{
 
@@ -630,10 +585,9 @@ main(int argc, char* argv[])
 			{
 			case 0: //1,000,000 place
 				frequencyDialMultiplier = 1000000;
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 33, ILI9340_RED);
+				drawNumber(freqChar[0], freqHOffset + 16*0, freqVOffset + 0, MASKRED);
 				updateVfo();
 				break;
 			case 1: //100,000 place
@@ -641,7 +595,7 @@ main(int argc, char* argv[])
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 18*3, freqVOffset + 25, 15, ILI9340_RED);
+				Adafruit_GFX_drawFastHLine(freqHOffset + 16*3, freqVOffset + 25, 15, ILI9340_RED);
 				updateVfo();
 				break;
 			case 2: //10,000 place
@@ -649,7 +603,7 @@ main(int argc, char* argv[])
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 18*4, freqVOffset + 25, 15, ILI9340_RED);
+				Adafruit_GFX_drawFastHLine(freqHOffset + 16*4, freqVOffset + 25, 15, ILI9340_RED);
 				updateVfo();
 				break;
 			case 3: //1,000 place
@@ -657,7 +611,7 @@ main(int argc, char* argv[])
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 18*5, freqVOffset + 25, 15, ILI9340_RED);
+				Adafruit_GFX_drawFastHLine(freqHOffset + 16*5, freqVOffset + 25, 15, ILI9340_RED);
 				updateVfo();
 				break;
 			case 4: //100 place
@@ -665,7 +619,7 @@ main(int argc, char* argv[])
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 18*7, freqVOffset + 25, 15, ILI9340_RED);
+				Adafruit_GFX_drawFastHLine(freqHOffset + 16*7, freqVOffset + 25, 15, ILI9340_RED);
 				updateVfo();
 				break;
 			case 5: //10 place
@@ -673,7 +627,7 @@ main(int argc, char* argv[])
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 18*8, freqVOffset + 25, 15, ILI9340_RED);
+				Adafruit_GFX_drawFastHLine(freqHOffset + 16*8, freqVOffset + 25, 15, ILI9340_RED);
 				updateVfo();
 				break;
 			case 6: //1 place
@@ -681,7 +635,7 @@ main(int argc, char* argv[])
 				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
 				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 18*9, freqVOffset + 25, 15, ILI9340_RED);
+				Adafruit_GFX_drawFastHLine(freqHOffset + 16*9, freqVOffset + 25, 15, ILI9340_RED);
 				updateVfo();
 				break;
 			case 7: //Filter Lower
@@ -756,8 +710,8 @@ main(int argc, char* argv[])
 				}
 				Adafruit_GFX_setTextSize(3);
 
-				Adafruit_GFX_fillRect(120, 120, 4, 100 , ILI9340_BLACK);
-				Adafruit_GFX_fillRect(120, filterLowerLimit/2 + 120, 4, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
+				Adafruit_GFX_fillRect(121, 120, 3, 100 , ILI9340_BLACK);
+				Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
 			}
 			break;
 		case 8: //Filter Upper
@@ -780,8 +734,8 @@ main(int argc, char* argv[])
 				}
 				Adafruit_GFX_setTextSize(3);
 
-				Adafruit_GFX_fillRect(120, 120, 4, 100 , ILI9340_BLACK);
-				Adafruit_GFX_fillRect(120, filterLowerLimit/2 + 120, 4, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
+				Adafruit_GFX_fillRect(121, 120, 3, 100 , ILI9340_BLACK);
+				Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
 
 			}
 			break;
@@ -791,34 +745,21 @@ main(int argc, char* argv[])
 			{
 				mode = (mode + (encoderLastPos - encoderPos)) % 3;
 				encoderLastPos = encoderPos;
-				Adafruit_GFX_setTextSize(1);
-				Adafruit_GFX_setCursor(150, 190);
-				int i;
+
 				//TODO: CHANGE THE FILTER SO IT MAKES SENSE!
 				//Right now all this does is turns the AM decoder on and off, I guess.
 
 				switch(mode)
 				{
 				case 0: //LSB
-					modeChar[0] = 'L';
-					modeChar[1] = 'S';
-					modeChar[2] = 'B';
+					Adafruit_GFX_drawColorBitmap(196, 91, bitmapLSB, 28, 9, MASKWHITE);
 					break;
 				case 1: //USB
-					modeChar[0] = 'U';
-					modeChar[1] = 'S';
-					modeChar[2] = 'B';
+					Adafruit_GFX_drawColorBitmap(196, 91, bitmapUSB, 28, 9, MASKWHITE);
 					break;
 				case 2: //AM
-					modeChar[0] = 'A';
-					modeChar[1] = 'M';
-					modeChar[2] = ' ';
+					Adafruit_GFX_drawColorBitmap(196, 91, bitmapAM, 28, 9, MASKWHITE);
 				}
-				for(i = 0; i < 3; i++)
-				{
-					Adafruit_GFX_write(modeChar[i]);
-				}
-				Adafruit_GFX_setTextSize(3);
 			}
 		default:
 			break;
@@ -826,134 +767,20 @@ main(int argc, char* argv[])
 
 
 
-//		float fftMaxMax = 0;
-//		if(sampleRun)
-//		{
-//
-//			timeMeasurement = millis;
-//			arm_cfft_radix4_instance_f32 fft_inst;
-//			//arm_cfft_radix4_init_q31(&fft_inst, FFT_SIZE, 0, 1);
-//			//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
-//
-//			if (sampleBankAReady == 1)
-//			{
-//				blink_led_on();
-//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
-//
-//
-//				//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
-//
-//				arm_cfft_radix4_f32(&fft_inst, samplesA);
-//				// Calculate magnitude of complex numbers output by the FFT.
-//				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-//
-//				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-//
-//				//applyCoeficient(samplesA);
-//
-//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
-//				arm_cfft_radix4_f32(&fft_inst, samplesA);
-//
-//				sampleBankAReady = 0;
-//				blink_led_off();
-//			}
-//			else if(sampleBankBReady == 1)
-//			{
-//				blink_led_on();
-//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
-//
-//				//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
-//
-//				arm_cfft_radix4_f32(&fft_inst, samplesB);
-//				// Calculate magnitude of complex numbers output by the FFT.
-//				//arm_cmplx_mag_f32(samplesB, magnitudes, FFT_SIZE);
-//				//applyCoeficient(samplesB);
-//
-//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
-//				arm_cfft_radix4_f32(&fft_inst, samplesB);
-//				sampleBankBReady = 0;
-//				blink_led_off();
-//
-//			}
-//			else if (sampleBankCReady == 1)
-//			{
-//				blink_led_on();
-//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
-//
-//
-//				//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
-//
-//				arm_cfft_radix4_f32(&fft_inst, samplesC);
-//				// Calculate magnitude of complex numbers output by the FFT.
-//				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-//
-//				//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-//				//applyCoeficient(samplesC);
-//				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
-//				arm_cfft_radix4_f32(&fft_inst, samplesC);
-//
-//				sampleBankCReady = 0;
-//				blink_led_off();
-//			}
-//			timeMeasurement = millis - timeMeasurement;
-//
-
-
-		//TODO: Should I shift away from 0Htz? to get away from 1/f noise? It didn's LOOK bad, but maybe it is negatively effecting things.
+		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn's LOOK bad, but maybe it is negatively effecting things.
 		//I could do something where the dial moves around on screen, but if you get too close to the edge, the DDSs start moving the frequency
 		//Hmm, I think that's kind of a cool idea. It would be cool in two ways: it would allow you to shift the IF so you could get away from
 		//birdies, and it would mean that while tuning around locally, the waterfall would stay aligned in a useful way. Eventually, when I have
 		//sufficient display performance, I'd like to move (and scale, if applicable) the waterfall so it is properly aligned.
 
 		//Speaking of 1/f noise. It doesn't seem to be much of an issue on this radio, I wonder why? Did I design something right?
+			//Update: Not sure that the 1/f noise is as little an issue as I thought. It popped up when I was out in the field.
+			//Maybe the 1/f noise is masked by all the noise in my neighborhood.
 		//Also, early on, I thought it had an issue with microphonics, but it turned out that it was the connection to the computer.
 		//Also since this is a form of direct conversion receiver (two of them together) I was worried about AM broadcast interference
 		//but I haven't noticed any, again, maybe I did something right? Beginner's luck?
 
-		arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
-
-								float fftMax = 0; //AH! These are being reset each time! Static makes them persistant right? Does it also ensure they are
-								float fftMin = 100; //only initialized once? Have to try it when I get home. It would certainly be nice if the waterfall
-								static float fftMaxMax = 0; //didn't change in brightness so much. Later, I may want to fix these values, or at least, make them
-								static float logMax; //manually controllable, sorta, you know?
-								uint8_t i;
-								for(i = 1; i < 255; i++) //If bin 0 is the DC offset, should we skip it in this calculation?
-								{
-									float mags = magnitudes[i];
-									if(mags > fftMax) fftMax = mags;
-									if(mags < fftMin) fftMin = mags;
-								}
-								//logMax = log2(fftMax);
-
-								if(fftMax > fftMaxMax) fftMaxMax += fftMax * 0.1;
-								logMax = log2(fftMaxMax);
-								fftMaxMax *= 0.99;
-
-//			TODOne: SWITCH THESE AND FLIP THEM. So that higher frequencies appear higher on screen.
-//			TODO: Got rid of the first bin because it's just DC offset, right?
-//			but now narrow signal can disappear when they are right at the center....
-//			Will that be better when I lower the sample frequency? Maybe I should do that next.
-			//uint16_t i;
-							for(i = 1; i < 120; i++)
-							{
-								mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32; //Log needs to be at least 1 right? We could do a + (1-fftMin) maybe? Worth it?
-								//mags = magnitudes[i] / fftMaxMax * 32;
-								Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
-							}
-
-							for(i = 135; i < 255; i++)
-							{
-								mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
-								//mags = magnitudes[i] / fftMaxMax * 32;
-								Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
-							}
-
-							waterfallScanLine++;
-							if(waterfallScanLine > 119) waterfallScanLine = 0;
-							Adafruit_ILI9340_setVertialScrollStartAddress((119 - waterfallScanLine) + 200);
-//
-//			sampleRun = 0;
-//		}
+		drawWaterfall();
 
 		if(vfoAFrequency != vfoALastFreq)
 		{
@@ -963,45 +790,36 @@ main(int argc, char* argv[])
 
 			if(freqChar[0] != lastFreqChar[0])
 			{
-				Adafruit_GFX_setCursor(freqHOffset + 18*0, freqVOffset + 0);
-				Adafruit_GFX_write(freqChar[0]);
+				drawNumber(freqChar[0], freqHOffset + 16*0, freqVOffset + 0, getMenuPos() == 0 ? MASKRED : MASKWHITE);
 			}
 			if(freqChar[1] != lastFreqChar[1])
 			{
-				Adafruit_GFX_setCursor(freqHOffset + 18*1, freqVOffset + 0);
-				Adafruit_GFX_write(freqChar[1]);
+				drawNumber(freqChar[1], freqHOffset + 16*1, freqVOffset + 0, getMenuPos() == 0 ? MASKRED : MASKWHITE);
 			}
 
 			if(freqChar[2] != lastFreqChar[2])
 			{
-				Adafruit_GFX_setCursor(freqHOffset + 18*3, freqVOffset + 0);
-				Adafruit_GFX_write(freqChar[2]);
+				drawNumber(freqChar[2], freqHOffset + 16*3, freqVOffset + 0, getMenuPos() == 1 ? MASKRED : MASKWHITE);
 			}
 			if(freqChar[3] != lastFreqChar[3])
 			{
-				Adafruit_GFX_setCursor(freqHOffset + 18*4, freqVOffset + 0);
-				Adafruit_GFX_write(freqChar[3]);
+				drawNumber(freqChar[3], freqHOffset + 16*4, freqVOffset + 0, getMenuPos() == 2 ? MASKRED : MASKWHITE);
 			}
 			if(freqChar[4] != lastFreqChar[4])
 			{
-				Adafruit_GFX_setCursor(freqHOffset + 18*5, freqVOffset + 0);
-				Adafruit_GFX_write(freqChar[4]);
+				drawNumber(freqChar[4], freqHOffset + 16*5, freqVOffset + 0, getMenuPos() == 3 ? MASKRED : MASKWHITE);
 			}
-
 			if(freqChar[5] != lastFreqChar[5])
 			{
-				Adafruit_GFX_setCursor(freqHOffset + 18*7, freqVOffset + 0);
-				Adafruit_GFX_write(freqChar[5]);
+				drawNumber(freqChar[5], freqHOffset + 16*7, freqVOffset + 0, getMenuPos() == 4 ? MASKRED : MASKWHITE);
 			}
 			if(freqChar[6] != lastFreqChar[6])
 			{
-				Adafruit_GFX_setCursor(freqHOffset + 18*8, freqVOffset + 0);
-				Adafruit_GFX_write(freqChar[6]);
+				drawNumber(freqChar[6], freqHOffset + 16*8, freqVOffset + 0, getMenuPos() == 5 ? MASKRED : MASKWHITE);
 			}
 			if(freqChar[7] != lastFreqChar[7])
 			{
-				Adafruit_GFX_setCursor(freqHOffset + 18*9, freqVOffset + 0);
-				Adafruit_GFX_write(freqChar[7]);
+				drawNumber(freqChar[7], freqHOffset + 16*9, freqVOffset + 0, getMenuPos() == 6 ? MASKRED : MASKWHITE);
 			}
 
 			vfoALastFreq = vfoAFrequency;
@@ -1013,16 +831,62 @@ main(int argc, char* argv[])
 	}
 }
 
+void drawWaterfall()
+{
+	static float magnitudes[FFT_SIZE];
+	static float mags;
+	static uint8_t waterfallScanLine = 0;
+
+	arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
+
+	float fftMax = 0; //AH! These are being reset each time! Static makes them persistant right? Does it also ensure they are
+	float fftMin = 100; //only initialized once? Have to try it when I get home. It would certainly be nice if the waterfall
+	static float fftMaxMax = 0; //didn't change in brightness so much. Later, I may want to fix these values, or at least, make them
+	static float logMax; //manually controllable, sorta, you know?
+	uint8_t i;
+	for(i = 1; i < 255; i++) //If bin 0 is the DC offset, should we skip it in this calculation?
+	{
+		float mags = magnitudes[i];
+		if(mags > fftMax) fftMax = mags;
+		if(mags < fftMin) fftMin = mags;
+	}
+	//logMax = log2(fftMax);
+
+	if(fftMax > fftMaxMax) fftMaxMax += fftMax * 0.1;
+	logMax = log2(fftMaxMax);
+	fftMaxMax *= 0.99;
+	if (fftMaxMax > fftMaxMaxMax) fftMaxMax = fftMaxMaxMax;
+	if (fftMaxMax < fftMaxMaxMin) fftMaxMax = fftMaxMaxMin;
+
+
+	//			TODO: Got rid of the first bin because it's just DC offset, right?
+	//			but now narrow signal can disappear when they are right at the center....
+	//			Will that be better when I lower the sample frequency? Maybe I should do that next.
+
+	for(i = 1; i < 120; i++)
+	{
+		mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100; //Log needs to be at least 1 right? We could do a + (1-fftMin) maybe? Worth it?
+		//mags = magnitudes[i] / fftMaxMax * 32;
+		Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), bitmapWebSdrGradient[(uint8_t) mags]);
+	}
+
+	for(i = 135; i < 255; i++)
+	{
+		mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100;
+		//mags = magnitudes[i] / fftMaxMax * 32;
+		Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), bitmapWebSdrGradient[(uint8_t) mags]);
+	}
+
+	waterfallScanLine++;
+	if(waterfallScanLine > 119) waterfallScanLine = 0;
+	Adafruit_ILI9340_setVertialScrollStartAddress((119 - waterfallScanLine) + 200);
+}
+
 void processStream()
 {
-
-
-
-	float fftMaxMax = 0;
 	if(sampleRun)
 	{
 
-		//timeMeasurement = millis;
 		arm_cfft_radix4_instance_f32 fft_inst;
 		//arm_cfft_radix4_init_q31(&fft_inst, FFT_SIZE, 0, 1);
 		//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
@@ -1032,9 +896,6 @@ void processStream()
 			blink_led_on();
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
 
-
-			//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
-
 			arm_cfft_radix4_f32(&fft_inst, samplesA);
 			// Calculate magnitude of complex numbers output by the FFT.
 			if(waterfallBusy != 1)
@@ -1043,9 +904,6 @@ void processStream()
 				for(i = 0; i < FFT_BUFFER_SIZE; i++) samplesDisplay[i] = samplesA[i];
 				//waterfallBusy = 1;
 			}
-			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
-
-			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
 
 			applyCoeficient(samplesA, ifShift);
 
@@ -1073,7 +931,6 @@ void processStream()
 			blink_led_on();
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
 
-			//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
 
 			arm_cfft_radix4_f32(&fft_inst, samplesB);
 			// Calculate magnitude of complex numbers output by the FFT.
@@ -1131,45 +988,6 @@ void processStream()
 			sampleBankCReady = 0;
 			blink_led_off();
 		}
-		//timeMeasurement = millis - timeMeasurement;
-
-		float fftMax = 0;
-		//					float fftMin = 100;
-		//					float logMax;
-		//					uint8_t i;
-		//					for(i = 0; i < 255; i++)
-		//					{
-		//						float mags = magnitudes[i];
-		//						if(mags > fftMax) fftMax = mags;
-		//						if(mags < fftMin) fftMin = mags;
-		//					}
-		//					//logMax = log2(fftMax);
-		//
-		//					if(fftMax > fftMaxMax) fftMaxMax = fftMax;
-		//					logMax = log2(fftMaxMax);
-
-
-		//TODOne: SWITCH THESE AND FLIP THEM. So that higher frequencies appear higher on screen.
-		//TODO: Got rid of the first bin because it's just DC offset, right?
-		//but now narrow signal can disappear when they are right at the center....
-		//Will that be better when I lower the sample frequency? Maybe I should do that next.
-		//				for(i = 1; i < 120; i++)
-		//				{
-		//					mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
-		//					//mags = magnitudes[i] / fftMaxMax * 32;
-		//					Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
-		//				}
-		//
-		//				for(i = 135; i < 255; i++)
-		//				{
-		//					mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 32;
-		//					//mags = magnitudes[i] / fftMaxMax * 32;
-		//					Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
-		//				}
-		//
-		//				waterfallScanLine++;
-		//				if(waterfallScanLine > 119) waterfallScanLine = 0;
-		//				Adafruit_ILI9340_setVertialScrollStartAddress((119 - waterfallScanLine) + 200);
 
 		sampleRun = 0;
 	}
@@ -1197,6 +1015,48 @@ void updateVfo()
 		if(vfoAFrequency > 37500000) vfoAFrequency = 37500000;
 
 		encoderLastPos = encoderPos;
+	}
+}
+
+void drawNumber(char c, uint16_t x, uint16_t y, uint16_t tintMask)
+{
+	switch(c)
+	{
+	case '.':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapPeriod, 15, 19, tintMask);
+		break;
+	case '1':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapOne, 15, 19, tintMask);
+		break;
+	case '2':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapTwo, 15, 19, tintMask);
+		break;
+	case '3':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapThree, 15, 19, tintMask);
+		break;
+	case '4':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapFour, 15, 19, tintMask);
+		break;
+	case '5':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapFive, 15, 19, tintMask);
+		break;
+	case '6':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapSix, 15, 19, tintMask);
+		break;
+	case '7':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapSeven, 15, 19, tintMask);
+		break;
+	case '8':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapEight, 15, 19, tintMask);
+		break;
+	case '9':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapNine, 15, 19,tintMask);
+		break;
+	case '0':
+		Adafruit_GFX_drawColorBitmap(x, y, bitmapZero, 15, 19, tintMask);
+		break;
+	default:
+		Adafruit_GFX_fillRect(x, y, 15, 19, ILI9340_BLACK);
 	}
 }
 
@@ -1309,7 +1169,7 @@ TIM_TypeDef timTimBase;
 void TIM_Try(void)
 {
 
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock/2) / 21000000) - 1;
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock/2) / 17500000) - 1;
 
     //NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 	__TIM3_CLK_ENABLE();
