@@ -58,9 +58,9 @@ float fftFilterCoeficient[FFT_BUFFER_SIZE];
 float filterTemp[FFT_BUFFER_SIZE];
 uint16_t filterKernelLength = 100; //what's a good value? How does it relate to the FFT size?
 
-uint16_t menuState = 0;
+uint16_t menuPos = 0;
 uint16_t menuEncoderTicks = 0;
-uint16_t menuLastState = 1;
+uint16_t menuLastPos = 1;
 uint16_t menuCount = 10;
 uint32_t frequencyDialMultiplier = 1;
 
@@ -69,8 +69,11 @@ long vfoALastFreq = 0;
 int encoderPos, encoderLastPos;
 
 int16_t filterUpperLimit = 68;
+int16_t filterLastUpperLimit = 2;
 int16_t filterLowerLimit = 0;
+int16_t filterLastLowerLimit = 2;
 uint8_t mode = 0;
+uint8_t modeLast = 2;
 
 float agcLevel = 0;
 float agcScale = 160; //Higher is lower volume.. for now
@@ -272,8 +275,8 @@ int isFwd;
 			{
 				if (isFwd) menuEncoderTicks += 1;
 				else menuEncoderTicks -= 1;
-				menuState = menuEncoderTicks/2;
-				menu
+				menuPos = menuEncoderTicks/2;
+				menuPos = menuPos % menuCount;
 			}
 			else
 			{
@@ -291,10 +294,10 @@ int isFwd;
 		return (Pos/2);
 	}
 
-	uint16_t getMenuPos(void)
-	{
-		return (menuState/2);
-	}
+//	uint16_t getMenuPos(void)
+//	{
+//		return (menuPos/2);
+//	}
 
 	void setMinMax(int _Min, int _Max)
 	{
@@ -303,12 +306,6 @@ int isFwd;
 		if (Pos < Min) Pos = Min;
 		if (Pos > Max) Pos = Max;
 	}
-
-	void setClickMultiply(int _clickMultiply)
-	{
-		clickMultiply = _clickMultiply;
-	}
-
 
 
 
@@ -508,265 +505,36 @@ main(int argc, char* argv[])
 
 	blink_led_init();
 	blink_led_on();
-	uint32_t seconds = 0;
-
 
 	populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
 
-
-
 	initDac1();
+	Encoder();
 
 	Adafruit_ILI9340_begin();
 	Adafruit_ILI9340_setRotation(3);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
-
-	Adafruit_GFX_drawColorBitmap(180, 2, psdrLogo, 86,20, MASKWHITE);
-	Adafruit_GFX_drawColorBitmap(150, 90, bitmapMode, 40,12, MASKWHITE);
-
-	Encoder();
-
-	int j;
 	Adafruit_GFX_setTextSize(3);
 	Adafruit_GFX_setTextWrap(1);
 	Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
-	char freqChar[14];
-
-	sprintf(&freqChar, "%8d", 28000000);
-
-
-
-
-	char lastFreqChar[] = {'$','$','$','$','$','$','$','$','$','$','$','$','$','$',};
-
-
+	Adafruit_ILI9340_setVerticalScrollDefinition(200,120,0);
 
 	initAdc();
-
 	adcConfigured = 1;
-
 	adcStartConversion();
-
-
-
-
-
-
-
-
-	Adafruit_GFX_fillTriangle(126,119,136,124,136,114,ILI9340_WHITE);
-
-
-	uint16_t freqVOffset = 120 - (8*3/2);
-	uint16_t freqHOffset = 142;
-
-
-
-	drawNumber('.', freqHOffset + 16*2, freqVOffset + 0, MASKWHITE);
-	drawNumber('.', freqHOffset + 16*6, freqVOffset + 0, MASKWHITE);
-
 
 	//TIM_setup();
 	//TIM_Config();
 	TIM_Try();
-	Adafruit_ILI9340_setVerticalScrollDefinition(200,120,0);
+
 	long long timeMeasurement = 0;
 
+	updateDisplay(1);
 
 	//MAIN LOOP - Lowest Priority
 	while(1)
 	{
-
-		//********MENU SYSTEM*********************************
-		if(getMenuPos() != menuLastState)
-		{
-			switch(getMenuPos())
-			{
-			case 0: //1,000,000 place
-				frequencyDialMultiplier = 1000000;
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				drawNumber(freqChar[0], freqHOffset + 16*0, freqVOffset + 0, MASKRED);
-				updateVfo();
-				break;
-			case 1: //100,000 place
-				frequencyDialMultiplier = 100000;
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 16*3, freqVOffset + 25, 15, ILI9340_RED);
-				updateVfo();
-				break;
-			case 2: //10,000 place
-				frequencyDialMultiplier = 10000;
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 16*4, freqVOffset + 25, 15, ILI9340_RED);
-				updateVfo();
-				break;
-			case 3: //1,000 place
-				frequencyDialMultiplier = 1000;
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 16*5, freqVOffset + 25, 15, ILI9340_RED);
-				updateVfo();
-				break;
-			case 4: //100 place
-				frequencyDialMultiplier = 100;
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 16*7, freqVOffset + 25, 15, ILI9340_RED);
-				updateVfo();
-				break;
-			case 5: //10 place
-				frequencyDialMultiplier = 10;
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 16*8, freqVOffset + 25, 15, ILI9340_RED);
-				updateVfo();
-				break;
-			case 6: //1 place
-				frequencyDialMultiplier = 1;
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(freqHOffset + 16*9, freqVOffset + 25, 15, ILI9340_RED);
-				updateVfo();
-				break;
-			case 7: //Filter Lower
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 199, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_RED);
-				break;
-			case 8: //Filter Upper
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 199, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_RED);
-				break;
-			case 9:
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 159, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 179, 30, ILI9340_BLACK);
-				Adafruit_GFX_drawFastHLine(150, 199, 30, ILI9340_RED);
-				break;
-				//Mode
-			default:
-				Adafruit_GFX_drawFastHLine(freqHOffset, freqVOffset + 25, 178, ILI9340_BLACK);
-				break;
-			}
-
-
-
-			menuLastState = getMenuPos();
-		}
-
-		switch(getMenuPos())
-		{
-		case 0: //1,000,000 place
-			updateVfo();
-			break;
-		case 1: //100,000 place
-			updateVfo();
-			break;
-		case 2: //10,000 place
-			updateVfo();
-			break;
-		case 3: //1,000 place
-			updateVfo();
-			break;
-		case 4: //100 place
-			updateVfo();
-			break;
-		case 5: //10 place
-			updateVfo();
-			break;
-		case 6: //1 place
-			updateVfo();
-			break;
-		case 7: //Filter Lower
-			encoderPos = getPos();
-			if(encoderPos != encoderLastPos)
-			{
-				filterLowerLimit += 1 * (encoderLastPos - encoderPos);
-				if(filterLowerLimit <= 0) filterLowerLimit = 0;
-				if(filterLowerLimit >= 200) filterLowerLimit = 100;
-				if(filterLowerLimit >= filterUpperLimit) filterLowerLimit = filterUpperLimit - 1;
-				encoderLastPos = encoderPos;
-				populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
-				sprintf(&freqChar, "%5d", filterLowerLimit * 40);
-				Adafruit_GFX_setTextSize(1);
-				Adafruit_GFX_setCursor(150, 150 );
-				int i;
-				for(i = 0; i < 5; i++)
-				{
-					Adafruit_GFX_write(freqChar[i]);
-				}
-				Adafruit_GFX_setTextSize(3);
-
-				Adafruit_GFX_fillRect(121, 120, 3, 100 , ILI9340_BLACK);
-				Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
-			}
-			break;
-		case 8: //Filter Upper
-			encoderPos = getPos();
-			if(encoderPos != encoderLastPos)
-			{
-				filterUpperLimit += 1 * (encoderLastPos - encoderPos);
-				if(filterUpperLimit <= 0) filterUpperLimit = 0;
-				if(filterUpperLimit >= 200) filterUpperLimit = 100;
-				if(filterUpperLimit <= filterLowerLimit) filterUpperLimit = filterLowerLimit + 1;
-				encoderLastPos = encoderPos;
-				populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
-				sprintf(&freqChar, "%5d", filterUpperLimit * 40);
-				Adafruit_GFX_setTextSize(1);
-				Adafruit_GFX_setCursor(150, 170 );
-				int i;
-				for(i = 0; i < 5; i++)
-				{
-					Adafruit_GFX_write(freqChar[i]);
-				}
-				Adafruit_GFX_setTextSize(3);
-
-				Adafruit_GFX_fillRect(121, 120, 3, 100 , ILI9340_BLACK);
-				Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
-
-			}
-			break;
-		case 9: //Mode
-			encoderPos = getPos();
-			if(encoderPos != encoderLastPos)
-			{
-				mode = (mode + (encoderLastPos - encoderPos)) % 3;
-				encoderLastPos = encoderPos;
-
-				//TODO: CHANGE THE FILTER SO IT MAKES SENSE!
-				//Right now all this does is turns the AM decoder on and off, I guess.
-
-				switch(mode)
-				{
-				case 0: //LSB
-					Adafruit_GFX_drawColorBitmap(196, 91, bitmapLSB, 28, 9, MASKWHITE);
-					break;
-				case 1: //USB
-					Adafruit_GFX_drawColorBitmap(196, 91, bitmapUSB, 28, 9, MASKWHITE);
-					break;
-				case 2: //AM
-					Adafruit_GFX_drawColorBitmap(196, 91, bitmapAM, 28, 9, MASKWHITE);
-				}
-			}
-		default:
-			break;
-		}
-
-
-
 		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn's LOOK bad, but maybe it is negatively effecting things.
 		//I could do something where the dial moves around on screen, but if you get too close to the edge, the DDSs start moving the frequency
 		//Hmm, I think that's kind of a cool idea. It would be cool in two ways: it would allow you to shift the IF so you could get away from
@@ -774,61 +542,204 @@ main(int argc, char* argv[])
 		//sufficient display performance, I'd like to move (and scale, if applicable) the waterfall so it is properly aligned.
 
 		//Speaking of 1/f noise. It doesn't seem to be much of an issue on this radio, I wonder why? Did I design something right?
-			//Update: Not sure that the 1/f noise is as little an issue as I thought. It popped up when I was out in the field.
-			//Maybe the 1/f noise is masked by all the noise in my neighborhood.
+			//Update: Not sure that the 1/f noise is as small an issue as I thought. It popped up when I was out in the field.
+			//Maybe the 1/f noise is masked by all the noise in my neighborhood?
 		//Also, early on, I thought it had an issue with microphonics, but it turned out that it was the connection to the computer.
 		//Also since this is a form of direct conversion receiver (two of them together) I was worried about AM broadcast interference
 		//but I haven't noticed any, again, maybe I did something right? Beginner's luck?
 
+		updateMenu();
+		updateDisplay(0);
 		drawWaterfall();
+	}
+}
 
-		if(vfoAFrequency != vfoALastFreq)
+void updateMenu()
+{
+	switch(menuPos)
+	{
+	case 0: //1,000,000 place
+		frequencyDialMultiplier = 1000000;
+		updateVfo();
+		break;
+	case 1: //100,000 place
+		frequencyDialMultiplier = 100000;
+		updateVfo();
+		break;
+	case 2: //10,000 place
+		frequencyDialMultiplier = 10000;
+		updateVfo();
+		break;
+	case 3: //1,000 place
+		frequencyDialMultiplier = 1000;
+		updateVfo();
+		break;
+	case 4: //100 place
+		frequencyDialMultiplier = 100;
+		updateVfo();
+		break;
+	case 5: //10 place
+		frequencyDialMultiplier = 10;
+		updateVfo();
+		break;
+	case 6: //1 place
+		frequencyDialMultiplier = 1;
+		updateVfo();
+		break;
+	case 7: //Filter Lower Limit
+		encoderPos = getPos();
+		if(encoderPos != encoderLastPos)
 		{
+			filterLowerLimit += 1 * (encoderLastPos - encoderPos);
+			if(filterLowerLimit <= 0) filterLowerLimit = 0;
+			if(filterLowerLimit >= 200) filterLowerLimit = 100;
+			if(filterLowerLimit >= filterUpperLimit) filterLowerLimit = filterUpperLimit - 1;
+			encoderLastPos = encoderPos;
+			populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
+		}
+		break;
+	case 8: //Filter Upper
+		encoderPos = getPos();
+		if(encoderPos != encoderLastPos)
+		{
+			filterUpperLimit += 1 * (encoderLastPos - encoderPos);
+			if(filterUpperLimit <= 0) filterUpperLimit = 0;
+			if(filterUpperLimit >= 200) filterUpperLimit = 100;
+			if(filterUpperLimit <= filterLowerLimit) filterUpperLimit = filterLowerLimit + 1;
+			encoderLastPos = encoderPos;
+			populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
+		}
+		break;
+	case 9: //Mode
+		encoderPos = getPos();
+		if(encoderPos != encoderLastPos)
+		{
+			mode = (mode + (encoderLastPos - encoderPos)) % 3;
+			encoderLastPos = encoderPos;
 
-			setFreq(vfoAFrequency);
-			sprintf(&freqChar, "%8d", vfoAFrequency);
+			//TODO: CHANGE THE FILTER SO IT MAKES SENSE!
+			//Right now all this does is turns the AM decoder on and off, I guess.
+		}
+		break;
+	default:
+		break;
+	}
+}
 
-			if(freqChar[0] != lastFreqChar[0])
-			{
-				drawNumber(freqChar[0], freqHOffset + 16*0, freqVOffset + 0, getMenuPos() == 0 ? MASKRED : MASKWHITE);
-			}
-			if(freqChar[1] != lastFreqChar[1])
-			{
-				drawNumber(freqChar[1], freqHOffset + 16*1, freqVOffset + 0, getMenuPos() == 0 ? MASKRED : MASKWHITE);
-			}
 
-			if(freqChar[2] != lastFreqChar[2])
-			{
-				drawNumber(freqChar[2], freqHOffset + 16*3, freqVOffset + 0, getMenuPos() == 1 ? MASKRED : MASKWHITE);
-			}
-			if(freqChar[3] != lastFreqChar[3])
-			{
-				drawNumber(freqChar[3], freqHOffset + 16*4, freqVOffset + 0, getMenuPos() == 2 ? MASKRED : MASKWHITE);
-			}
-			if(freqChar[4] != lastFreqChar[4])
-			{
-				drawNumber(freqChar[4], freqHOffset + 16*5, freqVOffset + 0, getMenuPos() == 3 ? MASKRED : MASKWHITE);
-			}
-			if(freqChar[5] != lastFreqChar[5])
-			{
-				drawNumber(freqChar[5], freqHOffset + 16*7, freqVOffset + 0, getMenuPos() == 4 ? MASKRED : MASKWHITE);
-			}
-			if(freqChar[6] != lastFreqChar[6])
-			{
-				drawNumber(freqChar[6], freqHOffset + 16*8, freqVOffset + 0, getMenuPos() == 5 ? MASKRED : MASKWHITE);
-			}
-			if(freqChar[7] != lastFreqChar[7])
-			{
-				drawNumber(freqChar[7], freqHOffset + 16*9, freqVOffset + 0, getMenuPos() == 6 ? MASKRED : MASKWHITE);
-			}
+#define freqVOffset 108     //120 - (8*3/2)
+#define freqHOffset 142
+void updateDisplay(uint8_t force)
+{
+	static char freqChar[14];
+	static char lastFreqChar[] = {'$','$','$','$','$','$','$','$','$','$','$','$','$','$',};
 
-			vfoALastFreq = vfoAFrequency;
-			strcpy(lastFreqChar, freqChar);
+	if(force)
+	{
+		Adafruit_GFX_drawColorBitmap(180, 2, psdrLogo, 86,20, MASKWHITE);
+		Adafruit_GFX_drawColorBitmap(150, 90, bitmapMode, 40,12, MASKWHITE);
+		Adafruit_GFX_fillTriangle(126,119,136,124,136,114,ILI9340_WHITE);
+		Adafruit_GFX_drawColorBitmap(150, 136, bitmapFilter, 47,12, MASKWHITE);
+		drawNumber('.', freqHOffset + 16*2, freqVOffset + 0, MASKWHITE);
+		drawNumber('.', freqHOffset + 16*6, freqVOffset + 0, MASKWHITE);
+	}
+
+	sprintf(&freqChar, "%8d", vfoAFrequency);
+
+	//So on each of these elements, we update when the value changes, when we're forced to, when the item becomes selected, or unselected.
+	if(freqChar[0] != lastFreqChar[0] || force || (menuPos != menuLastPos && (menuPos == 0 || menuLastPos == 0)))
+	{
+		drawNumber(freqChar[0], freqHOffset + 16*0, freqVOffset + 0, menuPos == 0 ? MASKRED : MASKWHITE);
+	}
+	if(freqChar[1] != lastFreqChar[1] || force || (menuPos != menuLastPos && (menuPos == 0 || menuLastPos == 0)))
+	{
+		drawNumber(freqChar[1], freqHOffset + 16*1, freqVOffset + 0, menuPos == 0 ? MASKRED : MASKWHITE);
+	}
+	if(freqChar[2] != lastFreqChar[2] || force || (menuPos != menuLastPos && (menuPos == 1 || menuLastPos == 1)))
+	{
+		drawNumber(freqChar[2], freqHOffset + 16*3, freqVOffset + 0, menuPos == 1 ? MASKRED : MASKWHITE);
+	}
+	if(freqChar[3] != lastFreqChar[3] || force || (menuPos != menuLastPos && (menuPos == 2 || menuLastPos == 2)))
+	{
+		drawNumber(freqChar[3], freqHOffset + 16*4, freqVOffset + 0, menuPos == 2 ? MASKRED : MASKWHITE);
+	}
+	if(freqChar[4] != lastFreqChar[4] || force || (menuPos != menuLastPos && (menuPos == 3 || menuLastPos == 3)))
+	{
+		drawNumber(freqChar[4], freqHOffset + 16*5, freqVOffset + 0, menuPos == 3 ? MASKRED : MASKWHITE);
+	}
+	if(freqChar[5] != lastFreqChar[5] || force || (menuPos != menuLastPos && (menuPos == 4 || menuLastPos == 4)))
+	{
+		drawNumber(freqChar[5], freqHOffset + 16*7, freqVOffset + 0, menuPos == 4 ? MASKRED : MASKWHITE);
+	}
+	if(freqChar[6] != lastFreqChar[6] || force || (menuPos != menuLastPos && (menuPos == 5 || menuLastPos == 5)))
+	{
+		drawNumber(freqChar[6], freqHOffset + 16*8, freqVOffset + 0, menuPos == 5 ? MASKRED : MASKWHITE);
+	}
+	if(freqChar[7] != lastFreqChar[7] || force || (menuPos != menuLastPos && (menuPos == 6 || menuLastPos == 6)))
+	{
+		drawNumber(freqChar[7], freqHOffset + 16*9, freqVOffset + 0, menuPos == 6 ? MASKRED : MASKWHITE);
+	}
+
+	vfoALastFreq = vfoAFrequency;
+	strcpy(lastFreqChar, freqChar);
+
+	if(filterLowerLimit != filterLastLowerLimit || force || (menuPos != menuLastPos && (menuPos == 7 || menuLastPos == 7)))
+	{
+		sprintf(&freqChar, "%4d", filterLowerLimit * 40);
+		Adafruit_GFX_setTextSize(2);
+		Adafruit_GFX_setTextColor(menuPos == 7 ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
+		Adafruit_GFX_setCursor(200, 135 );
+		int i;
+		for(i = 0; i < 4; i++)
+		{
+			Adafruit_GFX_write(freqChar[i]);
+		}
+		//Adafruit_GFX_setTextSize(3);
+
+		Adafruit_GFX_fillRect(121, 120, 3, 100 , ILI9340_BLACK);
+		Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
+
+		filterLastLowerLimit = filterLowerLimit;
+	}
+
+	if(filterUpperLimit != filterLastUpperLimit || force || (menuPos != menuLastPos && (menuPos == 8 || menuLastPos == 8)))
+	{
+		sprintf(&freqChar, "%-4d", filterUpperLimit * 40);
+		Adafruit_GFX_setTextSize(2);
+		Adafruit_GFX_setTextColor(menuPos == 8 ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
+		Adafruit_GFX_setCursor(265, 135 );
+		int i;
+		for(i = 0; i < 4; i++)
+		{
+			Adafruit_GFX_write(freqChar[i]);
+		}
+		//Adafruit_GFX_setTextSize(3);
+
+		Adafruit_GFX_fillRect(121, 120, 3, 100 , ILI9340_BLACK);
+		Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
+
+		filterLastUpperLimit = filterUpperLimit;
+	}
+
+	if(mode != modeLast || force || (menuPos != menuLastPos && (menuPos == 9 || menuLastPos == 9)))
+	{
+		switch(mode)
+		{
+		case 0: //LSB
+			Adafruit_GFX_drawColorBitmap(196, 91, bitmapLSB, 28, 9, menuPos == 9 ? MASKRED : MASKWHITE);
+			break;
+		case 1: //USB
+			Adafruit_GFX_drawColorBitmap(196, 91, bitmapUSB, 28, 9, menuPos == 9 ? MASKRED : MASKWHITE);
+			break;
+		case 2: //AM
+			Adafruit_GFX_drawColorBitmap(196, 91, bitmapAM, 28, 9, menuPos == 9 ? MASKRED : MASKWHITE);
+			break;
 		}
 
-
-
+		modeLast = mode;
 	}
+
+	menuLastPos = menuPos;
 }
 
 void drawWaterfall()
@@ -888,8 +799,6 @@ void processStream()
 	{
 
 		arm_cfft_radix4_instance_f32 fft_inst;
-		//arm_cfft_radix4_init_q31(&fft_inst, FFT_SIZE, 0, 1);
-		//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
 
 		if (sampleBankAReady == 1)
 		{
@@ -902,7 +811,6 @@ void processStream()
 			{
 				uint16_t i;
 				for(i = 0; i < FFT_BUFFER_SIZE; i++) samplesDisplay[i] = samplesA[i];
-				//waterfallBusy = 1;
 			}
 
 			applyCoeficient(samplesA, ifShift);
@@ -962,13 +870,10 @@ void processStream()
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
 
 
-			//arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 2);
 
 			arm_cfft_radix4_f32(&fft_inst, samplesC);
 			// Calculate magnitude of complex numbers output by the FFT.
-			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
 
-			//arm_cmplx_mag_f32(samplesA, magnitudes, FFT_SIZE);
 			applyCoeficient(samplesC, ifShift);
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesC);
@@ -992,14 +897,6 @@ void processStream()
 		sampleRun = 0;
 	}
 
-
-
-
-
-
-
-	//wrongThings++;
-    //__HAL_TIM_CLEAR_IT(htim, TIM_IT_UPDATE);
 	clearTimUpdateFlag(&TimHandle4);
 }
 
@@ -1015,6 +912,11 @@ void updateVfo()
 		if(vfoAFrequency > 37500000) vfoAFrequency = 37500000;
 
 		encoderLastPos = encoderPos;
+	}
+
+	if(vfoAFrequency != vfoALastFreq)
+	{
+		setFreq(vfoAFrequency);
 	}
 }
 
@@ -1169,7 +1071,7 @@ TIM_TypeDef timTimBase;
 void TIM_Try(void)
 {
 
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock/2) / 17500000) - 1;
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock/2) / 21000000) - 1;
 
     //NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 	__TIM3_CLK_ENABLE();

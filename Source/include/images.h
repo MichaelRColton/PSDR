@@ -28,3 +28,4 @@ extern const unsigned short bitmapNine[];
 extern const unsigned short bitmapZero[];
 extern const unsigned short bitmapIronGradient[];
 extern const unsigned short bitmapWebSdrGradient[];
+extern const unsigned short bitmapFilter[];
