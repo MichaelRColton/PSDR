@@ -52,7 +52,12 @@ void dac2SetValue(uint16_t value);
 __IO long long millis = 0;
 
 
-float gain = 1;
+float afGain = 1.0;
+float afGainLast = 2.0;
+float afGainStep = 0.1;
+float afGainMax = 25.0;
+
+uint16_t maxAmplitude = 0;
 
 float fftFilterCoeficient[FFT_BUFFER_SIZE];
 float filterTemp[FFT_BUFFER_SIZE];
@@ -61,7 +66,7 @@ uint16_t filterKernelLength = 100; //what's a good value? How does it relate to 
 uint16_t menuPos = 0;
 uint16_t menuEncoderTicks = 0;
 uint16_t menuLastPos = 1;
-uint16_t menuCount = 10;
+uint16_t menuCount = 11;
 uint32_t frequencyDialMultiplier = 1;
 
 long vfoAFrequency = 7236400;
@@ -77,6 +82,7 @@ uint8_t modeLast = 2;
 
 float agcLevel = 0;
 float agcScale = 160; //Higher is lower volume.. for now
+
 
 int ifShift = 0;
 
@@ -343,6 +349,9 @@ int isFwd;
 					samplesA[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
 					samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
 
+					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
+					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
+
 					if(samplesB[sampleIndex*2] > agcLevel) agcLevel = samplesB[sampleIndex*2];
 					if(samplesB[sampleIndex*2+1] > agcLevel) agcLevel = samplesB[sampleIndex*2+1];
 //					if(sampleIndex < filterKernelLength)
@@ -352,8 +361,8 @@ int isFwd;
 //						dac2SetValue(samplesB[sampleIndex*2+1] + samplesA[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesB[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
-						dac2SetValue(samplesB[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+						dac1SetValue(samplesB[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						dac2SetValue(samplesB[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 //					}
 
 					if(sampleIndex > FFT_SIZE - filterKernelLength - 1)
@@ -369,6 +378,9 @@ int isFwd;
 					samplesB[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
 					samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
 
+					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
+					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
+
 					if(samplesC[sampleIndex*2] > agcLevel) agcLevel =samplesC[sampleIndex*2];
 					if(samplesC[sampleIndex*2+1] > agcLevel) agcLevel = samplesC[sampleIndex*2+1];
 //					if(sampleIndex < filterKernelLength)
@@ -378,8 +390,8 @@ int isFwd;
 //						dac2SetValue(samplesC[sampleIndex*2+1] + samplesB[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesC[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
-						dac2SetValue(samplesC[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+						dac1SetValue(samplesC[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						dac2SetValue(samplesC[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 //					}
 
 						if(sampleIndex > FFT_SIZE - filterKernelLength - 1)
@@ -395,6 +407,9 @@ int isFwd;
 					samplesC[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
 					samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
 
+					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
+					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
+
 					if(samplesA[sampleIndex*2] > agcLevel) agcLevel = samplesA[sampleIndex*2];
 					if(samplesA[sampleIndex*2+1] > agcLevel) agcLevel = samplesA[sampleIndex*2+1];
 //					if(sampleIndex < filterKernelLength)
@@ -404,8 +419,8 @@ int isFwd;
 //						dac2SetValue(samplesA[sampleIndex*2+1] + samplesC[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesA[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
-						dac2SetValue(samplesA[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
+						dac1SetValue(samplesA[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						dac2SetValue(samplesA[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 //					}
 
 						if(sampleIndex > FFT_SIZE - filterKernelLength - 1)
@@ -621,6 +636,16 @@ void updateMenu()
 			//Right now all this does is turns the AM decoder on and off, I guess.
 		}
 		break;
+	case 10: //Volume
+		encoderPos = getPos();
+		if(encoderPos != encoderLastPos)
+		{
+			afGain += afGainStep * (encoderLastPos - encoderPos);
+			if(afGain > afGainMax) afGain = afGainMax;
+			if(afGain <= 0) afGain = 0;
+			encoderLastPos = encoderPos;
+		}
+		break;
 	default:
 		break;
 	}
@@ -642,6 +667,7 @@ void updateDisplay(uint8_t force)
 		Adafruit_GFX_drawColorBitmap(150, 136, bitmapFilter, 47,12, MASKWHITE);
 		drawNumber('.', freqHOffset + 16*2, freqVOffset + 0, MASKWHITE);
 		drawNumber('.', freqHOffset + 16*6, freqVOffset + 0, MASKWHITE);
+		Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
 	}
 
 	sprintf(&freqChar, "%8d", vfoAFrequency);
@@ -738,6 +764,8 @@ void updateDisplay(uint8_t force)
 
 		modeLast = mode;
 	}
+
+	if(afGain * 0.99 )
 
 	menuLastPos = menuPos;
 }
