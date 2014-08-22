@@ -143,7 +143,7 @@ void populateCoeficients(int bandwidth, int sideband, int offset)
 	fftFilterCoeficient[FFT_BUFFER_SIZE / 2] = 0;
 	fftFilterCoeficient[FFT_BUFFER_SIZE - 1] = 0;
 
-	return; //Skipping all the later stuff doesn't seem to make a huge difference yet...
+	//return; //Skipping all the later stuff doesn't seem to make a huge difference yet...
 
 	//2:
 //	float x, y;
@@ -566,7 +566,23 @@ main(int argc, char* argv[])
 		updateMenu();
 		updateDisplay(0);
 		drawWaterfall();
+		drawSMeter();
 	}
+}
+
+float passBandRms = 0;
+int lastSMeterBarWidth = 0;
+void drawSMeter()
+{
+
+	//Adafruit_GFX_fillRect(150, 160, 170, 3, ILI9340_BLACK);
+	int width = 10*log((passBandRms * 1000000) + 1);
+	if(width > lastSMeterBarWidth)
+		Adafruit_GFX_fillRect(150 + lastSMeterBarWidth, 156, width - lastSMeterBarWidth, 3, ILI9340_RED);
+	else
+		Adafruit_GFX_fillRect(150 + width, 156, lastSMeterBarWidth - width, 3, ILI9340_BLACK);
+
+	lastSMeterBarWidth = width;
 }
 
 void updateMenu()
@@ -652,6 +668,21 @@ void updateMenu()
 }
 
 
+float calculateRmsOfSample(float* samples, int length)
+{
+	int i;
+	float accumulatedSquares = 0;
+	for(i = 0; i < length; i++)
+	{
+		accumulatedSquares += samples[i] * samples[i];
+	}
+
+	accumulatedSquares = accumulatedSquares / length;
+	float32_t result;
+	arm_sqrt_f32(accumulatedSquares, &result);
+	return result;
+}
+
 #define freqVOffset 108     //120 - (8*3/2)
 #define freqHOffset 142
 void updateDisplay(uint8_t force)
@@ -667,6 +698,7 @@ void updateDisplay(uint8_t force)
 		Adafruit_GFX_drawColorBitmap(150, 136, bitmapFilter, 47,12, MASKWHITE);
 		drawNumber('.', freqHOffset + 16*2, freqVOffset + 0, MASKWHITE);
 		drawNumber('.', freqHOffset + 16*6, freqVOffset + 0, MASKWHITE);
+		Adafruit_GFX_drawColorBitmap(142, 162, bitmapSMeter, 155, 10, MASKWHITE);
 		Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
 	}
 
@@ -858,6 +890,7 @@ void processStream()
 				}
 			}
 
+			passBandRms = calculateRmsOfSample(samplesA, FFT_BUFFER_SIZE);
 
 			sampleBankAReady = 0;
 			blink_led_off();
@@ -888,6 +921,8 @@ void processStream()
 				}
 			}
 
+			passBandRms = calculateRmsOfSample(samplesB, FFT_BUFFER_SIZE);
+
 			sampleBankBReady = 0;
 			blink_led_off();
 
@@ -917,6 +952,8 @@ void processStream()
 					samplesC[i * 2 + 1] = samplesDemod[i];
 				}
 			}
+
+			passBandRms = calculateRmsOfSample(samplesC, FFT_BUFFER_SIZE);
 
 			sampleBankCReady = 0;
 			blink_led_off();
