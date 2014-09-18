@@ -1,5 +1,5 @@
 #MicroXplorer Configuration settings - do not modify
-#Fri Sep 12 11:44:13 MDT 2014
+#Sun Sep 14 21:40:09 MDT 2014
 ADC1.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_TEMPSENSOR
 ADC1.IPParameters=NbrOfConversionFlag,Channel-0\#ChannelRegularConversion,SamplingTime-0\#ChannelRegularConversion,Rank-0\#ChannelRegularConversion,master
 ADC1.NbrOfConversionFlag=1
