@@ -516,6 +516,10 @@ main(int argc, char* argv[])
 	hal_setupPins();
 	spi_init();
 
+	//MUX Enable = 0; Disable = 1
+	HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1);
+	HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0);
+
 	timer_start();
 
 	blink_led_init();

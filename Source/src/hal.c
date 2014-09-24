@@ -229,14 +229,14 @@ void hal_setupPins(void)
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
     gpioInitStructure.Alternate = 0;
-    gpioInitStructure.Pull  = GPIO_PULLDOWN;
+    gpioInitStructure.Pull  = GPIO_PULLUP;
     HAL_GPIO_Init(TX_MUX.port, &gpioInitStructure);
 
     gpioInitStructure.Pin   = RX_MUX.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
     gpioInitStructure.Alternate = 0;
-    gpioInitStructure.Pull  = GPIO_PULLDOWN;
+    gpioInitStructure.Pull  = GPIO_PULLUP;
     HAL_GPIO_Init(RX_MUX.port, &gpioInitStructure);
 
 //    gpioInitStructure.GPIO_Pin   = LCD_NSS.pin;
