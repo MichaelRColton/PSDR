@@ -22,28 +22,28 @@ void spi_init(void)
     __SPI1_CLK_ENABLE();
 
     // SPI2 SCK and MOSI
-    gpioInitStructure.Pin   = SPI1_SCK.pin;
+    gpioInitStructure.Pin   = LCD_SCK.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
     gpioInitStructure.Pull  = GPIO_NOPULL;
     //gpioInitStructure.Alternate = 1;
-    HAL_GPIO_Init(SPI1_SCK.port, &gpioInitStructure);
+    HAL_GPIO_Init(LCD_SCK.port, &gpioInitStructure);
 
-    gpioInitStructure.Pin   = SPI1_MOSI.pin;
+    gpioInitStructure.Pin   = LCD_MOSI.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
     gpioInitStructure.Pull  = GPIO_NOPULL;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
-    HAL_GPIO_Init(SPI1_MOSI.port, &gpioInitStructure);
+    HAL_GPIO_Init(LCD_MOSI.port, &gpioInitStructure);
 
     // SPI2 MISO
-    gpioInitStructure.Pin   = SPI1_MISO.pin;
+    gpioInitStructure.Pin   = LCD_MISO.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_INPUT;
     gpioInitStructure.Pull = GPIO_PULLUP;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
-    HAL_GPIO_Init(SPI1_MISO.port, &gpioInitStructure);
+    HAL_GPIO_Init(LCD_MISO.port, &gpioInitStructure);
 
     // RFID NSS
     gpioInitStructure.Pin   = LCD_NSS.pin;
@@ -58,7 +58,7 @@ void spi_init(void)
 //    gpioInitStructure.Speed = GPIO_SPEED_FAST;
 //    gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
 //    gpioInitStructure.Pull  = GPIO_NOPULL;
-//    gpioInitStructure.Alternate = GPIO_AF5_SPI1;
+//    gpioInitStructure.Alternate = GPIO_AF5_LCD;
 //    HAL_GPIO_Init(LCD_NSS.port, &gpioInitStructure);
 //    //HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);       // TBD - should this be before init?
 
@@ -116,16 +116,16 @@ void spi_readWrite(SPI_HandleTypeDef SpiH, uint8_t* rxBuf, uint8_t* txBuf, int c
 
 //	//High, second edge
 //	//We're going to bitbang it for now, I guess
-//	HAL_GPIO_WritePin(SPI1_SCK.port, SPI1_SCK.pin, 0);
+//	HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 0);
 //	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
 //	int i, j;
 //	for(i = 0; i < cnt; i++)
 //	{
 //		for(j = 0; j < 8; j++)
 //		{
-//			HAL_GPIO_WritePin(SPI1_MOSI.port, SPI1_MOSI.pin, (txBuf[i] >> (7 - j)) & 1);
-//			HAL_GPIO_WritePin(SPI1_SCK.port, SPI1_SCK.pin, 0);
-//			HAL_GPIO_WritePin(SPI1_SCK.port, SPI1_SCK.pin, 1);
+//			HAL_GPIO_WritePin(LCD_MOSI.port, LCD_MOSI.pin, (txBuf[i] >> (7 - j)) & 1);
+//			HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 0);
+//			HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 1);
 //		}
 //	}
 //	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);

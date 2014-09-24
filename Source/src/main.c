@@ -272,12 +272,12 @@ int isFwd;
 
 	void Tick(void)
 	{
-		Position2 = (HAL_GPIO_ReadPin(encoderB.port, encoderB.pin) * 2) + HAL_GPIO_ReadPin(encoderA.port, encoderA.pin);;
+		Position2 = (HAL_GPIO_ReadPin(ENCODER_B.port, ENCODER_B.pin) * 2) + HAL_GPIO_ReadPin(ENCODER_A.port, ENCODER_A.pin);;
 		if (Position2 != Position)
 		{
 			isFwd = ((Position == 0) && (Position2 == 1)) || ((Position == 1) && (Position2 == 3)) ||
 				((Position == 3) && (Position2 == 2)) || ((Position == 2) && (Position2 == 0));
-			if (!HAL_GPIO_ReadPin(encoderP.port, encoderP.pin))
+			if (!HAL_GPIO_ReadPin(ENCODER_P.port, ENCODER_P.pin))
 			{
 				if (isFwd) menuEncoderTicks += 1;
 				else menuEncoderTicks -= 1;
@@ -699,7 +699,7 @@ void updateDisplay(uint8_t force)
 		drawNumber('.', freqHOffset + 16*2, freqVOffset + 0, MASKWHITE);
 		drawNumber('.', freqHOffset + 16*6, freqVOffset + 0, MASKWHITE);
 		Adafruit_GFX_drawColorBitmap(142, 162, bitmapSMeter, 155, 10, MASKWHITE);
-		Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
+		//Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
 	}
 
 	sprintf(&freqChar, "%8d", vfoAFrequency);

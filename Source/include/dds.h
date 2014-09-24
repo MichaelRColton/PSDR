@@ -3,10 +3,4 @@
 
 #include "hal.h"
 
-
-
-
-
-
-
 #endif /* DDS_H_ */
