@@ -40,42 +40,40 @@
 //const Gpio_Pin RX_TO_GPS            = { GPIOB, GPIO_Pin_10 };
 //const Gpio_Pin TX_FROM_GPS          = { GPIOB, GPIO_Pin_11 };
 
-
-
-
-
-const Gpio_Pin DAC1					= { GPIOA, GPIO_PIN_4 };
-const Gpio_Pin DAC2					= { GPIOA, GPIO_PIN_5 };
-const Gpio_Pin ADC_0				= { GPIOA, GPIO_PIN_0 };
 //const Gpio_Pin OLED_RESET			= { GPIOA, GPIO_PIN_5 };
 //const Gpio_Pin OLED_DC				= { GPIOA, GPIO_PIN_9 };
 //const Gpio_Pin OLED_NSS				= { GPIOA, GPIO_PIN_8 };
-const Gpio_Pin SPI2_SCK				= { GPIOB, GPIO_PIN_13 };
-const Gpio_Pin SPI2_MISO			= { GPIOB, GPIO_PIN_14 };
-const Gpio_Pin SPI2_MOSI			= { GPIOB, GPIO_PIN_15 };
 
 //CORRECT FOR PSDR1
+const Gpio_Pin LCD_MOSI				= { GPIOB, GPIO_PIN_5  };
+const Gpio_Pin LCD_MISO				= { GPIOB, GPIO_PIN_4  };
+const Gpio_Pin LCD_SCK				= { GPIOB, GPIO_PIN_3  };
+const Gpio_Pin LCD_NSS              = { GPIOA, GPIO_PIN_15 };
+const Gpio_Pin LCD_LED				= { GPIOB, GPIO_PIN_1  };
 const Gpio_Pin LCD_DC				= { GPIOB, GPIO_PIN_11 };
 const Gpio_Pin LCD_RESET			= { GPIOB, GPIO_PIN_10 };
-const Gpio_Pin LCD_NSS              = { GPIOA, GPIO_PIN_15 };
-const Gpio_Pin ddsReset 			= { GPIOC, GPIO_PIN_12 };
-const Gpio_Pin ddsSleep 			= { GPIOD, GPIO_PIN_2  };
-const Gpio_Pin dds1Mosi 			= { GPIOC, GPIO_PIN_11 };
-const Gpio_Pin dds1Nss 				= { GPIOC, GPIO_PIN_0  };
-const Gpio_Pin dds1Sck 				= { GPIOC, GPIO_PIN_10 };
-const Gpio_Pin dds2Mosi 			= { GPIOB, GPIO_PIN_6  };
-const Gpio_Pin dds2Nss 				= { GPIOB, GPIO_PIN_8  };
-const Gpio_Pin dds2Sck 				= { GPIOB, GPIO_PIN_7  };
-const Gpio_Pin SPI1_MOSI            = { GPIOB, GPIO_PIN_5  };
-const Gpio_Pin SPI1_MISO            = { GPIOB, GPIO_PIN_4  };
-const Gpio_Pin SPI1_SCK             = { GPIOB, GPIO_PIN_3  };
-const Gpio_Pin encoderA             = { GPIOC, GPIO_PIN_2  };
-const Gpio_Pin encoderB             = { GPIOC, GPIO_PIN_3  };
-const Gpio_Pin encoderP             = { GPIOC, GPIO_PIN_15 };
+const Gpio_Pin SD_SCK				= { GPIOB, GPIO_PIN_13 };
+const Gpio_Pin SD_MISO				= { GPIOB, GPIO_PIN_14 };
+const Gpio_Pin SD_MOSI				= { GPIOB, GPIO_PIN_15 };
+const Gpio_Pin SD_NSS				= { GPIOB, GPIO_PIN_12 };
+const Gpio_Pin DDS_RESET 			= { GPIOC, GPIO_PIN_12 };
+const Gpio_Pin DDS_SLEEP 			= { GPIOD, GPIO_PIN_2  };
+const Gpio_Pin DDS_1_MOSI 			= { GPIOC, GPIO_PIN_11 };
+const Gpio_Pin DDS_1_NSS 			= { GPIOC, GPIO_PIN_0  };
+const Gpio_Pin DDS_1_SCK 			= { GPIOC, GPIO_PIN_10 };
+const Gpio_Pin DDS_2_MOSI 			= { GPIOB, GPIO_PIN_6  };
+const Gpio_Pin DDS_2_NSS 			= { GPIOB, GPIO_PIN_8  };
+const Gpio_Pin DDS_2_SCK 			= { GPIOB, GPIO_PIN_7  };
+const Gpio_Pin ENCODER_A			= { GPIOC, GPIO_PIN_2  };
+const Gpio_Pin ENCODER_B			= { GPIOC, GPIO_PIN_3  };
+const Gpio_Pin ENCODER_P			= { GPIOC, GPIO_PIN_15 };
+const Gpio_Pin ADC_0				= { GPIOA, GPIO_PIN_0  };
 const Gpio_Pin ADC_1				= { GPIOA, GPIO_PIN_1  };
 const Gpio_Pin ADC_2				= { GPIOA, GPIO_PIN_2  };
-const Gpio_Pin dac1					= { GPIOA, GPIO_PIN_4  };
-const Gpio_Pin dac2					= { GPIOA, GPIO_PIN_5  };
+const Gpio_Pin DAC_1				= { GPIOA, GPIO_PIN_4  };
+const Gpio_Pin DAC_2				= { GPIOA, GPIO_PIN_5  };
+const Gpio_Pin TX_MUX				= { GPIOC, GPIO_PIN_5  };
+const Gpio_Pin RX_MUX				= { GPIOB, GPIO_PIN_0  };
 
 //const Gpio_Pin NC_1                 = { GPIOC, GPIO_Pin_0  };	// this is the Closure Sensor Pin near the 3v3 regulator, fyi
 //const Gpio_Pin DAC_SWITCHES         = { GPIOC, GPIO_Pin_5  };   // currently labeled LIGHT_SENSOR on schem (TODO)
@@ -197,21 +195,28 @@ void hal_setupPins(void)
     //hal_delay_ms(1); // Make sure the buzzer has quieted down
 
     // Now that the buzzer has quieted down, we can use it as an output
-    gpioInitStructure.Pin   = DAC1.pin;
+    gpioInitStructure.Pin   = DAC_1.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
     gpioInitStructure.Pull  = GPIO_PULLDOWN;
     gpioInitStructure.Alternate = 1;
-    HAL_GPIO_Init(DAC1.port, &gpioInitStructure);
+    HAL_GPIO_Init(DAC_1.port, &gpioInitStructure);
     //GPIO_WriteBit(DAC1.port, DAC1.pin, 0);
 
-    gpioInitStructure.Pin   = DAC2.pin;
+    gpioInitStructure.Pin   = DAC_2.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
     gpioInitStructure.Pull  = GPIO_PULLDOWN;
     gpioInitStructure.Alternate = 1;
-    HAL_GPIO_Init(DAC2.port, &gpioInitStructure);
+    HAL_GPIO_Init(DAC_2.port, &gpioInitStructure);
     //GPIO_WriteBit(DAC1.port, DAC1.pin, 0);
+
+    gpioInitStructure.Pin   = LCD_LED.pin;
+    gpioInitStructure.Speed = GPIO_SPEED_FAST;
+    gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
+    gpioInitStructure.Alternate = 0;
+    gpioInitStructure.Pull  = GPIO_PULLUP;
+    HAL_GPIO_Init(LCD_LED.port, &gpioInitStructure);
 
     gpioInitStructure.Pin   = LCD_DC.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
@@ -220,6 +225,19 @@ void hal_setupPins(void)
     gpioInitStructure.Pull  = GPIO_NOPULL;
     HAL_GPIO_Init(LCD_DC.port, &gpioInitStructure);
 
+    gpioInitStructure.Pin   = TX_MUX.pin;
+    gpioInitStructure.Speed = GPIO_SPEED_FAST;
+    gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
+    gpioInitStructure.Alternate = 0;
+    gpioInitStructure.Pull  = GPIO_PULLUP;
+    HAL_GPIO_Init(TX_MUX.port, &gpioInitStructure);
+
+    gpioInitStructure.Pin   = RX_MUX.pin;
+    gpioInitStructure.Speed = GPIO_SPEED_FAST;
+    gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
+    gpioInitStructure.Alternate = 0;
+    gpioInitStructure.Pull  = GPIO_PULLUP;
+    HAL_GPIO_Init(RX_MUX.port, &gpioInitStructure);
 
 //    gpioInitStructure.GPIO_Pin   = LCD_NSS.pin;
 //    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
@@ -249,28 +267,28 @@ void hal_setupPins(void)
     HAL_GPIO_Init(ADC_0.port, &gpioInitStructure);
 
     //EncoderA
-    gpioInitStructure.Pin   = encoderA.pin;
+    gpioInitStructure.Pin   = ENCODER_A.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_INPUT;
     gpioInitStructure.Pull  = GPIO_PULLUP;
     gpioInitStructure.Alternate = 0;
-    HAL_GPIO_Init(encoderA.port, &gpioInitStructure);
+    HAL_GPIO_Init(ENCODER_A.port, &gpioInitStructure);
 
     //EncoderB
-    gpioInitStructure.Pin   = encoderB.pin;
+    gpioInitStructure.Pin   = ENCODER_B.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_INPUT;
     gpioInitStructure.Pull  = GPIO_PULLUP;
     gpioInitStructure.Alternate = 0;
-    HAL_GPIO_Init(encoderB.port, &gpioInitStructure);
+    HAL_GPIO_Init(ENCODER_B.port, &gpioInitStructure);
 
     //EncoderP
-    gpioInitStructure.Pin   = encoderP.pin;
+    gpioInitStructure.Pin   = ENCODER_P.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_INPUT;
     gpioInitStructure.Pull  = GPIO_PULLUP;
     gpioInitStructure.Alternate = 0;
-    HAL_GPIO_Init(encoderP.port, &gpioInitStructure);
+    HAL_GPIO_Init(ENCODER_P.port, &gpioInitStructure);
 
     //ADC1
     gpioInitStructure.Pin   = ADC_1.pin;
@@ -291,75 +309,75 @@ void hal_setupPins(void)
 
     //DDS Pins
     //Reset
-    	gpioInitStructure.Pin = ddsReset.pin;
+    	gpioInitStructure.Pin = DDS_RESET.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_FAST;
     	gpioInitStructure.Pull = GPIO_PULLUP;
-    	HAL_GPIO_Init(ddsReset.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(ddsReset.port, ddsReset.pin, 0);
+    	HAL_GPIO_Init(DDS_RESET.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_RESET.port, DDS_RESET.pin, 0);
 
     	//Sleep
-    	gpioInitStructure.Pin = ddsSleep.pin;
+    	gpioInitStructure.Pin = DDS_SLEEP.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_FAST;
     	gpioInitStructure.Pull = GPIO_PULLUP;
-    	HAL_GPIO_Init(ddsSleep.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(ddsSleep.port, ddsSleep.pin, 0);
+    	HAL_GPIO_Init(DDS_SLEEP.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_SLEEP.port, DDS_SLEEP.pin, 0);
 
     	//DDS1 MOSI
-    	gpioInitStructure.Pin = dds1Mosi.pin;
+    	gpioInitStructure.Pin = DDS_1_MOSI.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_FAST;
     	gpioInitStructure.Pull = GPIO_PULLUP;
-    	HAL_GPIO_Init(dds1Mosi.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(dds1Mosi.port, dds1Mosi.pin, 0);
+    	HAL_GPIO_Init(DDS_1_MOSI.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_1_MOSI.port, DDS_1_MOSI.pin, 0);
 
     	//DDS1 SCK
-    	gpioInitStructure.Pin = dds1Sck.pin;
+    	gpioInitStructure.Pin = DDS_1_SCK.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_FAST;
     	gpioInitStructure.Pull = GPIO_PULLUP;
-    	HAL_GPIO_Init(dds1Sck.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(dds1Sck.port, dds1Sck.pin, 1);
+    	HAL_GPIO_Init(DDS_1_SCK.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_1_SCK.port, DDS_1_SCK.pin, 1);
 
     	//DDS1 NSS
-    	gpioInitStructure.Pin = dds1Nss.pin;
+    	gpioInitStructure.Pin = DDS_1_NSS.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_FAST;
     	gpioInitStructure.Pull = GPIO_PULLUP;
-    	HAL_GPIO_Init(dds1Nss.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(dds1Nss.port, dds1Nss.pin, 1);
+    	HAL_GPIO_Init(DDS_1_NSS.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_1_NSS.port, DDS_1_NSS.pin, 1);
 
     	//DDS2 MOSI
-    	gpioInitStructure.Pin = dds2Mosi.pin;
+    	gpioInitStructure.Pin = DDS_2_MOSI.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_FAST;
     	gpioInitStructure.Pull = GPIO_PULLUP;
-    	HAL_GPIO_Init(dds2Mosi.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(dds2Mosi.port, dds2Mosi.pin, 0);
+    	HAL_GPIO_Init(DDS_2_MOSI.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_2_MOSI.port, DDS_2_MOSI.pin, 0);
 
     	//DDS2 SCK
-    	gpioInitStructure.Pin = dds2Sck.pin;
+    	gpioInitStructure.Pin = DDS_2_SCK.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_FAST;
     	gpioInitStructure.Pull = GPIO_PULLUP;
-    	HAL_GPIO_Init(dds2Sck.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(dds2Sck.port, dds2Sck.pin, 1);
+    	HAL_GPIO_Init(DDS_2_SCK.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_2_SCK.port, DDS_2_SCK.pin, 1);
 
     	//DDS1 NSS
-    	gpioInitStructure.Pin = dds2Nss.pin;
+    	gpioInitStructure.Pin = DDS_2_NSS.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_FAST;
     	gpioInitStructure.Pull = GPIO_PULLUP;
-    	HAL_GPIO_Init(dds2Nss.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(dds2Nss.port, dds2Nss.pin, 1);
+    	HAL_GPIO_Init(DDS_2_NSS.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_2_NSS.port, DDS_2_NSS.pin, 1);
 
 
 
-        gpioInitStructure.Pin = dac1.pin | dac2.pin;
+        gpioInitStructure.Pin = DAC_1.pin | DAC_2.pin;
         gpioInitStructure.Mode = GPIO_MODE_ANALOG;
         gpioInitStructure.Pull = GPIO_NOPULL;
-        HAL_GPIO_Init(dac1.port, &gpioInitStructure);
+        HAL_GPIO_Init(DAC_1.port, &gpioInitStructure);
 
     // Power Switch
 //    gpioInitStructure.GPIO_Pin   = POWER_SWITCH.pin;

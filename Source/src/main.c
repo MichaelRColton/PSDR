@@ -52,10 +52,10 @@ void dac2SetValue(uint16_t value);
 __IO long long millis = 0;
 
 
-float afGain = 1.0;
-float afGainLast = 2.0;
-float afGainStep = 0.1;
-float afGainMax = 25.0;
+float afGain = 1.0f;
+float afGainLast = 2.0f;
+float afGainStep = 0.1f;
+float afGainMax = 25.0f;
 
 uint16_t maxAmplitude = 0;
 
@@ -69,8 +69,8 @@ uint16_t menuLastPos = 1;
 uint16_t menuCount = 11;
 uint32_t frequencyDialMultiplier = 1;
 
-long vfoAFrequency = 7236400;
-long vfoALastFreq = 0;
+uint32_t vfoAFrequency = 7236400;
+uint32_t vfoALastFreq = 0;
 int encoderPos, encoderLastPos;
 
 int16_t filterUpperLimit = 68;
@@ -80,14 +80,40 @@ int16_t filterLastLowerLimit = 2;
 uint8_t mode = 0;
 uint8_t modeLast = 2;
 
-float agcLevel = 0;
-float agcScale = 160; //Higher is lower volume.. for now
-
+float agcLevel = 0.0f;
+float agcScale = 160.0f; //Higher is lower volume.. for now
 
 int ifShift = 0;
 
-float fftMaxMaxMax = 20;
-float fftMaxMaxMin = 0.2;
+float fftMaxMaxMax = 20.0f;
+float fftMaxMaxMin = 0.2f;
+
+float passBandRms = 0.0f;
+
+void polarToRect(float, float, float32_t*, float32_t*);
+void populateCoeficients(int, int, int);
+void applyCoeficient(float*, int);
+void setupPeripheralPower(void);
+void doNothing(void);
+void SysTick_Handler(void);
+void Encoder(void);
+void Tick(void);
+int getPos(void);
+void setMinMax(int, int);
+void captureSamples(void);
+void zeroSampleBank(float*);
+void drawSMeter(void);
+void updateMenu(void);
+float calculateRmsOfSample(float*, int);
+void updateDisplay(uint8_t);
+void drawWaterfall(void);
+void processStream(void);
+void updateVfo(void);
+void drawNumber(char, uint16_t, uint16_t, uint16_t);
+void TIM_Try(void);
+void initDac1(void);
+void dac1SetValue(uint16_t);
+void dac2SetValue(uint16_t);
 
 void polarToRect(float m, float a, float32_t* x, float32_t* y)
 {
@@ -179,7 +205,7 @@ void populateCoeficients(int bandwidth, int sideband, int offset)
 	for(i = 0; i < FFT_BUFFER_SIZE; i++)
 	{
 		if(i <= filterKernelLength) fftFilterCoeficient[i] =
-				fftFilterCoeficient[i] * (0.54 - 0.46 * arm_cos_f32(2* 3.14159265*i/filterKernelLength));
+				fftFilterCoeficient[i] * (0.54 - 0.46 * arm_cos_f32(2.0 * 3.14159265 * i / filterKernelLength));
 		if(i > filterKernelLength) fftFilterCoeficient[i] = 0;
 	}
 
@@ -211,16 +237,12 @@ void applyCoeficient(float *samples, int shift)
 		filterTemp[i * 2 + 1] = samples[i * 2 + 1] * fftFilterCoeficient[i * 2 + 1] + samples[i * 2] * fftFilterCoeficient[i * 2];
 	}
 
-	int shifter;
 	for(i = 0; i < FFT_BUFFER_SIZE; i++)
 	{
-		shifter = i + 2 * shift;
-		if(i < 0) samples[i] = 0;
-		if(i > FFT_BUFFER_SIZE - 1) samples[i] = 0;
+		if((i < 0) || (i > FFT_BUFFER_SIZE - 1)) samples[i] = 0;
 		samples[i] = filterTemp[i + 2 * shift];
 	}
 }
-
 
 void setupPeripheralPower()
 {
@@ -230,22 +252,18 @@ void setupPeripheralPower()
 	__GPIOD_CLK_ENABLE();
 }
 
-
-
-
 void doNothing()
 {
 	static int cap = 0;
 	cap++;
 }
 
-void
-SysTick_Handler (void)
+void SysTick_Handler (void)
 {
 	millis++;
-  timer_tick ();
-  Tick();
-  if(timingDelay > 0) timingDelay--;
+	timer_tick();
+	Tick();
+	if(timingDelay > 0) timingDelay--;
 }
 
 int clickMultiply;
@@ -260,83 +278,79 @@ int isFwd;
 #define EncoderPinB 19	// Rotary Encoder Right Pin //
 #define EncoderPinP 21	// Rotary Encoder Click //
 
+void Encoder()
+{
+	Position = 0;
+	Position2 = 0;
+	Max = 127;
+	Min = 0;
+	clickMultiply = 100;
+}
 
-	Encoder()
+void Tick()
+{
+	Position2 = (HAL_GPIO_ReadPin(ENCODER_B.port, ENCODER_B.pin) * 2) + HAL_GPIO_ReadPin(ENCODER_A.port, ENCODER_A.pin);;
+	if (Position2 != Position)
 	{
-		Position = 0;
-		Position2 = 0;
-		Max = 127;
-		Min = 0;
-		clickMultiply = 100;
-	}
-
-	void Tick(void)
-	{
-		Position2 = (HAL_GPIO_ReadPin(encoderB.port, encoderB.pin) * 2) + HAL_GPIO_ReadPin(encoderA.port, encoderA.pin);;
-		if (Position2 != Position)
+		isFwd = ((Position == 0) && (Position2 == 1)) || ((Position == 1) && (Position2 == 3)) ||
+			((Position == 3) && (Position2 == 2)) || ((Position == 2) && (Position2 == 0));
+		if (!HAL_GPIO_ReadPin(ENCODER_P.port, ENCODER_P.pin))
 		{
-			isFwd = ((Position == 0) && (Position2 == 1)) || ((Position == 1) && (Position2 == 3)) ||
-				((Position == 3) && (Position2 == 2)) || ((Position == 2) && (Position2 == 0));
-			if (!HAL_GPIO_ReadPin(encoderP.port, encoderP.pin))
-			{
-				if (isFwd) menuEncoderTicks += 1;
-				else menuEncoderTicks -= 1;
-				menuPos = menuEncoderTicks/2;
-				menuPos = menuPos % menuCount;
-			}
-			else
-			{
-				if (isFwd) Pos++;
-				else Pos--;
-			}
-			//if (Pos < Min) Pos = Min;
-			//if (Pos > Max) Pos = Max;
+			if (isFwd) menuEncoderTicks++;
+			else menuEncoderTicks--;
+			menuPos = menuEncoderTicks / 2;
+			menuPos = menuPos % menuCount;
 		}
-		Position = Position2;
+		else
+		{
+			if (isFwd) Pos++;
+			else Pos--;
+		}
+		//if (Pos < Min) Pos = Min;
+		//if (Pos > Max) Pos = Max;
 	}
+	Position = Position2;
+}
 
-	int getPos(void)
-	{
-		return (Pos/2);
-	}
+int getPos()
+{
+	return (Pos/2);
+}
 
 //	uint16_t getMenuPos(void)
 //	{
 //		return (menuPos/2);
 //	}
 
-	void setMinMax(int _Min, int _Max)
-	{
-		Min = _Min*4;
-		Max = _Max*4;
-		if (Pos < Min) Pos = Min;
-		if (Pos > Max) Pos = Max;
-	}
+void setMinMax(int _Min, int _Max)
+{
+	Min = _Min*4;
+	Max = _Max*4;
+	if (Pos < Min) Pos = Min;
+	if (Pos > Max) Pos = Max;
+}
 
+float samplesA[FFT_BUFFER_SIZE];
+float samplesB[FFT_BUFFER_SIZE];
+float samplesC[FFT_BUFFER_SIZE];
+float samplesDisplay[FFT_BUFFER_SIZE];
+float samplesDemod[FFT_BUFFER_SIZE];
+float samplesOverlap[100];
+int sampleBankAReady = 0;
+int sampleBankBReady = 0;
+int	sampleBankCReady = 0;
 
+uint8_t waterfallBusy = 0;
 
+//float   outputSamplesA[512];
+//float   outputSamplesB[512];
+int     sampleBank = 0;
+//int 	sampleCounter = 0;
+//const int FFT_SIZE = 256;
+float observerA, observerB, observerC;
 
-	float samplesA[FFT_BUFFER_SIZE];
-	float samplesB[FFT_BUFFER_SIZE];
-	float samplesC[FFT_BUFFER_SIZE];
-	float samplesDisplay[FFT_BUFFER_SIZE];
-	float samplesDemod[FFT_BUFFER_SIZE];
-	float samplesOverlap[100];
-	int     sampleBankAReady = 0;
-	int 	sampleBankBReady = 0;
-	int		sampleBankCReady = 0;
-
-	uint8_t waterfallBusy = 0;
-
-	//float   outputSamplesA[512];
-	//float   outputSamplesB[512];
-	int     sampleBank = 0;
-	//int 	sampleCounter = 0;
-	//const int FFT_SIZE = 256;
-	float observerA, observerB, observerC;
-
-	void captureSamples()
-	{
+void captureSamples()
+{
 		if(adcConfigured)
 		{
 			//if(!sampleRun)
@@ -346,8 +360,8 @@ int isFwd;
 				{
 				case 0:
 
-					samplesA[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
-					samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
+					samplesA[sampleIndex*2] = ((uhADCxConvertedValue - 2048.0f) / 4096.0f); // - 2048;
+					samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048.0f) / 4096.0f); // - 2048;//0.0;
 
 					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
@@ -375,8 +389,8 @@ int isFwd;
 
 				case 1:
 
-					samplesB[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
-					samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
+					samplesB[sampleIndex*2] = ((uhADCxConvertedValue - 2048.0f) / 4096.0f); // - 2048;
+					samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048.0f) / 4096.0f); // - 2048;//0.0;
 
 					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
@@ -404,8 +418,8 @@ int isFwd;
 
 				case 2:
 
-					samplesC[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
-					samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
+					samplesC[sampleIndex*2] = ((uhADCxConvertedValue - 2048.0f) / 4096.0f); // - 2048;
+					samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048.0f) / 4096.0f); // - 2048;//0.0;
 
 					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
@@ -433,7 +447,7 @@ int isFwd;
 				}
 				//dac1SetValue(outputSamplesA[sampleIndex*2]);
 
-				agcLevel = agcLevel * (1 - 0.0001);
+				agcLevel = agcLevel * (1.0f - 0.0001f);
 
 				sampleIndex++;
 				if(sampleIndex >= FFT_SIZE - (filterKernelLength/2))
@@ -486,8 +500,7 @@ void zeroSampleBank(float *samples)
 	for(; i < FFT_BUFFER_SIZE; i++) samples[i] = 0;
 }
 
-int
-main(int argc, char* argv[])
+int main(int argc __attribute__((unused)), char* argv[] __attribute__((unused)))
 {
 	HAL_Init();
 	//HAL_RCC_OscConfig()
@@ -516,6 +529,10 @@ main(int argc, char* argv[])
 	hal_setupPins();
 	spi_init();
 
+	//MUX Enable = 0; Disable = 1
+	HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1);
+	HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0);
+
 	timer_start();
 
 	blink_led_init();
@@ -543,8 +560,6 @@ main(int argc, char* argv[])
 	//TIM_Config();
 	TIM_Try();
 
-	long long timeMeasurement = 0;
-
 	updateDisplay(1);
 
 	//MAIN LOOP - Lowest Priority
@@ -570,10 +585,10 @@ main(int argc, char* argv[])
 	}
 }
 
-float passBandRms = 0;
-int lastSMeterBarWidth = 0;
 void drawSMeter()
 {
+
+	static int lastSMeterBarWidth = 0;
 
 	//Adafruit_GFX_fillRect(150, 160, 170, 3, ILI9340_BLACK);
 	int width = 10*log((passBandRms * 1000000) + 1);
@@ -621,7 +636,7 @@ void updateMenu()
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
-			filterLowerLimit += 1 * (encoderLastPos - encoderPos);
+			filterLowerLimit += 1 * (encoderLastPos - encoderPos); //FIXME order of operations?
 			if(filterLowerLimit <= 0) filterLowerLimit = 0;
 			if(filterLowerLimit >= 200) filterLowerLimit = 100;
 			if(filterLowerLimit >= filterUpperLimit) filterLowerLimit = filterUpperLimit - 1;
@@ -656,7 +671,7 @@ void updateMenu()
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
-			afGain += afGainStep * (encoderLastPos - encoderPos);
+			afGain += afGainStep * (float)(encoderLastPos - encoderPos);
 			if(afGain > afGainMax) afGain = afGainMax;
 			if(afGain <= 0) afGain = 0;
 			encoderLastPos = encoderPos;
@@ -667,17 +682,16 @@ void updateMenu()
 	}
 }
 
-
 float calculateRmsOfSample(float* samples, int length)
 {
 	int i;
-	float accumulatedSquares = 0;
+	float accumulatedSquares = 0.0f;
 	for(i = 0; i < length; i++)
 	{
 		accumulatedSquares += samples[i] * samples[i];
 	}
 
-	accumulatedSquares = accumulatedSquares / length;
+	accumulatedSquares = accumulatedSquares / (float)length;
 	float32_t result;
 	arm_sqrt_f32(accumulatedSquares, &result);
 	return result;
@@ -699,10 +713,10 @@ void updateDisplay(uint8_t force)
 		drawNumber('.', freqHOffset + 16*2, freqVOffset + 0, MASKWHITE);
 		drawNumber('.', freqHOffset + 16*6, freqVOffset + 0, MASKWHITE);
 		Adafruit_GFX_drawColorBitmap(142, 162, bitmapSMeter, 155, 10, MASKWHITE);
-		Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
+		//Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
 	}
 
-	sprintf(&freqChar, "%8d", vfoAFrequency);
+	sprintf(&freqChar, "%8u", (unsigned int)vfoAFrequency);
 
 	//So on each of these elements, we update when the value changes, when we're forced to, when the item becomes selected, or unselected.
 	if(freqChar[0] != lastFreqChar[0] || force || (menuPos != menuLastPos && (menuPos == 0 || menuLastPos == 0)))
@@ -1190,7 +1204,7 @@ void TIM_Try(void)
 }
 
 int ledState = 0;
-HAL_TIM_PeriodElapsedCallback(htim)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim __attribute__((unused)))
 {
 	captureSamples();
 //	doNothing();

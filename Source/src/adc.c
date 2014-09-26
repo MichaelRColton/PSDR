@@ -1,6 +1,5 @@
 #include "adc.h"
 
-
 void initAdc()
 	{
 	uhADCxConvertedValue = 0;
