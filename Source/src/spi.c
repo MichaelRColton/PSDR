@@ -11,7 +11,6 @@
 #include <stm32f4xx_hal_gpio.h>
 #include <stm32f4xx_hal.h>
 
-
 void spi_init(void)
 {
     SPI_InitTypeDef  spiInitStructure;

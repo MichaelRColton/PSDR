@@ -9,6 +9,7 @@
 #include "hal.h"
 #include "adc.h"
 #include "dds.h"
+#include "spi.h"
 #include "Timer.h"
 #include "BlinkLed.h"
 //#include "stm32f4xx_hal_rcc.h"

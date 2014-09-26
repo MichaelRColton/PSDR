@@ -1,5 +1,6 @@
-
 #include "dds.h"
+
+void ddsCmd(uint16_t, uint16_t);
 
 //Bitbang the SPI interface to the DDS chips, writing commands to both
 //chips as close in time as possible
@@ -33,24 +34,18 @@ void ddsCmd(uint16_t data1, uint16_t data2)
 
 }
 
-long long freqToReg(long long frequency)
+void setFreq(uint32_t frequency)
 {
-	//frequency = 6000000;
-	long long freqIn = 75000000;
-	long long bits28 = 268435456;
-	long long intStep = frequency * bits28;
-	return intStep / freqIn;
-}
-
-void setFreq(long frequency)
-{
-	long long freg = freqToReg(frequency);
+	uint32_t freqReg = (uint64_t)(frequency << 28) / DDS_CLK;
 
 	HAL_GPIO_WritePin(DDS_RESET.port, DDS_RESET.pin, 1);
 
 	//ddsCmd(0x2100, 0x2100);
 	//ddsCmd(0x0010001100000000 , 0x0010001100000000);
-	ddsCmd(0b0010001000000000 , 0b0010001000000000);
+	ddsCmd(
+	    0b0010001000000000,
+		0b0010001000000000
+	);
 
 	//FIXME why do we reassert reset?
 	//HAL_GPIO_WritePin(DDS_RESET.port, DDS_RESET.pin, 0);
@@ -59,16 +54,23 @@ void setFreq(long frequency)
 	//ddsCmd(0x4000);
 
 	//Frequency Register LSB
-	ddsCmd(((freg & 0b0011111111111111) | 0b0100000000000000),
-	       ((freg & 0b0011111111111111) | 0b0100000000000000));
+	ddsCmd(
+	    (uint16_t)((freqReg & 0b00000000000000000011111111111111) | 0b00000000000000000100000000000000),
+	    (uint16_t)((freqReg & 0b00000000000000000011111111111111) | 0b00000000000000000100000000000000)
+	);
 
 	//Frequency Register MSB
-	ddsCmd((((freg >> 14) & 0b0011111111111111) | 0b0100000000000000),
-		   (((freg >> 14) & 0b0011111111111111) | 0b0100000000000000));
+	ddsCmd(
+		(uint16_t)(((freqReg & 0b00001111111111111100000000000000) | 0b00000000000000000100000000000000) >> 14),
+		(uint16_t)(((freqReg & 0b00001111111111111100000000000000) | 0b00000000000000000100000000000000) >> 14)
+	);
 
 	//Phase Register
 	//ddsCmd(0xc000, 0xc000);
-	ddsCmd(0xc000, 0xc000 | 3072);
+	ddsCmd(
+		0xc000,
+		0xc000 | 3072
+	);
 	//ddsCmd(0b1100000000000000);
 
 	//Exit Reset

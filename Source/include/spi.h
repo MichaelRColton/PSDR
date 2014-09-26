@@ -16,8 +16,7 @@
 
 SPI_HandleTypeDef SpiHandle;
 
-    void spi_init(void);
-        // set up the used SPI (SPI2) and pins
+void spi_init(void); // set up the used SPI (SPI2) and pins
 
 //    int spi_getSpi2Semaphore(void);
 //        // tries to take the spi2 semaphore
