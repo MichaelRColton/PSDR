@@ -67,7 +67,7 @@ void initAdc()
 		  sConfig1.SamplingTime = ADC_SAMPLETIME_3CYCLES;
 		  sConfig1.Offset = 0;
 
-		  sConfig2.Channel = ADC_CHANNEL_2;
+		  sConfig2.Channel = ADC_CHANNEL_6;
 		  sConfig2.Rank = 1;
 		  sConfig2.SamplingTime = ADC_SAMPLETIME_3CYCLES;
 		  sConfig2.Offset = 0;

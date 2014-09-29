@@ -7,7 +7,10 @@
     #include <stdint.h>
     #include <stdbool.h>
     //#include <stm32f10x.h>
-#include <stm32f415xx.h>
+//#include <stm32f415xx.h>
+#ifdef PSDR2
+	#include "stm32f429xx.h"
+#endif
 #include <stm32f4xx_hal_gpio.h>
 //    #include <stm32f10x_gpio.h>
    // #include <uart.h>
@@ -98,6 +101,25 @@
     extern const Gpio_Pin encoderP;
     extern const Gpio_Pin dac1;
     extern const Gpio_Pin dac2;
+
+    extern const Gpio_Pin REF_CLOCK_DISABLE;
+    extern const Gpio_Pin DDS_FSEL;
+    extern const Gpio_Pin DDS_PSEL;
+    extern const Gpio_Pin RX_MUX;
+    extern const Gpio_Pin AMP_SWITCH_A;
+    extern const Gpio_Pin AMP_SWITCH_B;
+    extern const Gpio_Pin IMP_BRIDGE_SWITCH_A;
+    extern const Gpio_Pin IMP_BRIDGE_SWITCH_B;
+    extern const Gpio_Pin MIXER_SWITCH_A;
+    extern const Gpio_Pin MIXER_SWITCH_B;
+    extern const Gpio_Pin TX_RF_SWITCH_A;
+    extern const Gpio_Pin TX_RF_SWITCH_B;
+
+    extern const Gpio_Pin GAIN_POT_SCLK;
+    extern const Gpio_Pin GAIN_POT_MOSI;
+    extern const Gpio_Pin GAIN_POT_NSS;
+
+
 
 
 //    extern const Gpio_Pin NC_1;

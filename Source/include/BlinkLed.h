@@ -27,8 +27,8 @@
 // STM32F4DISCOVERY definitions (the GREEN led, D12, active high)
 // (SEGGER J-Link device name: STM32F407VG).
 
-#define BLINK_PORT_NUMBER               (2)
-#define BLINK_PIN_NUMBER                (13)
+#define BLINK_PORT_NUMBER               (0)
+#define BLINK_PIN_NUMBER                (8)
 #define BLINK_ACTIVE_LOW                (0)
 
 #endif

@@ -55,27 +55,46 @@ const Gpio_Pin SPI2_MISO			= { GPIOB, GPIO_PIN_14 };
 const Gpio_Pin SPI2_MOSI			= { GPIOB, GPIO_PIN_15 };
 
 //CORRECT FOR PSDR1
-const Gpio_Pin LCD_DC				= { GPIOB, GPIO_PIN_11 };
-const Gpio_Pin LCD_RESET			= { GPIOB, GPIO_PIN_10 };
-const Gpio_Pin LCD_NSS              = { GPIOA, GPIO_PIN_15 };
-const Gpio_Pin ddsReset 			= { GPIOC, GPIO_PIN_12 };
-const Gpio_Pin ddsSleep 			= { GPIOD, GPIO_PIN_2  };
-const Gpio_Pin dds1Mosi 			= { GPIOC, GPIO_PIN_11 };
-const Gpio_Pin dds1Nss 				= { GPIOC, GPIO_PIN_0  };
-const Gpio_Pin dds1Sck 				= { GPIOC, GPIO_PIN_10 };
-const Gpio_Pin dds2Mosi 			= { GPIOB, GPIO_PIN_6  };
-const Gpio_Pin dds2Nss 				= { GPIOB, GPIO_PIN_8  };
-const Gpio_Pin dds2Sck 				= { GPIOB, GPIO_PIN_7  };
+const Gpio_Pin LCD_DC				= { GPIOD, GPIO_PIN_7 };
+const Gpio_Pin LCD_RESET			= { GPIOD, GPIO_PIN_6 };
+const Gpio_Pin LCD_NSS              = { GPIOD, GPIO_PIN_5 }; //When this was set wrong, the display still worked. No need?
+const Gpio_Pin LCD_LED				= { GPIOA, GPIO_PIN_15 };
+const Gpio_Pin ddsReset 			= { GPIOC, GPIO_PIN_3 };
+const Gpio_Pin ddsSleep 			= { GPIOA, GPIO_PIN_0  };
+const Gpio_Pin dds1Mosi 			= { GPIOE, GPIO_PIN_1  };
+const Gpio_Pin dds1Nss 				= { GPIOE, GPIO_PIN_3  };
+const Gpio_Pin dds1Sck 				= { GPIOE, GPIO_PIN_2 };
+const Gpio_Pin dds2Mosi 			= { GPIOE, GPIO_PIN_4  };
+const Gpio_Pin dds2Nss 				= { GPIOE, GPIO_PIN_6  };
+const Gpio_Pin dds2Sck 				= { GPIOE, GPIO_PIN_5  };
 const Gpio_Pin SPI1_MOSI            = { GPIOB, GPIO_PIN_5  };
 const Gpio_Pin SPI1_MISO            = { GPIOB, GPIO_PIN_4  };
 const Gpio_Pin SPI1_SCK             = { GPIOB, GPIO_PIN_3  };
-const Gpio_Pin encoderA             = { GPIOC, GPIO_PIN_2  };
-const Gpio_Pin encoderB             = { GPIOC, GPIO_PIN_3  };
-const Gpio_Pin encoderP             = { GPIOC, GPIO_PIN_15 };
-const Gpio_Pin ADC_1				= { GPIOA, GPIO_PIN_1  };
-const Gpio_Pin ADC_2				= { GPIOA, GPIO_PIN_2  };
+const Gpio_Pin encoderA             = { GPIOB, GPIO_PIN_8  }; //Backwards according to schematic, but easier this way
+const Gpio_Pin encoderB             = { GPIOB, GPIO_PIN_9  };
+const Gpio_Pin encoderP             = { GPIOE, GPIO_PIN_0 };
+const Gpio_Pin ADC_1				= { GPIOA, GPIO_PIN_3  }; //just testing to see what happens.
+const Gpio_Pin ADC_2				= { GPIOA, GPIO_PIN_6  };
 const Gpio_Pin dac1					= { GPIOA, GPIO_PIN_4  };
 const Gpio_Pin dac2					= { GPIOA, GPIO_PIN_5  };
+
+
+const Gpio_Pin REF_CLOCK_DISABLE     = { GPIOC, GPIO_PIN_2  };
+const Gpio_Pin DDS_FSEL				= { GPIOA, GPIO_PIN_1  };
+const Gpio_Pin DDS_PSEL				= { GPIOA, GPIO_PIN_2  };
+const Gpio_Pin RX_MUX				= { GPIOB, GPIO_PIN_15 };
+const Gpio_Pin AMP_SWITCH_A			= { GPIOE, GPIO_PIN_8  };
+const Gpio_Pin AMP_SWITCH_B			= { GPIOE, GPIO_PIN_9  };
+const Gpio_Pin IMP_BRIDGE_SWITCH_A	= { GPIOE, GPIO_PIN_11 };
+const Gpio_Pin IMP_BRIDGE_SWITCH_B	= { GPIOE, GPIO_PIN_12 };
+const Gpio_Pin MIXER_SWITCH_A		= { GPIOE, GPIO_PIN_13 };
+const Gpio_Pin MIXER_SWITCH_B		= { GPIOE, GPIO_PIN_14 };
+const Gpio_Pin TX_RF_SWITCH_A		= { GPIOB, GPIO_PIN_12 };
+const Gpio_Pin TX_RF_SWITCH_B		= { GPIOB, GPIO_PIN_13 };
+
+const Gpio_Pin GAIN_POT_SCLK		= { GPIOB , GPIO_PIN_11 };
+const Gpio_Pin GAIN_POT_MOSI		= { GPIOE , GPIO_PIN_15};
+const Gpio_Pin GAIN_POT_NSS			= { GPIOB , GPIO_PIN_10};
 
 //const Gpio_Pin NC_1                 = { GPIOC, GPIO_Pin_0  };	// this is the Closure Sensor Pin near the 3v3 regulator, fyi
 //const Gpio_Pin DAC_SWITCHES         = { GPIOC, GPIO_Pin_5  };   // currently labeled LIGHT_SENSOR on schem (TODO)
@@ -233,6 +252,14 @@ void hal_setupPins(void)
     gpioInitStructure.Pull  = GPIO_NOPULL;
     HAL_GPIO_Init(LCD_RESET.port, &gpioInitStructure);
 
+    gpioInitStructure.Pin   = LCD_LED.pin;
+    gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_OD;
+    gpioInitStructure.Alternate = 0;
+    gpioInitStructure.Pull  = GPIO_NOPULL;
+    HAL_GPIO_Init(LCD_LED.port, &gpioInitStructure);
+    HAL_GPIO_WritePin(LCD_LED.port, LCD_LED.pin, 0);
+
 
     // 'DAC' switches
 //    gpioInitStructure.GPIO_Pin   = DAC_SWITCHES.pin;
@@ -360,6 +387,72 @@ void hal_setupPins(void)
         gpioInitStructure.Mode = GPIO_MODE_ANALOG;
         gpioInitStructure.Pull = GPIO_NOPULL;
         HAL_GPIO_Init(dac1.port, &gpioInitStructure);
+
+
+    	gpioInitStructure.Pin = REF_CLOCK_DISABLE.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(REF_CLOCK_DISABLE.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(REF_CLOCK_DISABLE.port, REF_CLOCK_DISABLE.pin, 1);
+
+    	gpioInitStructure.Pin = DDS_FSEL.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(DDS_FSEL.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_FSEL.port, DDS_FSEL.pin, 0);
+
+    	gpioInitStructure.Pin = DDS_PSEL.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(DDS_PSEL.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DDS_PSEL.port, DDS_PSEL.pin, 0);
+
+    	gpioInitStructure.Pin = RX_MUX.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(RX_MUX.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1);
+
+    	gpioInitStructure.Pin = TX_RF_SWITCH_A.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(TX_RF_SWITCH_A.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, 0); //0 to route to TX SMA connector
+
+    	gpioInitStructure.Pin = TX_RF_SWITCH_B.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(TX_RF_SWITCH_B.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, 1); //always reverse of above.
+
+    	gpioInitStructure.Pin = GAIN_POT_MOSI.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(GAIN_POT_MOSI.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, 1);
+
+    	gpioInitStructure.Pin = GAIN_POT_SCLK.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(GAIN_POT_SCLK.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+
+    	gpioInitStructure.Pin = GAIN_POT_NSS.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(GAIN_POT_NSS.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 1);
+
+
 
     // Power Switch
 //    gpioInitStructure.GPIO_Pin   = POWER_SWITCH.pin;

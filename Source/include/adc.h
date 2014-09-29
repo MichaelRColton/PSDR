@@ -24,18 +24,18 @@ volatile uint8_t sampleRun;
 
 	/* Definition for ADCx clock resources */
 	#define ADCx                            ADC1
-	#define ADCx_CLK_ENABLE()               __ADC3_CLK_ENABLE();
-	#define ADCx_CHANNEL_GPIO_CLK_ENABLE()  __GPIOF_CLK_ENABLE()
+	#define ADCx_CLK_ENABLE()               __ADC1_CLK_ENABLE();
+	#define ADCx_CHANNEL_GPIO_CLK_ENABLE()  __GPIOA_CLK_ENABLE()
 
 	#define ADCx_FORCE_RESET()              __ADC_FORCE_RESET()
 	#define ADCx_RELEASE_RESET()            __ADC_RELEASE_RESET()
 
 	/* Definition for ADCx Channel Pin */
-	#define ADCx_CHANNEL_PIN                GPIO_PIN_1
+	#define ADCx_CHANNEL_PIN                GPIO_PIN_3
 	#define ADCx_CHANNEL_GPIO_PORT          GPIOA
 
 	/* Definition for ADCx's Channel */
-	#define ADCx_CHANNEL                    ADC_CHANNEL_1
+	#define ADCx_CHANNEL                    ADC_CHANNEL_3
 
 	/* Definition for ADCx's NVIC */
 	#define ADCx_IRQn                      ADC_IRQn

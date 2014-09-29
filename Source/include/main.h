@@ -1,6 +1,23 @@
 #pragma once
 
-#include "stm32f415xx.h"
+//#define PSDR1 1
+#define PSDR2 2
+
+//#define PSDR_BOARD PSDR2
+
+#ifdef PSDR1
+#define STM32F415xx
+#define HSE_VALUE=8000000 //did I do this right? Both of these were defined in the progect settings before in the several preprocessors
+
+//#include "stm32f415xx.h"
+#endif
+
+#ifdef PSDR2
+//#define HSE_VALUE 24000000
+
+#include "stm32f429xx.h"
+#endif
+
 #include "stm32f4xx.h"
 //#include "core_cmInstr.h"
 #include <stdio.h>
@@ -41,3 +58,5 @@ TIM_HandleTypeDef    TimHandle4;
 #define MASKTEAL   0b0000011111111111
 #define MASKWHITE  0b1111111111111111
 #define MASKBLACK  0b0000000000000000
+
+

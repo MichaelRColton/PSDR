@@ -1,5 +1,5 @@
 #MicroXplorer Configuration settings - do not modify
-#Sun Sep 14 21:40:09 MDT 2014
+#Sat Sep 27 00:38:59 MDT 2014
 ADC1.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_TEMPSENSOR
 ADC1.IPParameters=NbrOfConversionFlag,Channel-0\#ChannelRegularConversion,SamplingTime-0\#ChannelRegularConversion,Rank-0\#ChannelRegularConversion,master
 ADC1.NbrOfConversionFlag=1
@@ -251,12 +251,19 @@ PH0/OSC_IN.Mode=HSE-External-Oscillator
 PH0/OSC_IN.Signal=RCC_OSC_IN
 PH1/OSC_OUT.Mode=HSE-External-Oscillator
 PH1/OSC_OUT.Signal=RCC_OSC_OUT
+RCC.APB1CLKDivider=RCC_HCLK_DIV4
+RCC.APB2CLKDivider=RCC_HCLK_DIV2
 RCC.FamilyName=M
-RCC.HSE_VALUE=25000000
+RCC.HSE_VALUE=24000000
 RCC.HSI_VALUE=16000000
-RCC.IPParameters=SYSCLKFreq_VALUE,RTCFreq_Value,LSI_VALUE,FamilyName,LSE_VALUE,APB1Freq_Value,HSE_VALUE,APB2Freq_Value,HSI_VALUE,VCOI2SOutputFreq_Value,RTCHSEDivFreq_Value,PLLCLKFreq_Value,AHBFreq_Value,48MHZClocksFreq_Value,VCOInputFreq_Value,I2SClocksFreq_Value,VCOSAIOutputFreq_Value,VCOOutputFreq_Value
+RCC.IPParameters=PLLSource,RTCFreq_Value,LSI_VALUE,FamilyName,APB1TimFreq_Value,SAI_AClocksFreq_Value,APB2Freq_Value,MCO2PinFreq_Value,APB1CLKDivider,HCLKFreq_Value,EthernetFreq_Value,FCLKCortexFreq_Value,APB2CLKDivider,PLLM,AHBFreq_Value,48MHZClocksFreq_Value,VCOInputFreq_Value,I2SClocksFreq_Value,PLLN,VCOSAIOutputFreq_Value,VCOOutputFreq_Value,SYSCLKFreq_VALUE,SAI_BClocksFreq_Value,CortexFreq_Value,PLLQ,SYSCLKSource,LSE_VALUE,APB1Freq_Value,HSE_VALUE,HSI_VALUE,VCOI2SOutputFreq_Value,LCDTFTFreq_Value,RTCHSEDivFreq_Value,PLLCLKFreq_Value,APB2TimFreq_Value
 RCC.LSE_VALUE=32768
 RCC.LSI_VALUE=32000
+RCC.PLLM=15
+RCC.PLLN=210
+RCC.PLLQ=7
+RCC.PLLSource=RCC_PLLSOURCE_HSE
+RCC.SYSCLKSource=RCC_SYSCLKSOURCE_PLLCLK
 SH.COMP_DAC1_group.0=DAC_OUT1,DAC_OUT1
 SH.COMP_DAC1_group.ConfNb=1
 SH.COMP_DAC2_group.0=DAC_OUT2,DAC_OUT2
@@ -265,8 +272,9 @@ SH.S_TIM1_CH1.0=TIM1_CH1,Output Compare1 CH1
 SH.S_TIM1_CH1.ConfNb=1
 SH.S_TIM2_CH1_ETR.0=TIM2_CH1,Output Compare1 CH1
 SH.S_TIM2_CH1_ETR.ConfNb=1
-SPI1.CalculateBaudRate-Full_Duplex_Master=8.0 MBits/s
-SPI1.IPParameters=Mode-Full_Duplex_Master,CalculateBaudRate-Full_Duplex_Master
+SPI1.BaudRatePrescaler-Full_Duplex_Master=SPI_BAUDRATEPRESCALER_2
+SPI1.CalculateBaudRate-Full_Duplex_Master=42.0 MBits/s
+SPI1.IPParameters=BaudRatePrescaler-Full_Duplex_Master,Mode-Full_Duplex_Master,CalculateBaudRate-Full_Duplex_Master
 SPI1.Mode-Full_Duplex_Master=SPI_MODE_MASTER
 VP_ADC1_TempSens_Input.Mode=IN-TempSens
 VP_ADC1_TempSens_Input.Signal=ADC1_TempSens_Input

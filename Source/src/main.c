@@ -89,6 +89,39 @@ int ifShift = 0;
 float fftMaxMaxMax = 20;
 float fftMaxMaxMin = 0.2;
 
+
+/** System Clock Configuration
+*/
+void SystemClock_Config(void)
+{
+
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+
+  __PWR_CLK_ENABLE();
+
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 15;
+  RCC_OscInitStruct.PLL.PLLN = 210;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
+  HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1
+                              |RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+
+}
+
 void polarToRect(float m, float a, float32_t* x, float32_t* y)
 {
 	*y = m * arm_sin_f32(a);
@@ -228,6 +261,7 @@ void setupPeripheralPower()
 	__GPIOB_CLK_ENABLE();
 	__GPIOC_CLK_ENABLE();
 	__GPIOD_CLK_ENABLE();
+	__GPIOE_CLK_ENABLE();
 }
 
 
@@ -334,6 +368,7 @@ int isFwd;
 	//int 	sampleCounter = 0;
 	//const int FFT_SIZE = 256;
 	float observerA, observerB, observerC;
+	int 	dcOffset = 1533;
 
 	void captureSamples()
 	{
@@ -346,8 +381,8 @@ int isFwd;
 				{
 				case 0:
 
-					samplesA[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
-					samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
+					samplesA[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset)/4096.0); // - 2048;
+					samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset)/4096.0); // - 2048;//0.0;
 
 					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
@@ -375,8 +410,8 @@ int isFwd;
 
 				case 1:
 
-					samplesB[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
-					samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
+					samplesB[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset)/4096.0); // - 2048;
+					samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset)/4096.0); // - 2048;//0.0;
 
 					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
@@ -404,8 +439,8 @@ int isFwd;
 
 				case 2:
 
-					samplesC[sampleIndex*2] = ((uhADCxConvertedValue - 2048)/4096.0); // - 2048;
-					samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - 2048)/4096.0); // - 2048;//0.0;
+					samplesC[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset)/4096.0); // - 2048;
+					samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset)/4096.0); // - 2048;//0.0;
 
 					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
@@ -486,10 +521,57 @@ void zeroSampleBank(float *samples)
 	for(; i < FFT_BUFFER_SIZE; i++) samples[i] = 0;
 }
 
+void setGainPot(uint8_t a, uint8_t b)
+{
+	uint8_t i;
+	//pull NSS low
+	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 0);
+
+	//choose first register
+	HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, 0);
+	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
+	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+
+
+	for(i = 0; i < 8; i++)
+	{
+		HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, (a >> (7-i)) & 1);
+		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
+		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+	}
+
+	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 1);
+
+	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 0);
+
+	//choose first register
+	HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, 1);
+	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
+	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+
+
+	for(i = 0; i < 8; i++)
+	{
+		HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, (b >> (7-i)) & 1);
+		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
+		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+	}
+
+	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 1);
+
+}
+
 int
 main(int argc, char* argv[])
 {
+
+
+
+
 	HAL_Init();
+
+	SystemClock_Config();
+
 	//HAL_RCC_OscConfig()
 	//	RCC_ClkInitStruct clockInitStructure;
 	//	clockInitStructure.
@@ -527,13 +609,13 @@ main(int argc, char* argv[])
 	Encoder();
 
 	Adafruit_ILI9340_begin();
-	Adafruit_ILI9340_setRotation(3);
+	Adafruit_ILI9340_setRotation(1);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
 	Adafruit_GFX_setTextSize(3);
 	Adafruit_GFX_setTextWrap(1);
 	Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
-	Adafruit_ILI9340_setVerticalScrollDefinition(200,120,0);
+	Adafruit_ILI9340_setVerticalScrollDefinition(0,120,200);
 
 	initAdc();
 	adcConfigured = 1;
@@ -546,6 +628,8 @@ main(int argc, char* argv[])
 	long long timeMeasurement = 0;
 
 	updateDisplay(1);
+
+	setGainPot(128, 128);
 
 	//MAIN LOOP - Lowest Priority
 	while(1)
@@ -692,7 +776,7 @@ void updateDisplay(uint8_t force)
 
 	if(force)
 	{
-		Adafruit_GFX_drawColorBitmap(180, 2, psdrLogo, 86,20, MASKWHITE);
+		//Adafruit_GFX_drawColorBitmap(180, 2, psdrLogo, 86,20, MASKWHITE);
 		Adafruit_GFX_drawColorBitmap(150, 90, bitmapMode, 40,12, MASKWHITE);
 		Adafruit_GFX_fillTriangle(126,119,136,124,136,114,ILI9340_WHITE);
 		Adafruit_GFX_drawColorBitmap(150, 136, bitmapFilter, 47,12, MASKWHITE);
@@ -850,7 +934,7 @@ void drawWaterfall()
 
 	waterfallScanLine++;
 	if(waterfallScanLine > 119) waterfallScanLine = 0;
-	Adafruit_ILI9340_setVertialScrollStartAddress((119 - waterfallScanLine) + 200);
+	Adafruit_ILI9340_setVertialScrollStartAddress((/*119 -*/ waterfallScanLine) /*+ 200*/);
 }
 
 void processStream()
@@ -1131,7 +1215,7 @@ uint32_t uwPrescalerValue = 0;
 TIM_TypeDef timTimBase;
 //TIM_HandleTypeDef timHandle;
 /* Definition for TIMx's NVIC */
-#define TIMx_IRQn                      TIM3_IRQn
+#define TIMx_IRQn                      29 //TIM3_IRQn
 #define TIMx_IRQHandler                TIM3_IRQHandler
 void TIM_Try(void)
 {
@@ -1174,10 +1258,10 @@ void TIM_Try(void)
 
 	  /*##-2- Configure the NVIC for TIMx #########################################*/
 	  /* Set the TIMx priority */
-	  HAL_NVIC_SetPriority(TIM4_IRQn, 2, 4);
+	  HAL_NVIC_SetPriority(30 /*TIM4_IRQn*/, 2, 4);
 
 	  /* Enable the TIMx global Interrupt */
-	  HAL_NVIC_EnableIRQ(TIM4_IRQn);
+	  HAL_NVIC_EnableIRQ(30 /*TIM4_IRQn*/);
 
 
 

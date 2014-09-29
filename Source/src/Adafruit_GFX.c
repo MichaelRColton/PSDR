@@ -40,7 +40,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 //#include "stm32f10x.h"
-#include <stm32f415xx.h>
+//#include <stm32f415xx.h>
+#ifdef PSDR2
+	#include "stm32f429xx.h"
+#endif
 
 
 //void Adafruit_GFX_Adafruit_GFX(int16_t w, int16_t h)
