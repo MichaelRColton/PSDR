@@ -13,7 +13,7 @@ void ddsCmd(uint16_t data1, uint16_t data2)
     //delay
     HAL_GPIO_WritePin(DDS_1_NSS.port, DDS_1_NSS.pin, 0);
     HAL_GPIO_WritePin(DDS_2_NSS.port, DDS_2_NSS.pin, 0);
-    //Delay
+    //delay
 
     int i;
     for(i = 0; i < 16; i++)
@@ -24,8 +24,8 @@ void ddsCmd(uint16_t data1, uint16_t data2)
         HAL_GPIO_WritePin(DDS_1_SCK.port, DDS_1_SCK.pin, 0);
         HAL_GPIO_WritePin(DDS_2_SCK.port, DDS_2_SCK.pin, 0);
         //delay
-        HAL_GPIO_WritePin(DDS_1_SCK.port, DDS_1_SCK.pin, 1); //The 16th shift of this line is when execution occurs
-        HAL_GPIO_WritePin(DDS_2_SCK.port, DDS_2_SCK.pin, 1); //NOT on the release of NSS!!!! GAH!
+        HAL_GPIO_WritePin(DDS_1_SCK.port, DDS_1_SCK.pin, 1);
+        HAL_GPIO_WritePin(DDS_2_SCK.port, DDS_2_SCK.pin, 1);
     }
 
     //Suffix
@@ -34,47 +34,47 @@ void ddsCmd(uint16_t data1, uint16_t data2)
 
 }
 
-void setFreq(uint32_t frequency)
+void ddsInit()
 {
-	uint32_t freqReg = (uint64_t)(frequency << 28) / DDS_CLK;
-
-	HAL_GPIO_WritePin(DDS_RESET.port, DDS_RESET.pin, 1);
-
-	//ddsCmd(0x2100, 0x2100);
-	//ddsCmd(0x0010001100000000 , 0x0010001100000000);
+	//Init the DDS chips to pin-based control
+	HAL_GPIO_WritePin(DDS_RESET.port, DDS_RESET.pin, 0);
 	ddsCmd(
-	    0b0010001000000000,
-		0b0010001000000000
+		DDS_CTL_PINSW,
+		DDS_CTL_PINSW
 	);
-
-	//FIXME why do we reassert reset?
-	//HAL_GPIO_WritePin(DDS_RESET.port, DDS_RESET.pin, 0);
 	HAL_GPIO_WritePin(DDS_RESET.port, DDS_RESET.pin, 1);
-	//ddsCmd(0x50c7);
-	//ddsCmd(0x4000);
+}
+
+void ddsFreq(uint32_t frequency)
+{
+	uint32_t freqReg = DDS_FREQ_HZ(frequency);
+
+	//Assert DDS_RESET
+	HAL_GPIO_WritePin(DDS_RESET.port, DDS_RESET.pin, 1);
+
+	ddsCmd(
+	    DDS_CTL_PINSW | DDS_CTL_B28,
+	    DDS_CTL_PINSW | DDS_CTL_B28
+	);
 
 	//Frequency Register LSB
 	ddsCmd(
-	    (uint16_t)((freqReg & 0b00000000000000000011111111111111) | 0b00000000000000000100000000000000),
-	    (uint16_t)((freqReg & 0b00000000000000000011111111111111) | 0b00000000000000000100000000000000)
+	    DDS_REG_FREQ0 | DDS_FREQ_LSB(freqReg),
+	    DDS_REG_FREQ0 | DDS_FREQ_LSB(freqReg)
 	);
 
 	//Frequency Register MSB
 	ddsCmd(
-		(uint16_t)(((freqReg & 0b00001111111111111100000000000000) | 0b00000000000000000100000000000000) >> 14),
-		(uint16_t)(((freqReg & 0b00001111111111111100000000000000) | 0b00000000000000000100000000000000) >> 14)
+		DDS_REG_FREQ0 | DDS_FREQ_MSB(freqReg),
+		DDS_REG_FREQ0 | DDS_FREQ_MSB(freqReg)
 	);
 
 	//Phase Register
-	//ddsCmd(0xc000, 0xc000);
 	ddsCmd(
-		0xc000,
-		0xc000 | 3072
+		DDS_REG_PHASE0 | 0,
+		DDS_REG_PHASE0 | 3072
 	);
-	//ddsCmd(0b1100000000000000);
 
-	//Exit Reset
-	//ddsCmd(0x2000, 0x2000);
-
+	//Deassert DDS_RESET
 	HAL_GPIO_WritePin(DDS_RESET.port, DDS_RESET.pin, 0);
 }

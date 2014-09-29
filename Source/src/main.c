@@ -525,9 +525,9 @@ int main(int argc __attribute__((unused)), char* argv[] __attribute__((unused)))
 
 	setupPeripheralPower();
 
-	//initDdsPins();
 	hal_setupPins();
 	spi_init();
+	ddsInit();
 
 	//MUX Enable = 0; Disable = 1
 	HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1);
@@ -995,7 +995,7 @@ void updateVfo()
 
 	if(vfoAFrequency != vfoALastFreq)
 	{
-		setFreq(vfoAFrequency);
+		ddsFreq(vfoAFrequency);
 	}
 }
 
