@@ -106,6 +106,7 @@
     extern const Gpio_Pin DDS_FSEL;
     extern const Gpio_Pin DDS_PSEL;
     extern const Gpio_Pin RX_MUX;
+    extern const Gpio_Pin TX_MUX;
     extern const Gpio_Pin AMP_SWITCH_A;
     extern const Gpio_Pin AMP_SWITCH_B;
     extern const Gpio_Pin IMP_BRIDGE_SWITCH_A;
@@ -119,6 +120,8 @@
     extern const Gpio_Pin GAIN_POT_MOSI;
     extern const Gpio_Pin GAIN_POT_NSS;
 
+    extern const Gpio_Pin IN_AMP_ENABLE;
+    extern const Gpio_Pin DAC_MUX;
 
 
 

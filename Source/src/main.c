@@ -69,7 +69,7 @@ uint16_t menuLastPos = 1;
 uint16_t menuCount = 11;
 uint32_t frequencyDialMultiplier = 1;
 
-long vfoAFrequency = 7236400;
+long vfoAFrequency = 6111000;
 long vfoALastFreq = 0;
 int encoderPos, encoderLastPos;
 
@@ -368,7 +368,8 @@ int isFwd;
 	//int 	sampleCounter = 0;
 	//const int FFT_SIZE = 256;
 	float observerA, observerB, observerC;
-	int 	dcOffset = 1533;
+	int 	dcOffset1 = 1539;
+	int     dcOffset2 = 1530;
 
 	void captureSamples()
 	{
@@ -381,8 +382,8 @@ int isFwd;
 				{
 				case 0:
 
-					samplesA[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset)/4096.0); // - 2048;
-					samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset)/4096.0); // - 2048;//0.0;
+					samplesA[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset1)/4096.0); // - 2048;
+					samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
 
 					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
@@ -410,8 +411,8 @@ int isFwd;
 
 				case 1:
 
-					samplesB[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset)/4096.0); // - 2048;
-					samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset)/4096.0); // - 2048;//0.0;
+					samplesB[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset1)/4096.0); // - 2048;
+					samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
 
 					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
@@ -439,8 +440,8 @@ int isFwd;
 
 				case 2:
 
-					samplesC[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset)/4096.0); // - 2048;
-					samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset)/4096.0); // - 2048;//0.0;
+					samplesC[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset1)/4096.0); // - 2048;
+					samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
 
 					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
@@ -521,6 +522,8 @@ void zeroSampleBank(float *samples)
 	for(; i < FFT_BUFFER_SIZE; i++) samples[i] = 0;
 }
 
+
+//Seems to be working, higher numbers are higher gain. I'll need to work out the math on how much.
 void setGainPot(uint8_t a, uint8_t b)
 {
 	uint8_t i;
@@ -544,7 +547,7 @@ void setGainPot(uint8_t a, uint8_t b)
 
 	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 0);
 
-	//choose first register
+	//choose second register
 	HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, 1);
 	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
 	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);

@@ -83,6 +83,7 @@ const Gpio_Pin REF_CLOCK_DISABLE     = { GPIOC, GPIO_PIN_2  };
 const Gpio_Pin DDS_FSEL				= { GPIOA, GPIO_PIN_1  };
 const Gpio_Pin DDS_PSEL				= { GPIOA, GPIO_PIN_2  };
 const Gpio_Pin RX_MUX				= { GPIOB, GPIO_PIN_15 };
+const Gpio_Pin TX_MUX				= { GPIOB, GPIO_PIN_14 };
 const Gpio_Pin AMP_SWITCH_A			= { GPIOE, GPIO_PIN_8  };
 const Gpio_Pin AMP_SWITCH_B			= { GPIOE, GPIO_PIN_9  };
 const Gpio_Pin IMP_BRIDGE_SWITCH_A	= { GPIOE, GPIO_PIN_11 };
@@ -95,6 +96,10 @@ const Gpio_Pin TX_RF_SWITCH_B		= { GPIOB, GPIO_PIN_13 };
 const Gpio_Pin GAIN_POT_SCLK		= { GPIOB , GPIO_PIN_11 };
 const Gpio_Pin GAIN_POT_MOSI		= { GPIOE , GPIO_PIN_15};
 const Gpio_Pin GAIN_POT_NSS			= { GPIOB , GPIO_PIN_10};
+
+const Gpio_Pin DAC_MUX				= { GPIOD, GPIO_PIN_8 };
+
+//const Gpio_Pin IN_AMP_ENABLE		= { GPIO, GPIO_PIN_ }; //FORGOT TO CONNECT IT TO THE MCU!
 
 //const Gpio_Pin NC_1                 = { GPIOC, GPIO_Pin_0  };	// this is the Closure Sensor Pin near the 3v3 regulator, fyi
 //const Gpio_Pin DAC_SWITCHES         = { GPIOC, GPIO_Pin_5  };   // currently labeled LIGHT_SENSOR on schem (TODO)
@@ -415,14 +420,21 @@ void hal_setupPins(void)
     	gpioInitStructure.Speed = GPIO_SPEED_LOW;
     	gpioInitStructure.Pull = GPIO_NOPULL;
     	HAL_GPIO_Init(RX_MUX.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1);
+        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
+
+    	gpioInitStructure.Pin = TX_MUX.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(TX_MUX.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
 
     	gpioInitStructure.Pin = TX_RF_SWITCH_A.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_LOW;
     	gpioInitStructure.Pull = GPIO_NOPULL;
     	HAL_GPIO_Init(TX_RF_SWITCH_A.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, 0); //0 to route to TX SMA connector
+        HAL_GPIO_WritePin(TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, 0); //0 to route to TX SMA connector... I think
 
     	gpioInitStructure.Pin = TX_RF_SWITCH_B.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
@@ -452,7 +464,12 @@ void hal_setupPins(void)
     	HAL_GPIO_Init(GAIN_POT_NSS.port, &gpioInitStructure);
         HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 1);
 
-
+    	gpioInitStructure.Pin = DAC_MUX.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(DAC_MUX.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. Speaker doesn't seem to work, btw...
 
     // Power Switch
 //    gpioInitStructure.GPIO_Pin   = POWER_SWITCH.pin;

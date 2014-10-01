@@ -1,5 +1,5 @@
 #MicroXplorer Configuration settings - do not modify
-#Sat Sep 27 00:43:07 MDT 2014
+#Mon Sep 29 11:29:24 MDT 2014
 ADC1.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_TEMPSENSOR
 ADC1.IPParameters=NbrOfConversionFlag,Channel-0\#ChannelRegularConversion,SamplingTime-0\#ChannelRegularConversion,Rank-0\#ChannelRegularConversion,master
 ADC1.NbrOfConversionFlag=1
@@ -263,11 +263,11 @@ ProjectManager.FreePins=false
 ProjectManager.HalAssertFull=false
 ProjectManager.KeepUserCode=true
 ProjectManager.LastFirmware=true
-ProjectManager.LibraryCopy=0
+ProjectManager.LibraryCopy=1
 ProjectManager.ProjectBuild=false
 ProjectManager.ProjectFileName=PSDR.ioc
 ProjectManager.ProjectName=PSDR
-ProjectManager.TargetToolchain=EWARM 6.70
+ProjectManager.TargetToolchain=MDK-ARM 4.73
 RCC.APB1CLKDivider=RCC_HCLK_DIV4
 RCC.APB2CLKDivider=RCC_HCLK_DIV2
 RCC.FamilyName=M
