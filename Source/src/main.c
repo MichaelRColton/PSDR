@@ -89,6 +89,8 @@ int ifShift = 0;
 float fftMaxMaxMax = 20;
 float fftMaxMaxMin = 0.2;
 
+int transmitting = 0;
+unsigned int tone = 0;
 
 /** System Clock Configuration
 */
@@ -176,7 +178,7 @@ void populateCoeficients(int bandwidth, int sideband, int offset)
 	fftFilterCoeficient[FFT_BUFFER_SIZE / 2] = 0;
 	fftFilterCoeficient[FFT_BUFFER_SIZE - 1] = 0;
 
-	//return; //Skipping all the later stuff doesn't seem to make a huge difference yet...
+	return; //Skipping all the later stuff doesn't seem to make a huge difference yet...
 
 	//2:
 //	float x, y;
@@ -368,8 +370,9 @@ int isFwd;
 	//int 	sampleCounter = 0;
 	//const int FFT_SIZE = 256;
 	float observerA, observerB, observerC;
-	int 	dcOffset1 = 1539;
-	int     dcOffset2 = 1530;
+	int 	dcOffset1 = 1029;
+	int     dcOffset2 = 1535;
+	int     dcOffset3 = 1518;
 
 	void captureSamples()
 	{
@@ -381,11 +384,16 @@ int isFwd;
 				switch (sampleBank)
 				{
 				case 0:
+					if(transmitting == 0)
+					{
+						samplesA[sampleIndex*2] = ((uhADCxConvertedValue3 - dcOffset3)/4096.0); // - 2048;
+						samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
+					} else {
+						samplesA[sampleIndex*2] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;
+						samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;//0.0;
+					}
 
-					samplesA[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset1)/4096.0); // - 2048;
-					samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
-
-					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
+					if(uhADCxConvertedValue1 > maxAmplitude) maxAmplitude = uhADCxConvertedValue1;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
 
 					if(samplesB[sampleIndex*2] > agcLevel) agcLevel = samplesB[sampleIndex*2];
@@ -410,11 +418,16 @@ int isFwd;
 					break;
 
 				case 1:
+					if(transmitting == 0)
+					{
+						samplesB[sampleIndex*2] = ((uhADCxConvertedValue3 - dcOffset3)/4096.0); // - 2048;
+						samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
+					} else {
+						samplesB[sampleIndex*2] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;
+						samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;//0.0;
+					}
 
-					samplesB[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset1)/4096.0); // - 2048;
-					samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
-
-					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
+					if(uhADCxConvertedValue1 > maxAmplitude) maxAmplitude = uhADCxConvertedValue1;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
 
 					if(samplesC[sampleIndex*2] > agcLevel) agcLevel =samplesC[sampleIndex*2];
@@ -439,11 +452,16 @@ int isFwd;
 					break;
 
 				case 2:
+					if(transmitting == 0)
+					{
+						samplesC[sampleIndex*2] = ((uhADCxConvertedValue3 - dcOffset3)/4096.0); // - 2048;
+						samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
+					} else {
+						samplesC[sampleIndex*2] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;
+						samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;//0.0;
+					}
 
-					samplesC[sampleIndex*2] = ((uhADCxConvertedValue - dcOffset1)/4096.0); // - 2048;
-					samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
-
-					if(uhADCxConvertedValue > maxAmplitude) maxAmplitude = uhADCxConvertedValue;
+					if(uhADCxConvertedValue1 > maxAmplitude) maxAmplitude = uhADCxConvertedValue1;
 					if(uhADCxConvertedValue2 > maxAmplitude) maxAmplitude = uhADCxConvertedValue2;
 
 					if(samplesA[sampleIndex*2] > agcLevel) agcLevel = samplesA[sampleIndex*2];
@@ -654,6 +672,26 @@ main(int argc, char* argv[])
 		updateDisplay(0);
 		drawWaterfall();
 		drawSMeter();
+
+		Adafruit_GFX_fillRect(310, 0, 3, 3, !HAL_GPIO_ReadPin(KEY1.port, KEY1.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 4, 3, 3, !HAL_GPIO_ReadPin(KEY2.port, KEY2.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 8, 3, 3, HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 12, 3, 3, HAL_GPIO_ReadPin(TOUCH2.port, TOUCH2.pin) ? ILI9340_RED : ILI9340_BLUE);
+
+		if(HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin))
+		{
+			transmitting = 1;
+	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
+	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
+	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
+	        tone = 0;
+		} else {
+			transmitting = 0;
+	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
+	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
+	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
+	        tone = 0;
+		}
 	}
 }
 
@@ -895,6 +933,13 @@ void drawWaterfall()
 	static float mags;
 	static uint8_t waterfallScanLine = 0;
 
+	unsigned short *gradient;
+
+	if(transmitting)
+		gradient = &bitmapIronGradient;
+	else
+		gradient = &bitmapWebSdrGradient;
+
 	arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
 
 	float fftMax = 0; //AH! These are being reset each time! Static makes them persistant right? Does it also ensure they are
@@ -925,20 +970,32 @@ void drawWaterfall()
 	{
 		mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100; //Log needs to be at least 1 right? We could do a + (1-fftMin) maybe? Worth it?
 		//mags = magnitudes[i] / fftMaxMax * 32;
-		Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), bitmapWebSdrGradient[(uint8_t) mags]);
+		Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
 	}
 
 	for(i = 135; i < 255; i++)
 	{
 		mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100;
 		//mags = magnitudes[i] / fftMaxMax * 32;
-		Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), bitmapWebSdrGradient[(uint8_t) mags]);
+		Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
 	}
 
 	waterfallScanLine++;
 	if(waterfallScanLine > 119) waterfallScanLine = 0;
 	Adafruit_ILI9340_setVertialScrollStartAddress((/*119 -*/ waterfallScanLine) /*+ 200*/);
 }
+
+void fillSamepleWithTone(int tone, float *samples)
+{
+	int i;
+	for(i = 0; i < FFT_BUFFER_SIZE; i++)
+	{
+		samples[i] = 0;
+	}
+
+	samples[tone] = 1;
+}
+
 
 void processStream()
 {
@@ -947,23 +1004,43 @@ void processStream()
 
 		arm_cfft_radix4_instance_f32 fft_inst;
 
+		blink_led_on();
+
 		if (sampleBankAReady == 1)
 		{
-			blink_led_on();
-			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
-
-			arm_cfft_radix4_f32(&fft_inst, samplesA);
-			// Calculate magnitude of complex numbers output by the FFT.
-			if(waterfallBusy != 1)
+			if(tone == 0)
 			{
-				uint16_t i;
-				for(i = 0; i < FFT_BUFFER_SIZE; i++) samplesDisplay[i] = samplesA[i];
-			}
+				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
 
-			applyCoeficient(samplesA, ifShift);
+				arm_cfft_radix4_f32(&fft_inst, samplesA);
+				// Calculate magnitude of complex numbers output by the FFT.
+				if(transmitting == 0)
+				{
+					if(waterfallBusy != 1)
+					{
+						uint16_t i;
+						for(i = 0; i < FFT_BUFFER_SIZE; i++) samplesDisplay[i] = samplesA[i];
+					}
+				}
+
+				applyCoeficient(samplesA, ifShift);
+
+				if(transmitting == 1)
+				{
+					if(waterfallBusy != 1)
+					{
+						uint16_t i;
+						for(i = 0; i < FFT_BUFFER_SIZE; i++) samplesDisplay[i] = samplesA[i];
+					}
+				}
+			} else {
+				fillSamepleWithTone(tone, samplesA);
+			}
 
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesA);
+
+
 
 			if(mode == 2) //Try to demodulate AM
 			{
@@ -980,18 +1057,21 @@ void processStream()
 			passBandRms = calculateRmsOfSample(samplesA, FFT_BUFFER_SIZE);
 
 			sampleBankAReady = 0;
-			blink_led_off();
 		}
 		else if(sampleBankBReady == 1)
 		{
-			blink_led_on();
-			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+			if(tone == 0)
+			{
+				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
 
 
-			arm_cfft_radix4_f32(&fft_inst, samplesB);
-			// Calculate magnitude of complex numbers output by the FFT.
-			//arm_cmplx_mag_f32(samplesB, magnitudes, FFT_SIZE);
-			applyCoeficient(samplesB, ifShift);
+				arm_cfft_radix4_f32(&fft_inst, samplesB);
+				// Calculate magnitude of complex numbers output by the FFT.
+				//arm_cmplx_mag_f32(samplesB, magnitudes, FFT_SIZE);
+				applyCoeficient(samplesB, ifShift);
+			} else {
+				fillSamepleWithTone(tone, samplesB);
+			}
 
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesB);
@@ -1011,20 +1091,27 @@ void processStream()
 			passBandRms = calculateRmsOfSample(samplesB, FFT_BUFFER_SIZE);
 
 			sampleBankBReady = 0;
-			blink_led_off();
 
 		}
 		else if (sampleBankCReady == 1)
 		{
-			blink_led_on();
-			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
+			if(tone == 0)
+			{
+				arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 0, 1);
 
 
 
-			arm_cfft_radix4_f32(&fft_inst, samplesC);
-			// Calculate magnitude of complex numbers output by the FFT.
+				arm_cfft_radix4_f32(&fft_inst, samplesC);
+				// Calculate magnitude of complex numbers output by the FFT.
 
-			applyCoeficient(samplesC, ifShift);
+
+
+
+				applyCoeficient(samplesC, ifShift);
+			} else {
+				fillSamepleWithTone(tone, samplesC);
+			}
+
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesC);
 
@@ -1043,9 +1130,10 @@ void processStream()
 			passBandRms = calculateRmsOfSample(samplesC, FFT_BUFFER_SIZE);
 
 			sampleBankCReady = 0;
-			blink_led_off();
+
 		}
 
+		blink_led_off();
 		sampleRun = 0;
 	}
 

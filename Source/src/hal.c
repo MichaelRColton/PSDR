@@ -79,7 +79,7 @@ const Gpio_Pin dac1					= { GPIOA, GPIO_PIN_4  };
 const Gpio_Pin dac2					= { GPIOA, GPIO_PIN_5  };
 
 
-const Gpio_Pin REF_CLOCK_DISABLE     = { GPIOC, GPIO_PIN_2  };
+const Gpio_Pin REF_CLOCK_ENABLE     = { GPIOC, GPIO_PIN_2  };
 const Gpio_Pin DDS_FSEL				= { GPIOA, GPIO_PIN_1  };
 const Gpio_Pin DDS_PSEL				= { GPIOA, GPIO_PIN_2  };
 const Gpio_Pin RX_MUX				= { GPIOB, GPIO_PIN_15 };
@@ -98,6 +98,22 @@ const Gpio_Pin GAIN_POT_MOSI		= { GPIOE , GPIO_PIN_15};
 const Gpio_Pin GAIN_POT_NSS			= { GPIOB , GPIO_PIN_10};
 
 const Gpio_Pin DAC_MUX				= { GPIOD, GPIO_PIN_8 };
+
+const Gpio_Pin AUDIO_AMP_NSHTDWN	= { GPIOD, GPIO_PIN_9 };
+const Gpio_Pin EARPHONE_NOT_INSERTED= { GPIOB, GPIO_PIN_0 };
+const Gpio_Pin SIDETONE				= { GPIOD, GPIO_PIN_12 }; //Should be a timer pin.
+
+const Gpio_Pin MIC_IN				= { GPIOB, GPIO_PIN_1 };
+const Gpio_Pin MIC_SWITCH			= { GPIOD, GPIO_PIN_14 };
+const Gpio_Pin PREAMP_POWER			= { GPIOD, GPIO_PIN_13 };
+
+const Gpio_Pin TOUCH1				= { GPIOC, GPIO_PIN_6  };
+const Gpio_Pin TOUCH2				= { GPIOC, GPIO_PIN_7  };
+const Gpio_Pin KEY1					= { GPIOD, GPIO_PIN_10 };
+const Gpio_Pin KEY2					= { GPIOD, GPIO_PIN_11 };
+
+
+//const Gpio_Pin MIC_BUTTON			= { GPIOD, GPIO_PIN_12 };;//FORGOT TO CONNECT IT TO THE MCU!
 
 //const Gpio_Pin IN_AMP_ENABLE		= { GPIO, GPIO_PIN_ }; //FORGOT TO CONNECT IT TO THE MCU!
 
@@ -394,12 +410,12 @@ void hal_setupPins(void)
         HAL_GPIO_Init(dac1.port, &gpioInitStructure);
 
 
-    	gpioInitStructure.Pin = REF_CLOCK_DISABLE.pin;
+    	gpioInitStructure.Pin = REF_CLOCK_ENABLE.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_LOW;
     	gpioInitStructure.Pull = GPIO_NOPULL;
-    	HAL_GPIO_Init(REF_CLOCK_DISABLE.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(REF_CLOCK_DISABLE.port, REF_CLOCK_DISABLE.pin, 1);
+    	HAL_GPIO_Init(REF_CLOCK_ENABLE.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(REF_CLOCK_ENABLE.port, REF_CLOCK_ENABLE.pin, 1);
 
     	gpioInitStructure.Pin = DDS_FSEL.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
@@ -420,14 +436,14 @@ void hal_setupPins(void)
     	gpioInitStructure.Speed = GPIO_SPEED_LOW;
     	gpioInitStructure.Pull = GPIO_NOPULL;
     	HAL_GPIO_Init(RX_MUX.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
+        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
 
     	gpioInitStructure.Pin = TX_MUX.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_LOW;
     	gpioInitStructure.Pull = GPIO_NOPULL;
     	HAL_GPIO_Init(TX_MUX.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
+        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
 
     	gpioInitStructure.Pin = TX_RF_SWITCH_A.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
@@ -469,7 +485,73 @@ void hal_setupPins(void)
     	gpioInitStructure.Speed = GPIO_SPEED_LOW;
     	gpioInitStructure.Pull = GPIO_NOPULL;
     	HAL_GPIO_Init(DAC_MUX.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. Speaker doesn't seem to work, btw...
+        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. Speaker doesn't seem to work, btw...
+
+    	gpioInitStructure.Pin = EARPHONE_NOT_INSERTED.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_ANALOG;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(EARPHONE_NOT_INSERTED.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(EARPHONE_NOT_INSERTED.port, EARPHONE_NOT_INSERTED.pin, 0);
+
+    	gpioInitStructure.Pin = AUDIO_AMP_NSHTDWN.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(AUDIO_AMP_NSHTDWN.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(AUDIO_AMP_NSHTDWN.port, AUDIO_AMP_NSHTDWN.pin, 1);
+
+    	gpioInitStructure.Pin = SIDETONE.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_ANALOG; //For now, or when not in use.
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(SIDETONE.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(SIDETONE.port, SIDETONE.pin, 0);
+
+    	gpioInitStructure.Pin = MIC_IN.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_ANALOG;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(MIC_IN.port, &gpioInitStructure);
+
+    	gpioInitStructure.Pin = MIC_SWITCH.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(MIC_SWITCH.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(MIC_SWITCH.port, MIC_SWITCH.pin, 1); //1 = Internal Mic
+
+    	gpioInitStructure.Pin = PREAMP_POWER.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(PREAMP_POWER.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(PREAMP_POWER.port, PREAMP_POWER.pin, 1); //1 = ON!
+
+    	gpioInitStructure.Pin = KEY1.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_INPUT;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_PULLUP;
+    	HAL_GPIO_Init(KEY1.port, &gpioInitStructure);
+
+    	gpioInitStructure.Pin = KEY2.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_INPUT;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_PULLUP;
+    	HAL_GPIO_Init(KEY2.port, &gpioInitStructure);
+
+    	gpioInitStructure.Pin = TOUCH1.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_INPUT;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(TOUCH1.port, &gpioInitStructure);
+
+    	gpioInitStructure.Pin = TOUCH2.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_INPUT;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(TOUCH2.port, &gpioInitStructure);
+
 
     // Power Switch
 //    gpioInitStructure.GPIO_Pin   = POWER_SWITCH.pin;

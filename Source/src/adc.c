@@ -3,7 +3,7 @@
 
 void initAdc()
 	{
-	uhADCxConvertedValue = 0;
+	uhADCxConvertedValue1 = 0;
 	uhADCxConvertedValue2 = 0;
 	adcConfigured = 0;
 	sampleIndex = 0;
@@ -13,27 +13,30 @@ void initAdc()
 
 		__ADC1_CLK_ENABLE();
 		__ADC2_CLK_ENABLE();
-		__GPIOA_CLK_ENABLE(); //PA1 and PA2
+		__ADC3_CLK_ENABLE();
+		__GPIOA_CLK_ENABLE();
+		__GPIOB_CLK_ENABLE();
+		__GPIOC_CLK_ENABLE();
 
 		__ADC_FORCE_RESET();
 		__ADC_RELEASE_RESET();
 
-		  AdcHandle.Instance          = ADCx;
+		  AdcHandle1.Instance          = ADC1;
 
-		  AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-		  AdcHandle.Init.Resolution = ADC_RESOLUTION12b;
-		  AdcHandle.Init.ScanConvMode = DISABLE;
-		  AdcHandle.Init.ContinuousConvMode = ENABLE;
-		  AdcHandle.Init.DiscontinuousConvMode = DISABLE;
-		  AdcHandle.Init.NbrOfDiscConversion = 0;
-		  AdcHandle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-		  AdcHandle.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
-		  AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-		  AdcHandle.Init.NbrOfConversion = 1;
-		  AdcHandle.Init.DMAContinuousRequests = DISABLE;
-		  AdcHandle.Init.EOCSelection = DISABLE;
+		  AdcHandle1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+		  AdcHandle1.Init.Resolution = ADC_RESOLUTION12b;
+		  AdcHandle1.Init.ScanConvMode = DISABLE;
+		  AdcHandle1.Init.ContinuousConvMode = ENABLE;
+		  AdcHandle1.Init.DiscontinuousConvMode = DISABLE;
+		  AdcHandle1.Init.NbrOfDiscConversion = 0;
+		  AdcHandle1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+		  AdcHandle1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
+		  AdcHandle1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+		  AdcHandle1.Init.NbrOfConversion = 1;
+		  AdcHandle1.Init.DMAContinuousRequests = DISABLE;
+		  AdcHandle1.Init.EOCSelection = DISABLE;
 
-		  if(HAL_ADC_Init(&AdcHandle) != HAL_OK)
+		  if(HAL_ADC_Init(&AdcHandle1) != HAL_OK)
 		  {
 		    /* Initiliazation Error */
 		    //Error_Handler();
@@ -61,19 +64,43 @@ void initAdc()
 			  wrongThings++;
 		  }
 
+		  AdcHandle3.Instance          = ADC3;
 
-		  sConfig1.Channel = ADCx_CHANNEL;
+		  AdcHandle3.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+		  AdcHandle3.Init.Resolution = ADC_RESOLUTION12b;
+		  AdcHandle3.Init.ScanConvMode = DISABLE;
+		  AdcHandle3.Init.ContinuousConvMode = ENABLE;
+		  AdcHandle3.Init.DiscontinuousConvMode = DISABLE;
+		  AdcHandle3.Init.NbrOfDiscConversion = 0;
+		  AdcHandle3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+		  AdcHandle3.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
+		  AdcHandle3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+		  AdcHandle3.Init.NbrOfConversion = 1;
+		  AdcHandle3.Init.DMAContinuousRequests = DISABLE;
+		  AdcHandle3.Init.EOCSelection = DISABLE;
+		  if(HAL_ADC_Init(&AdcHandle3) != HAL_OK)
+		  {
+		    /* Initiliazation Error */
+		    //Error_Handler();
+			  wrongThings++;
+		  }
+
+		  sConfig1.Channel = ADC_MIC_CHANNEL;
 		  sConfig1.Rank = 1;
 		  sConfig1.SamplingTime = ADC_SAMPLETIME_3CYCLES;
 		  sConfig1.Offset = 0;
 
-		  sConfig2.Channel = ADC_CHANNEL_6;
+		  sConfig2.Channel = ADC_RX_I_CHANNEL;
 		  sConfig2.Rank = 1;
 		  sConfig2.SamplingTime = ADC_SAMPLETIME_3CYCLES;
 		  sConfig2.Offset = 0;
 
+		  sConfig3.Channel = ADC_RX_Q_CHANNEL;
+		  sConfig3.Rank = 1;
+		  sConfig3.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+		  sConfig3.Offset = 0;
 
-		  if(HAL_ADC_ConfigChannel(&AdcHandle, &sConfig1) != HAL_OK)
+		  if(HAL_ADC_ConfigChannel(&AdcHandle1, &sConfig1) != HAL_OK)
 		  {
 		    /* Channel Configuration Error */
 		    //Error_Handler();
@@ -86,26 +113,37 @@ void initAdc()
 		    //Error_Handler();
 			  wrongThings++;
 		  }
+
+		  if(HAL_ADC_ConfigChannel(&AdcHandle3, &sConfig3) != HAL_OK)
+		  {
+		    /* Channel Configuration Error */
+		    //Error_Handler();
+			  wrongThings++;
+		  }
 	}
 
 	void adcGetConversion()
 	{
-		  HAL_ADC_PollForConversion(&AdcHandle, 10);
+		  HAL_ADC_PollForConversion(&AdcHandle1, 10);
 		  HAL_ADC_PollForConversion(&AdcHandle2, 10);
+		  HAL_ADC_PollForConversion(&AdcHandle3, 10);
 
 		    /* Check if the continous conversion of regular channel is finished */
-		    if(HAL_ADC_GetState(&AdcHandle) == HAL_ADC_STATE_EOC_REG && HAL_ADC_GetState(&AdcHandle2) == HAL_ADC_STATE_EOC_REG)
+		    if(HAL_ADC_GetState(&AdcHandle1) == HAL_ADC_STATE_EOC_REG
+		    		&& HAL_ADC_GetState(&AdcHandle2) == HAL_ADC_STATE_EOC_REG
+		    		&& HAL_ADC_GetState(&AdcHandle3) == HAL_ADC_STATE_EOC_REG)
 		    {
 		      /*##-5- Get the converted value of regular channel  ########################*/
-		      uhADCxConvertedValue = HAL_ADC_GetValue(&AdcHandle);
+		      uhADCxConvertedValue1 = HAL_ADC_GetValue(&AdcHandle1);
 		      uhADCxConvertedValue2 = HAL_ADC_GetValue(&AdcHandle2);
+		      uhADCxConvertedValue3 = HAL_ADC_GetValue(&AdcHandle3);
 		    }
 	}
 
 
 	void adcStartConversion()
 	{
-		if(HAL_ADC_Start(&AdcHandle) != HAL_OK)
+		if(HAL_ADC_Start(&AdcHandle1) != HAL_OK)
 		{
 			/* Start Conversation Error */
 			//Error_Handler();
@@ -118,10 +156,17 @@ void initAdc()
 			//Error_Handler();
 			wrongThings++;
 		}
+
+		if(HAL_ADC_Start(&AdcHandle3) != HAL_OK)
+		{
+			/* Start Conversation Error */
+			//Error_Handler();
+			wrongThings++;
+		}
 	}
 
 
-	//__IO uint16_t uhADCxConvertedValue = 0;
+	//__IO uint16_t uhADCxConvertedValue1 = 0;
 
 
 	/**
@@ -134,7 +179,7 @@ void initAdc()
 	void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle)
 	{
 	  /* Get the converted value of regular channel */
-	  uhADCxConvertedValue = HAL_ADC_GetValue(AdcHandle);
+	  uhADCxConvertedValue1 = HAL_ADC_GetValue(AdcHandle);
 	}
 
 

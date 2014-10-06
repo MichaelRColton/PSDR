@@ -102,7 +102,7 @@
     extern const Gpio_Pin dac1;
     extern const Gpio_Pin dac2;
 
-    extern const Gpio_Pin REF_CLOCK_DISABLE;
+    extern const Gpio_Pin REF_CLOCK_ENABLE;
     extern const Gpio_Pin DDS_FSEL;
     extern const Gpio_Pin DDS_PSEL;
     extern const Gpio_Pin RX_MUX;
@@ -123,7 +123,19 @@
     extern const Gpio_Pin IN_AMP_ENABLE;
     extern const Gpio_Pin DAC_MUX;
 
+    extern const Gpio_Pin AUDIO_AMP_NSHTDWN;
+    extern const Gpio_Pin EARPHONE_NOT_INSERTED;
+    extern const Gpio_Pin SIDETONE; //Should be a timer pin.
 
+    extern const Gpio_Pin MIC_IN;
+    extern const Gpio_Pin MIC_SWITCH;
+    extern const Gpio_Pin PREAMP_POWER;
+    extern const Gpio_Pin MIC_BUTTON;
+
+    extern const Gpio_Pin TOUCH1;
+    extern const Gpio_Pin TOUCH2;
+    extern const Gpio_Pin KEY1;
+    extern const Gpio_Pin KEY2;
 
 //    extern const Gpio_Pin NC_1;
 //    extern const Gpio_Pin DAC_SWITCHES;
