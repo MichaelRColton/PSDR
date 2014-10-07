@@ -6,7 +6,7 @@ void initAdc()
 	uhADCxConvertedValue1 = 0;
 	uhADCxConvertedValue2 = 0;
 	adcConfigured = 0;
-	sampleIndex = 0;
+	sampleIndex = 100; //probably makes more sense for this to be in main for
 	sampleRun = 0;
 	wrongThings = 0;
 

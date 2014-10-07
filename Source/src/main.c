@@ -357,7 +357,7 @@ int isFwd;
 	float samplesC[FFT_BUFFER_SIZE];
 	float samplesDisplay[FFT_BUFFER_SIZE];
 	float samplesDemod[FFT_BUFFER_SIZE];
-	float samplesOverlap[100];
+	float samplesOverlap[200]; //filterkernellength*2
 	int     sampleBankAReady = 0;
 	int 	sampleBankBReady = 0;
 	int		sampleBankCReady = 0;
@@ -380,6 +380,8 @@ int isFwd;
 		{
 			//if(!sampleRun)
 			{
+				if(sampleIndex == 100)
+							blink_led_on();
 				adcGetConversion();
 				switch (sampleBank)
 				{
@@ -405,15 +407,18 @@ int isFwd;
 //						dac2SetValue(samplesB[sampleIndex*2+1] + samplesA[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesB[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
-						dac2SetValue(samplesB[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						dac1SetValue(samplesB[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						dac2SetValue(samplesB[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 //					}
 
-					if(sampleIndex > FFT_SIZE - filterKernelLength - 1)
+
+
+					if(sampleIndex >= FFT_SIZE - filterKernelLength - 1)
 					{
 						samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength))*2] = samplesA[sampleIndex*2];
 						samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength)) * 2 +1] = samplesA[sampleIndex*2+1];
 					}
+
 
 					break;
 
@@ -439,11 +444,11 @@ int isFwd;
 //						dac2SetValue(samplesC[sampleIndex*2+1] + samplesB[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesC[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
-						dac2SetValue(samplesC[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						dac1SetValue(samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						dac2SetValue(samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 //					}
 
-						if(sampleIndex > FFT_SIZE - filterKernelLength - 1)
+						if(sampleIndex >= FFT_SIZE - filterKernelLength - 1)
 						{
 							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength))*2] = samplesB[sampleIndex*2];
 							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength)) * 2 +1] = samplesB[sampleIndex*2+1];
@@ -473,11 +478,11 @@ int isFwd;
 //						dac2SetValue(samplesA[sampleIndex*2+1] + samplesC[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesA[sampleIndex*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
-						dac2SetValue(samplesA[sampleIndex*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						dac1SetValue(samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						dac2SetValue(samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 //					}
 
-						if(sampleIndex > FFT_SIZE - filterKernelLength - 1)
+						if(sampleIndex >= FFT_SIZE - filterKernelLength - 1)
 						{
 							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength))*2] = samplesC[sampleIndex*2];
 							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength)) * 2 +1] = samplesC[sampleIndex*2+1];
@@ -490,10 +495,11 @@ int isFwd;
 				agcLevel = agcLevel * (1 - 0.0001);
 
 				sampleIndex++;
-				if(sampleIndex >= FFT_SIZE - (filterKernelLength/2))
+				if(sampleIndex >= FFT_SIZE) //- (filterKernelLength/2))
 				{
+					blink_led_off();
 					sampleRun = 1;
-					sampleIndex = filterKernelLength/2; //0;
+					sampleIndex = filterKernelLength; ///2; //0;
 					switch(sampleBank)
 					{
 					case 0:
@@ -536,8 +542,10 @@ int isFwd;
 void zeroSampleBank(float *samples)
 {
 	uint16_t i;
-	for(i = 0; i < filterKernelLength; i++) samples[i] = samplesOverlap[i];
-	for(; i < FFT_BUFFER_SIZE; i++) samples[i] = 0;
+	for(i = 0; i < filterKernelLength * 2; i++)
+		samples[i] = samplesOverlap[i];
+	for(; i < FFT_BUFFER_SIZE; i++)
+		samples[i] = 0;
 }
 
 
@@ -586,9 +594,6 @@ int
 main(int argc, char* argv[])
 {
 
-
-
-
 	HAL_Init();
 
 	SystemClock_Config();
@@ -624,7 +629,7 @@ main(int argc, char* argv[])
 	blink_led_init();
 	blink_led_on();
 
-	populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
+	populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 
 	initDac1();
 	Encoder();
@@ -751,7 +756,7 @@ void updateMenu()
 			if(filterLowerLimit >= 200) filterLowerLimit = 100;
 			if(filterLowerLimit >= filterUpperLimit) filterLowerLimit = filterUpperLimit - 1;
 			encoderLastPos = encoderPos;
-			populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
+			populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 		}
 		break;
 	case 8: //Filter Upper
@@ -763,7 +768,7 @@ void updateMenu()
 			if(filterUpperLimit >= 200) filterUpperLimit = 100;
 			if(filterUpperLimit <= filterLowerLimit) filterUpperLimit = filterLowerLimit + 1;
 			encoderLastPos = encoderPos;
-			populateCoeficients(filterUpperLimit - filterLowerLimit, 0, filterLowerLimit);
+			populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 		}
 		break;
 	case 9: //Mode
@@ -771,6 +776,7 @@ void updateMenu()
 		if(encoderPos != encoderLastPos)
 		{
 			mode = (mode + (encoderLastPos - encoderPos)) % 3;
+			populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 			encoderLastPos = encoderPos;
 
 			//TODO: CHANGE THE FILTER SO IT MAKES SENSE!
@@ -1004,7 +1010,7 @@ void processStream()
 
 		arm_cfft_radix4_instance_f32 fft_inst;
 
-		blink_led_on();
+		//blink_led_on();
 
 		if (sampleBankAReady == 1)
 		{
@@ -1133,7 +1139,7 @@ void processStream()
 
 		}
 
-		blink_led_off();
+		//blink_led_off();
 		sampleRun = 0;
 	}
 
@@ -1446,7 +1452,7 @@ void initDac1()
 	}
 
 	/*##-3- Set DAC Channel1 DHR register ######################################*/
-	if(HAL_DAC_SetValue(&DacHandle, DAC_CHANNEL_1, DAC_ALIGN_8B_R, 0x88) != HAL_OK)
+	if(HAL_DAC_SetValue(&DacHandle, DAC_CHANNEL_1, DAC_ALIGN_12B_R/*DAC_ALIGN_8B_R*/, 0x88) != HAL_OK)
 	{
 		/* Setting value Error */
 		// Error_Handler();
@@ -1454,7 +1460,7 @@ void initDac1()
 	}
 
 	/*##-3- Set DAC Channel1 DHR register ######################################*/
-	if(HAL_DAC_SetValue(&DacHandle, DAC_CHANNEL_2, DAC_ALIGN_8B_R, 0x88) != HAL_OK)
+	if(HAL_DAC_SetValue(&DacHandle, DAC_CHANNEL_2, DAC_ALIGN_12B_R/*DAC_ALIGN_8B_R*/, 0x88) != HAL_OK)
 	{
 		/* Setting value Error */
 		// Error_Handler();
