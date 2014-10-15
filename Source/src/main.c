@@ -92,6 +92,8 @@ float fftMaxMaxMin = 0.2;
 int transmitting = 0;
 unsigned int tone = 0;
 
+uint8_t displayUpdating = 0;
+
 /** System Clock Configuration
 */
 void SystemClock_Config(void)
@@ -264,8 +266,69 @@ void setupPeripheralPower()
 	__GPIOC_CLK_ENABLE();
 	__GPIOD_CLK_ENABLE();
 	__GPIOE_CLK_ENABLE();
+	__DMA1_CLK_ENABLE();
+	__DMA2_CLK_ENABLE();
 }
 
+void configDMA(SPI_HandleTypeDef *hspi)
+{
+	  static DMA_HandleTypeDef hdma_tx;
+	  static DMA_HandleTypeDef hdma_rx;
+
+
+	hdma_tx.Instance                 = SPIx_TX_DMA_STREAM;
+
+	  hdma_tx.Init.Channel             = SPIx_TX_DMA_CHANNEL;
+	  hdma_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
+	  hdma_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
+	  hdma_tx.Init.MemInc              = DMA_MINC_ENABLE;
+	  hdma_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+	  hdma_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+	  hdma_tx.Init.Mode                = DMA_NORMAL;
+	  hdma_tx.Init.Priority            = DMA_PRIORITY_LOW;
+	  hdma_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+	  hdma_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+	  hdma_tx.Init.MemBurst            = DMA_MBURST_INC4;
+	  hdma_tx.Init.PeriphBurst         = DMA_PBURST_INC4;
+
+	  HAL_DMA_Init(&hdma_tx);
+
+	  /* Associate the initialized DMA handle to the the SPI handle */
+	  __HAL_LINKDMA(hspi, hdmatx, hdma_tx);
+
+	  /* Configure the DMA handler for Transmission process */
+	  hdma_rx.Instance                 = SPIx_RX_DMA_STREAM;
+
+	  hdma_rx.Init.Channel             = SPIx_RX_DMA_CHANNEL;
+	  hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+	  hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
+	  hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
+	  hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+	  hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+	  hdma_rx.Init.Mode                = DMA_NORMAL;
+	  hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
+	  hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+	  hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+	  hdma_rx.Init.MemBurst            = DMA_MBURST_INC4;
+	  hdma_rx.Init.PeriphBurst         = DMA_PBURST_INC4;
+
+	  HAL_DMA_Init(&hdma_rx);
+
+	  /* Associate the initialized DMA handle to the the SPI handle */
+	  __HAL_LINKDMA(hspi, hdmarx, hdma_rx);
+
+	  /*##-4- Configure the NVIC for DMA #########################################*/
+	  /* NVIC configuration for DMA transfer complete interrupt (SPI3_TX) */
+	  HAL_NVIC_SetPriority(15/*SPIx_DMA_TX_IRQn*/, 0, 1);
+	  HAL_NVIC_EnableIRQ(SPIx_DMA_TX_IRQn);
+
+	  /* NVIC configuration for DMA transfer complete interrupt (SPI3_RX) */
+	  HAL_NVIC_SetPriority(SPIx_DMA_RX_IRQn, 0, 0);
+	  HAL_NVIC_EnableIRQ(SPIx_DMA_RX_IRQn);
+
+
+	  //HAL_DMA_Start();
+}
 
 
 
@@ -308,27 +371,30 @@ int isFwd;
 
 	void Tick(void)
 	{
-		Position2 = (HAL_GPIO_ReadPin(encoderB.port, encoderB.pin) * 2) + HAL_GPIO_ReadPin(encoderA.port, encoderA.pin);;
-		if (Position2 != Position)
+		if(!displayUpdating)
 		{
-			isFwd = ((Position == 0) && (Position2 == 1)) || ((Position == 1) && (Position2 == 3)) ||
-				((Position == 3) && (Position2 == 2)) || ((Position == 2) && (Position2 == 0));
-			if (!HAL_GPIO_ReadPin(encoderP.port, encoderP.pin))
+			Position2 = (HAL_GPIO_ReadPin(encoderB.port, encoderB.pin) * 2) + HAL_GPIO_ReadPin(encoderA.port, encoderA.pin);;
+			if (Position2 != Position)
 			{
-				if (isFwd) menuEncoderTicks += 1;
-				else menuEncoderTicks -= 1;
-				menuPos = menuEncoderTicks/2;
-				menuPos = menuPos % menuCount;
+				isFwd = ((Position == 0) && (Position2 == 1)) || ((Position == 1) && (Position2 == 3)) ||
+					((Position == 3) && (Position2 == 2)) || ((Position == 2) && (Position2 == 0));
+				if (!HAL_GPIO_ReadPin(encoderP.port, encoderP.pin))
+				{
+					if (isFwd) menuEncoderTicks += 1;
+					else menuEncoderTicks -= 1;
+					menuPos = menuEncoderTicks/2;
+					menuPos = menuPos % menuCount;
+				}
+				else
+				{
+					if (isFwd) Pos++;
+					else Pos--;
+				}
+				//if (Pos < Min) Pos = Min;
+				//if (Pos > Max) Pos = Max;
 			}
-			else
-			{
-				if (isFwd) Pos++;
-				else Pos--;
-			}
-			//if (Pos < Min) Pos = Min;
-			//if (Pos > Max) Pos = Max;
+			Position = Position2;
 		}
-		Position = Position2;
 	}
 
 	int getPos(void)
@@ -624,6 +690,9 @@ main(int argc, char* argv[])
 	hal_setupPins();
 	spi_init();
 
+	configDMA(&SpiHandle );
+
+
 	timer_start();
 
 	blink_led_init();
@@ -636,8 +705,28 @@ main(int argc, char* argv[])
 
 	Adafruit_ILI9340_begin();
 	Adafruit_ILI9340_setRotation(1);
+	//Adafruit_GFX_fillScreen(ILI9340_BLACK);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
-	Adafruit_GFX_fillScreen(ILI9340_BLACK);
+
+	//drawNextPixel test
+//	Adafruit_ILI9340_drawPixel(100,100,ILI9340_CYAN);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_BLUE);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_RED);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_WHITE);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_YELLOW);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_CYAN);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_RED);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_BLUE);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_RED);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_WHITE);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_YELLOW);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_CYAN);
+//	Adafruit_ILI9340_drawNextPixel(ILI9340_RED);
+
+
+//	while(1);
+
+
 	Adafruit_GFX_setTextSize(3);
 	Adafruit_GFX_setTextWrap(1);
 	Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
@@ -654,6 +743,8 @@ main(int argc, char* argv[])
 	long long timeMeasurement = 0;
 
 	updateDisplay(1);
+
+
 
 	setGainPot(128, 128);
 
@@ -816,8 +907,15 @@ float calculateRmsOfSample(float* samples, int length)
 
 #define freqVOffset 108     //120 - (8*3/2)
 #define freqHOffset 142
+
+
+//TODO: Should I make a menuItem struct? Would that be helpful? The menus are a pain right now...
+uint8_t redItems[30];
+
+
 void updateDisplay(uint8_t force)
 {
+	displayUpdating = 1;
 	static char freqChar[14];
 	static char lastFreqChar[] = {'$','$','$','$','$','$','$','$','$','$','$','$','$','$',};
 
@@ -836,11 +934,11 @@ void updateDisplay(uint8_t force)
 	sprintf(&freqChar, "%8d", vfoAFrequency);
 
 	//So on each of these elements, we update when the value changes, when we're forced to, when the item becomes selected, or unselected.
-	if(freqChar[0] != lastFreqChar[0] || force || (menuPos != menuLastPos && (menuPos == 0 || menuLastPos == 0)))
+	if(freqChar[0] != lastFreqChar[0] ||  force || (menuPos != menuLastPos && (menuPos == 0 || menuLastPos == 0)))
 	{
 		drawNumber(freqChar[0], freqHOffset + 16*0, freqVOffset + 0, menuPos == 0 ? MASKRED : MASKWHITE);
 	}
-	if(freqChar[1] != lastFreqChar[1] || force || (menuPos != menuLastPos && (menuPos == 0 || menuLastPos == 0)))
+	if(freqChar[1] != lastFreqChar[1] || redItems[0] || force || (menuPos != menuLastPos && (menuPos == 0 || menuLastPos == 0)))
 	{
 		drawNumber(freqChar[1], freqHOffset + 16*1, freqVOffset + 0, menuPos == 0 ? MASKRED : MASKWHITE);
 	}
@@ -926,11 +1024,13 @@ void updateDisplay(uint8_t force)
 		}
 
 		modeLast = mode;
+
 	}
 
 	if(afGain * 0.99 )
 
 	menuLastPos = menuPos;
+	displayUpdating = 0;
 }
 
 void drawWaterfall()
@@ -972,18 +1072,22 @@ void drawWaterfall()
 	//			but now narrow signal can disappear when they are right at the center....
 	//			Will that be better when I lower the sample frequency? Maybe I should do that next.
 
-	for(i = 1; i < 120; i++)
+	Adafruit_ILI9340_setAddrWindow(waterfallScanLine, 0, waterfallScanLine, 120);
+	for(i = 120; i != 0; i--)
 	{
 		mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100; //Log needs to be at least 1 right? We could do a + (1-fftMin) maybe? Worth it?
 		//mags = magnitudes[i] / fftMaxMax * 32;
-		Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
+		//Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
+		Adafruit_ILI9340_pushColor(gradient[(uint8_t) mags]);
 	}
 
-	for(i = 135; i < 255; i++)
+	Adafruit_ILI9340_setAddrWindow(waterfallScanLine, 120, waterfallScanLine, 239);
+	for(i = 255; i > 135; i--)
 	{
 		mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100;
 		//mags = magnitudes[i] / fftMaxMax * 32;
-		Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
+		//Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
+		Adafruit_ILI9340_pushColor(gradient[(uint8_t) mags]);
 	}
 
 	waterfallScanLine++;

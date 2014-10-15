@@ -47,6 +47,9 @@
 #include "stm32f4xx_hal_dac.h"
 
 #include "images.h"
+#include "stm32f4xx_hal_dma.h"
+
+#include "stm32f4xx_hal_def.h"
 
 TIM_HandleTypeDef    TimHandle;
 TIM_HandleTypeDef    TimHandle4;
@@ -59,4 +62,16 @@ TIM_HandleTypeDef    TimHandle4;
 #define MASKWHITE  0b1111111111111111
 #define MASKBLACK  0b0000000000000000
 
+/* Definition for SPIx's DMA */
+#define SPIx_TX_DMA_CHANNEL              DMA_CHANNEL_3
+#define SPIx_TX_DMA_STREAM               DMA2_Stream5
+#define SPIx_RX_DMA_CHANNEL              DMA_CHANNEL_3
+#define SPIx_RX_DMA_STREAM               DMA2_Stream2
 
+/* Definition for SPIx's NVIC */
+#define SPIx_DMA_TX_IRQn                 DMA2_Stream3_IRQn
+#define SPIx_DMA_RX_IRQn                 DMA2_Stream0_IRQn
+#define SPIx_DMA_TX_IRQHandler           DMA2_Stream3_IRQHandler
+#define SPIx_DMA_RX_IRQHandler           DMA2_Stream0_IRQHandler
+
+SPI_HandleTypeDef SpiHandle;

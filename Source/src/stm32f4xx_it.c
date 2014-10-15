@@ -175,6 +175,16 @@ processStream();
  //__HAL_TIM_CLEAR_IT(htim, TIM_IT_UPDATE);
 }
 
+void SPIx_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(SpiHandle.hdmatx);
+}
+
+void SPIx_DMA_RX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(SpiHandle.hdmarx);
+}
+
 //void TIM3_IRQHandler(void)
 //{
 //    __HAL_TIM_CLEAR_IT(htim, TIM_IT_UPDATE);

@@ -66,7 +66,7 @@ void spi_init(void)
     SpiHandle.Instance 				  = SPI1;
     SpiHandle.Init.Direction 		  = SPI_DIRECTION_2LINES;
     SpiHandle.Init.Mode               = SPI_MODE_MASTER;
-    SpiHandle.Init.DataSize           = SPI_DATASIZE_8BIT;
+    SpiHandle.Init.DataSize           = SPI_DATASIZE_8BIT; //Was 8BIT
     SpiHandle.Init.CLKPolarity 		  = SPI_POLARITY_HIGH;
     SpiHandle.Init.CLKPhase			  = SPI_PHASE_2EDGE;
     SpiHandle.Init.NSS                = SPI_NSS_SOFT; //SPI_NSS_SOFT;
@@ -109,10 +109,17 @@ void spi_init(void)
 //    spi2Semaphore = 1;
 //}
 
-void spi_readWrite(SPI_HandleTypeDef SpiH, uint8_t* rxBuf, uint8_t* txBuf, int cnt)
+uint8_t txTmp[] = {0,0};
+void spi_readWrite(SPI_HandleTypeDef SpiH, uint16_t* rxBuf, uint16_t* txBuf, uint16_t cnt)
 {
+	txTmp[0] = txBuf[0] >> 8;
+	txTmp[1] = txBuf[0] & 0xFF;
+
 	//HAL_SPI_TransmitReceive(&SpiHandle, txBuf, rxBuf, cnt, 1000);
-	HAL_SPI_Transmit(&SpiHandle, txBuf, cnt, 1);
+	HAL_SPI_Transmit(&SpiHandle, txTmp, 2 /*cnt * 2*/, 1);
+	//while(HAL_SPI_GetState(&SpiH) != HAL_SPI_STATE_READY);
+	//HAL_SPI_Transmit_DMA(&SpiH, txBuf, cnt);
+	//while(HAL_SPI_GetState(&SpiH) != HAL_SPI_STATE_READY);
 
 //	//High, second edge
 //	//We're going to bitbang it for now, I guess

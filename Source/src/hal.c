@@ -37,8 +37,8 @@
 //const Gpio_Pin FINGER_PRINT_BUTTON  = { GPIOB, GPIO_Pin_6  };
 
 //const Gpio_Pin LOW_BAT              = { GPIOB, GPIO_Pin_8  };
-//const Gpio_Pin RX_TO_GPS            = { GPIOB, GPIO_Pin_10 };
-//const Gpio_Pin TX_FROM_GPS          = { GPIOB, GPIO_Pin_11 };
+const Gpio_Pin RX_TO_GPS            = { GPIOB, GPIO_PIN_6 };
+const Gpio_Pin TX_FROM_GPS          = { GPIOB, GPIO_PIN_7 };
 
 
 
@@ -127,9 +127,10 @@ const Gpio_Pin KEY2					= { GPIOD, GPIO_PIN_11 };
 //const Gpio_Pin POWER_GOOD           = { GPIOC, GPIO_Pin_14 };
 //const Gpio_Pin POWER_SWITCH         = { GPIOC, GPIO_Pin_15 };
 //const Gpio_Pin ACCEL_NSS            = { GPIOD, GPIO_Pin_2  };   // currently labeled SPI2_NSS on schem
-//const Gpio_Pin GPS_RESET			= { GPIOC, GPIO_Pin_4  };
-//const Gpio_Pin GPS_FIX_LED 			= { GPIOC, GPIO_Pin_3  };
-//const Gpio_Pin GPS_PPS				= { GPIOC, GPIO_Pin_2  };
+const Gpio_Pin GPS_RESET			= { GPIOD, GPIO_PIN_1  };
+const Gpio_Pin GPS_FIX_LED 			= { GPIOD, GPIO_PIN_3  };
+const Gpio_Pin GPS_PPS				= { GPIOD, GPIO_PIN_4  };
+const Gpio_Pin GPS_POWER			= { GPIOD, GPIO_PIN_0  };
 
 //// timer pins
 //const Timer_Pin LED_G =
@@ -677,21 +678,33 @@ void hal_setupPins(void)
 //    gpioInitStructure.GPIO_Mode  = GPIO_Mode_IPD;
 //    GPIO_Init(NC_1.port, &gpioInitStructure);
 
-//    gpioInitStructure.GPIO_Pin 	 = GPS_RESET.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_Out_PP; //I don't know if the module has ANYTHING hooked up to these pins yet.
-//    GPIO_Init(GPS_RESET.port, &gpioInitStructure);
+    gpioInitStructure.Pin 	 = GPS_POWER.pin;
+    gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP; //I don't know if the module has ANYTHING hooked up to these pins yet.
+    gpioInitStructure.Pull  = GPIO_PULLUP;
+    HAL_GPIO_Init(GPS_POWER.port, &gpioInitStructure);
+    HAL_GPIO_WritePin(GPS_POWER.port, GPS_POWER.pin, 0); //
 
-//    gpioInitStructure.GPIO_Pin 	 = GPS_FIX_LED.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_Out_PP; //I don't know if the module has ANYTHING hooked up to these pins yet.
-//    GPIO_Init(GPS_FIX_LED.port, &gpioInitStructure);
+    gpioInitStructure.Pin 	 = GPS_RESET.pin;
+    gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP; //I don't know if the module has ANYTHING hooked up to these pins yet.
+    gpioInitStructure.Pull  = GPIO_NOPULL;
+    HAL_GPIO_Init(GPS_RESET.port, &gpioInitStructure);
+    HAL_GPIO_WritePin(GPS_POWER.port, GPS_POWER.pin, 0);
 
-//    gpioInitStructure.GPIO_Pin 	 = GPS_PPS.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING; //I don't know if the module has ANYTHING hooked up to these pins yet.
-//    GPIO_Init(GPS_PPS.port, &gpioInitStructure);
+    gpioInitStructure.Pin 	 = GPS_FIX_LED.pin;
+    gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    gpioInitStructure.Mode  = GPIO_MODE_INPUT; //I don't know if the module has ANYTHING hooked up to these pins yet.
+    gpioInitStructure.Pull  = GPIO_NOPULL;
+    HAL_GPIO_Init(GPS_FIX_LED.port, &gpioInitStructure);
+
+    gpioInitStructure.Pin 	 = GPS_PPS.pin;
+    gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    gpioInitStructure.Mode  = GPIO_MODE_INPUT; //I don't know if the module has ANYTHING hooked up to these pins yet.
+    gpioInitStructure.Pull  = GPIO_NOPULL;
+    HAL_GPIO_Init(GPS_PPS.port, &gpioInitStructure);
 }
+
 //
 //void hal_timerSetCompare(const Timer_Channel* timer, uint16_t value)
 //{
@@ -781,22 +794,22 @@ void hal_setupPins(void)
 //    NVIC_InitTypeDef  nvicInitStructure;
 //
 //    // Finger Print UART Input / Output GPIO
-//    gpioInitStructure.GPIO_Pin   = FPR_TX.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
-//    GPIO_Init(FPR_TX.port, &gpioInitStructure);
+//    gpioInitStructure.Pin   = TX_FROM_GPS.pin;
+//    gpioInitStructure.Speed = GPIO_SPEED_LOW;
+//    gpioInitStructure.Mode  = GPIO_MODE_INPUT;
+//    GPIO_Init(TX_FROM_GPS.port, &gpioInitStructure);
 //
-//    gpioInitStructure.GPIO_Pin   = FPR_RX.pin;
-//    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz; // TBD
-//    gpioInitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;
-//    GPIO_Init(FPR_RX.port, &gpioInitStructure);
-//    GPIO_WriteBit(FPR_RX.port, FPR_RX.pin, 0);
+//    gpioInitStructure.Pin   = RX_TO_GPS.pin;
+//    gpioInitStructure.Speed = GPIO_SPEED_MEDIUM; // TBD
+//    gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
+//    GPIO_Init(RX_TO_GPS.port, &gpioInitStructure);
+//    HAL_GPIO_WritePin(RX_TO_GPS.port, RX_TO_GPS.pin, 0);
 //
 //    // Usart 1
-//    USART_StructInit(&usartInitStructure);
-//    usartInitStructure.USART_BaudRate = 9600; // TODO - fpr define
-//    usartInitStructure.USART_Mode     = USART_Mode_Rx | USART_Mode_Tx;
-//    USART_Init(USART1, &usartInitStructure);
+//    HAL_USART_DeInit(&usartInitStructure);
+//    usartInitStructure.BaudRate = 9600; // TODO - fpr define
+//    usartInitStructure.Mode     = USART_MODE_TX_RX;
+//    HAL_USART_Init(USART1, &usartInitStructure);
 //
 //    // Setup USART1 Interrupts
 //    nvicInitStructure.NVIC_IRQChannel                   = USART1_IRQn;
@@ -806,10 +819,10 @@ void hal_setupPins(void)
 //    NVIC_Init(&nvicInitStructure);
 //
 //    // enable usart and rx interrupt
-//    USART_Cmd(USART1, ENABLE);
-//    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+//    //HAL_U      USART_Cmd(USART1, ENABLE);
+//    //USART_ITConfig(USART1  , ENABLE);
 //}
-//
+
 //void hal_resetUart1(void)
 //{
 //    NVIC_InitTypeDef  nvicInitStructure;

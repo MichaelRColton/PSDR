@@ -45,6 +45,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal_def.h"  
+#include "stm32f4xx_hal_dma.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
   * @{
@@ -151,9 +152,9 @@ typedef struct __SPI_HandleTypeDef
 
   uint16_t                   RxXferCount;  /* SPI Rx Transfer Counter */
 
-  //DMA_HandleTypeDef          *hdmatx;      /* SPI Tx DMA handle parameters */
+  DMA_HandleTypeDef          *hdmatx;      /* SPI Tx DMA handle parameters */
 
-  //DMA_HandleTypeDef          *hdmarx;      /* SPI Rx DMA handle parameters */
+  DMA_HandleTypeDef          *hdmarx;      /* SPI Rx DMA handle parameters */
 
   void                       (*RxISR)(struct __SPI_HandleTypeDef * hspi); /* function pointer on Rx ISR */
 

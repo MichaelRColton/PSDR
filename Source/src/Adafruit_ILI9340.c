@@ -56,8 +56,8 @@
 
 //   int  _width = ILI9340_TFTWIDTH; //240;
 //   int  _height = ILI9340_TFTHEIGHT; //320
-	uint8_t rxBuf[10];
-	uint8_t txBuf[2];
+	uint16_t rxBuf[10];
+	uint16_t txBuf[2];
 
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
@@ -105,7 +105,7 @@ void Adafruit_ILI9340_spiwrite(uint8_t c) {
 }
 
 
-void Adafruit_ILI9340_writecommand(uint8_t c) {
+void Adafruit_ILI9340_writecommand(uint16_t c) {
   //CLEAR_BIT(dcport, dcpinmask);
 	HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 0);
   //digitalWrite(_dc, LOW);
@@ -117,8 +117,10 @@ void Adafruit_ILI9340_writecommand(uint8_t c) {
   //digitalWrite(_cs, LOW);
 
   //spiwrite(c);
-	txBuf[0] = c;
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	txBuf[0] = c; // & 0xFF;
+	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	HAL_SPI_Transmit(&SpiHandle, txBuf, 1 /*cnt * 2*/, 1);
+
 	//HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)txBuf, (uint8_t *)rxBuf, 1, 1000);
 
   //SET_BIT(csport, cspinmask);
@@ -127,7 +129,7 @@ void Adafruit_ILI9340_writecommand(uint8_t c) {
 }
 
 
-void Adafruit_ILI9340_writedata(uint8_t c) {
+void Adafruit_ILI9340_writedata(uint16_t c) {
   //SET_BIT(dcport,  dcpinmask);
 	HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
   //digitalWrite(_dc, HIGH);
@@ -139,8 +141,9 @@ void Adafruit_ILI9340_writedata(uint8_t c) {
   //digitalWrite(_cs, LOW);
 
   //spiwrite(c);
-	txBuf[0] = c;
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	txBuf[0] = c; // & 0xFF;
+	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	HAL_SPI_Transmit(&SpiHandle, txBuf, 1 /*cnt * 2*/, 1);
 	//HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)txBuf, (uint8_t *)rxBuf, 1, 1000);
 
   //digitalWrite(_cs, HIGH);
@@ -392,21 +395,25 @@ void Adafruit_ILI9340_setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1,
 void Adafruit_ILI9340_pushColor(uint16_t color) {
   //digitalWrite(_dc, HIGH);
   //SET_BIT(dcport, dcpinmask);
-	GPIO_WriteBit(LCD_DC.port, LCD_DC.pin, 1);
+	//GPIO_WriteBit(LCD_DC.port, LCD_DC.pin, 1);
+	HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
   //digitalWrite(_cs, LOW);
   //CLEAR_BIT(csport, cspinmask);
-	GPIO_WriteBit(LCD_NSS.port, LCD_NSS.pin, 0);
+//	GPIO_WriteBit(LCD_NSS.port, LCD_NSS.pin, 0);
+	  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
 
   //spiwrite(color >> 8);
   //spiwrite(color);
-	uint8_t rxBuf[10];
-	uint8_t txBuf[2] = {color >> 8, color};
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 2);
+	//uint16_t rxBuf[10];
+	//uint16_t txBuf[2] = {color >> 8, color};
+	txBuf[0] = color;
+	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
 
 
 
   //SET_BIT(csport, cspinmask);
-	GPIO_WriteBit(LCD_NSS.port, LCD_NSS.pin, 1);
+	//GPIO_WriteBit(LCD_NSS.port, LCD_NSS.pin, 1);
+	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
   //digitalWrite(_cs, HIGH);
 }
 
@@ -425,15 +432,38 @@ void Adafruit_ILI9340_drawPixel(int16_t x, int16_t y, uint16_t color) {
 
   //spiwrite(color >> 8);
   //spiwrite(color);
-	uint8_t rxBuf[10];
-	uint8_t txBuf[2] = {color >> 8, color};
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 2);
+	//uint8_t rxBuf[10];
+	//uint8_t txBuf[2] = {color >> 8, color};
+  txBuf[0] = color;
+	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
 
   //SET_BIT(csport, cspinmask);
 	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
   //digitalWrite(_cs, HIGH);
 }
 
+void Adafruit_ILI9340_drawNextPixel(uint16_t color) {
+
+	Adafruit_ILI9340_writecommand(ILI9340_RAMWRCNT);
+
+	  //digitalWrite(_dc, HIGH);
+	  //SET_BIT(dcport, dcpinmask);
+	  HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
+	  //digitalWrite(_cs, LOW);
+	  //CLEAR_BIT(csport, cspinmask);
+	  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
+
+	  //spiwrite(color >> 8);
+	  //spiwrite(color);
+		//uint8_t rxBuf[10];
+		//uint8_t txBuf[2] = {color >> 8, color};
+	  txBuf[0] = color;
+		spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+
+	  //SET_BIT(csport, cspinmask);
+		HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
+	  //digitalWrite(_cs, HIGH);
+}
 
 void Adafruit_ILI9340_drawFastVLine(int16_t x, int16_t y, int16_t h,
  uint16_t color) {
@@ -446,7 +476,7 @@ void Adafruit_ILI9340_drawFastVLine(int16_t x, int16_t y, int16_t h,
 
   Adafruit_ILI9340_setAddrWindow(x, y, x, y+h-1);
 
-  uint8_t hi = color >> 8, lo = color;
+  //uint8_t hi = color >> 8, lo = color;
 
   //SET_BIT(dcport, dcpinmask);
   HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
@@ -455,15 +485,15 @@ void Adafruit_ILI9340_drawFastVLine(int16_t x, int16_t y, int16_t h,
   HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
   //digitalWrite(_cs, LOW);
 
-	uint8_t rxBuf[10];
-	uint8_t txBuf[2];
+	//uint8_t rxBuf[10];
+	//uint8_t txBuf[2];
   while (h--) {
     //spiwrite(hi);
     //spiwrite(lo);
-	txBuf[0] = hi;
-	txBuf[1] = lo;
-
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 2);
+	//txBuf[0] = hi;
+	//txBuf[1] = lo;
+txBuf[0] = color;
+	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
   }
   //SET_BIT(csport, cspinmask);
   HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
@@ -479,7 +509,7 @@ void Adafruit_ILI9340_drawFastHLine(int16_t x, int16_t y, int16_t w,
   if((x+w-1) >= _width)  w = _width-x;
   Adafruit_ILI9340_setAddrWindow(x, y, x+w-1, y);
 
-  uint8_t hi = color >> 8, lo = color;
+  //uint8_t hi = color >> 8, lo = color;
   //SET_BIT(dcport, dcpinmask);
   HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
   //CLEAR_BIT(csport, cspinmask);
@@ -490,10 +520,10 @@ void Adafruit_ILI9340_drawFastHLine(int16_t x, int16_t y, int16_t w,
   while (w--) {
     //spiwrite(hi);
     //spiwrite(lo);
-	txBuf[0] = hi;
-	txBuf[1] = lo;
-
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 2);
+	//txBuf[0] = hi;
+	//txBuf[1] = lo;
+	  txBuf[0] = color;
+	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
   }
   //SET_BIT(csport, cspinmask);
   HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
@@ -515,7 +545,7 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 
   Adafruit_ILI9340_setAddrWindow(x, y, x+w-1, y+h-1);
 
-  uint8_t hi = color >> 8, lo = color;
+ // uint8_t hi = color >> 8, lo = color;
 
   //SET_BIT(dcport, dcpinmask);
   HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
@@ -528,10 +558,11 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
     for(x=w; x>0; x--) {
       //spiwrite(hi);
       //spiwrite(lo);
-  	txBuf[0] = hi;
-  	txBuf[1] = lo;
+  	//txBuf[0] = hi;
+  	//txBuf[1] = lo;
+    	txBuf[0] = color;
 
-  	spi_readWrite(SpiHandle, rxBuf, txBuf, 2);
+  	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
   	//HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)txBuf, (uint8_t*)rxBuf, 2, 1000);
     }
   }

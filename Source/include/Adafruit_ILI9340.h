@@ -55,6 +55,8 @@
 #define ILI9340_RAMWR   0x2C
 #define ILI9340_RAMRD   0x2E
 
+#define ILI9340_RAMWRCNT 0x3C
+
 #define ILI9340_PTLAR   0x30
 #define ILI9340_MADCTL  0x36
 
@@ -122,6 +124,7 @@
            Adafruit_ILI9340_pushColor(uint16_t color),
            Adafruit_ILI9340_fillScreen(uint16_t color),
            Adafruit_ILI9340_drawPixel(int16_t x, int16_t y, uint16_t color),
+           Adafruit_ILI9340_drawNextPixel(uint16_t color),
            Adafruit_ILI9340_drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color),
            Adafruit_ILI9340_drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color),
            Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
@@ -140,8 +143,8 @@
   */
 
   void     Adafruit_ILI9340_spiwrite(uint8_t),
-		  Adafruit_ILI9340_writecommand(uint8_t c),
-		  Adafruit_ILI9340_writedata(uint8_t d),
+		  Adafruit_ILI9340_writecommand(uint16_t c),
+		  Adafruit_ILI9340_writedata(uint16_t d),
 		  Adafruit_ILI9340_commandList(uint8_t *addr);
   uint8_t  Adafruit_ILI9340_spiread(void);
 

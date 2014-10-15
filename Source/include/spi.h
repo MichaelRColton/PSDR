@@ -17,7 +17,7 @@
 //#include <stm32f4xx_hal.h>
 #include <stm32f4xx_hal_spi.h>
 
-SPI_HandleTypeDef SpiHandle;
+//SPI_HandleTypeDef SpiHandle;
 
     void spi_init(void);
         // set up the used SPI (SPI2) and pins
@@ -28,7 +28,7 @@ SPI_HandleTypeDef SpiHandle;
 //
 //    void spi_postSpi2Semaphore(void);
 //        // post (make available) spi2 semaphore
-    void spi_readWrite(SPI_HandleTypeDef SpiHandle, uint8_t *rxBuf, uint8_t *txBuf, int cnt);
+    void spi_readWrite(SPI_HandleTypeDef SpiHandle, uint16_t *rxBuf, uint16_t *txBuf, uint16_t cnt); //was uint8_t
     //int spi_readWrite(SPI_TypeDef* SPIx, uint8_t *rxBuf, const uint8_t *txBuf, int cnt, uint16_t speed);
         // send data to the spi bus, read data in from the spi bus
         // returns the number of bytes written/read

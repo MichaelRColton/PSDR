@@ -4,6 +4,7 @@
 #ifndef HAL_H_
     #define HAL_H_
 
+#include <main.h>
     #include <stdint.h>
     #include <stdbool.h>
     //#include <stm32f10x.h>
@@ -13,8 +14,9 @@
 #endif
 #include <stm32f4xx_hal_gpio.h>
 //    #include <stm32f10x_gpio.h>
-   // #include <uart.h>
-
+    #include <uart.h>
+#include "stm32f4xx_hal_dma.h"
+#include "stm32f4xx_hal_usart.h"
 
 
 
@@ -55,6 +57,8 @@
 
     __IO uint32_t timingDelay;
 
+#define MEDIATEK_MODULE
+#define hal_gpsUart USART1
 
     // gpio pins
 //    extern const Gpio_Pin RX_TO_GSM;
@@ -68,11 +72,12 @@
 //    extern const Gpio_Pin FINGER_PRINT_BUTTON;
     extern const Gpio_Pin LCD_NSS;
 //    extern const Gpio_Pin LOW_BAT;
-//    extern const Gpio_Pin RX_TO_GPS;
-//    extern const Gpio_Pin TX_FROM_GPS;
-//    extern const Gpio_Pin GPS_RESET;
-//    extern const Gpio_Pin GPS_FIX_LED;
-//    extern const Gpio_Pin GPS_PPS;
+    extern const Gpio_Pin RX_TO_GPS;
+    extern const Gpio_Pin TX_FROM_GPS;
+    extern const Gpio_Pin GPS_RESET;
+    extern const Gpio_Pin GPS_FIX_LED;
+    extern const Gpio_Pin GPS_PPS;
+    extern const Gpio_Pin GPS_POWER;
     extern const Gpio_Pin SPI1_SCK;
     extern const Gpio_Pin SPI1_MISO;
     extern const Gpio_Pin SPI1_MOSI;
