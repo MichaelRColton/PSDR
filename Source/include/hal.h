@@ -121,6 +121,9 @@
     extern const Gpio_Pin TX_RF_SWITCH_A;
     extern const Gpio_Pin TX_RF_SWITCH_B;
 
+    extern const Gpio_Pin AMP_POWER;
+    extern const Gpio_Pin MIXER_POWER;
+
     extern const Gpio_Pin GAIN_POT_SCLK;
     extern const Gpio_Pin GAIN_POT_MOSI;
     extern const Gpio_Pin GAIN_POT_NSS;

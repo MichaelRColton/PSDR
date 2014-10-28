@@ -708,25 +708,6 @@ main(int argc, char* argv[])
 	//Adafruit_GFX_fillScreen(ILI9340_BLACK);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
 
-	//drawNextPixel test
-//	Adafruit_ILI9340_drawPixel(100,100,ILI9340_CYAN);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_BLUE);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_RED);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_WHITE);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_YELLOW);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_CYAN);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_RED);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_BLUE);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_RED);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_WHITE);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_YELLOW);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_CYAN);
-//	Adafruit_ILI9340_drawNextPixel(ILI9340_RED);
-
-
-//	while(1);
-
-
 	Adafruit_GFX_setTextSize(3);
 	Adafruit_GFX_setTextWrap(1);
 	Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
@@ -780,12 +761,18 @@ main(int argc, char* argv[])
 	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
 	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
 	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
+	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 1); //Route through amp.
+	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 0); //always reverse of above.
+	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 0); //0 is on.
 	        tone = 0;
 		} else {
 			transmitting = 0;
 	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
 	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
 	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
+	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); //Bypass amp.
+	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
+	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.
 	        tone = 0;
 		}
 	}

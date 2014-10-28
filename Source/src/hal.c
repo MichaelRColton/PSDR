@@ -93,6 +93,9 @@ const Gpio_Pin MIXER_SWITCH_B		= { GPIOE, GPIO_PIN_14 };
 const Gpio_Pin TX_RF_SWITCH_A		= { GPIOB, GPIO_PIN_12 };
 const Gpio_Pin TX_RF_SWITCH_B		= { GPIOB, GPIO_PIN_13 };
 
+const Gpio_Pin AMP_POWER			= { GPIOE, GPIO_PIN_7  };
+const Gpio_Pin MIXER_POWER			= { GPIOE, GPIO_PIN_10 };
+
 const Gpio_Pin GAIN_POT_SCLK		= { GPIOB , GPIO_PIN_11 };
 const Gpio_Pin GAIN_POT_MOSI		= { GPIOE , GPIO_PIN_15};
 const Gpio_Pin GAIN_POT_NSS			= { GPIOB , GPIO_PIN_10};
@@ -451,14 +454,70 @@ void hal_setupPins(void)
     	gpioInitStructure.Speed = GPIO_SPEED_LOW;
     	gpioInitStructure.Pull = GPIO_NOPULL;
     	HAL_GPIO_Init(TX_RF_SWITCH_A.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, 0); //0 to route to TX SMA connector... I think
+        HAL_GPIO_WritePin(TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, 1); //0 to route to TX SMA connector
 
     	gpioInitStructure.Pin = TX_RF_SWITCH_B.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_LOW;
     	gpioInitStructure.Pull = GPIO_NOPULL;
     	HAL_GPIO_Init(TX_RF_SWITCH_B.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, 1); //always reverse of above.
+        HAL_GPIO_WritePin(TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, 0); //always reverse of above.
+
+    	gpioInitStructure.Pin = MIXER_SWITCH_A.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(MIXER_SWITCH_A.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(MIXER_SWITCH_A.port, MIXER_SWITCH_A.pin, 0); //always reverse of above.
+
+    	gpioInitStructure.Pin = MIXER_SWITCH_B.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(MIXER_SWITCH_B.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(MIXER_SWITCH_B.port, MIXER_SWITCH_B.pin, 1); //always reverse of above.
+
+    	gpioInitStructure.Pin = IMP_BRIDGE_SWITCH_A.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(IMP_BRIDGE_SWITCH_A.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, 0); //always reverse of above.
+
+    	gpioInitStructure.Pin = IMP_BRIDGE_SWITCH_B.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(IMP_BRIDGE_SWITCH_B.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, 1); //always reverse of above.
+
+    	gpioInitStructure.Pin = AMP_SWITCH_A.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(AMP_SWITCH_A.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); //always reverse of above.
+
+    	gpioInitStructure.Pin = AMP_SWITCH_B.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_NOPULL;
+    	HAL_GPIO_Init(AMP_SWITCH_B.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
+
+    	gpioInitStructure.Pin = MIXER_POWER.pin;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_OD;
+    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+    	gpioInitStructure.Pull = GPIO_PULLUP;
+    	HAL_GPIO_Init(MIXER_POWER.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(MIXER_POWER.port, MIXER_POWER.pin, 1); //1 is off.
+
+        gpioInitStructure.Pin = AMP_POWER.pin;
+        gpioInitStructure.Mode = GPIO_MODE_OUTPUT_OD;
+        gpioInitStructure.Speed = GPIO_SPEED_LOW;
+        gpioInitStructure.Pull = GPIO_PULLUP;
+        HAL_GPIO_Init(AMP_POWER.port, &gpioInitStructure);
+        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.
 
     	gpioInitStructure.Pin = GAIN_POT_MOSI.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
