@@ -10,7 +10,6 @@ Firmware Build Notes
 
 * Install gcc-arm-none-eabi: apt-get install gcc-arm-none-eabi, or download from https://launchpad.net/gcc-arm-embedded/4.7
 * Download Eclipse Kepler, v4.3 for C/C++ dev from https://eclipse.org/downloads/packages/release/Kepler/SR2
-
 * Help -> Install New software
 * add Name: GNU ARM, Location: http://gnuarmeclipse.sourceforge.net/updates
 * Click the radio button, and hit next, next, agree to the license, finsh, Hit OK to allow unsigned contents
