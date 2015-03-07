@@ -50,6 +50,9 @@
 #include "stm32f4xx_hal_dma.h"
 
 #include "stm32f4xx_hal_def.h"
+#include "stm32f4xx_hal_uart.h"
+#include "stm32f4xx_hal_usart.h"
+
 
 TIM_HandleTypeDef    TimHandle;
 TIM_HandleTypeDef    TimHandle4;
@@ -75,3 +78,4 @@ TIM_HandleTypeDef    TimHandle4;
 #define SPIx_DMA_RX_IRQHandler           DMA2_Stream0_IRQHandler
 
 SPI_HandleTypeDef SpiHandle;
+UART_HandleTypeDef UartHandle;

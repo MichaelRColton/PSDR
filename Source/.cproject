@@ -206,9 +206,6 @@
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1375704298.1528905043" name="stm32f417xx.h" rcbsApplicability="disable" resourcePath="system/include/cmsis/stm32f417xx.h" toolsToInvoke=""/>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1375704298.708018723" name="stm32f437xx.h" rcbsApplicability="disable" resourcePath="system/include/cmsis/stm32f437xx.h" toolsToInvoke=""/>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1375704298.1431321268" name="stm32f427xx.h" rcbsApplicability="disable" resourcePath="system/include/cmsis/stm32f427xx.h" toolsToInvoke=""/>
-					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1375704298.1883550001" name="uart.c" rcbsApplicability="disable" resourcePath="src/uart.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.98059731.1625589465">
-						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.98059731.1625589465" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.98059731"/>
-					</fileInfo>
 					<folderInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.1375704298.608015733" name="/" resourcePath="DSP_Lib">
 						<toolChain id="ilg.gnuarmeclipse.managedbuild.cross.toolchain.elf.debug.425450735" name="Cross ARM GCC" superClass="ilg.gnuarmeclipse.managedbuild.cross.toolchain.elf.debug" unusedChildren="">
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.1067485307.697494564" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.1067485307"/>

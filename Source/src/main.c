@@ -656,6 +656,56 @@ void setGainPot(uint8_t a, uint8_t b)
 
 }
 
+USART1_IRQHandler(void)
+{
+    //blink_led_on();
+    USARTx_IRQHandler();
+
+}
+
+GPIO_InitTypeDef GPIO_InitStruct;
+
+__IO ITStatus UartReady = RESET;
+uint8_t aTxBuffer[] = "Chris a baby!   ";
+uint8_t aRxBuffer[256];
+void configUartPeripheral()
+{
+	//Enable Clocks
+	__GPIOB_CLK_ENABLE();
+	__USART1_CLK_ENABLE();
+
+	//Setup TX Pin
+	GPIO_InitStruct.Pin = GPIO_PIN_6;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	//Setup RX Pin
+	//It doesn't get set as an input?
+	GPIO_InitStruct.Pin = GPIO_PIN_7;
+	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	//Configure NVIC
+	HAL_NVIC_SetPriority(USART1_IRQn, 0, 1);
+	HAL_NVIC_EnableIRQ(USART1_IRQn);
+
+	UartHandle.Instance = USART1;
+	UartHandle.Init.BaudRate = 9600;
+	UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
+	UartHandle.Init.StopBits = UART_STOPBITS_1;
+	UartHandle.Init.Parity = UART_PARITY_NONE;
+	UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	UartHandle.Init.Mode = UART_MODE_TX_RX;
+
+	HAL_UART_Init(&UartHandle);
+}
+
+
 int
 main(int argc, char* argv[])
 {
@@ -729,6 +779,15 @@ main(int argc, char* argv[])
 
 	setGainPot(128, 128);
 
+	//testing Uart
+	configUartPeripheral();
+//	while(1)
+//	{
+//	      //HAL_UART_Transmit_IT(&UartHandle, (uint8_t*)aTxBuffer, 16);
+//
+//		hal_delay_ms(100);
+//	}
+
 	//MAIN LOOP - Lowest Priority
 	while(1)
 	{
@@ -744,6 +803,13 @@ main(int argc, char* argv[])
 		//Also, early on, I thought it had an issue with microphonics, but it turned out that it was the connection to the computer.
 		//Also since this is a form of direct conversion receiver (two of them together) I was worried about AM broadcast interference
 		//but I haven't noticed any, again, maybe I did something right? Beginner's luck?
+
+		HAL_UART_Receive_IT(&UartHandle, (uint8_t*)aRxBuffer, 16);
+
+		int* p = UartHandle.pRxBuffPtr;
+		int* q = &aRxBuffer;
+		int difference = p- q;
+
 
 		updateMenu();
 		updateDisplay(0);
@@ -1147,7 +1213,8 @@ void processStream()
 				for(i = 0; i < FFT_SIZE; i++)
 				{
 					samplesA[i * 2] = samplesDemod[i];
-					samplesA[i * 2 + 1] = samplesDemod[i];
+					samplesA[i * 2 + 1] = /*1.0 -*/ samplesDemod[i]; //invert one of them so they don't cancel
+					//Isn't working yet...
 				}
 			}
 

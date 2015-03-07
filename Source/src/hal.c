@@ -37,8 +37,7 @@
 //const Gpio_Pin FINGER_PRINT_BUTTON  = { GPIOB, GPIO_Pin_6  };
 
 //const Gpio_Pin LOW_BAT              = { GPIOB, GPIO_Pin_8  };
-const Gpio_Pin RX_TO_GPS            = { GPIOB, GPIO_PIN_6 };
-const Gpio_Pin TX_FROM_GPS          = { GPIOB, GPIO_PIN_7 };
+
 
 
 
@@ -134,6 +133,9 @@ const Gpio_Pin GPS_RESET			= { GPIOD, GPIO_PIN_1  };
 const Gpio_Pin GPS_FIX_LED 			= { GPIOD, GPIO_PIN_3  };
 const Gpio_Pin GPS_PPS				= { GPIOD, GPIO_PIN_4  };
 const Gpio_Pin GPS_POWER			= { GPIOD, GPIO_PIN_0  };
+const Gpio_Pin RX_TO_GPS            = { GPIOB, GPIO_PIN_6 };
+const Gpio_Pin TX_FROM_GPS          = { GPIOB, GPIO_PIN_7 };
+
 
 //// timer pins
 //const Timer_Pin LED_G =
@@ -547,12 +549,19 @@ void hal_setupPins(void)
     	HAL_GPIO_Init(DAC_MUX.port, &gpioInitStructure);
         HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. Speaker doesn't seem to work, btw...
 
+//    	gpioInitStructure.Pin = EARPHONE_NOT_INSERTED.pin;
+//    	gpioInitStructure.Mode = GPIO_MODE_ANALOG;
+//    	gpioInitStructure.Speed = GPIO_SPEED_LOW;
+//    	gpioInitStructure.Pull = GPIO_NOPULL;
+//    	HAL_GPIO_Init(EARPHONE_NOT_INSERTED.port, &gpioInitStructure);
+//        HAL_GPIO_WritePin(EARPHONE_NOT_INSERTED.port, EARPHONE_NOT_INSERTED.pin, 0);
+
     	gpioInitStructure.Pin = EARPHONE_NOT_INSERTED.pin;
-    	gpioInitStructure.Mode = GPIO_MODE_ANALOG;
+    	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
     	gpioInitStructure.Speed = GPIO_SPEED_LOW;
     	gpioInitStructure.Pull = GPIO_NOPULL;
     	HAL_GPIO_Init(EARPHONE_NOT_INSERTED.port, &gpioInitStructure);
-        HAL_GPIO_WritePin(EARPHONE_NOT_INSERTED.port, EARPHONE_NOT_INSERTED.pin, 0);
+        HAL_GPIO_WritePin(EARPHONE_NOT_INSERTED.port, EARPHONE_NOT_INSERTED.pin, 1);
 
     	gpioInitStructure.Pin = AUDIO_AMP_NSHTDWN.pin;
     	gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
@@ -749,7 +758,7 @@ void hal_setupPins(void)
     gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP; //I don't know if the module has ANYTHING hooked up to these pins yet.
     gpioInitStructure.Pull  = GPIO_NOPULL;
     HAL_GPIO_Init(GPS_RESET.port, &gpioInitStructure);
-    HAL_GPIO_WritePin(GPS_POWER.port, GPS_POWER.pin, 0);
+    HAL_GPIO_WritePin(GPS_RESET.port, GPS_RESET.pin, 1);
 
     gpioInitStructure.Pin 	 = GPS_FIX_LED.pin;
     gpioInitStructure.Speed = GPIO_SPEED_LOW;

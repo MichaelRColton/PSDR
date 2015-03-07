@@ -5,6 +5,7 @@
 #include "uart.h"
 #include <queue.h>
 #include <hal.h>
+#include <stddef.h>
 #include <stm32f4xx_hal_usart.h>
 
 
@@ -459,17 +460,21 @@ int uart_queueContains(char thingToFind[], int thingToFindLength, uint8_t uart)
 	return false;
 }
 
+USART_HandleTypeDef usart;
 void USART1_IRQHandler(void)
 {
     // uart 1 interrupt handler
     // this function name must match that in the startup file
 
     // handle uart rx char
-    if( USART_GetITStatus(USART1, USART_IT_RXNE) != RESET )
+    //if( USART_GetITStatus(USART1, USART_IT_RXNE) != RESET )
+	if(HAL_USART_GetState(usart) != HAL_USART_STATE_RESET) ;
     {
         uint8_t data;
 
-        data = USART_ReceiveData(USART1) & 0xFF;
+        //data = USART_ReceiveData(USART1) & 0xFF;
+        //data = HAL_USART_Receive(usart, data, 1,
+        HAL_USART_Receive_IT(usart, data, 1);
         if( queue8_enqueue(&uart1RxQ, data) )
             uart1RxOverflow = true;
     }

@@ -145,6 +145,9 @@
     extern const Gpio_Pin KEY1;
     extern const Gpio_Pin KEY2;
 
+
+
+
 //    extern const Gpio_Pin NC_1;
 //    extern const Gpio_Pin DAC_SWITCHES;
 //    extern const Gpio_Pin GSM_PWRKEY;

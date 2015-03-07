@@ -185,6 +185,19 @@ void SPIx_DMA_RX_IRQHandler(void)
   HAL_DMA_IRQHandler(SpiHandle.hdmarx);
 }
 
+/**
+  * @brief  This function handles UART interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to DMA stream
+  *         used for USART data transmission
+  */
+void USARTx_IRQHandler(void)
+{
+  HAL_UART_IRQHandler(& UartHandle);
+}
+
+
 //void TIM3_IRQHandler(void)
 //{
 //    __HAL_TIM_CLEAR_IT(htim, TIM_IT_UPDATE);
