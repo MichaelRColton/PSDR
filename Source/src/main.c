@@ -82,6 +82,7 @@ uint8_t modeLast = 2;
 
 float agcLevel = 0;
 float agcScale = 160; //Higher is lower volume.. for now
+float txAgcLevel = 0;
 
 
 int ifShift = 0;
@@ -272,62 +273,62 @@ void setupPeripheralPower()
 
 void configDMA(SPI_HandleTypeDef *hspi)
 {
-	  static DMA_HandleTypeDef hdma_tx;
-	  static DMA_HandleTypeDef hdma_rx;
-
-
-	hdma_tx.Instance                 = SPIx_TX_DMA_STREAM;
-
-	  hdma_tx.Init.Channel             = SPIx_TX_DMA_CHANNEL;
-	  hdma_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
-	  hdma_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
-	  hdma_tx.Init.MemInc              = DMA_MINC_ENABLE;
-	  hdma_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-	  hdma_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-	  hdma_tx.Init.Mode                = DMA_NORMAL;
-	  hdma_tx.Init.Priority            = DMA_PRIORITY_LOW;
-	  hdma_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
-	  hdma_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-	  hdma_tx.Init.MemBurst            = DMA_MBURST_INC4;
-	  hdma_tx.Init.PeriphBurst         = DMA_PBURST_INC4;
-
-	  HAL_DMA_Init(&hdma_tx);
-
-	  /* Associate the initialized DMA handle to the the SPI handle */
-	  __HAL_LINKDMA(hspi, hdmatx, hdma_tx);
-
-	  /* Configure the DMA handler for Transmission process */
-	  hdma_rx.Instance                 = SPIx_RX_DMA_STREAM;
-
-	  hdma_rx.Init.Channel             = SPIx_RX_DMA_CHANNEL;
-	  hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
-	  hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
-	  hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
-	  hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-	  hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-	  hdma_rx.Init.Mode                = DMA_NORMAL;
-	  hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
-	  hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
-	  hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-	  hdma_rx.Init.MemBurst            = DMA_MBURST_INC4;
-	  hdma_rx.Init.PeriphBurst         = DMA_PBURST_INC4;
-
-	  HAL_DMA_Init(&hdma_rx);
-
-	  /* Associate the initialized DMA handle to the the SPI handle */
-	  __HAL_LINKDMA(hspi, hdmarx, hdma_rx);
-
-	  /*##-4- Configure the NVIC for DMA #########################################*/
-	  /* NVIC configuration for DMA transfer complete interrupt (SPI3_TX) */
-	  HAL_NVIC_SetPriority(15/*SPIx_DMA_TX_IRQn*/, 0, 1);
-	  HAL_NVIC_EnableIRQ(SPIx_DMA_TX_IRQn);
-
-	  /* NVIC configuration for DMA transfer complete interrupt (SPI3_RX) */
-	  HAL_NVIC_SetPriority(SPIx_DMA_RX_IRQn, 0, 0);
-	  HAL_NVIC_EnableIRQ(SPIx_DMA_RX_IRQn);
-
-
-	  //HAL_DMA_Start();
+//	  static DMA_HandleTypeDef hdma_tx;
+//	  static DMA_HandleTypeDef hdma_rx;
+//
+//
+//	hdma_tx.Instance                 = SPIx_TX_DMA_STREAM;
+//
+//	  hdma_tx.Init.Channel             = SPIx_TX_DMA_CHANNEL;
+//	  hdma_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
+//	  hdma_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
+//	  hdma_tx.Init.MemInc              = DMA_MINC_ENABLE;
+//	  hdma_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+//	  hdma_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+//	  hdma_tx.Init.Mode                = DMA_NORMAL;
+//	  hdma_tx.Init.Priority            = DMA_PRIORITY_LOW;
+//	  hdma_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+//	  hdma_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+//	  hdma_tx.Init.MemBurst            = DMA_MBURST_INC4;
+//	  hdma_tx.Init.PeriphBurst         = DMA_PBURST_INC4;
+//
+//	  HAL_DMA_Init(&hdma_tx);
+//
+//	  /* Associate the initialized DMA handle to the the SPI handle */
+//	  __HAL_LINKDMA(hspi, hdmatx, hdma_tx);
+//
+//	  /* Configure the DMA handler for Transmission process */
+//	  hdma_rx.Instance                 = SPIx_RX_DMA_STREAM;
+//
+//	  hdma_rx.Init.Channel             = SPIx_RX_DMA_CHANNEL;
+//	  hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+//	  hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
+//	  hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
+//	  hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+//	  hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+//	  hdma_rx.Init.Mode                = DMA_NORMAL;
+//	  hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
+//	  hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+//	  hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+//	  hdma_rx.Init.MemBurst            = DMA_MBURST_INC4;
+//	  hdma_rx.Init.PeriphBurst         = DMA_PBURST_INC4;
+//
+//	  HAL_DMA_Init(&hdma_rx);
+//
+//	  /* Associate the initialized DMA handle to the the SPI handle */
+//	  __HAL_LINKDMA(hspi, hdmarx, hdma_rx);
+//
+//	  /*##-4- Configure the NVIC for DMA #########################################*/
+//	  /* NVIC configuration for DMA transfer complete interrupt (SPI3_TX) */
+//	  HAL_NVIC_SetPriority(15/*SPIx_DMA_TX_IRQn*/, 0, 1);
+//	  HAL_NVIC_EnableIRQ(SPIx_DMA_TX_IRQn);
+//
+//	  /* NVIC configuration for DMA transfer complete interrupt (SPI3_RX) */
+//	  HAL_NVIC_SetPriority(SPIx_DMA_RX_IRQn, 0, 0);
+//	  HAL_NVIC_EnableIRQ(SPIx_DMA_RX_IRQn);
+//
+//
+//	  //HAL_DMA_Start();
 }
 
 
@@ -440,6 +441,10 @@ int isFwd;
 	int     dcOffset2 = 1535;
 	int     dcOffset3 = 1518;
 
+	int dac1OutVal = 0;
+	int dac2OutVal = 0;
+	int txDacOutValMax = 0;
+
 	void captureSamples()
 	{
 		if(adcConfigured)
@@ -473,8 +478,18 @@ int isFwd;
 //						dac2SetValue(samplesB[sampleIndex*2+1] + samplesA[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesB[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
-						dac2SetValue(samplesB[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+
+					dac1OutVal = samplesB[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
+					dac2OutVal = samplesB[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
+
+					if(transmitting == 1)
+					{
+						if(dac1OutVal > txDacOutValMax) txDacOutValMax = dac1OutVal;
+						if(dac2OutVal > txDacOutValMax) txDacOutValMax = dac2OutVal;
+					}
+
+						dac1SetValue(dac1OutVal);
+						dac2SetValue(dac2OutVal);
 //					}
 
 
@@ -510,8 +525,21 @@ int isFwd;
 //						dac2SetValue(samplesC[sampleIndex*2+1] + samplesB[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
-						dac2SetValue(samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						//dac1SetValue(samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						//dac2SetValue(samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+
+						dac1OutVal = samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
+						dac2OutVal = samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
+
+						if(transmitting == 1)
+						{
+							if(dac1OutVal > txDacOutValMax) txDacOutValMax = dac1OutVal;
+							if(dac2OutVal > txDacOutValMax) txDacOutValMax = dac2OutVal;
+						}
+
+							dac1SetValue(dac1OutVal);
+							dac2SetValue(dac2OutVal);
+
 //					}
 
 						if(sampleIndex >= FFT_SIZE - filterKernelLength - 1)
@@ -544,8 +572,22 @@ int isFwd;
 //						dac2SetValue(samplesA[sampleIndex*2+1] + samplesC[(FFT_SIZE - filterKernelLength)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
-						dac1SetValue(samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
-						dac2SetValue(samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						//dac1SetValue(samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+						//dac2SetValue(samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
+
+						dac1OutVal = samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
+						dac2OutVal = samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
+
+						if(transmitting == 1)
+						{
+							if(dac1OutVal > txDacOutValMax) txDacOutValMax = dac1OutVal;
+							if(dac2OutVal > txDacOutValMax) txDacOutValMax = dac2OutVal;
+						}
+
+							dac1SetValue(dac1OutVal);
+							dac2SetValue(dac2OutVal);
+
+
 //					}
 
 						if(sampleIndex >= FFT_SIZE - filterKernelLength - 1)
@@ -670,39 +712,39 @@ uint8_t aTxBuffer[] = "Chris a baby!   ";
 uint8_t aRxBuffer[256];
 void configUartPeripheral()
 {
-	//Enable Clocks
-	__GPIOB_CLK_ENABLE();
-	__USART1_CLK_ENABLE();
-
-	//Setup TX Pin
-	GPIO_InitStruct.Pin = GPIO_PIN_6;
-	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
-
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-	//Setup RX Pin
-	//It doesn't get set as an input?
-	GPIO_InitStruct.Pin = GPIO_PIN_7;
-	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
-
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-	//Configure NVIC
-	HAL_NVIC_SetPriority(USART1_IRQn, 0, 1);
-	HAL_NVIC_EnableIRQ(USART1_IRQn);
-
-	UartHandle.Instance = USART1;
-	UartHandle.Init.BaudRate = 9600;
-	UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
-	UartHandle.Init.StopBits = UART_STOPBITS_1;
-	UartHandle.Init.Parity = UART_PARITY_NONE;
-	UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	UartHandle.Init.Mode = UART_MODE_TX_RX;
-
-	HAL_UART_Init(&UartHandle);
+//	//Enable Clocks
+//	__GPIOB_CLK_ENABLE();
+//	__USART1_CLK_ENABLE();
+//
+//	//Setup TX Pin
+//	GPIO_InitStruct.Pin = GPIO_PIN_6;
+//	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+//	GPIO_InitStruct.Pull = GPIO_NOPULL;
+//	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+//	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+//
+//	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+//
+//	//Setup RX Pin
+//	//It doesn't get set as an input?
+//	GPIO_InitStruct.Pin = GPIO_PIN_7;
+//	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+//
+//	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+//
+//	//Configure NVIC
+//	HAL_NVIC_SetPriority(USART1_IRQn, 0, 1);
+//	HAL_NVIC_EnableIRQ(USART1_IRQn);
+//
+//	UartHandle.Instance = USART1;
+//	UartHandle.Init.BaudRate = 9600;
+//	UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
+//	UartHandle.Init.StopBits = UART_STOPBITS_1;
+//	UartHandle.Init.Parity = UART_PARITY_NONE;
+//	UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+//	UartHandle.Init.Mode = UART_MODE_TX_RX;
+//
+//	HAL_UART_Init(&UartHandle);
 }
 
 
@@ -821,7 +863,8 @@ main(int argc, char* argv[])
 		Adafruit_GFX_fillRect(310, 8, 3, 3, HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin) ? ILI9340_RED : ILI9340_BLUE);
 		Adafruit_GFX_fillRect(310, 12, 3, 3, HAL_GPIO_ReadPin(TOUCH2.port, TOUCH2.pin) ? ILI9340_RED : ILI9340_BLUE);
 
-		if(HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin))
+		//if(HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin))
+		if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
 	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
@@ -830,7 +873,7 @@ main(int argc, char* argv[])
 	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 1); //Route through amp.
 	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 0); //always reverse of above.
 	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 0); //0 is on.
-	        tone = 0;
+	        tone = 200;
 		} else {
 			transmitting = 0;
 	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
@@ -1156,7 +1199,8 @@ void fillSamepleWithTone(int tone, float *samples)
 		samples[i] = 0;
 	}
 
-	samples[tone] = 1;
+	samples[tone*2] = 0.9;
+	samples[tone*2+1] = 0.9;
 }
 
 
