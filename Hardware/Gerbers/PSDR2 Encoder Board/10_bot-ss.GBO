@@ -1,0 +1,82 @@
+*
+*
+G04 PADS9.1 Build Number: 384028 generated Gerber (RS-274-X) file*
+G04 PC Version=2.1*
+*
+%IN "PSDR_Encoder.pcb"*%
+*
+%MOIN*%
+*
+%FSLAX35Y35*%
+*
+*
+*
+*
+G04 PC Standard Apertures*
+*
+*
+G04 Thermal Relief Aperture macro.*
+%AMTER*
+1,1,$1,0,0*
+1,0,$1-$2,0,0*
+21,0,$3,$4,0,0,45*
+21,0,$3,$4,0,0,135*
+%
+*
+*
+G04 Annular Aperture macro.*
+%AMANN*
+1,1,$1,0,0*
+1,0,$2,0,0*
+%
+*
+*
+G04 Odd Aperture macro.*
+%AMODD*
+1,1,$1,0,0*
+1,0,$1-0.005,0,0*
+%
+*
+*
+G04 PC Custom Aperture Macros*
+*
+*
+*
+*
+*
+*
+G04 PC Aperture Table*
+*
+%ADD012C,0.00787*%
+%ADD042C,0.001*%
+*
+*
+*
+*
+G04 PC Circuitry*
+G04 Layer Name PSDR_Encoder.pcb - circuitry*
+%LPD*%
+*
+*
+G04 PC Custom Flashes*
+G04 Layer Name PSDR_Encoder.pcb - flashes*
+%LPD*%
+*
+*
+G04 PC Circuitry*
+G04 Layer Name PSDR_Encoder.pcb - circuitry*
+%LPD*%
+*
+G54D12*
+G01X437402Y311220D02*
+X489764D01*
+Y349409*
+X437402*
+Y311220*
+X489764Y316142D02*
+X493701D01*
+Y344488*
+X489764*
+G54D42*
+X0Y0D02*
+M02*
