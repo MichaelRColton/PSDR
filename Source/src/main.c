@@ -42,6 +42,7 @@
 //#pragma GCC diagnostic ignored "-Wunused-parameter"
 //#pragma GCC diagnostic ignored "-Wmissing-declarations"
 //#pragma GCC diagnostic ignored "-Wreturn-type"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
 
 void dac1SetValue(uint16_t value);
 void dac2SetValue(uint16_t value);
@@ -771,6 +772,7 @@ main(int argc, char* argv[])
 
 	// Send a greeting to the trace device (skipped on Release).
 	trace_puts("Hello ARM World!");
+	trace_puts("Sweet, this works now!");
 
 	// At this stage the system clock should have already been configured
 	// at high speed.
