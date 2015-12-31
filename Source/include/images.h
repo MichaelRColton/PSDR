@@ -31,3 +31,16 @@ extern const unsigned short bitmapWebSdrGradient[];
 extern const unsigned short bitmapFilter[];
 extern const unsigned short bitmapHadLogo[];
 extern const unsigned short bitmapSMeter[];
+
+const unsigned short oneSmall[];
+const unsigned short twoSmall[];
+const unsigned short threeSmall[];
+const unsigned short fourSmall[];
+const unsigned short fiveSmall[];
+const unsigned short sixSmall[];
+const unsigned short sevenSmall[];
+const unsigned short eightSmall[];
+const unsigned short nineSmall[];
+const unsigned short zeroSmall[];
+const unsigned short hyphenSmall[];
+const unsigned short tildeSmall[];

@@ -904,39 +904,54 @@ void drawSMeter()
 	lastSMeterBarWidth = width;
 }
 
+enum menuItems
+{
+	oneMhzPlace = 0,
+	hundredKhzPlace = 1,
+	tenKhzPlace = 2,
+	oneKhzPlace = 3,
+	hundredHzPlace = 4,
+	tenHzPlace = 5,
+	oneHzPlace = 6,
+	filterLower = 7,
+	filterUpper = 8,
+	modeMenu = 9,
+	volumeMenu = 10,
+};
+
 void updateMenu()
 {
 	switch(menuPos)
 	{
-	case 0: //1,000,000 place
+	case oneMhzPlace:
 		frequencyDialMultiplier = 1000000;
 		updateVfo();
 		break;
-	case 1: //100,000 place
+	case hundredKhzPlace:
 		frequencyDialMultiplier = 100000;
 		updateVfo();
 		break;
-	case 2: //10,000 place
+	case tenKhzPlace:
 		frequencyDialMultiplier = 10000;
 		updateVfo();
 		break;
-	case 3: //1,000 place
+	case oneKhzPlace:
 		frequencyDialMultiplier = 1000;
 		updateVfo();
 		break;
-	case 4: //100 place
+	case hundredHzPlace:
 		frequencyDialMultiplier = 100;
 		updateVfo();
 		break;
-	case 5: //10 place
+	case tenHzPlace:
 		frequencyDialMultiplier = 10;
 		updateVfo();
 		break;
-	case 6: //1 place
+	case oneHzPlace:
 		frequencyDialMultiplier = 1;
 		updateVfo();
 		break;
-	case 7: //Filter Lower Limit
+	case filterLower:
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
@@ -948,7 +963,7 @@ void updateMenu()
 			populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 		}
 		break;
-	case 8: //Filter Upper
+	case filterUpper:
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
@@ -960,7 +975,7 @@ void updateMenu()
 			populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 		}
 		break;
-	case 9: //Mode
+	case modeMenu:
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
@@ -972,7 +987,7 @@ void updateMenu()
 			//Right now all this does is turns the AM decoder on and off, I guess.
 		}
 		break;
-	case 10: //Volume
+	case volumeMenu:
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
@@ -1010,6 +1025,12 @@ float calculateRmsOfSample(float* samples, int length)
 //TODO: Should I make a menuItem struct? Would that be helpful? The menus are a pain right now...
 uint8_t redItems[30];
 
+enum modes
+{
+	LSB = 0,
+	USB = 1,
+	AM = 2
+};
 
 void updateDisplay(uint8_t force)
 {
@@ -1017,6 +1038,7 @@ void updateDisplay(uint8_t force)
 	static char freqChar[14];
 	static char lastFreqChar[] = {'$','$','$','$','$','$','$','$','$','$','$','$','$','$',};
 
+	//Draw elements that don't normally change. Static icons, etc.
 	if(force)
 	{
 		//Adafruit_GFX_drawColorBitmap(180, 2, psdrLogo, 86,20, MASKWHITE);
@@ -1026,7 +1048,7 @@ void updateDisplay(uint8_t force)
 		drawNumber('.', freqHOffset + 16*2, freqVOffset + 0, MASKWHITE);
 		drawNumber('.', freqHOffset + 16*6, freqVOffset + 0, MASKWHITE);
 		Adafruit_GFX_drawColorBitmap(142, 162, bitmapSMeter, 155, 10, MASKWHITE);
-		Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
+		//Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
 	}
 
 	sprintf(&freqChar, "%8d", vfoAFrequency);
@@ -1068,55 +1090,93 @@ void updateDisplay(uint8_t force)
 	vfoALastFreq = vfoAFrequency;
 	strcpy(lastFreqChar, freqChar);
 
-	if(filterLowerLimit != filterLastLowerLimit || force || (menuPos != menuLastPos && (menuPos == 7 || menuLastPos == 7)))
+	int redrawFilterBar = 0;
+
+	if(mode != modeLast || filterLowerLimit != filterLastLowerLimit || force || (menuPos != menuLastPos && (menuPos == 7 || menuLastPos == 7)))
 	{
 		sprintf(&freqChar, "%4d", filterLowerLimit * 40);
-		Adafruit_GFX_setTextSize(2);
-		Adafruit_GFX_setTextColor(menuPos == 7 ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
-		Adafruit_GFX_setCursor(200, 135 );
+		//Adafruit_GFX_setTextSize(2);
+		//Adafruit_GFX_setTextColor(menuPos == 7 ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
+		//Adafruit_GFX_setCursor(200, 135 );
 		int i;
 		for(i = 0; i < 4; i++)
 		{
-			Adafruit_GFX_write(freqChar[i]);
+			//Adafruit_GFX_write(freqChar[i]);
+			drawNumberSmall(freqChar[i], 205 + (i * 9), 137, menuPos == 7 ? MASKRED : MASKWHITE);
 		}
 		//Adafruit_GFX_setTextSize(3);
 
-		Adafruit_GFX_fillRect(121, 120, 3, 100 , ILI9340_BLACK);
-		Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
-
+		redrawFilterBar = 1;
 		filterLastLowerLimit = filterLowerLimit;
 	}
 
-	if(filterUpperLimit != filterLastUpperLimit || force || (menuPos != menuLastPos && (menuPos == 8 || menuLastPos == 8)))
+	if(mode != modeLast || filterUpperLimit != filterLastUpperLimit || force || (menuPos != menuLastPos && (menuPos == 8 || menuLastPos == 8)))
 	{
 		sprintf(&freqChar, "%-4d", filterUpperLimit * 40);
-		Adafruit_GFX_setTextSize(2);
-		Adafruit_GFX_setTextColor(menuPos == 8 ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
-		Adafruit_GFX_setCursor(265, 135 );
+		//Adafruit_GFX_setTextSize(2);
+		//Adafruit_GFX_setTextColor(menuPos == 8 ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
+		//Adafruit_GFX_setCursor(265, 135 );
 		int i;
 		for(i = 0; i < 4; i++)
 		{
-			Adafruit_GFX_write(freqChar[i]);
+			//Adafruit_GFX_write(freqChar[i]);
+			drawNumberSmall(freqChar[i], 250 + (i * 9), 137, menuPos == 8 ? MASKRED : MASKWHITE);
 		}
 		//Adafruit_GFX_setTextSize(3);
 
-		Adafruit_GFX_fillRect(121, 120, 3, 100 , ILI9340_BLACK);
-		Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit - filterLowerLimit)/2, ILI9340_WHITE);
-
+		redrawFilterBar = 1;
 		filterLastUpperLimit = filterUpperLimit;
 	}
+
+
+	if(afGainLast != afGain || force || (menuPos != menuLastPos && (menuPos == volumeMenu || menuLastPos == volumeMenu)))
+	{
+		sprintf(&freqChar, "%-4f", afGain * 100);
+		int i;
+		for(i = 0; i < 4; i++)
+		{
+			//Adafruit_GFX_write(freqChar[i]);
+			drawNumberSmall(freqChar[i], 250 + (i * 9), 10, menuPos == volumeMenu ? MASKRED : MASKWHITE);
+		}
+
+		afGainLast = afGain;
+	}
+
+	//I think I want to make this more like the Draw S Meter, where it only draws the parts that have changed. Also, I think I want to do gray pixels when half
+	//way between values.
+	if(redrawFilterBar)
+	{
+		switch(mode)
+		{
+			case LSB:
+				Adafruit_GFX_fillRect(121, 0, 3, 240 , ILI9340_BLACK); //erase the old bar
+				Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit/2 - filterLowerLimit/2), ILI9340_WHITE); //draw the new one
+				break;
+			case USB:
+				Adafruit_GFX_fillRect(121, 0, 3, 240 , ILI9340_BLACK);
+				Adafruit_GFX_fillRect(121, 120 - (filterUpperLimit/2), 3, (filterUpperLimit/2 - filterLowerLimit/2), ILI9340_WHITE);
+				break;
+			case AM:
+				Adafruit_GFX_fillRect(121, 0, 3, 240 , ILI9340_BLACK);
+				Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit/2 - filterLowerLimit/2), ILI9340_WHITE);
+				Adafruit_GFX_fillRect(121, 120 - (filterUpperLimit/2), 3, (filterUpperLimit/2 - filterLowerLimit/2), ILI9340_WHITE);
+				break;
+		}
+		redrawFilterBar = 0;
+	}
+
 
 	if(mode != modeLast || force || (menuPos != menuLastPos && (menuPos == 9 || menuLastPos == 9)))
 	{
 		switch(mode)
 		{
-		case 0: //LSB
+		case LSB:
 			Adafruit_GFX_drawColorBitmap(196, 91, bitmapLSB, 28, 9, menuPos == 9 ? MASKRED : MASKWHITE);
 			break;
-		case 1: //USB
+		case USB:
 			Adafruit_GFX_drawColorBitmap(196, 91, bitmapUSB, 28, 9, menuPos == 9 ? MASKRED : MASKWHITE);
 			break;
-		case 2: //AM
+		case AM:
 			Adafruit_GFX_drawColorBitmap(196, 91, bitmapAM, 28, 9, menuPos == 9 ? MASKRED : MASKWHITE);
 			break;
 		}
@@ -1409,6 +1469,51 @@ void drawNumber(char c, uint16_t x, uint16_t y, uint16_t tintMask)
 		break;
 	default:
 		Adafruit_GFX_fillRect(x, y, 15, 19, ILI9340_BLACK);
+	}
+}
+
+void drawNumberSmall(char c, uint16_t x, uint16_t y, uint16_t tintMask)
+{
+	switch(c)
+	{
+	case '1':
+		Adafruit_GFX_drawColorBitmap(x, y, oneSmall, 8, 9, tintMask);
+		break;
+	case '2':
+		Adafruit_GFX_drawColorBitmap(x, y, twoSmall, 8, 9, tintMask);
+		break;
+	case '3':
+		Adafruit_GFX_drawColorBitmap(x, y, threeSmall, 8, 9, tintMask);
+		break;
+	case '4':
+		Adafruit_GFX_drawColorBitmap(x, y, fourSmall, 8, 9, tintMask);
+		break;
+	case '5':
+		Adafruit_GFX_drawColorBitmap(x, y, fiveSmall, 8, 9, tintMask);
+		break;
+	case '6':
+		Adafruit_GFX_drawColorBitmap(x, y, sixSmall, 8, 9, tintMask);
+		break;
+	case '7':
+		Adafruit_GFX_drawColorBitmap(x, y, sevenSmall, 8, 9, tintMask);
+		break;
+	case '8':
+		Adafruit_GFX_drawColorBitmap(x, y, eightSmall, 8, 9, tintMask);
+		break;
+	case '9':
+		Adafruit_GFX_drawColorBitmap(x, y, nineSmall, 8, 9, tintMask);
+		break;
+	case '0':
+		Adafruit_GFX_drawColorBitmap(x, y, zeroSmall, 8, 9, tintMask);
+		break;
+	case '-':
+		Adafruit_GFX_drawColorBitmap(x, y, hyphenSmall, 8, 9, tintMask);
+		break;
+	case '~':
+		Adafruit_GFX_drawColorBitmap(x, y, tildeSmall, 8, 9, tintMask);
+		break;
+	default:
+		Adafruit_GFX_fillRect(x, y, 8, 9, ILI9340_BLACK);
 	}
 }
 
