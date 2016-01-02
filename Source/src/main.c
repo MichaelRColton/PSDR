@@ -382,8 +382,10 @@ int isFwd;
 					((Position == 3) && (Position2 == 2)) || ((Position == 2) && (Position2 == 0));
 				if (!HAL_GPIO_ReadPin(encoderP.port, encoderP.pin))
 				{
-					if (isFwd) menuEncoderTicks += 1;
-					else menuEncoderTicks -= 1;
+					if (isFwd)
+						menuEncoderTicks += 1;
+					else
+						menuEncoderTicks -= 1;
 					menuPos = menuEncoderTicks/2;
 					menuPos = menuPos % menuCount;
 				}
@@ -774,6 +776,12 @@ main(int argc, char* argv[])
 	trace_puts("Hello ARM World!");
 	trace_puts("Sweet, this works now!");
 
+//	for(int i; i > 1000; i++)
+//	{
+//		trace_printf("%f = %f\n", (float)i, log((double)i));
+//	}
+
+
 	// At this stage the system clock should have already been configured
 	// at high speed.
 	trace_printf("System clock: %uHz\n", SystemCoreClock);
@@ -865,8 +873,8 @@ main(int argc, char* argv[])
 		Adafruit_GFX_fillRect(310, 8, 3, 3, HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin) ? ILI9340_RED : ILI9340_BLUE);
 		Adafruit_GFX_fillRect(310, 12, 3, 3, HAL_GPIO_ReadPin(TOUCH2.port, TOUCH2.pin) ? ILI9340_RED : ILI9340_BLUE);
 
-		//if(HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin))
-		if(1) //I am locking it in transmit for some testing.
+		if(HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin))
+		//if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
 	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
