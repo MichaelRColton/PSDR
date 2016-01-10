@@ -10,7 +10,41 @@
 #include <stm32f4xx_hal_spi.h>
 #include <stm32f4xx_hal_gpio.h>
 #include <stm32f4xx_hal.h>
+#include <stm32f4xx_hal_dma.h>
+#include <stm32f429xx.h>
 
+void spi_dma_init(void)
+{
+	DMA_InitTypeDef dma_is;
+
+	dma_is.Channel = DMA_CHANNEL_3;
+	dma_is.Direction = DMA_MEMORY_TO_PERIPH;
+	dma_is.FIFOMode = DMA_FIFOMODE_DISABLE;
+	dma_is.MemBurst = DMA_MBURST_SINGLE;
+	dma_is.MemInc = DMA_MINC_DISABLE;
+	dma_is.Mode = DMA_
+
+//	dma_is.DMA_Channel = DMA_Channel_0;
+//	dma_is.DMA_Memory0BaseAddr = (uint32_t)screenBuffer;
+//	dma_is.DMA_PeripheralBaseAddr = (uint32_t)(0x4000380C); //SPI2 DR
+//	dma_is.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+//	dma_is.DMA_PeripheralDataSize = DMA_MemoryDataSize_Byte;
+//	dma_is.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+//	dma_is.DMA_Mode = DMA_Mode_Normal;
+//	dma_is.DMA_MemoryInc = DMA_MemoryInc_Enable;
+//	dma_is.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+//	dma_is.DMA_BufferSize = 6*84;
+//	dma_is.DMA_Priority = DMA_Priority_High;
+//	dma_is.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+//	dma_is.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+//	dma_is.DMA_FIFOMode = DMA_FIFOMode_Disable;
+
+	DMA_Init(DMA1_Stream4, &dma_is);
+	DMA_Cmd(DMA1_Stream4, ENABLE);
+
+	// ...
+	SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
+}
 
 void spi_init(void)
 {
@@ -70,7 +104,7 @@ void spi_init(void)
     SpiHandle.Init.CLKPolarity 		  = SPI_POLARITY_HIGH;
     SpiHandle.Init.CLKPhase			  = SPI_PHASE_2EDGE;
     SpiHandle.Init.NSS                = SPI_NSS_SOFT; //SPI_NSS_SOFT;
-    SpiHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_2;
+    SpiHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_2
     SpiHandle.Init.FirstBit           = SPI_FIRSTBIT_MSB;
     SpiHandle.Init.CRCCalculation 	  = SPI_CRCCALCULATION_DISABLED;
     SpiHandle.Init.TIMode 			  = SPI_TIMODE_DISABLED;
