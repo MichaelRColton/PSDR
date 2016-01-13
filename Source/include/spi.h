@@ -16,6 +16,9 @@
 #endif
 //#include <stm32f4xx_hal.h>
 #include <stm32f4xx_hal_spi.h>
+#include "main.h"
+
+DMA_HandleTypeDef     DmaHandle;
 
 //SPI_HandleTypeDef SpiHandle;
 

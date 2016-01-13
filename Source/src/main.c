@@ -790,10 +790,13 @@ main(int argc, char* argv[])
 
 	//initDdsPins();
 	hal_setupPins();
+
+
+	//configDMA(&SpiHandle );
+
+
 	spi_init();
-
-	configDMA(&SpiHandle );
-
+	spi_dma_init();
 
 	timer_start();
 
@@ -809,6 +812,8 @@ main(int argc, char* argv[])
 	Adafruit_ILI9340_setRotation(1);
 	//Adafruit_GFX_fillScreen(ILI9340_BLACK);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
+
+
 
 	Adafruit_GFX_setTextSize(3);
 	Adafruit_GFX_setTextWrap(1);

@@ -554,18 +554,36 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
   //digitalWrite(_cs, LOW);
 
-  for(y=h; y>0; y--) {
-    for(x=w; x>0; x--) {
-      //spiwrite(hi);
-      //spiwrite(lo);
-  	//txBuf[0] = hi;
-  	//txBuf[1] = lo;
-    	txBuf[0] = color;
+  txBuf[0] = color;
 
-  	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
-  	//HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)txBuf, (uint8_t*)rxBuf, 2, 1000);
-    }
+  int size = w*h;
+//  while(size > 0xFFFF)
+//  {
+//	  HAL_DMA_Start(&DmaHandle, (uint32_t)&txBuf, (uint32_t)(&(SPI1->DR)), 0xFFFF);
+//	  size -= 0xFFFF;
+//	  HAL_DMA_PollForTransfer(&DmaHandle, HAL_DMA_FULL_TRANSFER, 10000);
+//  }
+//  HAL_DMA_Start(&DmaHandle, (uint32_t)&txBuf, (uint32_t)(&(SPI1->DR)), size);
+
+  HAL_SPI_Transmit_DMA(&SpiHandle, (uint32_t)&txBuf, size);
+
+  while (HAL_SPI_GetState(&SpiHandle) != HAL_SPI_STATE_READY)
+  {
   }
+
+//  for(y=h; y>0; y--) {
+//    for(x=w; x>0; x--) {
+//      //spiwrite(hi);
+//      //spiwrite(lo);
+//  	//txBuf[0] = hi;
+//  	//txBuf[1] = lo;
+//    	txBuf[0] = color;
+//
+//  	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+//  	//HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)txBuf, (uint8_t*)rxBuf, 2, 1000);
+//    }
+//  }
+
   //digitalWrite(_cs, HIGH);
   //SET_BIT(csport, cspinmask);
   HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
