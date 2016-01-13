@@ -42,7 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
 //#include "stm32f10x.h"
 //#include <stm32f415xx.h>
 #ifdef PSDR2
-	#include "stm32f429xx.h"
+//	#include "stm32f429xx.h"
 #endif
 
 

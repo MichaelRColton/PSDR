@@ -10,14 +10,14 @@
     //#include <stm32f10x.h>
 //#include <stm32f415xx.h>
 #ifdef PSDR2
-	#include "stm32f429xx.h"
+//	#include "stm32f429xx.h"
 #endif
-#include <stm32f4xx_hal_gpio.h>
+//#include <stm32f4xx_hal_gpio.h>
 //    #include <stm32f10x_gpio.h>
     #include <uart.h>
-#include "stm32f4xx_hal_dma.h"
-#include "stm32f4xx_hal_usart.h"
-
+//#include "stm32f4xx_hal_dma.h"
+//#include "stm32f4xx_hal_usart.h"
+#include "stm32f4xx_hal.h"
 
 
     typedef struct _Gpio_Pin

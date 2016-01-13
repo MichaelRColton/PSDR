@@ -37,6 +37,7 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
+#pragma message trying to include hal_def
 #ifndef __STM32F4xx_HAL_DEF
 #define __STM32F4xx_HAL_DEF
 
@@ -49,6 +50,7 @@
 #include "Legacy/stm32_hal_legacy.h"
 #include <stdio.h>
 
+#pragma message This got included
 /* Exported types ------------------------------------------------------------*/
 
 /** 

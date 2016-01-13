@@ -1,4 +1,6 @@
-#pragma once
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __MAIN_H
+#define __MAIN_H
 
 //#define PSDR1 1
 #define PSDR2 2
@@ -16,10 +18,10 @@
 //#define HSE_VALUE 24000000
 
 
-#include "stm32f429xx.h"
+//#include "stm32f429xx.h"
 #endif
 
-#include "stm32f4xx.h"
+//#include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 //#include "stm32f4xx_hal_conf.h"
 //#include "stm32f4xx_hal_def.h"
@@ -54,8 +56,8 @@
 //#include "stm32f4xx_hal_dma.h"
 
 //#include "stm32f4xx_hal_def.h"
-#include "stm32f4xx_hal_uart.h"
-#include "stm32f4xx_hal_usart.h"
+//#include "stm32f4xx_hal_uart.h"
+//#include "stm32f4xx_hal_usart.h"
 
 
 TIM_HandleTypeDef    TimHandle;
@@ -106,3 +108,5 @@ UART_HandleTypeDef UartHandle;
 //  HAL_UNLOCKED = 0x00,
 //  HAL_LOCKED   = 0x01
 //} HAL_LockTypeDef;
+
+#endif /* __MAIN_H */

@@ -24,7 +24,9 @@
 #include <stdbool.h>
 //#include <stm32f4xx_hal.h>
 
-#include "stm32f4xx_hal_spi.h"
+//#include "stm32f4xx_hal_spi.h"
+#include "stm32f4xx_hal.h"
+
 
 #if defined(__SAM3X8E__)
 #include <include/pio.h>

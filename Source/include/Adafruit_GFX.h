@@ -10,9 +10,9 @@
 
 //#include <stm32f10x.h>
 //#include <stm32f415xx.h>
-#include "stm32f4xx.h"
+//#include "stm32f4xx.h"
 #ifdef PSDR2
-	#include "stm32f429xx.h"
+//	#include "stm32f429xx.h"
 #endif
 
 #include <stdbool.h>
