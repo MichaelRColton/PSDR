@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    stm32f4xx_ll_sdmmc.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    18-February-2014
+  * @version V1.4.3
+  * @date    11-December-2015
   * @brief   Header file of SDMMC HAL module.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -42,7 +42,10 @@
 #ifdef __cplusplus
  extern "C" {
 #endif
-
+#if defined(STM32F405xx) || defined(STM32F415xx) || defined(STM32F407xx) || defined(STM32F417xx) || \
+    defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx) || \
+    defined(STM32F401xC) || defined(STM32F401xE) || defined(STM32F411xE) || defined(STM32F446xx) || \
+    defined(STM32F469xx) || defined(STM32F479xx)
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal_def.h"
 
@@ -50,12 +53,15 @@
   * @{
   */
 
-/** @addtogroup SDMMC
+/** @addtogroup SDMMC_LL
   * @{
   */ 
 
 /* Exported types ------------------------------------------------------------*/ 
-
+/** @defgroup SDMMC_LL_Exported_Types SDMMC_LL Exported Types
+  * @{
+  */
+  
 /** 
   * @brief  SDMMC Configuration Structure definition  
   */
@@ -134,17 +140,20 @@ typedef struct
                                      This parameter can be a value of @ref SDIO_DPSM_State         */
 }SDIO_DataInitTypeDef;
 
+/**
+  * @}
+  */
+  
 /* Exported constants --------------------------------------------------------*/
-
-/** @defgroup SDIO_Exported_Constants
+/** @defgroup SDMMC_LL_Exported_Constants SDMMC_LL Exported Constants
   * @{
   */
 
-/** @defgroup SDIO_Clock_Edge 
+/** @defgroup SDIO_Clock_Edge Clock Edge
   * @{
   */
 #define SDIO_CLOCK_EDGE_RISING               ((uint32_t)0x00000000)
-#define SDIO_CLOCK_EDGE_FALLING              ((uint32_t)0x00002000)
+#define SDIO_CLOCK_EDGE_FALLING              SDIO_CLKCR_NEGEDGE
 
 #define IS_SDIO_CLOCK_EDGE(EDGE) (((EDGE) == SDIO_CLOCK_EDGE_RISING) || \
                                   ((EDGE) == SDIO_CLOCK_EDGE_FALLING))
@@ -152,11 +161,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_Clock_Bypass 
+/** @defgroup SDIO_Clock_Bypass Clock Bypass
   * @{
   */
 #define SDIO_CLOCK_BYPASS_DISABLE             ((uint32_t)0x00000000)
-#define SDIO_CLOCK_BYPASS_ENABLE              ((uint32_t)0x00000400)    
+#define SDIO_CLOCK_BYPASS_ENABLE              SDIO_CLKCR_BYPASS   
 
 #define IS_SDIO_CLOCK_BYPASS(BYPASS) (((BYPASS) == SDIO_CLOCK_BYPASS_DISABLE) || \
                                       ((BYPASS) == SDIO_CLOCK_BYPASS_ENABLE))
@@ -164,11 +173,11 @@ typedef struct
   * @}
   */ 
 
-/** @defgroup SDIO_Clock_Power_Save 
+/** @defgroup SDIO_Clock_Power_Save Clock Power Saving
   * @{
   */
 #define SDIO_CLOCK_POWER_SAVE_DISABLE         ((uint32_t)0x00000000)
-#define SDIO_CLOCK_POWER_SAVE_ENABLE          ((uint32_t)0x00000200) 
+#define SDIO_CLOCK_POWER_SAVE_ENABLE          SDIO_CLKCR_PWRSAV
 
 #define IS_SDIO_CLOCK_POWER_SAVE(SAVE) (((SAVE) == SDIO_CLOCK_POWER_SAVE_DISABLE) || \
                                         ((SAVE) == SDIO_CLOCK_POWER_SAVE_ENABLE))
@@ -176,12 +185,12 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_Bus_Wide 
+/** @defgroup SDIO_Bus_Wide Bus Width
   * @{
   */
 #define SDIO_BUS_WIDE_1B                      ((uint32_t)0x00000000)
-#define SDIO_BUS_WIDE_4B                      ((uint32_t)0x00000800)
-#define SDIO_BUS_WIDE_8B                      ((uint32_t)0x00001000)
+#define SDIO_BUS_WIDE_4B                      SDIO_CLKCR_WIDBUS_0
+#define SDIO_BUS_WIDE_8B                      SDIO_CLKCR_WIDBUS_1
 
 #define IS_SDIO_BUS_WIDE(WIDE) (((WIDE) == SDIO_BUS_WIDE_1B) || \
                                 ((WIDE) == SDIO_BUS_WIDE_4B) || \
@@ -190,11 +199,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_Hardware_Flow_Control 
+/** @defgroup SDIO_Hardware_Flow_Control Hardware Flow Control
   * @{
   */
 #define SDIO_HARDWARE_FLOW_CONTROL_DISABLE    ((uint32_t)0x00000000)
-#define SDIO_HARDWARE_FLOW_CONTROL_ENABLE     ((uint32_t)0x00004000)
+#define SDIO_HARDWARE_FLOW_CONTROL_ENABLE     SDIO_CLKCR_HWFC_EN
 
 #define IS_SDIO_HARDWARE_FLOW_CONTROL(CONTROL) (((CONTROL) == SDIO_HARDWARE_FLOW_CONTROL_DISABLE) || \
                                                 ((CONTROL) == SDIO_HARDWARE_FLOW_CONTROL_ENABLE))
@@ -202,19 +211,15 @@ typedef struct
   * @}
   */
   
-/** @defgroup SDIO_Clock_Division
+/** @defgroup SDIO_Clock_Division Clock Division
   * @{
   */
 #define IS_SDIO_CLKDIV(DIV)   ((DIV) <= 0xFF)
 /**
   * @}
   */  
-  
-/**
-  * @}
-  */ 
     
-/** @defgroup SDIO_Command_Index
+/** @defgroup SDIO_Command_Index Command Index
   * @{
   */
 #define IS_SDIO_CMD_INDEX(INDEX)            ((INDEX) < 0x40)
@@ -222,12 +227,12 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_Response_Type
+/** @defgroup SDIO_Response_Type Response Type
   * @{
   */
 #define SDIO_RESPONSE_NO                    ((uint32_t)0x00000000)
-#define SDIO_RESPONSE_SHORT                 ((uint32_t)0x00000040)
-#define SDIO_RESPONSE_LONG                  ((uint32_t)0x000000C0)
+#define SDIO_RESPONSE_SHORT                 SDIO_CMD_WAITRESP_0
+#define SDIO_RESPONSE_LONG                  SDIO_CMD_WAITRESP
 
 #define IS_SDIO_RESPONSE(RESPONSE) (((RESPONSE) == SDIO_RESPONSE_NO)    || \
                                     ((RESPONSE) == SDIO_RESPONSE_SHORT) || \
@@ -236,12 +241,12 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_Wait_Interrupt_State
+/** @defgroup SDIO_Wait_Interrupt_State Wait Interrupt
   * @{
   */
 #define SDIO_WAIT_NO                        ((uint32_t)0x00000000)
-#define SDIO_WAIT_IT                        ((uint32_t)0x00000100) 
-#define SDIO_WAIT_PEND                      ((uint32_t)0x00000200) 
+#define SDIO_WAIT_IT                        SDIO_CMD_WAITINT 
+#define SDIO_WAIT_PEND                      SDIO_CMD_WAITPEND
 
 #define IS_SDIO_WAIT(WAIT) (((WAIT) == SDIO_WAIT_NO) || \
                             ((WAIT) == SDIO_WAIT_IT) || \
@@ -250,11 +255,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_CPSM_State
+/** @defgroup SDIO_CPSM_State CPSM State
   * @{
   */
 #define SDIO_CPSM_DISABLE                   ((uint32_t)0x00000000)
-#define SDIO_CPSM_ENABLE                    ((uint32_t)0x00000400)
+#define SDIO_CPSM_ENABLE                    SDIO_CMD_CPSMEN
 
 #define IS_SDIO_CPSM(CPSM) (((CPSM) == SDIO_CPSM_DISABLE) || \
                             ((CPSM) == SDIO_CPSM_ENABLE))
@@ -262,7 +267,7 @@ typedef struct
   * @}
   */  
 
-/** @defgroup SDIO_Response_Registers
+/** @defgroup SDIO_Response_Registers Response Register
   * @{
   */
 #define SDIO_RESP1                          ((uint32_t)0x00000000)
@@ -278,7 +283,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_Data_Length 
+/** @defgroup SDIO_Data_Length Data Lenght
   * @{
   */
 #define IS_SDIO_DATA_LENGTH(LENGTH) ((LENGTH) <= 0x01FFFFFF)
@@ -286,18 +291,18 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_Data_Block_Size 
+/** @defgroup SDIO_Data_Block_Size Data Block Size
   * @{
   */
 #define SDIO_DATABLOCK_SIZE_1B               ((uint32_t)0x00000000)
-#define SDIO_DATABLOCK_SIZE_2B               ((uint32_t)0x00000010)
-#define SDIO_DATABLOCK_SIZE_4B               ((uint32_t)0x00000020)
+#define SDIO_DATABLOCK_SIZE_2B               SDIO_DCTRL_DBLOCKSIZE_0
+#define SDIO_DATABLOCK_SIZE_4B               SDIO_DCTRL_DBLOCKSIZE_1
 #define SDIO_DATABLOCK_SIZE_8B               ((uint32_t)0x00000030)
-#define SDIO_DATABLOCK_SIZE_16B              ((uint32_t)0x00000040)
+#define SDIO_DATABLOCK_SIZE_16B              SDIO_DCTRL_DBLOCKSIZE_2
 #define SDIO_DATABLOCK_SIZE_32B              ((uint32_t)0x00000050)
 #define SDIO_DATABLOCK_SIZE_64B              ((uint32_t)0x00000060)
 #define SDIO_DATABLOCK_SIZE_128B             ((uint32_t)0x00000070)
-#define SDIO_DATABLOCK_SIZE_256B             ((uint32_t)0x00000080)
+#define SDIO_DATABLOCK_SIZE_256B             SDIO_DCTRL_DBLOCKSIZE_3
 #define SDIO_DATABLOCK_SIZE_512B             ((uint32_t)0x00000090)
 #define SDIO_DATABLOCK_SIZE_1024B            ((uint32_t)0x000000A0)
 #define SDIO_DATABLOCK_SIZE_2048B            ((uint32_t)0x000000B0)
@@ -324,11 +329,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_Transfer_Direction 
+/** @defgroup SDIO_Transfer_Direction Transfer Direction
   * @{
   */
 #define SDIO_TRANSFER_DIR_TO_CARD            ((uint32_t)0x00000000)
-#define SDIO_TRANSFER_DIR_TO_SDIO             ((uint32_t)0x00000002)
+#define SDIO_TRANSFER_DIR_TO_SDIO            SDIO_DCTRL_DTDIR
 
 #define IS_SDIO_TRANSFER_DIR(DIR) (((DIR) == SDIO_TRANSFER_DIR_TO_CARD) || \
                                    ((DIR) == SDIO_TRANSFER_DIR_TO_SDIO))
@@ -336,11 +341,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_Transfer_Type 
+/** @defgroup SDIO_Transfer_Type Transfer Type
   * @{
   */
 #define SDIO_TRANSFER_MODE_BLOCK             ((uint32_t)0x00000000)
-#define SDIO_TRANSFER_MODE_STREAM            ((uint32_t)0x00000004)
+#define SDIO_TRANSFER_MODE_STREAM            SDIO_DCTRL_DTMODE
 
 #define IS_SDIO_TRANSFER_MODE(MODE) (((MODE) == SDIO_TRANSFER_MODE_BLOCK) || \
                                      ((MODE) == SDIO_TRANSFER_MODE_STREAM))
@@ -348,11 +353,11 @@ typedef struct
   * @}
   */
 
-/** @defgroup SDIO_DPSM_State 
+/** @defgroup SDIO_DPSM_State DPSM State
   * @{
   */
 #define SDIO_DPSM_DISABLE                    ((uint32_t)0x00000000)
-#define SDIO_DPSM_ENABLE                     ((uint32_t)0x00000001)
+#define SDIO_DPSM_ENABLE                     SDIO_DCTRL_DTEN
 
 #define IS_SDIO_DPSM(DPSM) (((DPSM) == SDIO_DPSM_DISABLE) ||\
                             ((DPSM) == SDIO_DPSM_ENABLE))
@@ -360,11 +365,11 @@ typedef struct
   * @}
   */
   
-/** @defgroup SDIO_Read_Wait_Mode 
+/** @defgroup SDIO_Read_Wait_Mode Read Wait Mode
   * @{
   */
-#define SDIO_READ_WAIT_MODE_CLK               ((uint32_t)0x00000000)
-#define SDIO_READ_WAIT_MODE_DATA2             ((uint32_t)0x00000001)
+#define SDIO_READ_WAIT_MODE_DATA2             ((uint32_t)0x00000000)
+#define SDIO_READ_WAIT_MODE_CLK               ((uint32_t)0x00000001)
 
 #define IS_SDIO_READWAIT_MODE(MODE) (((MODE) == SDIO_READ_WAIT_MODE_CLK) || \
                                      ((MODE) == SDIO_READ_WAIT_MODE_DATA2))
@@ -372,243 +377,192 @@ typedef struct
   * @}
   */  
 
-/** @defgroup SDIO_Interrupt_sources
+/** @defgroup SDIO_Interrupt_sources Interrupt Sources
   * @{
   */
-#define SDIO_IT_CCRCFAIL                    ((uint32_t)0x00000001)
-#define SDIO_IT_DCRCFAIL                    ((uint32_t)0x00000002)
-#define SDIO_IT_CTIMEOUT                    ((uint32_t)0x00000004)
-#define SDIO_IT_DTIMEOUT                    ((uint32_t)0x00000008)
-#define SDIO_IT_TXUNDERR                    ((uint32_t)0x00000010)
-#define SDIO_IT_RXOVERR                     ((uint32_t)0x00000020)
-#define SDIO_IT_CMDREND                     ((uint32_t)0x00000040)
-#define SDIO_IT_CMDSENT                     ((uint32_t)0x00000080)
-#define SDIO_IT_DATAEND                     ((uint32_t)0x00000100)
-#define SDIO_IT_STBITERR                    ((uint32_t)0x00000200)
-#define SDIO_IT_DBCKEND                     ((uint32_t)0x00000400)
-#define SDIO_IT_CMDACT                      ((uint32_t)0x00000800)
-#define SDIO_IT_TXACT                       ((uint32_t)0x00001000)
-#define SDIO_IT_RXACT                       ((uint32_t)0x00002000)
-#define SDIO_IT_TXFIFOHE                    ((uint32_t)0x00004000)
-#define SDIO_IT_RXFIFOHF                    ((uint32_t)0x00008000)
-#define SDIO_IT_TXFIFOF                     ((uint32_t)0x00010000)
-#define SDIO_IT_RXFIFOF                     ((uint32_t)0x00020000)
-#define SDIO_IT_TXFIFOE                     ((uint32_t)0x00040000)
-#define SDIO_IT_RXFIFOE                     ((uint32_t)0x00080000)
-#define SDIO_IT_TXDAVL                      ((uint32_t)0x00100000)
-#define SDIO_IT_RXDAVL                      ((uint32_t)0x00200000)
-#define SDIO_IT_SDIOIT                      ((uint32_t)0x00400000)
-#define SDIO_IT_CEATAEND                    ((uint32_t)0x00800000)
-
-#define IS_SDIO_IT(IT) ((((IT) & (uint32_t)0xFF000000) == 0x00) && ((IT) != (uint32_t)0x00))
+#define SDIO_IT_CCRCFAIL                    SDIO_STA_CCRCFAIL
+#define SDIO_IT_DCRCFAIL                    SDIO_STA_DCRCFAIL
+#define SDIO_IT_CTIMEOUT                    SDIO_STA_CTIMEOUT
+#define SDIO_IT_DTIMEOUT                    SDIO_STA_DTIMEOUT
+#define SDIO_IT_TXUNDERR                    SDIO_STA_TXUNDERR
+#define SDIO_IT_RXOVERR                     SDIO_STA_RXOVERR
+#define SDIO_IT_CMDREND                     SDIO_STA_CMDREND
+#define SDIO_IT_CMDSENT                     SDIO_STA_CMDSENT
+#define SDIO_IT_DATAEND                     SDIO_STA_DATAEND
+#define SDIO_IT_STBITERR                    SDIO_STA_STBITERR
+#define SDIO_IT_DBCKEND                     SDIO_STA_DBCKEND
+#define SDIO_IT_CMDACT                      SDIO_STA_CMDACT
+#define SDIO_IT_TXACT                       SDIO_STA_TXACT
+#define SDIO_IT_RXACT                       SDIO_STA_RXACT
+#define SDIO_IT_TXFIFOHE                    SDIO_STA_TXFIFOHE
+#define SDIO_IT_RXFIFOHF                    SDIO_STA_RXFIFOHF
+#define SDIO_IT_TXFIFOF                     SDIO_STA_TXFIFOF
+#define SDIO_IT_RXFIFOF                     SDIO_STA_RXFIFOF
+#define SDIO_IT_TXFIFOE                     SDIO_STA_TXFIFOE
+#define SDIO_IT_RXFIFOE                     SDIO_STA_RXFIFOE
+#define SDIO_IT_TXDAVL                      SDIO_STA_TXDAVL
+#define SDIO_IT_RXDAVL                      SDIO_STA_RXDAVL
+#define SDIO_IT_SDIOIT                      SDIO_STA_SDIOIT
+#define SDIO_IT_CEATAEND                    SDIO_STA_CEATAEND
 /**
   * @}
   */ 
 
-/** @defgroup SDIO_Flags 
+/** @defgroup SDIO_Flags Flags
   * @{
   */
-#define SDIO_FLAG_CCRCFAIL                  ((uint32_t)0x00000001)
-#define SDIO_FLAG_DCRCFAIL                  ((uint32_t)0x00000002)
-#define SDIO_FLAG_CTIMEOUT                  ((uint32_t)0x00000004)
-#define SDIO_FLAG_DTIMEOUT                  ((uint32_t)0x00000008)
-#define SDIO_FLAG_TXUNDERR                  ((uint32_t)0x00000010)
-#define SDIO_FLAG_RXOVERR                   ((uint32_t)0x00000020)
-#define SDIO_FLAG_CMDREND                   ((uint32_t)0x00000040)
-#define SDIO_FLAG_CMDSENT                   ((uint32_t)0x00000080)
-#define SDIO_FLAG_DATAEND                   ((uint32_t)0x00000100)
-#define SDIO_FLAG_STBITERR                  ((uint32_t)0x00000200)
-#define SDIO_FLAG_DBCKEND                   ((uint32_t)0x00000400)
-#define SDIO_FLAG_CMDACT                    ((uint32_t)0x00000800)
-#define SDIO_FLAG_TXACT                     ((uint32_t)0x00001000)
-#define SDIO_FLAG_RXACT                     ((uint32_t)0x00002000)
-#define SDIO_FLAG_TXFIFOHE                  ((uint32_t)0x00004000)
-#define SDIO_FLAG_RXFIFOHF                  ((uint32_t)0x00008000)
-#define SDIO_FLAG_TXFIFOF                   ((uint32_t)0x00010000)
-#define SDIO_FLAG_RXFIFOF                   ((uint32_t)0x00020000)
-#define SDIO_FLAG_TXFIFOE                   ((uint32_t)0x00040000)
-#define SDIO_FLAG_RXFIFOE                   ((uint32_t)0x00080000)
-#define SDIO_FLAG_TXDAVL                    ((uint32_t)0x00100000)
-#define SDIO_FLAG_RXDAVL                    ((uint32_t)0x00200000)
-#define SDIO_FLAG_SDIOIT                    ((uint32_t)0x00400000)
-#define SDIO_FLAG_CEATAEND                  ((uint32_t)0x00800000)
-
-#define IS_SDIO_FLAG(FLAG) (((FLAG)  == SDIO_FLAG_CCRCFAIL) || \
-                            ((FLAG)  == SDIO_FLAG_DCRCFAIL) || \
-                            ((FLAG)  == SDIO_FLAG_CTIMEOUT) || \
-                            ((FLAG)  == SDIO_FLAG_DTIMEOUT) || \
-                            ((FLAG)  == SDIO_FLAG_TXUNDERR) || \
-                            ((FLAG)  == SDIO_FLAG_RXOVERR)  || \
-                            ((FLAG)  == SDIO_FLAG_CMDREND)  || \
-                            ((FLAG)  == SDIO_FLAG_CMDSENT)  || \
-                            ((FLAG)  == SDIO_FLAG_DATAEND)  || \
-                            ((FLAG)  == SDIO_FLAG_STBITERR) || \
-                            ((FLAG)  == SDIO_FLAG_DBCKEND)  || \
-                            ((FLAG)  == SDIO_FLAG_CMDACT)   || \
-                            ((FLAG)  == SDIO_FLAG_TXACT)    || \
-                            ((FLAG)  == SDIO_FLAG_RXACT)    || \
-                            ((FLAG)  == SDIO_FLAG_TXFIFOHE) || \
-                            ((FLAG)  == SDIO_FLAG_RXFIFOHF) || \
-                            ((FLAG)  == SDIO_FLAG_TXFIFOF)  || \
-                            ((FLAG)  == SDIO_FLAG_RXFIFOF)  || \
-                            ((FLAG)  == SDIO_FLAG_TXFIFOE)  || \
-                            ((FLAG)  == SDIO_FLAG_RXFIFOE)  || \
-                            ((FLAG)  == SDIO_FLAG_TXDAVL)   || \
-                            ((FLAG)  == SDIO_FLAG_RXDAVL)   || \
-                            ((FLAG)  == SDIO_FLAG_SDIOIT)   || \
-                            ((FLAG)  == SDIO_FLAG_CEATAEND))
-
-#define IS_SDIO_CLEAR_FLAG(FLAG) ((((FLAG) & (uint32_t)0xFF3FF800) == 0x00) && ((FLAG) != (uint32_t)0x00))
-
-#define IS_SDIO_GET_IT(IT) (((IT)  == SDIO_IT_CCRCFAIL) || \
-                            ((IT)  == SDIO_IT_DCRCFAIL) || \
-                            ((IT)  == SDIO_IT_CTIMEOUT) || \
-                            ((IT)  == SDIO_IT_DTIMEOUT) || \
-                            ((IT)  == SDIO_IT_TXUNDERR) || \
-                            ((IT)  == SDIO_IT_RXOVERR)  || \
-                            ((IT)  == SDIO_IT_CMDREND)  || \
-                            ((IT)  == SDIO_IT_CMDSENT)  || \
-                            ((IT)  == SDIO_IT_DATAEND)  || \
-                            ((IT)  == SDIO_IT_STBITERR) || \
-                            ((IT)  == SDIO_IT_DBCKEND)  || \
-                            ((IT)  == SDIO_IT_CMDACT)   || \
-                            ((IT)  == SDIO_IT_TXACT)    || \
-                            ((IT)  == SDIO_IT_RXACT)    || \
-                            ((IT)  == SDIO_IT_TXFIFOHE) || \
-                            ((IT)  == SDIO_IT_RXFIFOHF) || \
-                            ((IT)  == SDIO_IT_TXFIFOF)  || \
-                            ((IT)  == SDIO_IT_RXFIFOF)  || \
-                            ((IT)  == SDIO_IT_TXFIFOE)  || \
-                            ((IT)  == SDIO_IT_RXFIFOE)  || \
-                            ((IT)  == SDIO_IT_TXDAVL)   || \
-                            ((IT)  == SDIO_IT_RXDAVL)   || \
-                            ((IT)  == SDIO_IT_SDIOIT)   || \
-                            ((IT)  == SDIO_IT_CEATAEND))
-
-#define IS_SDIO_CLEAR_IT(IT) ((((IT) & (uint32_t)0xFF3FF800) == 0x00) && ((IT) != (uint32_t)0x00))
-
+#define SDIO_FLAG_CCRCFAIL                  SDIO_STA_CCRCFAIL
+#define SDIO_FLAG_DCRCFAIL                  SDIO_STA_DCRCFAIL
+#define SDIO_FLAG_CTIMEOUT                  SDIO_STA_CTIMEOUT
+#define SDIO_FLAG_DTIMEOUT                  SDIO_STA_DTIMEOUT
+#define SDIO_FLAG_TXUNDERR                  SDIO_STA_TXUNDERR
+#define SDIO_FLAG_RXOVERR                   SDIO_STA_RXOVERR
+#define SDIO_FLAG_CMDREND                   SDIO_STA_CMDREND
+#define SDIO_FLAG_CMDSENT                   SDIO_STA_CMDSENT
+#define SDIO_FLAG_DATAEND                   SDIO_STA_DATAEND
+#define SDIO_FLAG_STBITERR                  SDIO_STA_STBITERR
+#define SDIO_FLAG_DBCKEND                   SDIO_STA_DBCKEND
+#define SDIO_FLAG_CMDACT                    SDIO_STA_CMDACT
+#define SDIO_FLAG_TXACT                     SDIO_STA_TXACT
+#define SDIO_FLAG_RXACT                     SDIO_STA_RXACT
+#define SDIO_FLAG_TXFIFOHE                  SDIO_STA_TXFIFOHE
+#define SDIO_FLAG_RXFIFOHF                  SDIO_STA_RXFIFOHF
+#define SDIO_FLAG_TXFIFOF                   SDIO_STA_TXFIFOF
+#define SDIO_FLAG_RXFIFOF                   SDIO_STA_RXFIFOF
+#define SDIO_FLAG_TXFIFOE                   SDIO_STA_TXFIFOE
+#define SDIO_FLAG_RXFIFOE                   SDIO_STA_RXFIFOE
+#define SDIO_FLAG_TXDAVL                    SDIO_STA_TXDAVL
+#define SDIO_FLAG_RXDAVL                    SDIO_STA_RXDAVL
+#define SDIO_FLAG_SDIOIT                    SDIO_STA_SDIOIT
+#define SDIO_FLAG_CEATAEND                  SDIO_STA_CEATAEND
 /**
   * @}
   */
 
-
-/** @defgroup SDIO_Instance_definition 
-  * @{
-  */ 
-#define IS_SDIO_ALL_INSTANCE(INSTANCE) ((INSTANCE) == SDIO)
-
 /**
   * @}
   */
-  
 /* Exported macro ------------------------------------------------------------*/
+/** @defgroup SDMMC_LL_Exported_macros SDMMC_LL Exported Macros
+  * @{
+  */
+
+/** @defgroup SDMMC_LL_Alias_Region Bit Address in the alias region
+  * @{
+  */
 /* ------------ SDIO registers bit address in the alias region -------------- */
 #define SDIO_OFFSET               (SDIO_BASE - PERIPH_BASE)
 
 /* --- CLKCR Register ---*/
 /* Alias word address of CLKEN bit */
 #define CLKCR_OFFSET              (SDIO_OFFSET + 0x04)
-#define CLKEN_BitNumber           0x08
-#define CLKCR_CLKEN_BB            (PERIPH_BB_BASE + (CLKCR_OFFSET * 32) + (CLKEN_BitNumber * 4))
+#define CLKEN_BITNUMBER           0x08
+#define CLKCR_CLKEN_BB            (PERIPH_BB_BASE + (CLKCR_OFFSET * 32) + (CLKEN_BITNUMBER * 4))
 
 /* --- CMD Register ---*/
 /* Alias word address of SDIOSUSPEND bit */
 #define CMD_OFFSET                (SDIO_OFFSET + 0x0C)
-#define SDIOSUSPEND_BitNumber     0x0B
-#define CMD_SDIOSUSPEND_BB        (PERIPH_BB_BASE + (CMD_OFFSET * 32) + (SDIOSUSPEND_BitNumber * 4))
+#define SDIOSUSPEND_BITNUMBER     0x0B
+#define CMD_SDIOSUSPEND_BB        (PERIPH_BB_BASE + (CMD_OFFSET * 32) + (SDIOSUSPEND_BITNUMBER * 4))
 
 /* Alias word address of ENCMDCOMPL bit */
-#define ENCMDCOMPL_BitNumber      0x0C
-#define CMD_ENCMDCOMPL_BB         (PERIPH_BB_BASE + (CMD_OFFSET * 32) + (ENCMDCOMPL_BitNumber * 4))
+#define ENCMDCOMPL_BITNUMBER      0x0C
+#define CMD_ENCMDCOMPL_BB         (PERIPH_BB_BASE + (CMD_OFFSET * 32) + (ENCMDCOMPL_BITNUMBER * 4))
 
 /* Alias word address of NIEN bit */
-#define NIEN_BitNumber            0x0D
-#define CMD_NIEN_BB               (PERIPH_BB_BASE + (CMD_OFFSET * 32) + (NIEN_BitNumber * 4))
+#define NIEN_BITNUMBER            0x0D
+#define CMD_NIEN_BB               (PERIPH_BB_BASE + (CMD_OFFSET * 32) + (NIEN_BITNUMBER * 4))
 
 /* Alias word address of ATACMD bit */
-#define ATACMD_BitNumber          0x0E
-#define CMD_ATACMD_BB             (PERIPH_BB_BASE + (CMD_OFFSET * 32) + (ATACMD_BitNumber * 4))
+#define ATACMD_BITNUMBER          0x0E
+#define CMD_ATACMD_BB             (PERIPH_BB_BASE + (CMD_OFFSET * 32) + (ATACMD_BITNUMBER * 4))
 
 /* --- DCTRL Register ---*/
 /* Alias word address of DMAEN bit */
 #define DCTRL_OFFSET              (SDIO_OFFSET + 0x2C)
-#define DMAEN_BitNumber           0x03
-#define DCTRL_DMAEN_BB            (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (DMAEN_BitNumber * 4))
+#define DMAEN_BITNUMBER           0x03
+#define DCTRL_DMAEN_BB            (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (DMAEN_BITNUMBER * 4))
 
 /* Alias word address of RWSTART bit */
-#define RWSTART_BitNumber         0x08
-#define DCTRL_RWSTART_BB          (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (RWSTART_BitNumber * 4))
+#define RWSTART_BITNUMBER         0x08
+#define DCTRL_RWSTART_BB          (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (RWSTART_BITNUMBER * 4))
 
 /* Alias word address of RWSTOP bit */
-#define RWSTOP_BitNumber          0x09
-#define DCTRL_RWSTOP_BB           (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (RWSTOP_BitNumber * 4))
+#define RWSTOP_BITNUMBER          0x09
+#define DCTRL_RWSTOP_BB           (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (RWSTOP_BITNUMBER * 4))
 
 /* Alias word address of RWMOD bit */
-#define RWMOD_BitNumber           0x0A
-#define DCTRL_RWMOD_BB            (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (RWMOD_BitNumber * 4))
+#define RWMOD_BITNUMBER           0x0A
+#define DCTRL_RWMOD_BB            (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (RWMOD_BITNUMBER * 4))
 
 /* Alias word address of SDIOEN bit */
-#define SDIOEN_BitNumber          0x0B
-#define DCTRL_SDIOEN_BB           (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (SDIOEN_BitNumber * 4))
+#define SDIOEN_BITNUMBER          0x0B
+#define DCTRL_SDIOEN_BB           (PERIPH_BB_BASE + (DCTRL_OFFSET * 32) + (SDIOEN_BITNUMBER * 4))
+/**
+  * @}
+  */
+
+/** @defgroup SDMMC_LL_Register Bits And Addresses Definitions
+  * @brief SDMMC_LL registers bit address in the alias region
+  * @{
+  */
 
 /* ---------------------- SDIO registers bit mask --------------------------- */
 /* --- CLKCR Register ---*/
-/* CLKCR register clear mask */
-#define CLKCR_CLEAR_MASK         ((uint32_t)0xFFFF8100) 
+/* CLKCR register clear mask */ 
+#define CLKCR_CLEAR_MASK         ((uint32_t)(SDIO_CLKCR_CLKDIV  | SDIO_CLKCR_PWRSAV |\
+                                             SDIO_CLKCR_BYPASS  | SDIO_CLKCR_WIDBUS |\
+                                             SDIO_CLKCR_NEGEDGE | SDIO_CLKCR_HWFC_EN))
 
 /* --- PWRCTRL Register ---*/
-/* SDIO PWRCTRL Mask */
-#define PWR_PWRCTRL_MASK         ((uint32_t)0xFFFFFFFC)
-
 /* --- DCTRL Register ---*/
 /* SDIO DCTRL Clear Mask */
-#define DCTRL_CLEAR_MASK         ((uint32_t)0xFFFFFF08)
+#define DCTRL_CLEAR_MASK         ((uint32_t)(SDIO_DCTRL_DTEN    | SDIO_DCTRL_DTDIR |\
+                                             SDIO_DCTRL_DTMODE  | SDIO_DCTRL_DBLOCKSIZE))
 
 /* --- CMD Register ---*/
 /* CMD Register clear mask */
-#define CMD_CLEAR_MASK           ((uint32_t)0xFFFFF800)
+#define CMD_CLEAR_MASK           ((uint32_t)(SDIO_CMD_CMDINDEX | SDIO_CMD_WAITRESP |\
+                                             SDIO_CMD_WAITINT  | SDIO_CMD_WAITPEND |\
+                                             SDIO_CMD_CPSMEN   | SDIO_CMD_SDIOSUSPEND))
 
 /* SDIO RESP Registers Address */
 #define SDIO_RESP_ADDR           ((uint32_t)(SDIO_BASE + 0x14))
 
-/* SD FLASH SDIO Interface */
-#define SDIO_FIFO_ADDRESS ((uint32_t)0x40012C80)
-
-/* SDIO Intialization Frequency (400KHz max) */
+/* SDIO Initialization Frequency (400KHz max) */
 #define SDIO_INIT_CLK_DIV ((uint8_t)0x76)
 
 /* SDIO Data Transfer Frequency (25MHz max) */
 #define SDIO_TRANSFER_CLK_DIV ((uint8_t)0x0)
+/**
+  * @}
+  */
 
-/** @defgroup SDIO_Interrupt_Clock
- *  @brief macros to handle interrupts and specific clock configurations
- * @{
- */
- 
+/** @defgroup SDMMC_LL_Interrupt_Clock Interrupt And Clock Configuration
+  * @brief macros to handle interrupts and specific clock configurations
+  * @{
+  */
+
 /**
   * @brief  Enable the SDIO device.
-  * @param  None   
   * @retval None
   */ 
 #define __SDIO_ENABLE()   (*(__IO uint32_t *)CLKCR_CLKEN_BB = ENABLE)
 
 /**
   * @brief  Disable the SDIO device.
-  * @param  None  
   * @retval None
   */
 #define __SDIO_DISABLE()   (*(__IO uint32_t *)CLKCR_CLKEN_BB = DISABLE)
 
 /**
   * @brief  Enable the SDIO DMA transfer.
-  * @param  None  
   * @retval None
   */ 
 #define __SDIO_DMA_ENABLE()   (*(__IO uint32_t *)DCTRL_DMAEN_BB = ENABLE)
 
 /**
   * @brief  Disable the SDIO DMA transfer.
-  * @param  None   
   * @retval None
   */
 #define __SDIO_DMA_DISABLE()   (*(__IO uint32_t *)DCTRL_DMAEN_BB = DISABLE)
@@ -716,7 +670,7 @@ typedef struct
 
 
 /**
-  * @brief  Clears the SDIO's pending flags.
+  * @brief  Clears the SDIO pending flags.
   * @param  __INSTANCE__ : Pointer to SDIO register base  
   * @param  __FLAG__: specifies the flag to clear.  
   *          This parameter can be one or a combination of the following values:
@@ -795,117 +749,129 @@ typedef struct
 
 /**
   * @brief  Enable Start the SD I/O Read Wait operation.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_START_READWAIT_ENABLE()   (*(__IO uint32_t *) DCTRL_RWSTART_BB = ENABLE)
 
 /**
   * @brief  Disable Start the SD I/O Read Wait operations.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_START_READWAIT_DISABLE()   (*(__IO uint32_t *) DCTRL_RWSTART_BB = DISABLE)
 
 /**
   * @brief  Enable Start the SD I/O Read Wait operation.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_STOP_READWAIT_ENABLE()   (*(__IO uint32_t *) DCTRL_RWSTOP_BB = ENABLE)
 
 /**
   * @brief  Disable Stop the SD I/O Read Wait operations.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_STOP_READWAIT_DISABLE()   (*(__IO uint32_t *) DCTRL_RWSTOP_BB = DISABLE)
 
 /**
   * @brief  Enable the SD I/O Mode Operation.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_OPERATION_ENABLE()   (*(__IO uint32_t *) DCTRL_SDIOEN_BB = ENABLE)
 
 /**
   * @brief  Disable the SD I/O Mode Operation.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_OPERATION_DISABLE()   (*(__IO uint32_t *) DCTRL_SDIOEN_BB = DISABLE)
 
 /**
   * @brief  Enable the SD I/O Suspend command sending.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_SUSPEND_CMD_ENABLE()   (*(__IO uint32_t *) CMD_SDIOSUSPEND_BB = ENABLE)
 
 /**
   * @brief  Disable the SD I/O Suspend command sending.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_SUSPEND_CMD_DISABLE()   (*(__IO uint32_t *) CMD_SDIOSUSPEND_BB = DISABLE)
-    
+
+#if defined(STM32F405xx) || defined(STM32F415xx) || defined(STM32F407xx) || defined(STM32F417xx) ||\
+    defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx) ||\
+    defined(STM32F401xC) || defined(STM32F401xE) || defined(STM32F411xE)
 /**
   * @brief  Enable the command completion signal.
-  * @param  None  
   * @retval None
   */    
 #define __SDIO_CEATA_CMD_COMPLETION_ENABLE()   (*(__IO uint32_t *) CMD_ENCMDCOMPL_BB = ENABLE)
 
 /**
   * @brief  Disable the command completion signal.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_CEATA_CMD_COMPLETION_DISABLE()   (*(__IO uint32_t *) CMD_ENCMDCOMPL_BB = DISABLE)
 
 /**
   * @brief  Enable the CE-ATA interrupt.
-  * @param  None  
   * @retval None
   */    
 #define __SDIO_CEATA_ENABLE_IT()   (*(__IO uint32_t *) CMD_NIEN_BB = (uint32_t)0)
 
 /**
   * @brief  Disable the CE-ATA interrupt.
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_CEATA_DISABLE_IT()   (*(__IO uint32_t *) CMD_NIEN_BB = (uint32_t)1)
 
 /**
   * @brief  Enable send CE-ATA command (CMD61).
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_CEATA_SENDCMD_ENABLE()   (*(__IO uint32_t *) CMD_ATACMD_BB = ENABLE)
 
 /**
   * @brief  Disable send CE-ATA command (CMD61).
-  * @param  None  
   * @retval None
   */  
 #define __SDIO_CEATA_SENDCMD_DISABLE()   (*(__IO uint32_t *) CMD_ATACMD_BB = DISABLE)
-  
+#endif /* STM32F405xx || STM32F415xx || STM32F407xx || STM32F417xx || STM32F401xC || STM32F401xE || STM32F411xE ||\
+          STM32F427xx || STM32F437xx || STM32F429xx || STM32F439xx */
 /**
   * @}
   */
 
+/**
+  * @}
+  */  
+
 /* Exported functions --------------------------------------------------------*/
-
+/** @addtogroup SDMMC_LL_Exported_Functions
+  * @{
+  */
+  
 /* Initialization/de-initialization functions  **********************************/
+/** @addtogroup HAL_SDMMC_LL_Group1
+  * @{
+  */
 HAL_StatusTypeDef SDIO_Init(SDIO_TypeDef *SDIOx, SDIO_InitTypeDef Init);
-
+/**
+  * @}
+  */
+  
 /* I/O operation functions  *****************************************************/
+/** @addtogroup HAL_SDMMC_LL_Group2
+  * @{
+  */
 /* Blocking mode: Polling */
 uint32_t          SDIO_ReadFIFO(SDIO_TypeDef *SDIOx);
 HAL_StatusTypeDef SDIO_WriteFIFO(SDIO_TypeDef *SDIOx, uint32_t *pWriteData);
-
+/**
+  * @}
+  */
+  
 /* Peripheral Control functions  ************************************************/
+/** @addtogroup HAL_SDMMC_LL_Group3
+  * @{
+  */
 HAL_StatusTypeDef SDIO_PowerState_ON(SDIO_TypeDef *SDIOx);
 HAL_StatusTypeDef SDIO_PowerState_OFF(SDIO_TypeDef *SDIOx);
 uint32_t          SDIO_GetPowerState(SDIO_TypeDef *SDIOx);
@@ -923,18 +889,27 @@ uint32_t          SDIO_GetFIFOCount(SDIO_TypeDef *SDIOx);
 /* SDIO IO Cards mode management functions */
 HAL_StatusTypeDef SDIO_SetSDIOReadWaitMode(uint32_t SDIO_ReadWaitMode);
 
+/**
+  * @}
+  */
+  
+/**
+  * @}
+  */
+  
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */
+#endif /* STM32F405xx || STM32F415xx || STM32F407xx || STM32F417xx || STM32F427xx || STM32F437xx || STM32F429xx || STM32F439xx ||
+          STM32F401xC || STM32F401xE || STM32F411xE || STM32F446xx || STM32F469xx || STM32F479xx */
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __STM32F4xx_LL_SDMMC_H */
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

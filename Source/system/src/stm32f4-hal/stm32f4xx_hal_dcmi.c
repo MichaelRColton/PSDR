@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_dcmi.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    18-February-2014
+  * @version V1.4.3
+  * @date    11-December-2015
   * @brief   DCMI HAL module driver
   *          This file provides firmware functions to manage the following 
   *          functionalities of the Digital Camera Interface (DCMI) peripheral:
@@ -39,9 +39,9 @@
         window from the received image using HAL_DCMI_ConfigCrop() 
         and HAL_DCMI_EnableCROP() functions
 
-    (#) The capture can be stopped using the following HAL_DCMI_Stop() function.
+    (#) The capture can be stopped using HAL_DCMI_Stop() function.
 
-    (#) To control DCMI state you can use the following function : HAL_DCMI_GetState()
+    (#) To control DCMI state you can use the function HAL_DCMI_GetState().
 
      *** DCMI HAL driver macros list ***
      ============================================= 
@@ -63,7 +63,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -96,14 +96,16 @@
 /** @addtogroup STM32F4xx_HAL_Driver
   * @{
   */
-/** @defgroup DCMI 
+/** @defgroup DCMI DCMI
   * @brief DCMI HAL module driver
   * @{
   */
 
 #ifdef HAL_DCMI_MODULE_ENABLED
 
-#if defined(STM32F407xx) || defined(STM32F417xx) || defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx)
+#if defined(STM32F407xx) || defined(STM32F417xx) || defined(STM32F427xx) || defined(STM32F437xx) ||\
+    defined(STM32F429xx) || defined(STM32F439xx) || defined(STM32F446xx) || defined(STM32F469xx) ||\
+    defined(STM32F479xx)
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define HAL_TIMEOUT_DCMI_STOP    ((uint32_t)1000)  /* 1s  */
@@ -113,13 +115,13 @@
 static void       DCMI_DMAConvCplt(DMA_HandleTypeDef *hdma);
 static void       DCMI_DMAError(DMA_HandleTypeDef *hdma);
 
-/* Private functions ---------------------------------------------------------*/
+/* Exported functions --------------------------------------------------------*/
 
-/** @defgroup DCMI_Private_Functions
+/** @defgroup DCMI_Exported_Functions DCMI Exported Functions
   * @{
   */
 
-/** @defgroup DCMI_Group1 Initialization and Configuration functions
+/** @defgroup DCMI_Exported_Functions_Group1 Initialization and Configuration functions
  *  @brief   Initialization and Configuration functions
  *
 @verbatim   
@@ -141,7 +143,7 @@ static void       DCMI_DMAError(DMA_HandleTypeDef *hdma);
   *                the configuration information for DCMI.
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_DCMI_Init(DCMI_HandleTypeDef *hdcmi)
+__weak HAL_StatusTypeDef HAL_DCMI_Init(DCMI_HandleTypeDef *hdcmi)
 {     
   /* Check the DCMI peripheral state */
   if(hdcmi == NULL)
@@ -161,13 +163,14 @@ HAL_StatusTypeDef HAL_DCMI_Init(DCMI_HandleTypeDef *hdcmi)
 
   if(hdcmi->State == HAL_DCMI_STATE_RESET)
   {
+    /* Allocate lock resource and initialize it */
+    hdcmi->Lock = HAL_UNLOCKED;
     /* Init the low level hardware */
     HAL_DCMI_MspInit(hdcmi);
   } 
   
   /* Change the DCMI state */
   hdcmi->State = HAL_DCMI_STATE_BUSY; 
-
   /* Configures the HS, VS, DE and PC polarity */
   hdcmi->Instance->CR &= ~(DCMI_CR_PCKPOL | DCMI_CR_HSPOL  | DCMI_CR_VSPOL  | DCMI_CR_EDM_0 |
                            DCMI_CR_EDM_1  | DCMI_CR_FCRC_0 | DCMI_CR_FCRC_1 | DCMI_CR_JPEG  |
@@ -183,6 +186,7 @@ HAL_StatusTypeDef HAL_DCMI_Init(DCMI_HandleTypeDef *hdcmi)
                   ((uint32_t)hdcmi->Init.SyncroCode.LineStartCode << 8)|
                   ((uint32_t)hdcmi->Init.SyncroCode.LineEndCode << 16) |
                   ((uint32_t)hdcmi->Init.SyncroCode.FrameEndCode << 24));
+
   }
 
   /* Enable the Line interrupt */
@@ -217,7 +221,7 @@ HAL_StatusTypeDef HAL_DCMI_Init(DCMI_HandleTypeDef *hdcmi)
   *         values.
   * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
   *                the configuration information for DCMI.
-  * @retval None
+  * @retval HAL status
   */
 
 HAL_StatusTypeDef HAL_DCMI_DeInit(DCMI_HandleTypeDef *hdcmi)
@@ -237,12 +241,6 @@ HAL_StatusTypeDef HAL_DCMI_DeInit(DCMI_HandleTypeDef *hdcmi)
   return HAL_OK;
 }
 
-// [ILG]
-#if defined ( __GNUC__ )
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#endif
-
 /**
   * @brief  Initializes the DCMI MSP.
   * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
@@ -251,6 +249,8 @@ HAL_StatusTypeDef HAL_DCMI_DeInit(DCMI_HandleTypeDef *hdcmi)
   */
 __weak void HAL_DCMI_MspInit(DCMI_HandleTypeDef* hdcmi)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdcmi);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_DCMI_MspInit could be implemented in the user file
    */ 
@@ -264,20 +264,17 @@ __weak void HAL_DCMI_MspInit(DCMI_HandleTypeDef* hdcmi)
   */
 __weak void HAL_DCMI_MspDeInit(DCMI_HandleTypeDef* hdcmi)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdcmi);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_DCMI_MspDeInit could be implemented in the user file
    */
 }
 
-// [ILG]
-#if defined ( __GNUC__ )
-#pragma GCC diagnostic pop
-#endif
-
 /**
   * @}
   */
-/** @defgroup DCMI_Group2 IO operation functions 
+/** @defgroup DCMI_Exported_Functions_Group2 IO operation functions 
  *  @brief   IO operation functions  
  *
 @verbatim   
@@ -301,11 +298,11 @@ __weak void HAL_DCMI_MspDeInit(DCMI_HandleTypeDef* hdcmi)
   * @param  DCMI_Mode: DCMI capture mode snapshot or continuous grab.
   * @param  pData:     The destination memory Buffer address (LCD Frame buffer).
   * @param  Length:    The length of capture to be transferred.
-  * @retval None
+  * @retval HAL status
   */
 HAL_StatusTypeDef HAL_DCMI_Start_DMA(DCMI_HandleTypeDef* hdcmi, uint32_t DCMI_Mode, uint32_t pData, uint32_t Length)
 {  
-  /* Initialise the second memory address */
+  /* Initialize the second memory address */
   uint32_t SecondMemAddress = 0;
 
   /* Check function parameters */
@@ -340,7 +337,7 @@ HAL_StatusTypeDef HAL_DCMI_Start_DMA(DCMI_HandleTypeDef* hdcmi, uint32_t DCMI_Mo
     /* Set the DMA memory1 conversion complete callback */
     hdcmi->DMA_Handle->XferM1CpltCallback = DCMI_DMAConvCplt; 
 
-    /* Initialise transfer parameters */
+    /* Initialize transfer parameters */
     hdcmi->XferCount = 1;
     hdcmi->XferSize = Length;
     hdcmi->pBuffPtr = pData;
@@ -374,10 +371,11 @@ HAL_StatusTypeDef HAL_DCMI_Start_DMA(DCMI_HandleTypeDef* hdcmi, uint32_t DCMI_Mo
   * @brief  Disable DCMI DMA request and Disable DCMI capture  
   * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
   *                the configuration information for DCMI. 
+  * @retval HAL status     
   */
 HAL_StatusTypeDef HAL_DCMI_Stop(DCMI_HandleTypeDef* hdcmi)
 {
-  uint32_t timeout = 0x00;
+  uint32_t tickstart = 0;
 
   /* Lock the DCMI peripheral state */
   hdcmi->State = HAL_DCMI_STATE_BUSY;
@@ -387,13 +385,13 @@ HAL_StatusTypeDef HAL_DCMI_Stop(DCMI_HandleTypeDef* hdcmi)
   /* Disable Capture */
   DCMI->CR &= ~(DCMI_CR_CAPTURE);
 
-  /* Get timeout */
-  timeout = HAL_GetTick() + HAL_TIMEOUT_DCMI_STOP;
+  /* Get tick */
+  tickstart = HAL_GetTick();
 
   /* Check if the DCMI capture effectively disabled */
   while((hdcmi->Instance->CR & DCMI_CR_CAPTURE) != 0)
   {
-    if(HAL_GetTick() >= timeout)
+    if((HAL_GetTick() - tickstart ) > HAL_TIMEOUT_DCMI_STOP)
     {
       /* Process Unlocked */
       __HAL_UNLOCK(hdcmi);
@@ -428,7 +426,7 @@ HAL_StatusTypeDef HAL_DCMI_Stop(DCMI_HandleTypeDef* hdcmi)
   * @brief  Handles DCMI interrupt request.
   * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
   *                the configuration information for the DCMI.
-  * @retval HAL status
+  * @retval None
   */
 void HAL_DCMI_IRQHandler(DCMI_HandleTypeDef *hdcmi)
 {  
@@ -539,12 +537,6 @@ void HAL_DCMI_IRQHandler(DCMI_HandleTypeDef *hdcmi)
   }
 }
 
-// [ILG]
-#if defined ( __GNUC__ )
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#endif
-
 /**
   * @brief  Error DCMI callback.
   * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
@@ -553,6 +545,8 @@ void HAL_DCMI_IRQHandler(DCMI_HandleTypeDef *hdcmi)
   */
 __weak void HAL_DCMI_ErrorCallback(DCMI_HandleTypeDef *hdcmi)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdcmi);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_DCMI_ErrorCallback could be implemented in the user file
    */
@@ -566,6 +560,8 @@ __weak void HAL_DCMI_ErrorCallback(DCMI_HandleTypeDef *hdcmi)
   */
 __weak void HAL_DCMI_LineEventCallback(DCMI_HandleTypeDef *hdcmi)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdcmi);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_DCMI_LineEventCallback could be implemented in the user file
    */
@@ -579,6 +575,8 @@ __weak void HAL_DCMI_LineEventCallback(DCMI_HandleTypeDef *hdcmi)
   */
 __weak void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdcmi);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_DCMI_VsyncEventCallback could be implemented in the user file
    */
@@ -592,21 +590,18 @@ __weak void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
   */
 __weak void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
 {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hdcmi);
   /* NOTE : This function Should not be modified, when the callback is needed,
             the HAL_DCMI_FrameEventCallback could be implemented in the user file
    */
 }
 
-// [ILG]
-#if defined ( __GNUC__ )
-#pragma GCC diagnostic pop
-#endif
-
 /**
   * @}
   */
 
-/** @defgroup DCMI_Group3 Peripheral Control functions
+/** @defgroup DCMI_Exported_Functions_Group3 Peripheral Control functions
  *  @brief    Peripheral Control functions 
  *
 @verbatim   
@@ -615,7 +610,7 @@ __weak void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
  ===============================================================================  
 [..]  This section provides functions allowing to:
       (+) Configure the CROP feature.
-      (+) ENABLE/DISABLE the CROP feature.
+      (+) Enable/Disable the CROP feature.
 
 @endverbatim
   * @{
@@ -625,10 +620,10 @@ __weak void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
   * @brief  Configure the DCMI CROP coordinate.
   * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
   *                the configuration information for DCMI.
-  * @param  YSize: DCMI Line number
-  * @param  XSize: DCMI Pixel per line
   * @param  X0:    DCMI window X offset
   * @param  Y0:    DCMI window Y offset
+  * @param  XSize: DCMI Pixel per line
+  * @param  YSize: DCMI Line number
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_DCMI_ConfigCROP(DCMI_HandleTypeDef *hdcmi, uint32_t X0, uint32_t Y0, uint32_t XSize, uint32_t YSize)
@@ -641,9 +636,9 @@ HAL_StatusTypeDef HAL_DCMI_ConfigCROP(DCMI_HandleTypeDef *hdcmi, uint32_t X0, ui
 
   /* Check the parameters */
   assert_param(IS_DCMI_WINDOW_COORDINATE(X0));
-  assert_param(IS_DCMI_WINDOW_COORDINATE(Y0));
+  assert_param(IS_DCMI_WINDOW_COORDINATE(YSize));
   assert_param(IS_DCMI_WINDOW_COORDINATE(XSize));
-  assert_param(IS_DCMI_WINDOW_HEIGHT(YSize));
+  assert_param(IS_DCMI_WINDOW_HEIGHT(Y0));
 
   /* Configure CROP */
   DCMI->CWSIZER = (XSize | (YSize << 16));
@@ -662,7 +657,7 @@ HAL_StatusTypeDef HAL_DCMI_ConfigCROP(DCMI_HandleTypeDef *hdcmi, uint32_t X0, ui
   * @brief  Disable the Crop feature.
   * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
   *                the configuration information for DCMI.
-  * @retval None
+  * @retval HAL status
   */
 HAL_StatusTypeDef HAL_DCMI_DisableCROP(DCMI_HandleTypeDef *hdcmi)
 {
@@ -688,7 +683,7 @@ HAL_StatusTypeDef HAL_DCMI_DisableCROP(DCMI_HandleTypeDef *hdcmi)
   * @brief  Enable the Crop feature.
   * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
   *                the configuration information for DCMI.
-  * @retval None
+  * @retval HAL status
   */
 HAL_StatusTypeDef HAL_DCMI_EnableCROP(DCMI_HandleTypeDef *hdcmi)
 {
@@ -714,7 +709,7 @@ HAL_StatusTypeDef HAL_DCMI_EnableCROP(DCMI_HandleTypeDef *hdcmi)
   * @}
   */
 
-/** @defgroup DCMI_Group4 Peripheral State functions
+/** @defgroup DCMI_Exported_Functions_Group4 Peripheral State functions
  *  @brief    Peripheral State functions 
  *
 @verbatim   
@@ -755,10 +750,15 @@ uint32_t HAL_DCMI_GetError(DCMI_HandleTypeDef *hdcmi)
 /**
   * @}
   */
-
+/* Private functions ---------------------------------------------------------*/
+/** @defgroup DCMI_Private_Functions DCMI Private Functions
+  * @{
+  */
+  
   /**
   * @brief  DMA conversion complete callback. 
-  * @param  hdma: pointer to DMA handle.
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
+  *                the configuration information for the specified DMA module.
   * @retval None
   */
 static void DCMI_DMAConvCplt(DMA_HandleTypeDef *hdma)
@@ -811,7 +811,8 @@ static void DCMI_DMAConvCplt(DMA_HandleTypeDef *hdma)
 
 /**
   * @brief  DMA error callback 
-  * @param  hdma: pointer to DMA handle.
+  * @param  hdma: pointer to a DMA_HandleTypeDef structure that contains
+  *                the configuration information for the specified DMA module.
   * @retval None
   */
 static void DCMI_DMAError(DMA_HandleTypeDef *hdma)
@@ -824,7 +825,13 @@ static void DCMI_DMAError(DMA_HandleTypeDef *hdma)
 /**
   * @}
   */
-#endif /* STM32F405xx || STM32F415xx || STM32F407xx || STM32F417xx || STM32F427xx || STM32F437xx || STM32F429xx || STM32F439xx */
+  
+/**
+  * @}
+  */
+#endif /* STM32F407xx || STM32F417xx || STM32F427xx || STM32F437xx ||\
+          STM32F429xx || STM32F439xx || STM32F446xx || STM32F469xx ||\
+          STM32F479xx */
 #endif /* HAL_DCMI_MODULE_ENABLED */
 /**
   * @}

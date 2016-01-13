@@ -15,14 +15,16 @@
 
 void spi_dma_init(void)
 {
-	DMA_InitTypeDef dma_is;
 
-	dma_is.Channel = DMA_CHANNEL_3;
-	dma_is.Direction = DMA_MEMORY_TO_PERIPH;
-	dma_is.FIFOMode = DMA_FIFOMODE_DISABLE;
-	dma_is.MemBurst = DMA_MBURST_SINGLE;
-	dma_is.MemInc = DMA_MINC_DISABLE;
-	dma_is.Mode = DMA_
+//	HAL_DMA
+//	DMA_InitTypeDef dma_is;
+//
+//	dma_is.Channel = DMA_CHANNEL_3;
+//	dma_is.Direction = DMA_MEMORY_TO_PERIPH;
+//	dma_is.FIFOMode = DMA_FIFOMODE_DISABLE;
+//	dma_is.MemBurst = DMA_MBURST_SINGLE;
+//	dma_is.MemInc = DMA_MINC_DISABLE;
+//	dma_is.Mode = DMA_
 
 //	dma_is.DMA_Channel = DMA_Channel_0;
 //	dma_is.DMA_Memory0BaseAddr = (uint32_t)screenBuffer;
@@ -39,11 +41,11 @@ void spi_dma_init(void)
 //	dma_is.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
 //	dma_is.DMA_FIFOMode = DMA_FIFOMode_Disable;
 
-	DMA_Init(DMA1_Stream4, &dma_is);
-	DMA_Cmd(DMA1_Stream4, ENABLE);
-
-	// ...
-	SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
+//	DMA_Init(DMA1_Stream4, &dma_is);
+//	DMA_Cmd(DMA1_Stream4, ENABLE);
+//
+//	// ...
+//	SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
 }
 
 void spi_init(void)
@@ -57,7 +59,7 @@ void spi_init(void)
 
     // SPI2 SCK and MOSI
     gpioInitStructure.Pin   = SPI1_SCK.pin;
-    gpioInitStructure.Speed = GPIO_SPEED_FAST;
+    gpioInitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
     gpioInitStructure.Pull  = GPIO_NOPULL;
@@ -65,7 +67,7 @@ void spi_init(void)
     HAL_GPIO_Init(SPI1_SCK.port, &gpioInitStructure);
 
     gpioInitStructure.Pin   = SPI1_MOSI.pin;
-    gpioInitStructure.Speed = GPIO_SPEED_FAST;
+    gpioInitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
     gpioInitStructure.Pull  = GPIO_NOPULL;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
@@ -73,7 +75,7 @@ void spi_init(void)
 
     // SPI2 MISO
     gpioInitStructure.Pin   = SPI1_MISO.pin;
-    gpioInitStructure.Speed = GPIO_SPEED_FAST;
+    gpioInitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     gpioInitStructure.Mode  = GPIO_MODE_INPUT;
     gpioInitStructure.Pull = GPIO_PULLUP;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
@@ -81,7 +83,7 @@ void spi_init(void)
 
     // RFID NSS
     gpioInitStructure.Pin   = LCD_NSS.pin;
-    gpioInitStructure.Speed = GPIO_SPEED_FAST;
+    gpioInitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     gpioInitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
     gpioInitStructure.Pull  = GPIO_NOPULL;
     gpioInitStructure.Alternate = 0;
@@ -104,7 +106,7 @@ void spi_init(void)
     SpiHandle.Init.CLKPolarity 		  = SPI_POLARITY_HIGH;
     SpiHandle.Init.CLKPhase			  = SPI_PHASE_2EDGE;
     SpiHandle.Init.NSS                = SPI_NSS_SOFT; //SPI_NSS_SOFT;
-    SpiHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_2
+    SpiHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_2;
     SpiHandle.Init.FirstBit           = SPI_FIRSTBIT_MSB;
     SpiHandle.Init.CRCCalculation 	  = SPI_CRCCALCULATION_DISABLED;
     SpiHandle.Init.TIMode 			  = SPI_TIMODE_DISABLED;

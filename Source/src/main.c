@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 
 //#define ARM_MATH_CM4
-
+//#include <stm32f4xx_hal_conf.h>
 #include "main.h"
 
 
@@ -43,6 +43,7 @@
 //#pragma GCC diagnostic ignored "-Wmissing-declarations"
 //#pragma GCC diagnostic ignored "-Wreturn-type"
 #pragma GCC diagnostic ignored "-Wfloat-conversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 
 void dac1SetValue(uint16_t value);
 void dac2SetValue(uint16_t value);

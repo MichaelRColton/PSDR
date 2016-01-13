@@ -73,6 +73,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm32f4xx_hal_def.h"
 #include "misc.h"
 
 /** @addtogroup STM32F4xx_StdPeriph_Driver

@@ -15,10 +15,14 @@
 #ifdef PSDR2
 //#define HSE_VALUE 24000000
 
+
 #include "stm32f429xx.h"
 #endif
 
 #include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
+//#include "stm32f4xx_hal_conf.h"
+//#include "stm32f4xx_hal_def.h"
 //#include "core_cmInstr.h"
 #include <stdio.h>
 #include "stddef.h"
@@ -29,27 +33,27 @@
 #include "Timer.h"
 #include "BlinkLed.h"
 //#include "stm32f4xx_hal_rcc.h"
-#include "stm32f4xx_hal_gpio.h"
+//#include "stm32f4xx_hal_gpio.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9340.h"
-#include "stm32f4xx_hal.h"
+
 //#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_def.h"
+
 #include "string.h"
 #include "math.h"
 #include "arm_math.h"
 //#include "stm32f4xx_hal_rtc.h"
 //#include "stm32f4xx_hal_adc.h"
-#include "stm32f4xx_it.h"
-#include "stm32f4xx_hal_tim.h"
-#include "stm32f4xx_hal_cortex.h"
+//#include "stm32f4xx_it.h"
+//#include "stm32f4xx_hal_tim.h"
+//#include "stm32f4xx_hal_cortex.h"
 #include "misc.h"
-#include "stm32f4xx_hal_dac.h"
+//#include "stm32f4xx_hal_dac.h"
 
 #include "images.h"
-#include "stm32f4xx_hal_dma.h"
+//#include "stm32f4xx_hal_dma.h"
 
-#include "stm32f4xx_hal_def.h"
+//#include "stm32f4xx_hal_def.h"
 #include "stm32f4xx_hal_uart.h"
 #include "stm32f4xx_hal_usart.h"
 
@@ -79,3 +83,26 @@ TIM_HandleTypeDef    TimHandle4;
 
 SPI_HandleTypeDef SpiHandle;
 UART_HandleTypeDef UartHandle;
+
+
+////These are in stm32f4_hal_def.h but the compiler can't see them. Will this work for now?
+//
+///**
+//  * @brief  HAL Status structures definition
+//  */
+//typedef enum
+//{
+//  HAL_OK       = 0x00,
+//  HAL_ERROR    = 0x01,
+//  HAL_BUSY     = 0x02,
+//  HAL_TIMEOUT  = 0x03
+//} HAL_StatusTypeDef;
+//
+///**
+//  * @brief  HAL Lock structures definition
+//  */
+//typedef enum
+//{
+//  HAL_UNLOCKED = 0x00,
+//  HAL_LOCKED   = 0x01
+//} HAL_LockTypeDef;
