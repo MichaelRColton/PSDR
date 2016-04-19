@@ -375,7 +375,7 @@ int isFwd;
 	{
 		if(!displayUpdating)
 		{
-			Position2 = (HAL_GPIO_ReadPin(encoderB.port, encoderB.pin) * 2) + HAL_GPIO_ReadPin(encoderA.port, encoderA.pin);;
+			Position2 = (HAL_GPIO_ReadPin(encoderB.port, encoderB.pin) * 2) + HAL_GPIO_ReadPin(encoderBee.port, encoderBee.pin);;
 			if (Position2 != Position)
 			{
 				isFwd = ((Position == 0) && (Position2 == 1)) || ((Position == 1) && (Position2 == 3)) ||
@@ -668,16 +668,16 @@ void setGainPot(uint8_t a, uint8_t b)
 	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 0);
 
 	//choose first register
-	HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, 0);
-	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
-	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, 0);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 0);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 1);
 
 
 	for(i = 0; i < 8; i++)
 	{
-		HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, (a >> (7-i)) & 1);
-		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
-		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, (a >> (7-i)) & 1);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 0);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 1);
 	}
 
 	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 1);
@@ -685,16 +685,16 @@ void setGainPot(uint8_t a, uint8_t b)
 	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 0);
 
 	//choose second register
-	HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, 1);
-	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
-	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, 1);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 0);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 1);
 
 
 	for(i = 0; i < 8; i++)
 	{
-		HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, (b >> (7-i)) & 1);
-		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
-		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, (b >> (7-i)) & 1);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 0);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 1);
 	}
 
 	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 1);
@@ -868,18 +868,18 @@ main(int argc, char* argv[])
 		drawWaterfall();
 		drawSMeter();
 
-		Adafruit_GFX_fillRect(310, 0, 3, 3, !HAL_GPIO_ReadPin(KEY1.port, KEY1.pin) ? ILI9340_RED : ILI9340_BLUE);
-		Adafruit_GFX_fillRect(310, 4, 3, 3, !HAL_GPIO_ReadPin(KEY2.port, KEY2.pin) ? ILI9340_RED : ILI9340_BLUE);
-		Adafruit_GFX_fillRect(310, 8, 3, 3, HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin) ? ILI9340_RED : ILI9340_BLUE);
-		Adafruit_GFX_fillRect(310, 12, 3, 3, HAL_GPIO_ReadPin(TOUCH2.port, TOUCH2.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 0, 3, 3, HAL_GPIO_ReadPin(PADDLE_THUMB_NC.port, PADDLE_THUMB_NC.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 4, 3, 3, HAL_GPIO_ReadPin(PADDLE_INDEX_NC.port, PADDLE_INDEX_NC.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 8, 3, 3, HAL_GPIO_ReadPin(PADDLE_THUMB_NO.port, PADDLE_THUMB_NO.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 12, 3, 3, HAL_GPIO_ReadPin(PADDLE_INDEX_NO.port, PADDLE_INDEX_NO.pin) ? ILI9340_RED : ILI9340_BLUE);
 
-		if(HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin))
+		if(!HAL_GPIO_ReadPin(PADDLE_THUMB_NO.port, PADDLE_THUMB_NO.pin))
 		//if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
 	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
-	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
-	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
+//	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
+//	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
 	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 1); //Route through amp.
 	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 0); //always reverse of above.
 	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 0); //0 is on.
@@ -887,8 +887,8 @@ main(int argc, char* argv[])
 		} else {
 			transmitting = 0;
 	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
-	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
-	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
+//	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
+//	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
 	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); //Bypass amp.
 	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
 	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.

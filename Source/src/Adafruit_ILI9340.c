@@ -88,18 +88,18 @@ void Adafruit_ILI9340_spiwrite(uint8_t c) {
       if(c & bit) {
         //digitalWrite(_mosi, HIGH);
         //SET_BIT(mosiport, mosipinmask);
-    	  HAL_GPIO_WritePin(SPI1_MOSI.port, SPI1_MOSI.pin, 1);
+    	  HAL_GPIO_WritePin(LCD_MOSI.port, LCD_MOSI.pin, 1);
       } else {
         //digitalWrite(_mosi, LOW);
         //CLEAR_BIT(mosiport, mosipinmask);
-    	  HAL_GPIO_WritePin(SPI1_MOSI.port, SPI1_MOSI.pin, 0);
+    	  HAL_GPIO_WritePin(LCD_MOSI.port, LCD_MOSI.pin, 0);
       }
       //digitalWrite(_sclk, HIGH);
       //SET_BIT(clkport, clkpinmask);
-      HAL_GPIO_WritePin(SPI1_SCK.port, SPI1_SCK.pin, 1);
+      HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 1);
       //digitalWrite(_sclk, LOW);
       //CLEAR_BIT(clkport, clkpinmask);
-      HAL_GPIO_WritePin(SPI1_SCK.port, SPI1_SCK.pin, 0);
+      HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 0);
     }
   }
 }
@@ -110,7 +110,7 @@ void Adafruit_ILI9340_writecommand(uint16_t c) {
 	HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 0);
   //digitalWrite(_dc, LOW);
   //CLEAR_BIT(clkport, clkpinmask);
-	HAL_GPIO_WritePin(SPI1_SCK.port, SPI1_SCK.pin, 0);
+	HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 0);
   //digitalWrite(_sclk, LOW);
   //CLEAR_BIT(csport, cspinmask);
 	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
@@ -134,7 +134,7 @@ void Adafruit_ILI9340_writedata(uint16_t c) {
 	HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
   //digitalWrite(_dc, HIGH);
   //CLEAR_BIT(clkport, clkpinmask);
-	HAL_GPIO_WritePin(SPI1_SCK.port, SPI1_SCK.pin, 0);
+	HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 0);
   //digitalWrite(_sclk, LOW);
   //CLEAR_BIT(csport, cspinmask);
 	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
