@@ -150,6 +150,8 @@ const Gpio_Pin PADDLE_THUMB_NC =
 const Gpio_Pin PADDLE_INDEX_NC =
   { GPIOD, GPIO_PIN_6 }; //2.5
 
+
+
 //const Gpio_Pin MIC_BUTTON			= { GPIOD, GPIO_PIN_12 };;//FORGOT TO CONNECT IT TO THE MCU!
 
 //const Gpio_Pin IN_AMP_ENABLE		= { GPIO, GPIO_PIN_ }; //FORGOT TO CONNECT IT TO THE MCU!
@@ -165,9 +167,9 @@ const Gpio_Pin PADDLE_INDEX_NC =
 //const Gpio_Pin POWER_SWITCH         = { GPIOC, GPIO_Pin_15 };
 //const Gpio_Pin ACCEL_NSS            = { GPIOD, GPIO_Pin_2  };   // currently labeled SPI2_NSS on schem
 const Gpio_Pin GPS_RESET =
-  { GPIOD, GPIO_PIN_15 }; //2.5
-const Gpio_Pin GPS_FIX_LED =
   { GPIOE, GPIO_PIN_15 }; //2.5
+//const Gpio_Pin GPS_FIX_LED =
+//  { GPIOE, GPIO_PIN_15 }; //2.5
 const Gpio_Pin GPS_PPS =
   { GPIOE, GPIO_PIN_7 }; //2.5
 const Gpio_Pin GPS_POWER =
@@ -188,6 +190,17 @@ const Gpio_Pin FILTER_S1 =
 
 const Gpio_Pin TRX_SWITCH =
     { GPIOC, GPIO_PIN_3  }; //2.5
+
+const Gpio_Pin I2C_SCL =
+    { GPIOB, GPIO_PIN_10 };
+const Gpio_Pin I2C_SDA =
+    { GPIOB, GPIO_PIN_11 };
+
+const Gpio_Pin FLIP_FLOP_ENABLE =
+    { GPIOE, GPIO_PIN_8  };
+
+const Gpio_Pin RED_LED =
+    { GPIOE, GPIO_PIN_13 };
 
 //// timer pins
 //const Timer_Pin LED_G =
@@ -662,6 +675,13 @@ hal_setupPins (void)
   gpioInitStructure.Pull = GPIO_PULLUP;
   HAL_GPIO_Init (PADDLE_INDEX_NO.port, &gpioInitStructure);
 
+  gpioInitStructure.Pin = RED_LED.pin;
+  gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioInitStructure.Speed = GPIO_SPEED_LOW;
+  gpioInitStructure.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init (RED_LED.port, &gpioInitStructure);
+  HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, 0);
+
   // Power Switch
 //    gpioInitStructure.GPIO_Pin   = POWER_SWITCH.pin;
 //    gpioInitStructure.GPIO_Speed = GPIO_Speed_2MHz;
@@ -800,11 +820,11 @@ hal_setupPins (void)
   HAL_GPIO_Init (GPS_RESET.port, &gpioInitStructure);
   HAL_GPIO_WritePin (GPS_RESET.port, GPS_RESET.pin, 1);
 
-  gpioInitStructure.Pin = GPS_FIX_LED.pin;
-  gpioInitStructure.Speed = GPIO_SPEED_LOW;
-  gpioInitStructure.Mode = GPIO_MODE_INPUT; //I don't know if the module has ANYTHING hooked up to these pins yet.
-  gpioInitStructure.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init (GPS_FIX_LED.port, &gpioInitStructure);
+//  gpioInitStructure.Pin = GPS_FIX_LED.pin;
+//  gpioInitStructure.Speed = GPIO_SPEED_LOW;
+//  gpioInitStructure.Mode = GPIO_MODE_INPUT; //I don't know if the module has ANYTHING hooked up to these pins yet.
+//  gpioInitStructure.Pull = GPIO_NOPULL;
+//  HAL_GPIO_Init (GPS_FIX_LED.port, &gpioInitStructure);
 
   gpioInitStructure.Pin = GPS_PPS.pin;
   gpioInitStructure.Speed = GPIO_SPEED_LOW;
@@ -817,7 +837,7 @@ hal_setupPins (void)
   gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP; //I don't know if the module has ANYTHING hooked up to these pins yet.
   gpioInitStructure.Pull = GPIO_NOPULL;
   HAL_GPIO_Init (IN_AMP_ENABLE.port, &gpioInitStructure);
-  HAL_GPIO_WritePin (IN_AMP_ENABLE.port, IN_AMP_ENABLE.pin, 1);
+  HAL_GPIO_WritePin (IN_AMP_ENABLE.port, IN_AMP_ENABLE.pin, 1); //high is on
 
   gpioInitStructure.Pin = FILTER_S0.pin;
   gpioInitStructure.Speed = GPIO_SPEED_LOW;
@@ -839,6 +859,15 @@ hal_setupPins (void)
   gpioInitStructure.Pull = GPIO_NOPULL;
   HAL_GPIO_Init (TRX_SWITCH.port, &gpioInitStructure);
   HAL_GPIO_WritePin (TRX_SWITCH.port, TRX_SWITCH.pin, 0);
+
+  //I2C Pins are declared elsewhere. (in the i2c.c file)
+
+  gpioInitStructure.Pin = FLIP_FLOP_ENABLE.pin;
+  gpioInitStructure.Speed = GPIO_SPEED_LOW;
+  gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioInitStructure.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init (FLIP_FLOP_ENABLE.port, &gpioInitStructure);
+  HAL_GPIO_WritePin (FLIP_FLOP_ENABLE.port, TRX_SWITCH.pin, 0);
 }
 
 //

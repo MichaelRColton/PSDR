@@ -19,6 +19,7 @@
 #endif
 
 #include "stm32f4xx.h"
+#include "stm32f4xx_hal_conf.h"
 //#include "core_cmInstr.h"
 #include <stdio.h>
 #include "stddef.h"
@@ -28,6 +29,7 @@
 #include "dds.h"
 #include "Timer.h"
 #include "BlinkLed.h"
+
 //#include "stm32f4xx_hal_rcc.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "Adafruit_GFX.h"
@@ -45,13 +47,14 @@
 #include "stm32f4xx_hal_cortex.h"
 #include "misc.h"
 #include "stm32f4xx_hal_dac.h"
-
+//#include "stm32f4xx_hal_i2c.h"
 #include "images.h"
 #include "stm32f4xx_hal_dma.h"
 
-#include "stm32f4xx_hal_def.h"
+//#include "stm32f4xx_hal_def.h"
 #include "stm32f4xx_hal_uart.h"
 #include "stm32f4xx_hal_usart.h"
+#include "i2c.h"
 
 
 TIM_HandleTypeDef    TimHandle;

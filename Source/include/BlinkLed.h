@@ -28,7 +28,7 @@
 // (SEGGER J-Link device name: STM32F407VG).
 
 #define BLINK_PORT_NUMBER               (4)
-#define BLINK_PIN_NUMBER                (7)
+#define BLINK_PIN_NUMBER                (12)
 #define BLINK_ACTIVE_LOW                (0)
 
 #endif

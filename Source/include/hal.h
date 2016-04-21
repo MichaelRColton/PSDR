@@ -17,6 +17,7 @@
 #include <uart.h>
 #include "stm32f4xx_hal_dma.h"
 #include "stm32f4xx_hal_usart.h"
+#include "stm32f4xx_hal_i2c.h"
 
 typedef struct _Gpio_Pin
 {
@@ -70,7 +71,7 @@ extern const Gpio_Pin LCD_NSS;
 extern const Gpio_Pin RX_TO_GPS;
 extern const Gpio_Pin TX_FROM_GPS;
 extern const Gpio_Pin GPS_RESET;
-extern const Gpio_Pin GPS_FIX_LED;
+//extern const Gpio_Pin GPS_FIX_LED;
 extern const Gpio_Pin GPS_PPS;
 extern const Gpio_Pin GPS_POWER;
 extern const Gpio_Pin LCD_SCK;
@@ -144,6 +145,13 @@ extern const Gpio_Pin FILTER_S0;
 extern const Gpio_Pin FILTER_S1;
 
 extern const Gpio_Pin TRX_SWITCH;
+
+extern const Gpio_Pin I2C_SCL;
+extern const Gpio_Pin I2C_SDA;
+
+extern const Gpio_Pin FLIP_FLOP_ENABLE;
+
+extern const Gpio_Pin RED_LED;
 
 //    extern const Gpio_Pin NC_1;
 //    extern const Gpio_Pin DAC_SWITCHES;
