@@ -6,8 +6,18 @@
 #ifndef BLINKLED_H_
 #define BLINKLED_H_
 
+
+
+#ifdef PSDR2
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
+#endif
+
+#ifdef PSDR257
+#include "stm32f7xx.h"
+#include "stm32f7xx_hal.h"
+#endif
+
 
 // ----- LED definitions ------------------------------------------------------
 

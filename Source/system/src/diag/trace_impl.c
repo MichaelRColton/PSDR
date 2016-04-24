@@ -26,6 +26,12 @@
 #endif // defined(OS_USE_TRACE_ITM)
 #endif // !(defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__))
 
+#if defined(OS_DEBUG_SEMIHOSTING_FAULTS)
+#if defined(OS_USE_TRACE_SEMIHOSTING_STDOUT) || defined(OS_USE_TRACE_SEMIHOSTING_DEBUG)
+#error "Cannot debug semihosting using semihosting trace; use OS_USE_TRACE_ITM"
+#endif
+#endif
+
 // ----------------------------------------------------------------------------
 
 // Forward definitions.
@@ -50,7 +56,7 @@ _trace_write_semihosting_debug(const char* buf, size_t nbyte);
 void
 trace_initialize(void)
 {
-  // No initialisations required for ITM / semihosting
+  // For regular ITM / semihosting, no inits required.
 }
 
 // ----------------------------------------------------------------------------
@@ -141,10 +147,12 @@ _trace_write_itm (const char* buf, size_t nbyte)
 // In OpenOCD, support for semihosting can be enabled using
 // "monitor arm semihosting enable".
 //
-// Note: Applications built with semihosting output active cannot be
-// executed without the debugger connected and active, since they use
-// BKPT to communicate with the host. Attempts to run them standalone or
-// without semihosting enabled will usually be terminated with hardware faults.
+// Note: Applications built with semihosting output active normally cannot
+// be executed without the debugger connected and active, since they use
+// BKPT to communicate with the host. However, with a carefully written
+// HardFault_Handler, the semihosting BKPT calls can be processed, making
+// possible to run semihosting applications as standalone, without being
+// terminated with hardware faults.
 
 #endif // OS_USE_TRACE_SEMIHOSTING_DEBUG_*
 
@@ -155,16 +163,6 @@ _trace_write_itm (const char* buf, size_t nbyte)
 static ssize_t
 _trace_write_semihosting_stdout (const char* buf, size_t nbyte)
 {
-#if defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
-  // Check if the debugger is enabled. CoreDebug is available only on CM3/CM4.
-  // [Contributed by SourceForge user diabolo38]
-  if ((CoreDebug->DHCSR & CoreDebug_DHCSR_C_DEBUGEN_Msk) == 0)
-    {
-      // If not, pretend we wrote all bytes
-      return (ssize_t) (nbyte);
-    }
-#endif // defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
-
   static int handle;
   void* block[3];
   int ret;
@@ -214,16 +212,6 @@ _trace_write_semihosting_stdout (const char* buf, size_t nbyte)
 static ssize_t
 _trace_write_semihosting_debug (const char* buf, size_t nbyte)
 {
-#if defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
-  // Check if the debugger is enabled. CoreDebug is available only on CM3/CM4.
-  // [Contributed by SourceForge user diabolo38]
-  if ((CoreDebug->DHCSR & CoreDebug_DHCSR_C_DEBUGEN_Msk) == 0)
-    {
-      // If not, pretend we wrote all bytes
-      return (ssize_t) (nbyte);
-    }
-#endif // defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
-
   // Since the single character debug channel is quite slow, try to
   // optimise and send a null terminated string, if possible.
   if (buf[nbyte] == '\0')

@@ -1,7 +1,9 @@
 #pragma once
 
 //#define PSDR1 1
-#define PSDR2 2
+//#define PSDR2 2
+//#define PSDR25 3
+#define PSDR257 4
 
 //#define PSDR_BOARD PSDR2
 
@@ -16,10 +18,40 @@
 //#define HSE_VALUE 24000000
 
 #include "stm32f429xx.h"
-#endif
-
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal_conf.h"
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_gpio.h"
+#include "stm32f4xx_hal_def.h"
+#include "stm32f4xx_it.h"
+#include "stm32f4xx_hal_tim.h"
+#include "stm32f4xx_hal_cortex.h"
+#include "stm32f4xx_hal_dma.h"
+#include "stm32f4xx_hal_dac.h"
+#include "stm32f4xx_hal_uart.h"
+#include "stm32f4xx_hal_usart.h"
+#endif
+
+#ifdef PSDR257
+//#define HSE_VALUE 24000000
+
+//#include "stm32f756xx.h"
+#include "stm32f7xx.h"
+#include "stm32f7xx_hal_conf.h"
+#include "stm32f7xx_hal.h"
+#include "stm32f7xx_hal_gpio.h"
+#include "stm32f7xx_hal_def.h"
+#include "stm32f7xx_it.h"
+#include "stm32f7xx_hal_tim.h"
+#include "stm32f7xx_hal_cortex.h"
+#include "stm32f7xx_hal_dma.h"
+#include "stm32f7xx_hal_dac.h"
+#include "stm32f7xx_hal_uart.h"
+#include "stm32f7xx_hal_usart.h"
+#endif
+
+
+
 //#include "core_cmInstr.h"
 #include <stdio.h>
 #include "stddef.h"
@@ -31,29 +63,24 @@
 #include "BlinkLed.h"
 
 //#include "stm32f4xx_hal_rcc.h"
-#include "stm32f4xx_hal_gpio.h"
+
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9340.h"
-#include "stm32f4xx_hal.h"
+
 //#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_def.h"
+
 #include "string.h"
 #include "math.h"
 #include "arm_math.h"
 //#include "stm32f4xx_hal_rtc.h"
 //#include "stm32f4xx_hal_adc.h"
-#include "stm32f4xx_it.h"
-#include "stm32f4xx_hal_tim.h"
-#include "stm32f4xx_hal_cortex.h"
-#include "misc.h"
-#include "stm32f4xx_hal_dac.h"
+
 //#include "stm32f4xx_hal_i2c.h"
 #include "images.h"
-#include "stm32f4xx_hal_dma.h"
 
+#include "misc.h"
 //#include "stm32f4xx_hal_def.h"
-#include "stm32f4xx_hal_uart.h"
-#include "stm32f4xx_hal_usart.h"
+
 #include "i2c.h"
 
 

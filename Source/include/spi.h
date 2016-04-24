@@ -13,9 +13,20 @@
 //#include <stm32f415xx.h>
 #ifdef PSDR2
 	#include "stm32f429xx.h"
+#include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
+#include <stm32f4xx_hal_spi.h>
 #endif
 //#include <stm32f4xx_hal.h>
-#include <stm32f4xx_hal_spi.h>
+
+
+
+#ifdef PSDR257
+  #include "stm32f746xx.h"
+#include "stm32f7xx.h"
+#include "stm32f7xx_hal.h"
+#include <stm32f7xx_hal_spi.h>
+#endif
 
 //SPI_HandleTypeDef SpiHandle;
 
