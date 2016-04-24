@@ -1,20 +1,20 @@
 //
-// This file is part of the µOS++ III distribution.
+// This file is part of the GNU ARM Eclipse distribution.
 // Copyright (c) 2014 Liviu Ionescu.
 //
 
 // ----------------------------------------------------------------------------
 
-#include "stm32f4xx.h"
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_cortex.h"
+#include "stm32f7xx.h"
+#include "stm32f7xx_hal.h"
+#include "stm32f7xx_hal_cortex.h"
 
 // ----------------------------------------------------------------------------
 
 // The external clock frequency is specified as a preprocessor definition
 // passed to the compiler via a command line option (see the 'C/C++ General' ->
 // 'Paths and Symbols' -> the 'Symbols' tab, if you want to change it).
-// The value selected during project creation was HSE_VALUE=8000000.
+// The value selected during project creation was HSE_VALUE=26000000.
 //
 // The code to set the clock is at the end.
 //
@@ -26,83 +26,97 @@
 //
 // Note2: The external memory controllers are not enabled. If needed, you
 // have to define DATA_IN_ExtSRAM or DATA_IN_ExtSDRAM and to configure
-// the memory banks in system/src/cmsis/system_stm32f4xx.c to match your needs.
+// the memory banks in system/src/cmsis/system_stm32f7xx.c to match your needs.
 
 // ----------------------------------------------------------------------------
 
 // Forward declarations.
 
 void
-__initialize_hardware(void);
+__initialize_hardware (void);
 
 void
-configure_system_clock(void);
+__initialize_hardware_early (void);
+
+void
+SystemClock_Config (void);
 
 // ----------------------------------------------------------------------------
+
+#if 0
+
+// These are the very first initialisations, performed immediately after
+// reset.
+//
+// Redefine this function to enable external RAM before data & bss init.
+
+void
+__initialize_hardware_early (void)
+{
+}
+
+#endif
 
 // This is the application hardware initialisation routine,
 // redefined to add more inits.
 //
-// Called early from _start(), right after data & bss init, before
+// Called from _start(), right after data & bss init, before
 // constructors.
 //
-// After Reset the Cortex-M processor is in Thread mode,
+// After reset the Cortex-M processor is in Thread mode,
 // priority is Privileged, and the Stack is set to Main.
+//
+// Warning: The HAL requires the system timer, running at 1000 Hz
+// and calling HAL_IncTick().
 
 void
-__initialize_hardware(void)
+__initialize_hardware (void)
 {
-  // Call the CSMSIS system initialisation routine.
-  SystemInit();
+  // Enable instruction & data cache.
+  SCB_EnableICache ();
+  SCB_EnableDCache ();
 
-#if defined (__VFP_FP__) && !defined (__SOFTFP__)
-
-  // Enable the Cortex-M4 FPU only when -mfloat-abi=hard.
-  // Code taken from Section 7.1, Cortex-M4 TRM (DDI0439C)
-
-  // Set bits 20-23 to enable CP10 and CP11 coprocessor
-  SCB->CPACR |= (0xF << 20);
-
-#endif // (__VFP_FP__) && !(__SOFTFP__)
-
-  // Initialise the HAL Library; it must be the first
-  // instruction to be executed in the main program.
-  HAL_Init();
+  // Initialise the HAL Library; it must be the first function
+  // to be executed before the call of any HAL function.
+  // More HAL initialisations can be defined in stm32f7xx_hal_msp.c
+  HAL_Init ();
 
   // Enable HSE Oscillator and activate PLL with HSE as source
-  configure_system_clock();
+  SystemClock_Config ();
+
+  // Call the CSMSIS system clock routine to store the clock frequency
+  // in the SystemCoreClock global RAM location.
+  SystemCoreClockUpdate ();
 }
+
+// Disable when using RTOSes, since they have their own handler.
+#if 0
+
+// This is a sample SysTick handler, use it if you need HAL timings.
+void __attribute__ ((section(".after_vectors")))
+SysTick_Handler(void)
+  {
+#if defined(USE_HAL_DRIVER)
+    HAL_IncTick();
+#endif
+  }
+
+#endif
 
 // ----------------------------------------------------------------------------
 
 /**
  * @brief  System Clock Configuration
- *         The system Clock is configured as follow :
- *            System Clock source            = PLL (HSE)
- *            SYSCLK(Hz)                     = 168000000
- *            HCLK(Hz)                       = 168000000
- *            AHB Prescaler                  = 1
- *            APB1 Prescaler                 = 4
- *            APB2 Prescaler                 = 2
- *            HSE Frequency(Hz)              = HSE_VALUE
- *            PLL_M                          = (HSE_VALUE/1000000u)
- *            PLL_N                          = 336
- *            PLL_P                          = 2
- *            PLL_Q                          = 7
- *            VDD(V)                         = 3.3
- *            Main regulator output voltage  = Scale1 mode
- *            Flash Latency(WS)              = 5
  * @param  None
  * @retval None
  */
 void
-configure_system_clock(void)
+__attribute__((weak))
+SystemClock_Config (void)
 {
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-
   // Enable Power Control clock
-  __PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE()
+  ;
 
   // The voltage scaling allows optimizing the power consumption when the
   // device is clocked below the maximum system frequency, to update the
@@ -110,29 +124,59 @@ configure_system_clock(void)
   // datasheet.
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-  // Enable HSE Oscillator and activate PLL with HSE as source
+// Comment this out after checking.
+#warning "Please check if the SystemClock_Config() settings match your board!"
+  // Comment out the warning after checking and updating.
+
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+
+#if defined(HSE_VALUE) && (HSE_VALUE != 0)
+  // Enable HSE Oscillator and activate PLL with HSE as source.
+  // This is tuned for STM32F7-DISCOVERY; update it for your board.
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-
-  // This assumes the HSE_VALUE is a multiple of 1MHz. If this is not
+  // This assumes the HSE_VALUE is a multiple of 1 MHz. If this is not
   // your case, you have to recompute these PLL constants.
   RCC_OscInitStruct.PLL.PLLM = (HSE_VALUE/1000000u);
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 7;
-  HAL_RCC_OscConfig(&RCC_OscInitStruct);
+#else
+  // Use HSI and activate PLL with HSI as source.
+  // This is generic; update it for your board.
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  // 16 is the average calibration value, adjust for your own board.
+  RCC_OscInitStruct.HSICalibrationValue = 16;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  // This assumes the HSI_VALUE is a multiple of 1 MHz. If this is not
+  // your case, you have to recompute these PLL constants.
+  RCC_OscInitStruct.PLL.PLLM = (HSI_VALUE / 1000000u);
+#endif
 
+  RCC_OscInitStruct.PLL.PLLN = 384; /* 192 MHz */
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 8; /* To make USB work. */
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  HAL_RCC_OscConfig (&RCC_OscInitStruct);
+
+  // Activate the OverDrive to reach the 200 MHz Frequency
+  HAL_PWREx_EnableOverDrive ();
+
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
   // Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
   // clocks dividers
   RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK
       | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  // This is expected to work for most large cores.
+  // Check and update it for your own configuration.
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+  HAL_RCC_ClockConfig (&RCC_ClkInitStruct, FLASH_LATENCY_6);
+
+  HAL_SYSTICK_Config (HAL_RCC_GetHCLKFreq () / 1000);
+
+  HAL_SYSTICK_CLKSourceConfig (SYSTICK_CLKSOURCE_HCLK);
 }
 
 // ----------------------------------------------------------------------------

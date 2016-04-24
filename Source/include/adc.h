@@ -11,10 +11,18 @@
 #define ADC_H_
 
     #include "hal.h"
+
+#ifdef PSDR2
 #include "stm32f4xx_hal_dma.h"
 #include "stm32f4xx_hal_adc.h"
 #include "stm32f4xx_hal_rcc.h"
+#endif
 
+#ifdef PSDR257
+#include "stm32f7xx_hal_dma.h"
+#include "stm32f7xx_hal_adc.h"
+#include "stm32f7xx_hal_rcc.h"
+#endif
 
 __IO uint16_t uhADCxConvertedValue1;
 __IO uint16_t uhADCxConvertedValue2;

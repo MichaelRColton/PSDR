@@ -825,9 +825,11 @@ handleI2C.Instance = I2C2;
 HAL_I2C_DeInit(&handleI2C);
 
 handleI2C.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-handleI2C.Init.ClockSpeed = 400000;
+//handleI2C.Init.ClockSpeed = 400000;
+//handleI2C.Init. = 400000;
 handleI2C.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
-handleI2C.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+//handleI2C.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+//handleI2C.Init.Timing = I2C_ .DutyCycle = I2C_DUTYCYCLE_16_9;
 handleI2C.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
 handleI2C.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED;
 handleI2C.Init.OwnAddress1 = 0x30F;
@@ -915,7 +917,7 @@ i2cLoop();
 	//MAIN LOOP - Lowest Priority
 	while(1)
 	{
-		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn's LOOK bad, but maybe it is negatively effecting things.
+		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn't LOOK bad, but maybe it is negatively effecting things.
 		//I could do something where the dial moves around on screen, but if you get too close to the edge, the DDSs start moving the frequency
 		//Hmm, I think that's kind of a cool idea. It would be cool in two ways: it would allow you to shift the IF so you could get away from
 		//birdies, and it would mean that while tuning around locally, the waterfall would stay aligned in a useful way. Eventually, when I have

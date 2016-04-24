@@ -1,19 +1,17 @@
 #ifndef _ADAFRUIT_GFX_H
 #define _ADAFRUIT_GFX_H
 
-#if ARDUINO >= 100
- //#include "Arduino.h"
- //#include "Print.h"
-#else
- //#include "WProgram.h"
+
+#ifdef PSDR2
+	#include "stm32f4xx.h"
+#include "stm32f429xx.h"
 #endif
 
-//#include <stm32f10x.h>
-//#include <stm32f415xx.h>
-#include "stm32f4xx.h"
-#ifdef PSDR2
-	#include "stm32f429xx.h"
-#endif
+
+//#ifdef PSDR257
+	#include "stm32f7xx.h"
+#include "stm32f746xx.h"
+//#endif
 
 #include <stdbool.h>
 #include <Adafruit_ILI9340.h>

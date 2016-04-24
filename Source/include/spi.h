@@ -21,12 +21,12 @@
 
 
 
-#ifdef PSDR257
+//#ifdef PSDR257
   #include "stm32f746xx.h"
 #include "stm32f7xx.h"
 #include "stm32f7xx_hal.h"
 #include <stm32f7xx_hal_spi.h>
-#endif
+//#endif
 
 //SPI_HandleTypeDef SpiHandle;
 
@@ -39,6 +39,7 @@
 //
 //    void spi_postSpi2Semaphore(void);
 //        // post (make available) spi2 semaphore
+
     void spi_readWrite(SPI_HandleTypeDef SpiHandle, uint16_t *rxBuf, uint16_t *txBuf, uint16_t cnt); //was uint8_t
     //int spi_readWrite(SPI_TypeDef* SPIx, uint8_t *rxBuf, const uint8_t *txBuf, int cnt, uint16_t speed);
         // send data to the spi bus, read data in from the spi bus

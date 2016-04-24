@@ -6,39 +6,48 @@
 #ifndef BLINKLED_H_
 #define BLINKLED_H_
 
-
-
-#ifdef PSDR2
-#include "stm32f4xx.h"
-#include "stm32f4xx_hal.h"
-#endif
-
-#ifdef PSDR257
 #include "stm32f7xx.h"
 #include "stm32f7xx_hal.h"
-#endif
-
 
 // ----- LED definitions ------------------------------------------------------
 
 // Adjust these definitions for your own board.
 
-#if defined(BOARD_OLIMEX_STM32_E407)
 
-// STM32-E407 definitions (the GREEN led, C13, active low)
+// Ports numbers are: PA=0, PB=1, PC=2, PD=3, PE=4, PF=5, PG=6, PH=7, PI=8.
 
-// Port numbers: 0=A, 1=B, 2=C, 3=D, 4=E, 5=F, 6=G, ...
-#define BLINK_PORT_NUMBER               (2)
-#define BLINK_PIN_NUMBER                (13)
-#define BLINK_ACTIVE_LOW                (1)
+#if defined(STM32F746xx)
+
+#if defined(STM32F746_EVAL)
+
+//#warning "Assume a STM32F746G-EVAL board, PF12 & PB7, active low."
+
+#define BLINK_PORT_NUMBER         (5)
+#define BLINK_PIN_NUMBER          (12)
+
+#define BLINK_PORT_NUMBER_RED     (1)
+#define BLINK_PIN_NUMBER_RED      (7)
+
+#define BLINK_ACTIVE_LOW          (1)
 
 #else
 
-// STM32F4DISCOVERY definitions (the GREEN led, D12, active high)
-// (SEGGER J-Link device name: STM32F407VG).
+#warning "Assume a STM32F746G-DISCO board, PI1, active high."
+
+// STM32F746-DISCO definitions (the GREEN led, I1, active high)
 
 #define BLINK_PORT_NUMBER               (4)
-#define BLINK_PIN_NUMBER                (12)
+#define BLINK_PIN_NUMBER                (13)
+#define BLINK_ACTIVE_LOW                (0)
+
+#endif
+
+#else
+
+#warning "Unknown board, assume PA5, active high."
+
+#define BLINK_PORT_NUMBER               (0)
+#define BLINK_PIN_NUMBER                (5)
 #define BLINK_ACTIVE_LOW                (0)
 
 #endif

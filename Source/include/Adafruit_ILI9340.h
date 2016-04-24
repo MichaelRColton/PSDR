@@ -22,6 +22,11 @@
 #ifdef PSDR2
 	#include "stm32f429xx.h"
 #endif
+
+
+#ifdef PSDR257
+#include "stm32f746xx.h"
+#endif
 #include <stdbool.h>
 #include <Adafruit_GFX.h>
 

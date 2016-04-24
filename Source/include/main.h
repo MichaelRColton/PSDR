@@ -78,7 +78,7 @@
 //#include "stm32f4xx_hal_i2c.h"
 #include "images.h"
 
-#include "misc.h"
+//#include "misc.h"
 //#include "stm32f4xx_hal_def.h"
 
 #include "i2c.h"

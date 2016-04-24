@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #define _GPGGA_TERM "GPGGA"
 
 #define TWO_PI 	6.28318530717958647693 //These numbers are included in Processing, since we aren't using Processing we need to include them here.
-#define PI 		3.14159265358979323846
+//#define PI 		3.14159265358979323846
 
 #define GPS_HYBERNATE_COMMAND "$PMTK161,0*28\x0D\x0A"
 

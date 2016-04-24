@@ -7,10 +7,18 @@
 
 #include "spi.h"
 #include <hal.h>
+
+#ifdef PSDR2
 #include <stm32f4xx_hal_spi.h>
 #include <stm32f4xx_hal_gpio.h>
 #include <stm32f4xx_hal.h>
+#endif
 
+#ifdef PSDR257
+#include <stm32f7xx_hal_spi.h>
+#include <stm32f7xx_hal_gpio.h>
+#include <stm32f7xx_hal.h>
+#endif
 
 void spi_init(void)
 {
