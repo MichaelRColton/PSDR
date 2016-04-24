@@ -4,6 +4,8 @@
 //#define PSDR2 2
 //#define PSDR25 3
 #define PSDR257 4
+#define ARM_MATH_CM7
+
 
 //#define PSDR_BOARD PSDR2
 
@@ -48,6 +50,7 @@
 #include "stm32f7xx_hal_dac.h"
 #include "stm32f7xx_hal_uart.h"
 #include "stm32f7xx_hal_usart.h"
+#include "stm32f7xx_hal_i2c.h"
 #endif
 
 
@@ -75,7 +78,7 @@
 //#include "stm32f4xx_hal_rtc.h"
 //#include "stm32f4xx_hal_adc.h"
 
-//#include "stm32f4xx_hal_i2c.h"
+
 #include "images.h"
 
 //#include "misc.h"

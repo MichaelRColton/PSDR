@@ -702,12 +702,12 @@ void setGainPot(uint8_t a, uint8_t b)
 
 }
 
-USART1_IRQHandler(void)
-{
-    //blink_led_on();
-    USARTx_IRQHandler();
-
-}
+//USART1_IRQHandler(void)
+//{
+//    //blink_led_on();
+//    USARTx_IRQHandler();
+//
+//}
 
 
 __IO ITStatus UartReady = RESET;
@@ -716,58 +716,58 @@ uint8_t aRxBuffer[256];
 void configUartPeripheral()
 {
 //	//Enable Clocks
-	__GPIOC_CLK_ENABLE();
-	__USART6_CLK_ENABLE();
-
-	GPIO_InitTypeDef GPIO_InitStruct;
-
-//	//Setup TX Pin
-	GPIO_InitStruct.Pin = RX_TO_GPS.pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-	GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
-	HAL_GPIO_Init(RX_TO_GPS.port, &GPIO_InitStruct);
-
-	//Setup RX Pin
-	//It doesn't get set as an input?
-	GPIO_InitStruct.Pin = TX_FROM_GPS.pin;
-	GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
-	HAL_GPIO_Init(TX_FROM_GPS.port, &GPIO_InitStruct);
-
-
-//	//Configure NVIC
-//	HAL_NVIC_SetPriority(USART1_IRQn, 0, 1);
-//	HAL_NVIC_EnableIRQ(USART1_IRQn);
+//	__GPIOC_CLK_ENABLE();
+//	__USART6_CLK_ENABLE();
 //
-	UartHandle.Instance = USART6;
-	UartHandle.Init.BaudRate = 9600;
-	UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
-	UartHandle.Init.StopBits = UART_STOPBITS_1;
-	UartHandle.Init.Parity = UART_PARITY_NONE;
-	UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	UartHandle.Init.Mode = UART_MODE_TX_RX;
-	UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
-
-	if(HAL_UART_Init(&UartHandle) != HAL_OK)
-	  {
-	    trace_puts("UART didn't init rightly.");
-	  }
-
-	TinyGPS_init();
-
-	while(1)
-	  {
-    if(HAL_UART_Receive(&UartHandle, (uint8_t *)aRxBuffer, 256, 5000) != HAL_OK)
-      {
-        trace_puts("UART recieve didn't work. No sir.");
-      } else {
-        trace_puts(aRxBuffer);
-        for(int i = 0; i < 256; i++)
-          TinyGPS_encode(aRxBuffer[i]);
-
-      }
-	  }
+//	GPIO_InitTypeDef GPIO_InitStruct;
+//
+////	//Setup TX Pin
+//	GPIO_InitStruct.Pin = RX_TO_GPS.pin;
+//	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+//	GPIO_InitStruct.Pull = GPIO_NOPULL;
+//	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+//	GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
+//	HAL_GPIO_Init(RX_TO_GPS.port, &GPIO_InitStruct);
+//
+//	//Setup RX Pin
+//	//It doesn't get set as an input?
+//	GPIO_InitStruct.Pin = TX_FROM_GPS.pin;
+//	GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
+//	HAL_GPIO_Init(TX_FROM_GPS.port, &GPIO_InitStruct);
+//
+//
+////	//Configure NVIC
+////	HAL_NVIC_SetPriority(USART1_IRQn, 0, 1);
+////	HAL_NVIC_EnableIRQ(USART1_IRQn);
+////
+//	UartHandle.Instance = USART6;
+//	UartHandle.Init.BaudRate = 9600;
+//	UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
+//	UartHandle.Init.StopBits = UART_STOPBITS_1;
+//	UartHandle.Init.Parity = UART_PARITY_NONE;
+//	UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+//	UartHandle.Init.Mode = UART_MODE_TX_RX;
+//	UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
+//
+//	if(HAL_UART_Init(&UartHandle) != HAL_OK)
+//	  {
+//	    trace_puts("UART didn't init rightly.");
+//	  }
+//
+//	TinyGPS_init();
+//
+//	while(1)
+//	  {
+//    if(HAL_UART_Receive(&UartHandle, (uint8_t *)aRxBuffer, 256, 5000) != HAL_OK)
+//      {
+//        trace_puts("UART recieve didn't work. No sir.");
+//      } else {
+//        trace_puts(aRxBuffer);
+//        for(int i = 0; i < 256; i++)
+//          TinyGPS_encode(aRxBuffer[i]);
+//
+//      }
+//	  }
 }
 
 
@@ -930,7 +930,7 @@ i2cLoop();
 		//Also since this is a form of direct conversion receiver (two of them together) I was worried about AM broadcast interference
 		//but I haven't noticed any, again, maybe I did something right? Beginner's luck?
 
-		HAL_UART_Receive_IT(&UartHandle, (uint8_t*)aRxBuffer, 16);
+		//HAL_UART_Receive_IT(&UartHandle, (uint8_t*)aRxBuffer, 16);
 
 		int* p = UartHandle.pRxBuffPtr;
 		int* q = &aRxBuffer;
@@ -1288,6 +1288,7 @@ void drawWaterfall()
 	else
 		gradient = &bitmapWebSdrGradient;
 
+	//arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
 	arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
 
 	float fftMax = 0; //AH! These are being reset each time! Static makes them persistant right? Does it also ensure they are

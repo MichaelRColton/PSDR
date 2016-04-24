@@ -27,7 +27,7 @@
 #include "stm32f7xx_hal_i2c.h"
 #endif
 
-#include <uart.h>
+//#include <uart.h>
 
 typedef struct _Gpio_Pin
 {
