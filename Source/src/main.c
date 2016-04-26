@@ -112,10 +112,10 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 15;
-  RCC_OscInitStruct.PLL.PLLN = 210;
+  RCC_OscInitStruct.PLL.PLLM = 13;
+  RCC_OscInitStruct.PLL.PLLN = 216;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 7;
+  RCC_OscInitStruct.PLL.PLLQ = 9;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1
@@ -812,7 +812,7 @@ main(int argc, char* argv[])
 	hal_setupPins();
 	spi_init();
 
-	configDMA(&SpiHandle );
+//	configDMA(&SpiHandle );
 
 
 //I2C_HandleTypeDef hi2c;
@@ -846,8 +846,8 @@ if(HAL_I2C_Init(&handleI2C) != HAL_OK)
 
 HAL_StatusTypeDef result = HAL_ERROR;
 
-while(result!= HAL_OK)
-  result = HAL_I2C_IsDeviceReady(&handleI2C, (0x70 << 1), 100, 100); //We need to shift the address to the left for it to work (because of the R/W bit)
+//while(result!= HAL_OK)
+//  result = HAL_I2C_IsDeviceReady(&handleI2C, (0x70 << 1), 100, 100); //We need to shift the address to the left for it to work (because of the R/W bit)
 
 //HAL_I2C_Master_Transmit(&hi2c, 230, 0x10, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 
@@ -859,8 +859,8 @@ while(result!= HAL_OK)
 //HAL_I2C_Master_Transmit(&handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 //HAL_I2C_Master_Transmit(handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 
-i2cSetup();
-i2cLoop();
+//i2cSetup();
+//i2cLoop();
 
 
 //trace_puts(( == HAL_OK ? "SI5338 Ready" : "SI5338 Not ready"));
@@ -1706,7 +1706,7 @@ uint32_t uwPrescalerValue = 0;
 TIM_TypeDef timTimBase;
 //TIM_HandleTypeDef timHandle;
 /* Definition for TIMx's NVIC */
-#define TIMx_IRQn                      29 //TIM3_IRQn
+#define TIMx_IRQn                      TIM3_IRQn //TIM3_IRQn
 #define TIMx_IRQHandler                TIM3_IRQHandler
 void TIM_Try(void)
 {
@@ -1715,6 +1715,9 @@ void TIM_Try(void)
 
     //NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 	__TIM3_CLK_ENABLE();
+
+	__HAL_DBGMCU_FREEZE_TIM3();
+	__HAL_DBGMCU_FREEZE_TIM4();
 
 	TimHandle.Instance = TIM3;
 	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -1732,7 +1735,7 @@ void TIM_Try(void)
 	  HAL_NVIC_SetPriority(TIMx_IRQn, 0, 1);
 
 	  /* Enable the TIMx global Interrupt */
-	  HAL_NVIC_EnableIRQ(TIMx_IRQn);
+HAL_NVIC_EnableIRQ(TIMx_IRQn);
 
 
 
@@ -1752,7 +1755,7 @@ void TIM_Try(void)
 	  HAL_NVIC_SetPriority(30 /*TIM4_IRQn*/, 2, 4);
 
 	  /* Enable the TIMx global Interrupt */
-	  HAL_NVIC_EnableIRQ(30 /*TIM4_IRQn*/);
+HAL_NVIC_EnableIRQ(TIM4_IRQn);
 
 
 
@@ -1762,6 +1765,16 @@ void TIM_Try(void)
 //		 tim3 = timTryHandle.Instance->CNT;
 //	}
 
+}
+
+TIM3_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&TimHandle);
+}
+
+TIM4_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&TimHandle4);
 }
 
 int ledState = 0;

@@ -35,8 +35,8 @@
 #endif
 
 #ifdef PSDR257
-//#define HSE_VALUE 24000000
-
+//#define HSE_VALUE 26000000
+#define ARM_MATH_CM7
 //#include "stm32f756xx.h"
 #include "stm32f7xx.h"
 #include "stm32f7xx_hal_conf.h"
@@ -51,11 +51,12 @@
 #include "stm32f7xx_hal_uart.h"
 #include "stm32f7xx_hal_usart.h"
 #include "stm32f7xx_hal_i2c.h"
+#include "stm32f7xx_hal_tim_ex.h"
+
 #endif
 
 
-
-//#include "core_cmInstr.h"
+#include "arm_math.h"
 #include <stdio.h>
 #include "stddef.h"
 #include "diag/Trace.h"
@@ -64,27 +65,19 @@
 #include "dds.h"
 #include "Timer.h"
 #include "BlinkLed.h"
-
-//#include "stm32f4xx_hal_rcc.h"
-
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9340.h"
-
-//#include "stm32f4xx_hal.h"
-
 #include "string.h"
 #include "math.h"
-#include "arm_math.h"
+#include "images.h"
+#include "i2c.h"
+//#include "stm32f4xx_hal_rcc.h"
+//#include "stm32f4xx_hal.h"
 //#include "stm32f4xx_hal_rtc.h"
 //#include "stm32f4xx_hal_adc.h"
-
-
-#include "images.h"
-
 //#include "misc.h"
 //#include "stm32f4xx_hal_def.h"
-
-#include "i2c.h"
+//#include "core_cmInstr.h"
 
 
 TIM_HandleTypeDef    TimHandle;
