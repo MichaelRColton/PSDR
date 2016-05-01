@@ -4,3 +4,18 @@ Source/BlankF4.launch
 Source/BlankF4-2.launch
 Source/StereoTurnerOnner.launch
 Hardware/~$PSDR.pcb.inf
+Hardware/Test Boards/~$MultiTestBoard2.pcb.inf
+Hardware/PSDR.eco
+Hardware/PSDR.rep
+Hardware/PSDR_Layou1.pcb
+Hardware/PSDR_Layou2.pcb
+Hardware/PSDR_Layou3.pcb
+Hardware/PSDR_Layout.pcb
+Hardware/PSDR_Logic0.sch
+Hardware/PSDR_Logic1.sch
+Hardware/PSDR_Logic2.sch
+Hardware/PSDR_Logic3.sch
+Hardware/PSDR_PCB/3D/3DSettings.xml
+Hardware/PSDR_PCB/PSDR_3DViewer.cce
+Hardware/STM32F756_Config.ioc
+Source/STM32F4 Test.launch

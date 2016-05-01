@@ -24,7 +24,7 @@ uint16_t sampleIndex;
 volatile uint8_t sampleRun;
 
 	/* Definition for ADCx clock resources */
-	#define ADC_RX_Q                        ADC3
+	#define ADC_RX_Q            ADC3
 	#define ADC_RX_I						ADC2
 	#define ADC_MIC							ADC1
 	#define ADCx_CLK_ENABLE()               __ADC1_CLK_ENABLE()
@@ -38,8 +38,8 @@ volatile uint8_t sampleRun;
 	//#define ADCx_CHANNEL_GPIO_PORT          GPIOA
 
 	/* Definition for ADCx's Channel */
-	#define ADC_RX_Q_CHANNEL                    ADC_CHANNEL_3
-	#define ADC_RX_I_CHANNEL					ADC_CHANNEL_6
+	#define ADC_RX_Q_CHANNEL                    ADC_CHANNEL_2
+	#define ADC_RX_I_CHANNEL					ADC_CHANNEL_3
 	#define ADC_MIC_CHANNEL						ADC_CHANNEL_9
 
 #define ADC_LIPO_VOLTAGE					ADC_CHANNEL_15

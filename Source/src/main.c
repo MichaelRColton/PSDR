@@ -270,6 +270,7 @@ void setupPeripheralPower()
 	__GPIOE_CLK_ENABLE();
 	__DMA1_CLK_ENABLE();
 	__DMA2_CLK_ENABLE();
+	__I2C2_CLK_ENABLE();
 }
 
 void configDMA(SPI_HandleTypeDef *hspi)
@@ -375,7 +376,7 @@ int isFwd;
 	{
 		if(!displayUpdating)
 		{
-			Position2 = (HAL_GPIO_ReadPin(encoderB.port, encoderB.pin) * 2) + HAL_GPIO_ReadPin(encoderA.port, encoderA.pin);;
+			Position2 = (HAL_GPIO_ReadPin(encoderB.port, encoderB.pin) * 2) + HAL_GPIO_ReadPin(encoderBee.port, encoderBee.pin);;
 			if (Position2 != Position)
 			{
 				isFwd = ((Position == 0) && (Position2 == 1)) || ((Position == 1) && (Position2 == 3)) ||
@@ -668,16 +669,16 @@ void setGainPot(uint8_t a, uint8_t b)
 	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 0);
 
 	//choose first register
-	HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, 0);
-	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
-	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, 0);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 0);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 1);
 
 
 	for(i = 0; i < 8; i++)
 	{
-		HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, (a >> (7-i)) & 1);
-		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
-		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, (a >> (7-i)) & 1);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 0);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 1);
 	}
 
 	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 1);
@@ -685,16 +686,16 @@ void setGainPot(uint8_t a, uint8_t b)
 	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 0);
 
 	//choose second register
-	HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, 1);
-	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
-	HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, 1);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 0);
+	HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 1);
 
 
 	for(i = 0; i < 8; i++)
 	{
-		HAL_GPIO_WritePin(GAIN_POT_MOSI.port, GAIN_POT_MOSI.pin, (b >> (7-i)) & 1);
-		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 0);
-		HAL_GPIO_WritePin(GAIN_POT_SCLK.port, GAIN_POT_SCLK.pin, 1);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, (b >> (7-i)) & 1);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 0);
+		HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, 1);
 	}
 
 	HAL_GPIO_WritePin(GAIN_POT_NSS.port, GAIN_POT_NSS.pin, 1);
@@ -708,7 +709,6 @@ USART1_IRQHandler(void)
 
 }
 
-GPIO_InitTypeDef GPIO_InitStruct;
 
 __IO ITStatus UartReady = RESET;
 uint8_t aTxBuffer[] = "Chris a baby!   ";
@@ -716,38 +716,58 @@ uint8_t aRxBuffer[256];
 void configUartPeripheral()
 {
 //	//Enable Clocks
-//	__GPIOB_CLK_ENABLE();
-//	__USART1_CLK_ENABLE();
-//
+	__GPIOC_CLK_ENABLE();
+	__USART6_CLK_ENABLE();
+
+	GPIO_InitTypeDef GPIO_InitStruct;
+
 //	//Setup TX Pin
-//	GPIO_InitStruct.Pin = GPIO_PIN_6;
-//	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-//	GPIO_InitStruct.Pull = GPIO_NOPULL;
-//	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-//	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
-//
-//	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-//
-//	//Setup RX Pin
-//	//It doesn't get set as an input?
-//	GPIO_InitStruct.Pin = GPIO_PIN_7;
-//	GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
-//
-//	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-//
+	GPIO_InitStruct.Pin = RX_TO_GPS.pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+	GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
+	HAL_GPIO_Init(RX_TO_GPS.port, &GPIO_InitStruct);
+
+	//Setup RX Pin
+	//It doesn't get set as an input?
+	GPIO_InitStruct.Pin = TX_FROM_GPS.pin;
+	GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
+	HAL_GPIO_Init(TX_FROM_GPS.port, &GPIO_InitStruct);
+
+
 //	//Configure NVIC
 //	HAL_NVIC_SetPriority(USART1_IRQn, 0, 1);
 //	HAL_NVIC_EnableIRQ(USART1_IRQn);
 //
-//	UartHandle.Instance = USART1;
-//	UartHandle.Init.BaudRate = 9600;
-//	UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
-//	UartHandle.Init.StopBits = UART_STOPBITS_1;
-//	UartHandle.Init.Parity = UART_PARITY_NONE;
-//	UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-//	UartHandle.Init.Mode = UART_MODE_TX_RX;
+	UartHandle.Instance = USART6;
+	UartHandle.Init.BaudRate = 9600;
+	UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
+	UartHandle.Init.StopBits = UART_STOPBITS_1;
+	UartHandle.Init.Parity = UART_PARITY_NONE;
+	UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	UartHandle.Init.Mode = UART_MODE_TX_RX;
+	UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
+
+	if(HAL_UART_Init(&UartHandle) != HAL_OK)
+	  {
+	    trace_puts("UART didn't init rightly.");
+	  }
+
+	TinyGPS_init();
+
+//	while(1)
+//	  {
+//    if(HAL_UART_Receive(&UartHandle, (uint8_t *)aRxBuffer, 256, 5000) != HAL_OK)
+//      {
+//        trace_puts("UART recieve didn't work. No sir.");
+//      } else {
+//        trace_puts(aRxBuffer);
+//        for(int i = 0; i < 256; i++)
+//          TinyGPS_encode(aRxBuffer[i]);
 //
-//	HAL_UART_Init(&UartHandle);
+//      }
+//	  }
 }
 
 
@@ -795,6 +815,58 @@ main(int argc, char* argv[])
 	configDMA(&SpiHandle );
 
 
+//I2C_HandleTypeDef hi2c;
+//HAL_I2C_MspInit(&hi2c);
+
+//__HAL_I2C_DISABLE(I2C2);
+clearStuckBusyFlag();
+
+handleI2C.Instance = I2C2;
+HAL_I2C_DeInit(&handleI2C);
+
+handleI2C.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+handleI2C.Init.ClockSpeed = 400000;
+handleI2C.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
+handleI2C.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+handleI2C.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
+handleI2C.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED;
+handleI2C.Init.OwnAddress1 = 0x30F;
+handleI2C.Init.OwnAddress2 = 0xFE;
+
+
+if(HAL_I2C_Init(&handleI2C) != HAL_OK)
+  {
+    trace_puts("I2C didn't Init correctly");
+
+  }
+//handleI2C.Instance->SR2 = 0; //What the heck is wrong with this thing?!
+//clearStuckBusyFlag();
+
+HAL_StatusTypeDef result = HAL_ERROR;
+
+while(result!= HAL_OK)
+  result = HAL_I2C_IsDeviceReady(&handleI2C, (0x70 << 1), 100, 100); //We need to shift the address to the left for it to work (because of the R/W bit)
+
+//HAL_I2C_Master_Transmit(&hi2c, 230, 0x10, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
+
+//*handleI2C = hi2c;
+
+//HAL_I2C_Master_Transmit(&handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
+//HAL_I2C_Master_Transmit(handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
+//handleI2C = &hi2c;
+//HAL_I2C_Master_Transmit(&handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
+//HAL_I2C_Master_Transmit(handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
+
+i2cSetup();
+//i2cLoop();
+
+
+//trace_puts(( == HAL_OK ? "SI5338 Ready" : "SI5338 Not ready"));
+
+//HAL_I2C_MspInit(&hi2c);
+
+
+
 	timer_start();
 
 	blink_led_init();
@@ -829,7 +901,7 @@ main(int argc, char* argv[])
 
 
 
-	setGainPot(128, 128);
+	setGainPot(250, 250);
 
 	//testing Uart
 	configUartPeripheral();
@@ -868,18 +940,20 @@ main(int argc, char* argv[])
 		drawWaterfall();
 		drawSMeter();
 
-		Adafruit_GFX_fillRect(310, 0, 3, 3, !HAL_GPIO_ReadPin(KEY1.port, KEY1.pin) ? ILI9340_RED : ILI9340_BLUE);
-		Adafruit_GFX_fillRect(310, 4, 3, 3, !HAL_GPIO_ReadPin(KEY2.port, KEY2.pin) ? ILI9340_RED : ILI9340_BLUE);
-		Adafruit_GFX_fillRect(310, 8, 3, 3, HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin) ? ILI9340_RED : ILI9340_BLUE);
-		Adafruit_GFX_fillRect(310, 12, 3, 3, HAL_GPIO_ReadPin(TOUCH2.port, TOUCH2.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 0, 3, 3, HAL_GPIO_ReadPin(PADDLE_THUMB_NC.port, PADDLE_THUMB_NC.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 4, 3, 3, HAL_GPIO_ReadPin(PADDLE_INDEX_NC.port, PADDLE_INDEX_NC.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 8, 3, 3, HAL_GPIO_ReadPin(PADDLE_THUMB_NO.port, PADDLE_THUMB_NO.pin) ? ILI9340_RED : ILI9340_BLUE);
+		Adafruit_GFX_fillRect(310, 12, 3, 3, HAL_GPIO_ReadPin(PADDLE_INDEX_NO.port, PADDLE_INDEX_NO.pin) ? ILI9340_RED : ILI9340_BLUE);
 
-		if(HAL_GPIO_ReadPin(TOUCH1.port, TOUCH1.pin))
+		HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, HAL_GPIO_ReadPin(GPS_PPS.port, GPS_PPS.pin));
+
+		if(!HAL_GPIO_ReadPin(PADDLE_THUMB_NO.port, PADDLE_THUMB_NO.pin))
 		//if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
 	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
-	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
-	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
+//	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
+//	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
 	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 1); //Route through amp.
 	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 0); //always reverse of above.
 	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 0); //0 is on.
@@ -887,8 +961,8 @@ main(int argc, char* argv[])
 		} else {
 			transmitting = 0;
 	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
-	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
-	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
+//	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
+//	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
 	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); //Bypass amp.
 	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
 	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.

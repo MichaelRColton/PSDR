@@ -22,28 +22,28 @@ void spi_init(void)
     __SPI1_CLK_ENABLE();
 
     // SPI2 SCK and MOSI
-    gpioInitStructure.Pin   = SPI1_SCK.pin;
+    gpioInitStructure.Pin   = LCD_SCK.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
     gpioInitStructure.Pull  = GPIO_NOPULL;
     //gpioInitStructure.Alternate = 1;
-    HAL_GPIO_Init(SPI1_SCK.port, &gpioInitStructure);
+    HAL_GPIO_Init(LCD_SCK.port, &gpioInitStructure);
 
-    gpioInitStructure.Pin   = SPI1_MOSI.pin;
+    gpioInitStructure.Pin   = LCD_MOSI.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_AF_PP;
     gpioInitStructure.Pull  = GPIO_NOPULL;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
-    HAL_GPIO_Init(SPI1_MOSI.port, &gpioInitStructure);
+    HAL_GPIO_Init(LCD_MOSI.port, &gpioInitStructure);
 
     // SPI2 MISO
-    gpioInitStructure.Pin   = SPI1_MISO.pin;
+    gpioInitStructure.Pin   = LCD_MISO.pin;
     gpioInitStructure.Speed = GPIO_SPEED_FAST;
     gpioInitStructure.Mode  = GPIO_MODE_INPUT;
     gpioInitStructure.Pull = GPIO_PULLUP;
     gpioInitStructure.Alternate = GPIO_AF5_SPI1;
-    HAL_GPIO_Init(SPI1_MISO.port, &gpioInitStructure);
+    HAL_GPIO_Init(LCD_MISO.port, &gpioInitStructure);
 
     // RFID NSS
     gpioInitStructure.Pin   = LCD_NSS.pin;

@@ -107,7 +107,7 @@ void TinyGPS_init()
 	}
 
 	//Initial Uart setup
-	uart_init(hal_gpsUart);
+	//uart_init(hal_gpsUart);
 
 #ifdef SIRF_MODULE
 	//TODO: Determine which of these delays can be eliminated or reduced
@@ -139,7 +139,7 @@ void TinyGPS_init()
 #endif
 #ifdef MEDIATEK_MODULE
 	//Send it something to wake it up
-	uart_write(hal_gpsUart, "\r\n", 2);
+	//uart_write(hal_gpsUart, "\r\n", 2);
 #endif
 }
 
