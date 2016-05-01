@@ -191,13 +191,13 @@ unsigned char Reg_Store[][3] = {
     { 45,0x00,0xFF},
     { 46,0x00,0xFF},
     { 47,0x14,0x3F},
-    { 48,0x38,0xFF},
+    { 48,0x37,0xFF},
     { 49,0x00,0xFF},
     { 50,0xC4,0xFF},
     { 51,0x07,0xFF},
     { 52,0x10,0xFF},
     { 53,0x00,0xFF},
-    { 54,0xB0,0xFF},
+    { 54,0x57,0xFF},
     { 55,0x00,0xFF},
     { 56,0x00,0xFF},
     { 57,0x00,0xFF},
@@ -240,20 +240,20 @@ unsigned char Reg_Store[][3] = {
     { 94,0x00,0xFF},
     { 95,0x00,0x3F},
     { 96,0x10,0x00},
-    { 97,0x0F,0xFF},
+    { 97,0x21,0xFF},
     { 98,0x2E,0xFF},
-    { 99,0x24,0xFF},
-    {100,0x00,0xFF},
-    {101,0x00,0xFF},
-    {102,0x00,0xFF},
-    {103,0x19,0xFF},
-    {104,0x00,0xFF},
-    {105,0x00,0xFF},
+    { 99,0x80,0xFF},
+    {100,0x8F,0xFF},
+    {101,0x50,0xFF},
+    {102,0x01,0xFF},
+    {103,0xA0,0xFF},
+    {104,0x2E,0xFF},
+    {105,0x63,0xFF},
     {106,0x80,0xBF},
     {107,0x00,0xFF},
     {108,0x00,0xFF},
     {109,0x00,0xFF},
-    {110,0xC0,0xFF},
+    {110,0x00,0xFF},
     {111,0x00,0xFF},
     {112,0x00,0xFF},
     {113,0x00,0xFF},
@@ -492,6 +492,8 @@ unsigned char Reg_Store[][3] = {
     { 93,0x00,0x00},
     { 94,0x00,0x00},
     {255, 0, 0xFF} }; // set page bit to 0
+    //End of file
+
 
 
 unsigned char hello = 1;
@@ -575,6 +577,9 @@ void sendRegToSi5338(int increment)
   unsigned char addr = Reg_Store[increment][0];
   unsigned char data = Reg_Store[increment][1];
   unsigned char mask = Reg_Store[increment][2];
+//  unsigned char addr = Reg_Store[increment].Reg_Addr;
+//  unsigned char data = Reg_Store[increment].Reg_Val;
+//  unsigned char mask = Reg_Store[increment].Reg_Mask;
 
   // ignore registers with masks of 0x00
   if(mask != 0x00){
@@ -739,7 +744,7 @@ long neumerator = 0;
 //do
 //{
 
-  writeMultiSynthParameters(MULTISYNTH0, integer, neumerator, 10000UL);
+  //writeMultiSynthParameters(MULTISYNTH0, integer, neumerator, 10000UL);
   //neumerator += 1000;
   //if(neumerator > 9999)
   //{

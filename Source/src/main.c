@@ -756,18 +756,18 @@ void configUartPeripheral()
 
 	TinyGPS_init();
 
-	while(1)
-	  {
-    if(HAL_UART_Receive(&UartHandle, (uint8_t *)aRxBuffer, 256, 5000) != HAL_OK)
-      {
-        trace_puts("UART recieve didn't work. No sir.");
-      } else {
-        trace_puts(aRxBuffer);
-        for(int i = 0; i < 256; i++)
-          TinyGPS_encode(aRxBuffer[i]);
-
-      }
-	  }
+//	while(1)
+//	  {
+//    if(HAL_UART_Receive(&UartHandle, (uint8_t *)aRxBuffer, 256, 5000) != HAL_OK)
+//      {
+//        trace_puts("UART recieve didn't work. No sir.");
+//      } else {
+//        trace_puts(aRxBuffer);
+//        for(int i = 0; i < 256; i++)
+//          TinyGPS_encode(aRxBuffer[i]);
+//
+//      }
+//	  }
 }
 
 
@@ -858,7 +858,7 @@ while(result!= HAL_OK)
 //HAL_I2C_Master_Transmit(handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 
 i2cSetup();
-i2cLoop();
+//i2cLoop();
 
 
 //trace_puts(( == HAL_OK ? "SI5338 Ready" : "SI5338 Not ready"));
@@ -901,7 +901,7 @@ i2cLoop();
 
 
 
-	setGainPot(255, 255);
+	setGainPot(250, 250);
 
 	//testing Uart
 	configUartPeripheral();
