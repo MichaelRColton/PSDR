@@ -819,7 +819,7 @@ main(int argc, char* argv[])
 //HAL_I2C_MspInit(&hi2c);
 
 //__HAL_I2C_DISABLE(I2C2);
-clearStuckBusyFlag();
+//clearStuckBusyFlag();
 
 handleI2C.Instance = I2C2;
 HAL_I2C_DeInit(&handleI2C);
@@ -859,8 +859,8 @@ HAL_StatusTypeDef result = HAL_ERROR;
 //HAL_I2C_Master_Transmit(&handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 //HAL_I2C_Master_Transmit(handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 
-//i2cSetup();
-//i2cLoop();
+i2cSetup();
+i2cLoop();
 
 
 //trace_puts(( == HAL_OK ? "SI5338 Ready" : "SI5338 Not ready"));
@@ -1492,7 +1492,7 @@ void processStream()
 		sampleRun = 0;
 	}
 
-	clearTimUpdateFlag(&TimHandle4);
+	//clearTimUpdateFlag(&TimHandle4);
 }
 
 void updateVfo()
@@ -1774,6 +1774,7 @@ TIM3_IRQHandler(void)
 
 TIM4_IRQHandler(void)
 {
+  processStream();
   HAL_TIM_IRQHandler(&TimHandle4);
 }
 
