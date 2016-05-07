@@ -44,43 +44,43 @@ long long freqToReg(long long frequency)
 }
 
 
-void setFreq(long frequency)
-{
-	long long freg = freqToReg(frequency);
-
-
-	//HAL_GPIO_WritePin(ddsReset.port, ddsReset.pin, 1);
-	  ddsPrefix();
-	  //sendToDds(0x2100, 0x2100);
-	  //sendToDds(0x0010001100000000 , 0x0010001100000000);
-	  sendToDds(0b0010001000000000 , 0b0010001000000000);
-	  ddsSuffix();
-
-	  //HAL_GPIO_WritePin(ddsReset.port, ddsReset.pin, 0);
-	  //HAL_GPIO_WritePin(ddsReset.port, ddsReset.pin, 1);
-	  //sendToDds(0x50c7);
-	  //sendToDds(0x4000);
-	  ddsPrefix();
-	  sendToDds(((freg & 0b0011111111111111) | 0b0100000000000000),
-			  ((freg & 0b0011111111111111) | 0b0100000000000000));
-	  ddsSuffix();
-	  ddsPrefix();
-	  sendToDds(((freg >> 14 & 0b0011111111111111) | 0b0100000000000000),
-			  (((freg >> 14) & 0b0011111111111111) | 0b0100000000000000));
-	  ddsSuffix();
-	  ddsPrefix();
-	  //sendToDds(0xc000, 0xc000);
-	  sendToDds(0xc000, 0xc000 | 3072);
-	  ddsSuffix();
-	//  ddsPrefix();
-	//  sendToDds(0b1100000000000000);
-	//  ddsSuffix();
-
-
-
-	//  ddsPrefix();
-	//  sendToDds(0x2000, 0x2000);
-	//  ddsSuffix();
-
-//	  HAL_GPIO_WritePin(ddsReset.port, ddsReset.pin, 0);
-}
+//void setFreq(long frequency)
+//{
+//	long long freg = freqToReg(frequency);
+//
+//
+//	//HAL_GPIO_WritePin(ddsReset.port, ddsReset.pin, 1);
+//	  ddsPrefix();
+//	  //sendToDds(0x2100, 0x2100);
+//	  //sendToDds(0x0010001100000000 , 0x0010001100000000);
+//	  sendToDds(0b0010001000000000 , 0b0010001000000000);
+//	  ddsSuffix();
+//
+//	  //HAL_GPIO_WritePin(ddsReset.port, ddsReset.pin, 0);
+//	  //HAL_GPIO_WritePin(ddsReset.port, ddsReset.pin, 1);
+//	  //sendToDds(0x50c7);
+//	  //sendToDds(0x4000);
+//	  ddsPrefix();
+//	  sendToDds(((freg & 0b0011111111111111) | 0b0100000000000000),
+//			  ((freg & 0b0011111111111111) | 0b0100000000000000));
+//	  ddsSuffix();
+//	  ddsPrefix();
+//	  sendToDds(((freg >> 14 & 0b0011111111111111) | 0b0100000000000000),
+//			  (((freg >> 14) & 0b0011111111111111) | 0b0100000000000000));
+//	  ddsSuffix();
+//	  ddsPrefix();
+//	  //sendToDds(0xc000, 0xc000);
+//	  sendToDds(0xc000, 0xc000 | 3072);
+//	  ddsSuffix();
+//	//  ddsPrefix();
+//	//  sendToDds(0b1100000000000000);
+//	//  ddsSuffix();
+//
+//
+//
+//	//  ddsPrefix();
+//	//  sendToDds(0x2000, 0x2000);
+//	//  ddsSuffix();
+//
+////	  HAL_GPIO_WritePin(ddsReset.port, ddsReset.pin, 0);
+//}

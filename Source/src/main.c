@@ -988,52 +988,67 @@ void drawSMeter()
 
 enum menuItems
 {
-	oneMhzPlace = 0,
-	hundredKhzPlace = 1,
-	tenKhzPlace = 2,
-	oneKhzPlace = 3,
-	hundredHzPlace = 4,
-	tenHzPlace = 5,
-	oneHzPlace = 6,
-	filterLower = 7,
-	filterUpper = 8,
-	modeMenu = 9,
-	volumeMenu = 10,
+  volumeMenuItem = 0,
+  modeMenuItem,
+  megahertzMenuItem,
+  hundredKilohertzMenuItem,
+  tenKilohertzMenuItem,
+  kilohertzMenuItem,
+  hundredHertzMenuItem,
+  tenHertzMenuItem,
+  hertzMenuItem,
+  filterLowMenuItem,
+  filterHighMenuItem
 };
+
+//enum menuItems
+//{
+//  oneMhzPlace = 0,
+//  hundredKhzPlace = 1,
+//  tenKhzPlace = 2,
+//  oneKhzPlace = 3,
+//  hundredHzPlace = 4,
+//  tenHzPlace = 5,
+//  oneHzPlace = 6,
+//  filterLower = 7,
+//  filterUpper = 8,
+//  modeMenu = 9,
+//  volumeMenu = 10,
+//};
 
 void updateMenu()
 {
 	switch(menuPos)
 	{
-	case oneMhzPlace:
+	case megahertzMenuItem:
 		frequencyDialMultiplier = 1000000;
 		updateVfo();
 		break;
-	case hundredKhzPlace:
+	case hundredKilohertzMenuItem:
 		frequencyDialMultiplier = 100000;
 		updateVfo();
 		break;
-	case tenKhzPlace:
+	case tenKilohertzMenuItem:
 		frequencyDialMultiplier = 10000;
 		updateVfo();
 		break;
-	case oneKhzPlace:
+	case kilohertzMenuItem:
 		frequencyDialMultiplier = 1000;
 		updateVfo();
 		break;
-	case hundredHzPlace:
+	case hundredHertzMenuItem:
 		frequencyDialMultiplier = 100;
 		updateVfo();
 		break;
-	case tenHzPlace:
+	case tenHertzMenuItem:
 		frequencyDialMultiplier = 10;
 		updateVfo();
 		break;
-	case oneHzPlace:
+	case hertzMenuItem:
 		frequencyDialMultiplier = 1;
 		updateVfo();
 		break;
-	case filterLower:
+	case filterLowMenuItem:
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
@@ -1045,7 +1060,7 @@ void updateMenu()
 			populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 		}
 		break;
-	case filterUpper:
+	case filterHighMenuItem:
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
@@ -1057,7 +1072,7 @@ void updateMenu()
 			populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 		}
 		break;
-	case modeMenu:
+	case modeMenuItem:
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
@@ -1069,7 +1084,7 @@ void updateMenu()
 			//Right now all this does is turns the AM decoder on and off, I guess.
 		}
 		break;
-	case volumeMenu:
+	case volumeMenuItem:
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
@@ -1114,11 +1129,13 @@ enum modes
 	AM = 2
 };
 
+
+
 void updateDisplay(uint8_t force)
 {
 	displayUpdating = 1;
-	static char freqChar[14];
-	static char lastFreqChar[] = {'$','$','$','$','$','$','$','$','$','$','$','$','$','$',};
+	static char freqChar[15];
+	static char lastFreqChar[] = {'$','$','$','$','$','$','$','$','$','$','$','$','$','$','$',};
 
 	//Draw elements that don't normally change. Static icons, etc.
 	if(force)
@@ -1127,54 +1144,83 @@ void updateDisplay(uint8_t force)
 		Adafruit_GFX_drawColorBitmap(150, 90, bitmapMode, 40,12, MASKWHITE);
 		Adafruit_GFX_fillTriangle(126,119,136,124,136,114,ILI9340_WHITE);
 		Adafruit_GFX_drawColorBitmap(150, 136, bitmapFilter, 47,12, MASKWHITE);
-		drawNumber('.', freqHOffset + 16*2, freqVOffset + 0, MASKWHITE);
-		drawNumber('.', freqHOffset + 16*6, freqVOffset + 0, MASKWHITE);
+		drawNumber('.', freqHOffset + 16*3, freqVOffset + 0, MASKWHITE);
+		drawNumber('.', freqHOffset + 16*7, freqVOffset + 0, MASKWHITE);
 		Adafruit_GFX_drawColorBitmap(142, 162, bitmapSMeter, 155, 10, MASKWHITE);
 		//Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
 	}
 
-	sprintf(&freqChar, "%8d", vfoAFrequency);
+	sprintf(&freqChar, "%9d", vfoAFrequency);
 
 	//So on each of these elements, we update when the value changes, when we're forced to, when the item becomes selected, or unselected.
-	if(freqChar[0] != lastFreqChar[0] ||  force || (menuPos != menuLastPos && (menuPos == 0 || menuLastPos == 0)))
+	if(freqChar[0] != lastFreqChar[0]
+	     ||  force
+	     || (menuPos != menuLastPos && (menuPos == megahertzMenuItem
+	     || menuLastPos == megahertzMenuItem)))
 	{
-		drawNumber(freqChar[0], freqHOffset + 16*0, freqVOffset + 0, menuPos == 0 ? MASKRED : MASKWHITE);
+		drawNumber(freqChar[0], freqHOffset + 16*0, freqVOffset + 0,
+		           menuPos == megahertzMenuItem ? MASKRED : MASKWHITE);
 	}
-	if(freqChar[1] != lastFreqChar[1] || redItems[0] || force || (menuPos != menuLastPos && (menuPos == 0 || menuLastPos == 0)))
+	if(freqChar[1] != lastFreqChar[1]
+	     || redItems[0]
+	     || force
+	     || (menuPos != menuLastPos && (menuPos == megahertzMenuItem
+	     || menuLastPos == megahertzMenuItem)))
 	{
-		drawNumber(freqChar[1], freqHOffset + 16*1, freqVOffset + 0, menuPos == 0 ? MASKRED : MASKWHITE);
+		drawNumber(freqChar[1], freqHOffset + 16*1, freqVOffset + 0,
+		           menuPos == megahertzMenuItem ? MASKRED : MASKWHITE);
 	}
-	if(freqChar[2] != lastFreqChar[2] || force || (menuPos != menuLastPos && (menuPos == 1 || menuLastPos == 1)))
+	if(freqChar[2] != lastFreqChar[2]
+	     || force
+	     || (menuPos != menuLastPos && (menuPos == megahertzMenuItem
+	     || menuLastPos == megahertzMenuItem)))
 	{
-		drawNumber(freqChar[2], freqHOffset + 16*3, freqVOffset + 0, menuPos == 1 ? MASKRED : MASKWHITE);
+		drawNumber(freqChar[2], freqHOffset + 16*2, freqVOffset + 0,
+		           menuPos == megahertzMenuItem ? MASKRED : MASKWHITE);
 	}
-	if(freqChar[3] != lastFreqChar[3] || force || (menuPos != menuLastPos && (menuPos == 2 || menuLastPos == 2)))
+	if(freqChar[3] != lastFreqChar[3]
+	     || force
+	     || (menuPos != menuLastPos && (menuPos == hundredKilohertzMenuItem
+	     || menuLastPos == hundredKilohertzMenuItem)))
 	{
-		drawNumber(freqChar[3], freqHOffset + 16*4, freqVOffset + 0, menuPos == 2 ? MASKRED : MASKWHITE);
+		drawNumber(freqChar[3], freqHOffset + 16*4, freqVOffset + 0,
+		           menuPos == hundredKilohertzMenuItem ? MASKRED : MASKWHITE);
 	}
-	if(freqChar[4] != lastFreqChar[4] || force || (menuPos != menuLastPos && (menuPos == 3 || menuLastPos == 3)))
+	if(freqChar[4] != lastFreqChar[4]
+	     || force
+	     || (menuPos != menuLastPos && (menuPos == tenKilohertzMenuItem
+	     || menuLastPos == tenKilohertzMenuItem)))
 	{
-		drawNumber(freqChar[4], freqHOffset + 16*5, freqVOffset + 0, menuPos == 3 ? MASKRED : MASKWHITE);
+		drawNumber(freqChar[4], freqHOffset + 16*5, freqVOffset + 0,
+		           menuPos == tenKilohertzMenuItem ? MASKRED : MASKWHITE);
 	}
-	if(freqChar[5] != lastFreqChar[5] || force || (menuPos != menuLastPos && (menuPos == 4 || menuLastPos == 4)))
+	if(freqChar[5] != lastFreqChar[5] || force || (menuPos != menuLastPos && (menuPos == kilohertzMenuItem || menuLastPos == kilohertzMenuItem)))
 	{
-		drawNumber(freqChar[5], freqHOffset + 16*7, freqVOffset + 0, menuPos == 4 ? MASKRED : MASKWHITE);
+		drawNumber(freqChar[5], freqHOffset + 16*6, freqVOffset + 0, menuPos == kilohertzMenuItem ? MASKRED : MASKWHITE);
 	}
-	if(freqChar[6] != lastFreqChar[6] || force || (menuPos != menuLastPos && (menuPos == 5 || menuLastPos == 5)))
+	if(freqChar[6] != lastFreqChar[6] || force || (menuPos != menuLastPos && (menuPos == hundredHertzMenuItem || menuLastPos == hundredHertzMenuItem)))
 	{
-		drawNumber(freqChar[6], freqHOffset + 16*8, freqVOffset + 0, menuPos == 5 ? MASKRED : MASKWHITE);
+		drawNumber(freqChar[6], freqHOffset + 16*8, freqVOffset + 0, menuPos == hundredHertzMenuItem ? MASKRED : MASKWHITE);
 	}
-	if(freqChar[7] != lastFreqChar[7] || force || (menuPos != menuLastPos && (menuPos == 6 || menuLastPos == 6)))
+	if(freqChar[7] != lastFreqChar[7] || force || (menuPos != menuLastPos && (menuPos == tenHertzMenuItem || menuLastPos == tenHertzMenuItem)))
 	{
-		drawNumber(freqChar[7], freqHOffset + 16*9, freqVOffset + 0, menuPos == 6 ? MASKRED : MASKWHITE);
+		drawNumber(freqChar[7], freqHOffset + 16*9, freqVOffset + 0, menuPos == tenHertzMenuItem ? MASKRED : MASKWHITE);
 	}
+  if(freqChar[8] != lastFreqChar[8] || force || (menuPos != menuLastPos && (menuPos == hertzMenuItem || menuLastPos == hertzMenuItem)))
+  {
+    drawNumber(freqChar[8], freqHOffset + 16*10, freqVOffset + 0, menuPos == hertzMenuItem ? MASKRED : MASKWHITE);
+  }
 
 	vfoALastFreq = vfoAFrequency;
 	strcpy(lastFreqChar, freqChar);
 
 	int redrawFilterBar = 0;
 
-	if(mode != modeLast || filterLowerLimit != filterLastLowerLimit || force || (menuPos != menuLastPos && (menuPos == 7 || menuLastPos == 7)))
+	if(mode != modeLast
+	    || filterLowerLimit != filterLastLowerLimit
+	    || force
+	    || (menuPos != menuLastPos && (menuPos == filterLowMenuItem
+	    || menuLastPos == filterLowMenuItem)))
 	{
 		sprintf(&freqChar, "%4d", filterLowerLimit * 40);
 		//Adafruit_GFX_setTextSize(2);
@@ -1184,7 +1230,7 @@ void updateDisplay(uint8_t force)
 		for(i = 0; i < 4; i++)
 		{
 			//Adafruit_GFX_write(freqChar[i]);
-			drawNumberSmall(freqChar[i], 205 + (i * 9), 137, menuPos == 7 ? MASKRED : MASKWHITE);
+			drawNumberSmall(freqChar[i], 205 + (i * 9), 137, menuPos == filterLowMenuItem ? MASKRED : MASKWHITE);
 		}
 		//Adafruit_GFX_setTextSize(3);
 
@@ -1192,7 +1238,11 @@ void updateDisplay(uint8_t force)
 		filterLastLowerLimit = filterLowerLimit;
 	}
 
-	if(mode != modeLast || filterUpperLimit != filterLastUpperLimit || force || (menuPos != menuLastPos && (menuPos == 8 || menuLastPos == 8)))
+	if(mode != modeLast
+	    || filterUpperLimit != filterLastUpperLimit
+	    || force
+	    || (menuPos != menuLastPos && (menuPos == filterHighMenuItem
+	    || menuLastPos == filterHighMenuItem)))
 	{
 		sprintf(&freqChar, "%-4d", filterUpperLimit * 40);
 		//Adafruit_GFX_setTextSize(2);
@@ -1202,7 +1252,7 @@ void updateDisplay(uint8_t force)
 		for(i = 0; i < 4; i++)
 		{
 			//Adafruit_GFX_write(freqChar[i]);
-			drawNumberSmall(freqChar[i], 250 + (i * 9), 137, menuPos == 8 ? MASKRED : MASKWHITE);
+			drawNumberSmall(freqChar[i], 250 + (i * 9), 137, menuPos == filterHighMenuItem ? MASKRED : MASKWHITE);
 		}
 		//Adafruit_GFX_setTextSize(3);
 
@@ -1211,14 +1261,14 @@ void updateDisplay(uint8_t force)
 	}
 
 
-	if(afGainLast != afGain || force || (menuPos != menuLastPos && (menuPos == volumeMenu || menuLastPos == volumeMenu)))
+	if(afGainLast != afGain || force || (menuPos != menuLastPos && (menuPos == volumeMenuItem || menuLastPos == volumeMenuItem)))
 	{
 		sprintf(&freqChar, "%-4f", afGain * 100);
 		int i;
 		for(i = 0; i < 4; i++)
 		{
 			//Adafruit_GFX_write(freqChar[i]);
-			drawNumberSmall(freqChar[i], 250 + (i * 9), 10, menuPos == volumeMenu ? MASKRED : MASKWHITE);
+			drawNumberSmall(freqChar[i], 250 + (i * 9), 10, menuPos == volumeMenuItem ? MASKRED : MASKWHITE);
 		}
 
 		afGainLast = afGain;
@@ -1248,18 +1298,21 @@ void updateDisplay(uint8_t force)
 	}
 
 
-	if(mode != modeLast || force || (menuPos != menuLastPos && (menuPos == 9 || menuLastPos == 9)))
+	if(mode != modeLast
+	    || force
+	    || (menuPos != menuLastPos && (menuPos == modeMenuItem
+	    || menuLastPos == modeMenuItem)))
 	{
 		switch(mode)
 		{
 		case LSB:
-			Adafruit_GFX_drawColorBitmap(196, 91, bitmapLSB, 28, 9, menuPos == 9 ? MASKRED : MASKWHITE);
+			Adafruit_GFX_drawColorBitmap(196, 91, bitmapLSB, 28, 9, menuPos == modeMenuItem ? MASKRED : MASKWHITE);
 			break;
 		case USB:
-			Adafruit_GFX_drawColorBitmap(196, 91, bitmapUSB, 28, 9, menuPos == 9 ? MASKRED : MASKWHITE);
+			Adafruit_GFX_drawColorBitmap(196, 91, bitmapUSB, 28, 9, menuPos == modeMenuItem ? MASKRED : MASKWHITE);
 			break;
 		case AM:
-			Adafruit_GFX_drawColorBitmap(196, 91, bitmapAM, 28, 9, menuPos == 9 ? MASKRED : MASKWHITE);
+			Adafruit_GFX_drawColorBitmap(196, 91, bitmapAM, 28, 9, menuPos == modeMenuItem ? MASKRED : MASKWHITE);
 			break;
 		}
 
@@ -1500,8 +1553,8 @@ void updateVfo()
 
 		vfoAFrequency += frequencyDialMultiplier * (encoderLastPos - encoderPos);
 
-		if(vfoAFrequency < 1) vfoAFrequency = 1;
-		if(vfoAFrequency > 37500000) vfoAFrequency = 37500000;
+		if(vfoAFrequency < 2500000) vfoAFrequency = 2500000; //Currently, the code can only corectly drive down to 5MHz/2 = 2.5MHz
+		if(vfoAFrequency > 175000000) vfoAFrequency = 175000000; //Currently, the code can only correctly drive up to 350MHz/2 = 175MHz
 
 		encoderLastPos = encoderPos;
 	}
