@@ -386,18 +386,18 @@ hal_setupPins (void)
 
   //ADC1
   gpioInitStructure.Pin = RX_Q.pin;
-  gpioInitStructure.Speed = GPIO_SPEED_FAST;
+  //gpioInitStructure.Speed = GPIO_SPEED_FAST;
   gpioInitStructure.Mode = GPIO_MODE_ANALOG;
   gpioInitStructure.Pull = GPIO_NOPULL;
-  gpioInitStructure.Alternate = 0;
+  //gpioInitStructure.Alternate = 0;
   HAL_GPIO_Init (RX_Q.port, &gpioInitStructure);
 
   //ADC2
   gpioInitStructure.Pin = RX_I.pin;
-  gpioInitStructure.Speed = GPIO_SPEED_FAST;
+  //gpioInitStructure.Speed = GPIO_SPEED_FAST;
   gpioInitStructure.Mode = GPIO_MODE_ANALOG;
   gpioInitStructure.Pull = GPIO_NOPULL;
-  gpioInitStructure.Alternate = 0;
+  //gpioInitStructure.Alternate = 0;
   HAL_GPIO_Init (RX_I.port, &gpioInitStructure);
 
   //DDS Pins

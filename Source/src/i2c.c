@@ -175,13 +175,13 @@ unsigned char Reg_Store[][3] = {
     { 29,0x90,0xFF},
     { 30,0xB0,0xFF},
     { 31,0xC0,0xFF},
-    { 32,0xE3,0xFF},
-    { 33,0xE3,0xFF},
+    { 32,0xC0,0xFF},
+    { 33,0xCC,0xFF},
     { 34,0xE3,0xFF},
     { 35,0x00,0xFF},
     { 36,0x06,0x1F},
-    { 37,0x00,0x1F},
-    { 38,0x00,0x1F},
+    { 37,0x06,0x1F},
+    { 38,0x06,0x1F},
     { 39,0x00,0x1F},
     { 40,0x63,0xFF},
     { 41,0x0C,0x7F},
@@ -191,18 +191,18 @@ unsigned char Reg_Store[][3] = {
     { 45,0x00,0xFF},
     { 46,0x00,0xFF},
     { 47,0x14,0x3F},
-    { 48,0x38,0xFF},
+    { 48,0x2B,0xFF},
     { 49,0x00,0xFF},
-    { 50,0xC4,0xFF},
-    { 51,0x07,0xFF},
+    { 50,0xC2,0xFF},
+    { 51,0x27,0xFF},
     { 52,0x10,0xFF},
-    { 53,0x00,0xFF},
-    { 54,0xB0,0xFF},
-    { 55,0x00,0xFF},
-    { 56,0x00,0xFF},
+    { 53,0xD9,0xFF},
+    { 54,0x02,0xFF},
+    { 55,0x84,0xFF},
+    { 56,0x01,0xFF},
     { 57,0x00,0xFF},
     { 58,0x00,0xFF},
-    { 59,0x01,0xFF},
+    { 59,0xB7,0xFF},
     { 60,0x00,0xFF},
     { 61,0x00,0xFF},
     { 62,0x00,0x3F},
@@ -213,18 +213,18 @@ unsigned char Reg_Store[][3] = {
     { 67,0x00,0xFF},
     { 68,0x00,0xFF},
     { 69,0x00,0xFF},
-    { 70,0x00,0xFF},
+    { 70,0x01,0xFF},
     { 71,0x00,0xFF},
     { 72,0x00,0xFF},
     { 73,0x00,0x3F},
     { 74,0x10,0xFF},
-    { 75,0x00,0xFF},
-    { 76,0x00,0xFF},
-    { 77,0x00,0xFF},
+    { 75,0x38,0xFF},
+    { 76,0xC3,0xFF},
+    { 77,0x20,0xFF},
     { 78,0x00,0xFF},
     { 79,0x00,0xFF},
     { 80,0x00,0xFF},
-    { 81,0x00,0xFF},
+    { 81,0x09,0xFF},
     { 82,0x00,0xFF},
     { 83,0x00,0xFF},
     { 84,0x00,0x3F},
@@ -240,20 +240,20 @@ unsigned char Reg_Store[][3] = {
     { 94,0x00,0xFF},
     { 95,0x00,0x3F},
     { 96,0x10,0x00},
-    { 97,0x0F,0xFF},
-    { 98,0x2E,0xFF},
-    { 99,0x24,0xFF},
+    { 97,0x9D,0xFF},
+    { 98,0x34,0xFF},
+    { 99,0x1C,0xFF},
     {100,0x00,0xFF},
     {101,0x00,0xFF},
     {102,0x00,0xFF},
-    {103,0x19,0xFF},
+    {103,0x0D,0xFF},
     {104,0x00,0xFF},
     {105,0x00,0xFF},
     {106,0x80,0xBF},
     {107,0x00,0xFF},
     {108,0x00,0xFF},
     {109,0x00,0xFF},
-    {110,0xC0,0xFF},
+    {110,0x40,0xFF},
     {111,0x00,0xFF},
     {112,0x00,0xFF},
     {113,0x00,0xFF},
@@ -491,7 +491,8 @@ unsigned char Reg_Store[][3] = {
     { 92,0x00,0x00},
     { 93,0x00,0x00},
     { 94,0x00,0x00},
-    {255, 0, 0xFF} }; // set page bit to 0
+    {255, 0, 0xFF} };
+
 
 
 unsigned char hello = 1;
@@ -575,6 +576,9 @@ void sendRegToSi5338(int increment)
   unsigned char addr = Reg_Store[increment][0];
   unsigned char data = Reg_Store[increment][1];
   unsigned char mask = Reg_Store[increment][2];
+//  unsigned char addr = Reg_Store[increment].Reg_Addr;
+//  unsigned char data = Reg_Store[increment].Reg_Val;
+//  unsigned char mask = Reg_Store[increment].Reg_Mask;
 
   // ignore registers with masks of 0x00
   if(mask != 0x00){
@@ -708,9 +712,23 @@ write_Si5338(230, 0x00); // OEB_ALL = 0
 //  }
 
 //while(1);
+
+
+
+write_Si5338(31, 0xC1); //output driver off?
+
+//Start us at a known frequency (in this case 14.06 which equals 7.03)
+//TODO: Make this start at whatever the unit is supposed to power up at. Not hard coded
+writeMultiSynthParameters(MULTISYNTH0, 201, 697, 703);
+write_Si5338(31, 0xC0); //output driver off?
 }
 
-void i2cLoop() {
+
+unsigned long long vcoFreq = 2840000000;
+double correctionFactor = 1;
+void setFreq(unsigned long frequency)
+{
+//void i2cLoop() {
   // put your main code here, to run repeatedly:
   //delay(400);
   //write_Si5338(31, 0xC1); //output driver off?
@@ -731,15 +749,34 @@ void i2cLoop() {
 //  if( integer >= 500) integer = 8;
 //
 //} while (true);
+//double  desiredFrequency = 150.5;
+//double  measuredFrequency = 150.48806;
+
+
+//  correctionFactor = desiredFrequency/measuredFrequency;
+
+//  frequency *= correctionFactor;
+
+  frequency *= 2; //because the flipflops will devide it back down by 2
+
+if(frequency < 5000000) return;
+if(frequency > 350000000) return;
 
 
 
-long integer = 199;
-long neumerator = 0;
+unsigned long integer = vcoFreq / frequency;
+
+//if((integer % 2) != 0) integer++;
+
+
+
+unsigned long remainder = vcoFreq % frequency;
+
+
 //do
 //{
 
-  writeMultiSynthParameters(MULTISYNTH0, integer, neumerator, 10000UL);
+  //writeMultiSynthParameters(MULTISYNTH0, integer, neumerator, 10000UL);
   //neumerator += 1000;
   //if(neumerator > 9999)
   //{
@@ -747,7 +784,7 @@ long neumerator = 0;
   //  integer++;
 
   //}
-  //if( integer >= 500) integer = 8;
+//  if( integer >= 500) integer = 8;
 
   //neumerator = (analogRead(A3) * 10); //578914 referal nu  801 435 7764 john thank you
   //integer = (analogRead(A2) /10) + 150;
@@ -755,12 +792,23 @@ long neumerator = 0;
 //} while (true);
 
 
-    write_Si5338(31, 0xC0); //output driver off?
+    //write_Si5338(31, 0xC0); //output driver off?
 
   //delay(400);
-    write_Si5338(31, 0xC1); //output driver off?
-  writeMultiSynthParameters(MULTISYNTH0, 397, 0, 10000UL);
-    write_Si5338(31, 0xC0); //output driver off?
+
+
+
+while(frequency > 100000) //This value should be fine tuned. I thought the numerator and denominator could be 30 bits, but it seems to be less than 24
+  {
+    remainder /= 2;
+    frequency /= 2;
+  }
+
+    //write_Si5338(31, 0xC1); //output driver off?
+    writeMultiSynthParameters(MULTISYNTH0, integer, remainder , frequency);
+    //writeMultiSynthParameters(MULTISYNTH0, 232, 44960 , 122220);
+  //writeMultiSynthParameters(MULTISYNTH0, integer, /*neumerator*/ 0 , 1000000UL);
+    //write_Si5338(31, 0xC0); //output driver off?
 
 }
 

@@ -23,7 +23,7 @@ void initAdc()
 
 		  AdcHandle1.Instance          = ADC1;
 
-		  AdcHandle1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+		  AdcHandle1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV4;
 		  AdcHandle1.Init.Resolution = ADC_RESOLUTION12b;
 		  AdcHandle1.Init.ScanConvMode = DISABLE;
 		  AdcHandle1.Init.ContinuousConvMode = ENABLE;
@@ -45,7 +45,7 @@ void initAdc()
 
 		  AdcHandle2.Instance          = ADC2;
 
-		  AdcHandle2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+		  AdcHandle2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV4;
 		  AdcHandle2.Init.Resolution = ADC_RESOLUTION12b;
 		  AdcHandle2.Init.ScanConvMode = DISABLE;
 		  AdcHandle2.Init.ContinuousConvMode = ENABLE;
@@ -66,7 +66,7 @@ void initAdc()
 
 		  AdcHandle3.Instance          = ADC3;
 
-		  AdcHandle3.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+		  AdcHandle3.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV4;
 		  AdcHandle3.Init.Resolution = ADC_RESOLUTION12b;
 		  AdcHandle3.Init.ScanConvMode = DISABLE;
 		  AdcHandle3.Init.ContinuousConvMode = ENABLE;
@@ -124,20 +124,25 @@ void initAdc()
 
 	void adcGetConversion()
 	{
-		  HAL_ADC_PollForConversion(&AdcHandle1, 10);
-		  HAL_ADC_PollForConversion(&AdcHandle2, 10);
-		  HAL_ADC_PollForConversion(&AdcHandle3, 10);
+		 HAL_StatusTypeDef result =  HAL_ADC_PollForConversion(&AdcHandle1, 10);
+		  result = HAL_ADC_PollForConversion(&AdcHandle2, 10);
+		  result = HAL_ADC_PollForConversion(&AdcHandle3, 10);
 
-		    /* Check if the continous conversion of regular channel is finished */
-		    if(HAL_ADC_GetState(&AdcHandle1) == HAL_ADC_STATE_EOC_REG
-		    		&& HAL_ADC_GetState(&AdcHandle2) == HAL_ADC_STATE_EOC_REG
-		    		&& HAL_ADC_GetState(&AdcHandle3) == HAL_ADC_STATE_EOC_REG)
+		  if (result == HAL_OK)
+		    {
+		     		    /* Check if the continous conversion of regular channel is finished */
+		    if(HAL_ADC_GetState(&AdcHandle1) == 0x300 /*HAL_ADC_STATE_REG_EOC*/
+		    		&& HAL_ADC_GetState(&AdcHandle2) == 0x300 /*HAL_ADC_STATE_REG_EOC*/
+		    		&& HAL_ADC_GetState(&AdcHandle3) == 0x300 /*HAL_ADC_STATE_REG_EOC*/)
 		    {
 		      /*##-5- Get the converted value of regular channel  ########################*/
 		      uhADCxConvertedValue1 = HAL_ADC_GetValue(&AdcHandle1);
 		      uhADCxConvertedValue2 = HAL_ADC_GetValue(&AdcHandle2);
 		      uhADCxConvertedValue3 = HAL_ADC_GetValue(&AdcHandle3);
 		    }
+		    }
+
+
 	}
 
 
