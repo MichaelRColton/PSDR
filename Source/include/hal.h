@@ -162,6 +162,7 @@ extern const Gpio_Pin I2C_SDA;
 extern const Gpio_Pin FLIP_FLOP_ENABLE;
 
 extern const Gpio_Pin RED_LED;
+extern const Gpio_Pin FIVE_VOLT_REGULATOR_ENABLE;
 
 //    extern const Gpio_Pin NC_1;
 //    extern const Gpio_Pin DAC_SWITCHES;

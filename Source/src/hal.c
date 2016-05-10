@@ -202,6 +202,9 @@ const Gpio_Pin FLIP_FLOP_ENABLE =
 const Gpio_Pin RED_LED =
     { GPIOE, GPIO_PIN_13 };
 
+const Gpio_Pin FIVE_VOLT_REGULATOR_ENABLE =
+    { GPIOE, GPIO_PIN_2 };
+
 //// timer pins
 //const Timer_Pin LED_G =
 //{
@@ -868,6 +871,13 @@ hal_setupPins (void)
   gpioInitStructure.Pull = GPIO_NOPULL;
   HAL_GPIO_Init (FLIP_FLOP_ENABLE.port, &gpioInitStructure);
   HAL_GPIO_WritePin (FLIP_FLOP_ENABLE.port, TRX_SWITCH.pin, 0);
+
+  gpioInitStructure.Pin = FIVE_VOLT_REGULATOR_ENABLE.pin;
+  gpioInitStructure.Speed = GPIO_SPEED_LOW;
+  gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioInitStructure.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init (FIVE_VOLT_REGULATOR_ENABLE.port, &gpioInitStructure);
+  HAL_GPIO_WritePin (FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 0);
 }
 
 //

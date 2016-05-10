@@ -1337,67 +1337,74 @@ void updateDisplay(uint8_t force)
 	displayUpdating = 0;
 }
 
+int newWaterFallData = 0;
 void drawWaterfall()
 {
-	static float magnitudes[FFT_SIZE];
-	static float mags;
-	static uint8_t waterfallScanLine = 0;
+  if(newWaterFallData == 1)
+    {
+      static float magnitudes[FFT_SIZE];
+      static float mags;
+      static uint8_t waterfallScanLine = 0;
 
-	unsigned short *gradient;
+      unsigned short *gradient;
 
-	if(transmitting)
-		gradient = &bitmapIronGradient;
-	else
-		gradient = &bitmapWebSdrGradient;
+      if(transmitting)
+        gradient = &bitmapIronGradient;
+      else
+        gradient = &bitmapWebSdrGradient;
 
-	//arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
-	arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
+      //arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
+      arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
 
-	float fftMax = 0; //AH! These are being reset each time! Static makes them persistant right? Does it also ensure they are
-	float fftMin = 100; //only initialized once? Have to try it when I get home. It would certainly be nice if the waterfall
-	static float fftMaxMax = 0; //didn't change in brightness so much. Later, I may want to fix these values, or at least, make them
-	static float logMax; //manually controllable, sorta, you know?
-	uint8_t i;
-	for(i = 1; i < 255; i++) //If bin 0 is the DC offset, should we skip it in this calculation?
-	{
-		float mags = magnitudes[i];
-		if(mags > fftMax) fftMax = mags;
-		if(mags < fftMin) fftMin = mags;
-	}
-	//logMax = log2(fftMax);
+      float fftMax = 0; //AH! These are being reset each time! Static makes them persistant right? Does it also ensure they are
+      float fftMin = 100; //only initialized once? Have to try it when I get home. It would certainly be nice if the waterfall
+      static float fftMaxMax = 0; //didn't change in brightness so much. Later, I may want to fix these values, or at least, make them
+      static float logMax; //manually controllable, sorta, you know?
+      uint8_t i;
+      for(i = 1; i < 255; i++) //If bin 0 is the DC offset, should we skip it in this calculation?
+      {
+        float mags = magnitudes[i];
+        if(mags > fftMax) fftMax = mags;
+        if(mags < fftMin) fftMin = mags;
+      }
+      //logMax = log2(fftMax);
 
-	if(fftMax > fftMaxMax) fftMaxMax += fftMax * 0.1;
-	logMax = log2(fftMaxMax);
-	fftMaxMax *= 0.99;
-	if (fftMaxMax > fftMaxMaxMax) fftMaxMax = fftMaxMaxMax;
-	if (fftMaxMax < fftMaxMaxMin) fftMaxMax = fftMaxMaxMin;
+      if(fftMax > fftMaxMax) fftMaxMax += fftMax * 0.1;
+      logMax = log2(fftMaxMax);
+      fftMaxMax *= 0.99;
+      if (fftMaxMax > fftMaxMaxMax) fftMaxMax = fftMaxMaxMax;
+      if (fftMaxMax < fftMaxMaxMin) fftMaxMax = fftMaxMaxMin;
 
 
-	//			TODO: Got rid of the first bin because it's just DC offset, right?
-	//			but now narrow signal can disappear when they are right at the center....
-	//			Will that be better when I lower the sample frequency? Maybe I should do that next.
+      //			TODO: Got rid of the first bin because it's just DC offset, right?
+      //			but now narrow signal can disappear when they are right at the center....
+      //			Will that be better when I lower the sample frequency? Maybe I should do that next.
 
-	Adafruit_ILI9340_setAddrWindow(waterfallScanLine, 0, waterfallScanLine, 120);
-	for(i = 120; i != 0; i--)
-	{
-		mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100; //Log needs to be at least 1 right? We could do a + (1-fftMin) maybe? Worth it?
-		//mags = magnitudes[i] / fftMaxMax * 32;
-		//Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
-		Adafruit_ILI9340_pushColor(gradient[(uint8_t) mags]);
-	}
+      Adafruit_ILI9340_setAddrWindow(waterfallScanLine, 0, waterfallScanLine, 120);
+      for(i = 120; i != 0; i--)
+      {
+        mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100; //Log needs to be at least 1 right? We could do a + (1-fftMin) maybe? Worth it?
+        //mags = magnitudes[i] / fftMaxMax * 32;
+        //Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
+        Adafruit_ILI9340_pushColor(gradient[(uint8_t) mags]);
+      }
 
-	Adafruit_ILI9340_setAddrWindow(waterfallScanLine, 120, waterfallScanLine, 239);
-	for(i = 255; i > 135; i--)
-	{
-		mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100;
-		//mags = magnitudes[i] / fftMaxMax * 32;
-		//Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
-		Adafruit_ILI9340_pushColor(gradient[(uint8_t) mags]);
-	}
+      Adafruit_ILI9340_setAddrWindow(waterfallScanLine, 120, waterfallScanLine, 239);
+      for(i = 255; i > 135; i--)
+      {
+        mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100;
+        //mags = magnitudes[i] / fftMaxMax * 32;
+        //Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
+        Adafruit_ILI9340_pushColor(gradient[(uint8_t) mags]);
+      }
 
-	waterfallScanLine++;
-	if(waterfallScanLine > 119) waterfallScanLine = 0;
-	Adafruit_ILI9340_setVertialScrollStartAddress((/*119 -*/ waterfallScanLine) /*+ 200*/);
+      waterfallScanLine++;
+      if(waterfallScanLine > 119) waterfallScanLine = 0;
+      Adafruit_ILI9340_setVertialScrollStartAddress((/*119 -*/ waterfallScanLine) /*+ 200*/);
+
+      newWaterFallData = 0;
+    }
+
 }
 
 void fillSamepleWithTone(int tone, float *samples)
@@ -1552,6 +1559,7 @@ void processStream()
 
 		//blink_led_off();
 		sampleRun = 0;
+		newWaterFallData = 1;
 	}
 
 	//clearTimUpdateFlag(&TimHandle4);

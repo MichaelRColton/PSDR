@@ -124,12 +124,14 @@ void initAdc()
 
 	void adcGetConversion()
 	{
-		 HAL_StatusTypeDef result =  HAL_ADC_PollForConversion(&AdcHandle1, 10);
-		  result = HAL_ADC_PollForConversion(&AdcHandle2, 10);
-		  result = HAL_ADC_PollForConversion(&AdcHandle3, 10);
+		 HAL_StatusTypeDef result =  HAL_ADC_PollForConversion(&AdcHandle1, 100);
+		  result = HAL_ADC_PollForConversion(&AdcHandle2, 100);
+		  result = HAL_ADC_PollForConversion(&AdcHandle3, 100);
 
 		  if (result == HAL_OK)
 		    {
+		      //while(HAL_ADC_GetState(&AdcHandle1) != HAL_ADC_STATE_REG_EOC);
+
 		     		    /* Check if the continous conversion of regular channel is finished */
 		    if(HAL_ADC_GetState(&AdcHandle1) == 0x300 /*HAL_ADC_STATE_REG_EOC*/
 		    		&& HAL_ADC_GetState(&AdcHandle2) == 0x300 /*HAL_ADC_STATE_REG_EOC*/
