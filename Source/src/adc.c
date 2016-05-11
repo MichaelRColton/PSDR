@@ -18,8 +18,10 @@ void initAdc()
 		__GPIOB_CLK_ENABLE();
 		__GPIOC_CLK_ENABLE();
 
-		__ADC_FORCE_RESET();
-		__ADC_RELEASE_RESET();
+		//__ADC_FORCE_RESET();
+		//__ADC_RELEASE_RESET();
+		__HAL_RCC_ADC_FORCE_RESET();
+		__HAL_RCC_ADC_RELEASE_RESET();
 
 		  AdcHandle1.Instance          = ADC1;
 
@@ -87,17 +89,17 @@ void initAdc()
 
 		  sConfig1.Channel = ADC_MIC_CHANNEL;
 		  sConfig1.Rank = 1;
-		  sConfig1.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+		  sConfig1.SamplingTime = ADC_SAMPLETIME_15CYCLES;
 		  sConfig1.Offset = 0;
 
 		  sConfig2.Channel = ADC_RX_I_CHANNEL;
 		  sConfig2.Rank = 1;
-		  sConfig2.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+		  sConfig2.SamplingTime = ADC_SAMPLETIME_15CYCLES;
 		  sConfig2.Offset = 0;
 
 		  sConfig3.Channel = ADC_RX_Q_CHANNEL;
 		  sConfig3.Rank = 1;
-		  sConfig3.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+		  sConfig3.SamplingTime = ADC_SAMPLETIME_15CYCLES;
 		  sConfig3.Offset = 0;
 
 		  if(HAL_ADC_ConfigChannel(&AdcHandle1, &sConfig1) != HAL_OK)
@@ -133,9 +135,15 @@ void initAdc()
 		      //while(HAL_ADC_GetState(&AdcHandle1) != HAL_ADC_STATE_REG_EOC);
 
 		     		    /* Check if the continous conversion of regular channel is finished */
-		    if(HAL_ADC_GetState(&AdcHandle1) == 0x300 /*HAL_ADC_STATE_REG_EOC*/
-		    		&& HAL_ADC_GetState(&AdcHandle2) == 0x300 /*HAL_ADC_STATE_REG_EOC*/
-		    		&& HAL_ADC_GetState(&AdcHandle3) == 0x300 /*HAL_ADC_STATE_REG_EOC*/)
+//		    if(HAL_ADC_GetState(&AdcHandle1) == 0x300 /*HAL_ADC_STATE_REG_EOC*/
+//		    		&& HAL_ADC_GetState(&AdcHandle2) == 0x300 /*HAL_ADC_STATE_REG_EOC*/
+//		    		&& HAL_ADC_GetState(&AdcHandle3) == 0x300 /*HAL_ADC_STATE_REG_EOC*/)
+
+		      if(HAL_IS_BIT_SET(HAL_ADC_GetState(&AdcHandle1), HAL_ADC_STATE_REG_EOC) &&
+		          HAL_IS_BIT_SET(HAL_ADC_GetState(&AdcHandle2), HAL_ADC_STATE_REG_EOC) &&
+		          HAL_IS_BIT_SET(HAL_ADC_GetState(&AdcHandle3), HAL_ADC_STATE_REG_EOC))
+
+
 		    {
 		      /*##-5- Get the converted value of regular channel  ########################*/
 		      uhADCxConvertedValue1 = HAL_ADC_GetValue(&AdcHandle1);

@@ -152,7 +152,7 @@ SystemClock_Config (void)
   RCC_OscInitStruct.PLL.PLLM = (HSI_VALUE / 1000000u);
 #endif
 
-  RCC_OscInitStruct.PLL.PLLN = 216; /* 192 MHz */
+  RCC_OscInitStruct.PLL.PLLN = 432; /* 192 MHz */
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 8; /* To make USB work. */
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;

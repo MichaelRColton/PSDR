@@ -36,8 +36,10 @@
 
 #ifdef PSDR257
 //#define HSE_VALUE 26000000
-#define ARM_MATH_CM7
+//#define ARM_MATH_CM7
 //#include "stm32f756xx.h"
+#define  ART_ACCLERATOR_ENABLE 1
+
 #include "stm32f7xx.h"
 #include "stm32f7xx_hal_conf.h"
 #include "stm32f7xx_hal.h"
