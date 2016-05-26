@@ -71,7 +71,7 @@ uint16_t menuLastPos = 1;
 uint16_t menuCount = 11;
 uint32_t frequencyDialMultiplier = 1;
 
-long vfoAFrequency = 6111000;
+long vfoAFrequency = 7030000;
 long vfoALastFreq = 0;
 int encoderPos, encoderLastPos;
 
@@ -893,6 +893,7 @@ while(result!= HAL_OK)
 //HAL_I2C_Master_Transmit(handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 
 i2cSetup();
+setFreq(vfoAFrequency);
 //i2cLoop();
 
 
@@ -936,7 +937,7 @@ i2cSetup();
 
 
 
-	setGainPot(250, 250);
+	setGainPot(20, 20);
 
 	//testing Uart
 	configUartPeripheral();

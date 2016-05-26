@@ -50,14 +50,14 @@ HAL_I2C_MspInit(I2C_HandleTypeDef hi2c)
   gpioInitStructure.Pin = I2C_SCL.pin;
   gpioInitStructure.Speed = GPIO_SPEED_FAST;
   gpioInitStructure.Mode = GPIO_MODE_AF_OD;
-  gpioInitStructure.Pull = GPIO_NOPULL;
+  gpioInitStructure.Pull = GPIO_PULLUP;
   gpioInitStructure.Alternate = GPIO_AF4_I2C2;
   HAL_GPIO_Init (I2C_SCL.port, &gpioInitStructure);
 
  gpioInitStructure.Pin = I2C_SDA.pin;
   gpioInitStructure.Speed = GPIO_SPEED_FAST;
   gpioInitStructure.Mode = GPIO_MODE_AF_OD;
-  gpioInitStructure.Pull = GPIO_NOPULL;
+  gpioInitStructure.Pull = GPIO_PULLUP;
   gpioInitStructure.Alternate = GPIO_AF4_I2C2;
   HAL_GPIO_Init (I2C_SDA.port, &gpioInitStructure);
 
