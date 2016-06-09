@@ -937,7 +937,7 @@ setFreq(vfoAFrequency);
 
 
 
-	setGainPot(128, 128);
+	setGainPot(200, 200);
 
 	//testing Uart
 	configUartPeripheral();
@@ -1816,7 +1816,7 @@ void TIM_Try(void)
 
 	TimHandle.Instance = TIM3;
 	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
-	TimHandle.Init.Period = 800; //was 1050. Can't remember what that works out to. I think 44kHz or so
+	TimHandle.Init.Period = 1050; //was 1050, 800 works okay, not in AM though. Can't remember what that works out to. I think 44kHz or so
 	TimHandle.Init.Prescaler = uwPrescalerValue;
 	TimHandle.Init.ClockDivision = 0;
 	HAL_TIM_Base_Init(&TimHandle);
@@ -1838,7 +1838,7 @@ HAL_NVIC_EnableIRQ(TIMx_IRQn);
 	  __TIM4_CLK_ENABLE();
 		TimHandle4.Instance = TIM4;
 		TimHandle4.Init.CounterMode = TIM_COUNTERMODE_UP;
-		TimHandle4.Init.Period = 800; //was 1050
+		TimHandle4.Init.Period = 1050; //was 1050, 800 works okay, not in AM though.
 		TimHandle4.Init.Prescaler = uwPrescalerValue;
 		TimHandle4.Init.ClockDivision = 0;
 

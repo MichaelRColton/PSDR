@@ -205,6 +205,9 @@ const Gpio_Pin RED_LED =
 const Gpio_Pin FIVE_VOLT_REGULATOR_ENABLE =
     { GPIOE, GPIO_PIN_2 };
 
+const Gpio_Pin CHARGE_POWER_SOURCE =
+    { GPIOB, GPIO_PIN_8 };
+
 //// timer pins
 //const Timer_Pin LED_G =
 //{
@@ -878,6 +881,13 @@ hal_setupPins (void)
   gpioInitStructure.Pull = GPIO_NOPULL;
   HAL_GPIO_Init (FIVE_VOLT_REGULATOR_ENABLE.port, &gpioInitStructure);
   HAL_GPIO_WritePin (FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 0);
+
+  gpioInitStructure.Pin = CHARGE_POWER_SOURCE.pin;
+  gpioInitStructure.Speed = GPIO_SPEED_LOW;
+  gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioInitStructure.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init (CHARGE_POWER_SOURCE.port, &gpioInitStructure);
+  HAL_GPIO_WritePin (CHARGE_POWER_SOURCE.port, CHARGE_POWER_SOURCE.pin, 1); //High is for high current charging (I think 1A) Low is for 0.5A I think.
 }
 
 //
