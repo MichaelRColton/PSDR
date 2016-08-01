@@ -819,8 +819,10 @@ main(int argc, char* argv[])
 	//hal_setSysTickCallback(doNothing());
 
 	// Send a greeting to the trace device (skipped on Release).
+#ifdef debug
 	trace_puts("Hello ARM World!");
 	trace_puts("Sweet, this works now!");
+#endif
 
 //	for(int i; i > 1000; i++)
 //	{
@@ -830,7 +832,9 @@ main(int argc, char* argv[])
 
 	// At this stage the system clock should have already been configured
 	// at high speed.
+#ifdef debug
 	trace_printf("System clock: %uHz\n", SystemCoreClock);
+#endif
 
 	setupPeripheralPower();
 

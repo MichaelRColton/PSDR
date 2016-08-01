@@ -577,9 +577,9 @@ hal_setupPins (void)
   gpioInitStructure.Pin = AMP_POWER.pin;
   gpioInitStructure.Mode = GPIO_MODE_OUTPUT_OD;
   gpioInitStructure.Speed = GPIO_SPEED_LOW;
-  gpioInitStructure.Pull = GPIO_PULLUP;
+  gpioInitStructure.Pull = GPIO_NOPULL;
   HAL_GPIO_Init (AMP_POWER.port, &gpioInitStructure);
-  HAL_GPIO_WritePin (AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.
+  HAL_GPIO_WritePin (AMP_POWER.port, AMP_POWER.pin, 0); //1 is off.
 
   gpioInitStructure.Pin = FILTER_GAIN_POT_MOSI.pin;
   gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;

@@ -1,0 +1,459 @@
+.HEADER
+LIBRARY_FILE    3.0    "PADS Layout 9.5"    2016/06/22.11:47:25    1
+.END_HEADER
+.ELECTRICAL
+VARIABLE_FILTER_HMC1023                      VARIABLE_FILTER_HMC1023                      THOU      39.37                    
+0     -126.91                  -122.05                  0     
+0     122.05                   -122.05                  0     
+0     122.05                   126.91                   0     
+0     -126.91                  126.91                   0     
+0     -126.91                  -122.05                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+0603_BORDERLESS                              CAP_0603                                     THOU      7.87                     
+0     -42.5                    -15.0                    0     
+0     42.5                     -15.0                    0     
+0     42.5                     15.0                     0     
+0     -42.5                    15.0                     0     
+0     -42.5                    -15.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+0603_BORDERLESS                              RES_0603                                     THOU      30.0                     
+0     -42.5                    -15.0                    0     
+0     42.5                     -15.0                    0     
+0     42.5                     15.0                     0     
+0     -42.5                    15.0                     0     
+0     -42.5                    -15.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+BUCK_REGULATOR_AP3417C                       BUCK_REGULATOR_AP3417C                       THOU      50.0                     
+0     -59.45                   -70.87                   0     
+0     59.45                    -70.87                   0     
+0     59.45                    70.87                    0     
+0     -59.45                   70.87                    0     
+0     -59.45                   -70.87                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+LED_0603                                     LED_0603                                     THOU      47.24                    
+0     -61.09                   -30.77                   0     
+0     74.87                    -30.77                   0     
+0     74.87                    30.77                    0     
+0     -61.09                   30.77                    0     
+0     -61.09                   -30.77                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+SOT-23                                       MOSFET_P_SOT23_IRLML6401                     THOU      43.31                    
+0     -69.0                    -83.0                    0     
+0     69.0                     -83.0                    0     
+0     69.0                     83.0                     0     
+0     -69.0                    83.0                     0     
+0     -69.0                    -83.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+MORSE_PADDLE_CONTACTS                        MORSE_PADDLE_CONTACTS                        THOU      50.0                     
+0     -137.8                   -80.32                   0     
+0     137.8                    -80.32                   0     
+0     137.8                    80.32                    0     
+0     -137.8                   80.32                    0     
+0     -137.8                   -80.32                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+0_1__1PIN                                    0_1__1PIN                                    THOU      50.0                     
+0     -35.0                    -35.0                    0     
+0     35.0                     -35.0                    0     
+0     35.0                     35.0                     0     
+0     -35.0                    35.0                     0     
+0     -35.0                    -35.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+MICROSD_DM3CS-SF                             MICROSD_DM3CS-SF                             THOU      50.0                     
+0     -7.87                    -612.2                   0     
+0     566.93                   -612.2                   0     
+0     566.93                   3.94                     0     
+0     -7.87                    3.94                     0     
+0     -7.87                    -612.2                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+CRYSTAL3225                                  CRYSTAL3225                                  THOU      50.0                     
+0     -70.93                   -55.18                   0     
+0     70.93                    -55.18                   0     
+0     70.93                    55.18                    0     
+0     -70.93                   55.18                    0     
+0     -70.93                   -55.18                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+GENERIC_CAP_0805                             CAP_0805                                     THOU      50.0                     
+0     -63.0                    -24.0                    0     
+0     63.0                     -24.0                    0     
+0     63.0                     24.0                     0     
+0     -63.0                    24.0                     0     
+0     -63.0                    -24.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+C1210                                        CSM-X5R-22U-20P-10V-1210                     THOU      66.93                    
+0     -92.52                   -62.99                   0     
+0     92.52                    -62.99                   0     
+0     92.52                    62.99                    0     
+0     -92.52                   62.99                    0     
+0     -92.52                   -62.99                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+BUTTON_B3U-1000P-B                           BUTTON_B3U-1000P-B                           THOU      50.0                     
+0     -82.68                   -53.15                   0     
+0     82.68                    -53.15                   0     
+0     82.68                    53.15                    0     
+0     -82.68                   53.15                    0     
+0     -82.68                   -53.15                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+SMA                                          DIODE-SMA                                    THOU      50.0                     
+0     -137.86                  -63.06                   0     
+0     108.27                   -63.06                   0     
+0     108.27                   70.93                    0     
+0     -137.86                  70.93                    0     
+0     -137.86                  -63.06                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+IND_4_7UH_SMT_CDRH4D28CNP-4R7PC              IND_4_7UH_SMT_CDRH4D28CNP-4R7PC              THOU      50.0                     
+0     -120.04                  -120.04                  0     
+0     120.04                   -120.04                  0     
+0     120.04                   120.04                   0     
+0     -120.04                  120.04                   0     
+0     -120.04                  -120.04                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+GENERIC_CAP_0805                             CSM-X5R-10U0-10P-10V-0805                    THOU      50.0                     
+0     -63.0                    -24.0                    0     
+0     63.0                     -24.0                    0     
+0     63.0                     24.0                     0     
+0     -63.0                    24.0                     0     
+0     -63.0                    -24.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+L0805                                        ISM-0805-10U                                 THOU      50.0                     
+0     -63.0                    -24.0                    0     
+0     63.0                     -24.0                    0     
+0     63.0                     24.0                     0     
+0     -63.0                    24.0                     0     
+0     -63.0                    -24.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+SMA_BOARD_EDGE                               SMA_BOARD_EDGE                               THOU      50.0                     
+0     -483.92                  -350.46                  0     
+0     80.0                     -350.46                  0     
+0     80.0                     350.46                   0     
+0     -483.92                  350.46                   0     
+0     -483.92                  -350.46                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+R1206                                        RSM-6K98-1PCT-250MW-1206                     THOU      50.0                     
+0     -92.52                   -45.28                   0     
+0     92.52                    -45.28                   0     
+0     92.52                    45.28                    0     
+0     -92.52                   45.28                    0     
+0     -92.52                   -45.28                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+GENERIC_CAP_0805                             CSM-X5R-47U-20P-6V3-0805                     THOU      53.15                    
+0     -63.0                    -24.0                    0     
+0     63.0                     -24.0                    0     
+0     63.0                     24.0                     0     
+0     -63.0                    24.0                     0     
+0     -63.0                    -24.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+IND_SMT_220UH_SRN4018-221M                   IND_SMT_220UH_SRN4018-221M                   THOU      50.0                     
+0     -89.57                   -82.74                   0     
+0     89.57                    -82.74                   0     
+0     89.57                    82.74                    0     
+0     -89.57                   82.74                    0     
+0     -89.57                   -82.74                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+SI5338                                       SI5338                                       THOU      35.43                    
+0     -119.04                  -101.38                  0     
+0     101.38                   -101.38                  0     
+0     101.38                   101.38                   0     
+0     -119.04                  101.38                   0     
+0     -119.04                  -101.38                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+GPS_ANTENNA-W3062A                           GPS_ANTENNA-W3062A                           THOU      50.0                     
+0     -177.17                  -103.35                  0     
+0     177.17                   -103.35                  0     
+0     177.17                   103.35                   0     
+0     -177.17                  103.35                   0     
+0     -177.17                  -103.35                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+MICROUSB_H1292CT-ND                          MICROUSB_H12192CT-ND                         THOU      50.0                     
+0     -240.22                  -200.85                  0     
+0     240.22                   -200.85                  0     
+0     240.22                   172.73                   0     
+0     -240.22                  172.73                   0     
+0     -240.22                  -200.85                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+FIDUCIAL_1MM                                 FIDUCIAL_1MM                                 THOU      50.0                     
+0     -39.37                   -39.37                   0     
+0     39.37                    -39.37                   0     
+0     39.37                    39.37                    0     
+0     -39.37                   39.37                    0     
+0     -39.37                   -39.37                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+2U2H_INDUCTOR_NR6028T2R2N                    2U2H_INDUCTOR_NR6028T2R2N                    THOU      50.0                     
+0     -124.02                  -122.05                  0     
+0     124.02                   -122.05                  0     
+0     124.02                   122.05                   0     
+0     -124.02                  122.05                   0     
+0     -124.02                  -122.05                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+BAT-MANAGE_MCP73871                          BAT-MANAGE_MCP73871                          THOU      39.37                    
+0     -110.34                  -101.38                  0     
+0     101.38                   -101.38                  0     
+0     101.38                   110.34                   0     
+0     -110.34                  110.34                   0     
+0     -110.34                  -101.38                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+GENERIC_CAP_0805                             CSM-X5R-10U0-10P-25V-0805                    THOU      30.71                    
+0     -63.0                    -24.0                    0     
+0     63.0                     -24.0                    0     
+0     63.0                     24.0                     0     
+0     -63.0                    24.0                     0     
+0     -63.0                    -24.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+3_5MM_PHONO_4P_3SW_SJ-42617-SMT              3_5MM_PHONO_4P_3SW_SJ-42617-SMT              THOU      50.0                     
+0     -279.59                  -220.54                  0     
+0     511.81                   -220.54                  0     
+0     511.81                   220.54                   0     
+0     -279.59                  220.54                   0     
+0     -279.59                  -220.54                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+MH3M_PLATED                                  MH3M_PLATED                                  THOU      50.0                     
+0     -123.11                  -123.11                  0     
+0     123.11                   -123.11                  0     
+0     123.11                   123.11                   0     
+0     -123.11                  123.11                   0     
+0     -123.11                  -123.11                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+MH3M                                         MH3M                                         THOU      50.0                     
+0     -83.74                   -83.74                   0     
+0     83.74                    -83.74                   0     
+0     83.74                    83.74                    0     
+0     -83.74                   83.74                    0     
+0     -83.74                   -83.74                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+MMIC-AMP-HMC482ST                            MMIC-AMP_HMC482ST                            THOU      50.0                     
+0     -94.49                   -61.02                   0     
+0     94.49                    -61.02                   0     
+0     94.49                    129.92                   0     
+0     -94.49                   129.92                   0     
+0     -94.49                   -61.02                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+SPEAKER_SMT_WATERPROOF_2403-260-00107        SPEAKER_SMT_WATERPROOF_2403-260-00107        THOU      50.0                     
+0     -298.28                  -227.95                  0     
+0     314.96                   -227.95                  0     
+0     314.96                   227.95                   0     
+0     -298.28                  227.95                   0     
+0     -298.28                  -227.95                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+CRYSTAL_SMT_32_768                           CRYSTAL_SMT_32_768                           THOU      50.0                     
+0     -68.9                    -35.43                   0     
+0     68.9                     -35.43                   0     
+0     68.9                     35.43                    0     
+0     -68.9                    35.43                    0     
+0     -68.9                    -35.43                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+MCP6N11                                      MCP6N11                                      THOU      50.0                     
+0     -122.05                  -136.81                  0     
+0     100.39                   -136.81                  0     
+0     100.39                   136.81                   0     
+0     -122.05                  136.81                   0     
+0     -122.05                  -136.81                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+OP_AMP_FAN4174                               OP_AMP_FAN4174                               THOU      50.0                     
+0     -83.61                   -70.87                   0     
+0     62.99                    -70.87                   0     
+0     62.99                    70.87                    0     
+0     -83.61                   70.87                    0     
+0     -83.61                   -70.87                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+DPDT_ANALOG_MAX4525                          DPDT_ANALOG_MAX4525                          THOU      37.4                     
+0     -122.05                  -68.9                    0     
+0     122.05                   -68.9                    0     
+0     122.05                   75.73                    0     
+0     -122.05                  75.73                    0     
+0     -122.05                  -68.9                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+SPDT_ANALOG_SWITCH_SN74LVC1G3157             SPDT_ANALOG_SWITCH_SN74LVC1G3157             THOU      50.0                     
+0     -63.92                   -61.02                   0     
+0     46.26                    -61.02                   0     
+0     46.26                    61.02                    0     
+0     -63.92                   61.02                    0     
+0     -63.92                   -61.02                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+DIGITAL_POT_MAX5388                          DIGITAL_POT_MAX5388                          THOU      37.4                     
+0     -122.05                  -68.9                    0     
+0     122.05                   -68.9                    0     
+0     122.05                   74.8                     0     
+0     -122.05                  74.8                     0     
+0     -122.05                  -68.9                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+RF_DPDT_MASWSS0129TR                         RF_DPDT_MASWSS0129TR                         THOU      35.43                    
+0     -95.42                   -81.69                   0     
+0     81.69                    -81.69                   0     
+0     81.69                    81.69                    0     
+0     -95.42                   81.69                    0     
+0     -95.42                   -81.69                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+AUDIO_AMP_TPA0253DGQR                        AUDIO_AMP_TPA0253DGQR                        THOU      50.0                     
+0     -75.73                   -114.17                  0     
+0     64.96                    -114.17                  0     
+0     64.96                    114.17                   0     
+0     -75.73                   114.17                   0     
+0     -75.73                   -114.17                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+AD8302                                       AD8302                                       THOU      47.24                    
+0     -150.59                  -109.25                  0     
+0     150.59                   -109.25                  0     
+0     150.59                   115.1                    0     
+0     -150.59                  115.1                    0     
+0     -150.59                  -109.25                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+AD8131                                       AD8131                                       THOU      43.31                    
+0     -121.06                  -67.91                   0     
+0     121.06                   -67.91                   0     
+0     121.06                   74.8                     0     
+0     -121.06                  74.8                     0     
+0     -121.06                  -67.91                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+SY10EP52V                                    SY10EP52V                                    THOU      43.31                    
+0     -121.06                  -69.88                   0     
+0     121.06                   -69.88                   0     
+0     121.06                   79.67                    0     
+0     -121.06                  79.67                    0     
+0     -121.06                  -69.88                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+MIC_PREAMP_SSM2167                           MIC_PREAMP_SSM2167                           THOU      57.09                    
+0     -124.02                  -69.88                   0     
+0     124.02                   -69.88                   0     
+0     124.02                   75.73                    0     
+0     -124.02                  75.73                    0     
+0     -124.02                  -69.88                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+SOT-23-5                                     3V3_LDO_MCP1802                              THOU      50.0                     
+0     -69.0                    -87.0                    0     
+0     69.0                     -87.0                    0     
+0     69.0                     87.0                     0     
+0     -69.0                    87.0                     0     
+0     -69.0                    -87.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+74CBTLV3253                                  74CBTLV3253                                  THOU      68.11                    
+0     -144.69                  -107.28                  0     
+0     144.69                   -107.28                  0     
+0     144.69                   125.98                   0     
+0     -144.69                  125.98                   0     
+0     -144.69                  -107.28                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+BOOST_REG_ADP1613                            BOOST_REG_ADP1613                            THOU      43.31                    
+0     -125.0                   -71.85                   0     
+0     125.0                    -71.85                   0     
+0     125.0                    74.8                     0     
+0     -125.0                   74.8                     0     
+0     -125.0                   -71.85                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+0_1__6P_HEADER_DUAL_ENTRY_1241152-6          0_1__6P_HEADER_DUAL_ENTRY_1241152-6          THOU      50.0                     
+0     -310.12                  -114.18                  0     
+0     310.12                   -114.18                  0     
+0     310.12                   114.18                   0     
+0     -310.12                  114.18                   0     
+0     -310.12                  -114.18                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+SPI_LCD_BOTTOM_ENTRY                         SPI_LCD_BOTTOM_ENTRY                         THOU      50.0                     
+0     -804.21                  -2581.77                 0     
+0     804.21                   -2581.77                 0     
+0     804.21                   114.18                   0     
+0     -804.21                  114.18                   0     
+0     -804.21                  -2581.77                 0     
+.END_ELECTRICAL
+.ELECTRICAL
+MH_80M                                       MH_80M                                       THOU      50.0                     
+0     -64.0                    -64.0                    0     
+0     64.0                     -64.0                    0     
+0     64.0                     64.0                     0     
+0     -64.0                    64.0                     0     
+0     -64.0                    -64.0                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+STM32F429_LQFP100                            STM32F746_LQFP100                            THOU      62.99                    
+0     -341.54                  -341.54                  0     
+0     341.54                   -341.54                  0     
+0     341.54                   341.54                   0     
+0     -341.54                  341.54                   0     
+0     -341.54                  -341.54                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+MIXER_DIODE-RING_ADE-2ASK                    MIXER_DIODE-RING_ADE-2ASK                    THOU      50.0                     
+0     -184.02                  -168.28                  0     
+0     160.0                    -168.28                  0     
+0     160.0                    150.0                    0     
+0     -184.02                  150.0                    0     
+0     -184.02                  -168.28                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+BALUN_1-2_WBC2-1TL                           BALUN_1-2_WBC2-1TL                           THOU      50.0                     
+0     -115.24                  -87.6                    0     
+0     80.0                     -87.6                    0     
+0     80.0                     87.6                     0     
+0     -115.24                  87.6                     0     
+0     -115.24                  -87.6                    0     
+.END_ELECTRICAL
+.ELECTRICAL
+GP-1513                                      GPS_MODULE_RXM-GPS-RM-T                      THOU      50.0                     
+0     -298.82                  -307.79                  0     
+0     307.79                   -307.79                  0     
+0     307.79                   299.28                   0     
+0     -298.82                  299.28                   0     
+0     -298.82                  -307.79                  0     
+.END_ELECTRICAL
+.ELECTRICAL
+MICROPHONE_MEMS_SPU0410HR5H-PB_ALT           MICROPHONE_MEMS_SPU0410HR5H-PB               THOU      50.0                     
+0     -62.01                   -77.95                   0     
+0     62.01                    -77.95                   0     
+0     62.01                    114.81                   0     
+0     -62.01                   114.81                   0     
+0     -62.01                   -77.95                   0     
+.END_ELECTRICAL
+.ELECTRICAL
+PAD_1MM                                      PAD_1MM                                      THOU      50.0                     
+0     -19.69                   -19.69                   0     
+0     19.69                    -19.69                   0     
+0     19.69                    19.69                    0     
+0     -19.69                   19.69                    0     
+0     -19.69                   -19.69                   0     
+.END_ELECTRICAL

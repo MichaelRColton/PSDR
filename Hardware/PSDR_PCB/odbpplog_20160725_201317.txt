@@ -1,0 +1,580 @@
+***********  COMMAND 25Jul2016.201322.081 get 11584 pads_user 9.2.0 Update 1(19) 
+dpw_run,path=camc4pads,init_file_path=C:/MentorGraphics/9.5PADS/SDD_HOME/dfm/tmp/wfInit-genesis186a2.michaels-thinkpad.11584,mode=silent,start=yes (-1)
+read file - C:/MentorGraphics/9.5PADS/SDD_HOME/dfm/sys//wizards/camc4pads.xmlz
+read file - C:/MentorGraphics/9.5PADS/SDD_HOME/dfm/sys//wizards/camc4pads.xmlz
+***********  COMMAND 25Jul2016.201322.117 get 11584 pads_user 9.2.0 Update 1(19) 
+config_edit,name=get_def_units,value=inch,mode=user (-1)
+***********  COMMAND 25Jul2016.201322.127 get 11584 pads_user 9.2.0 Update 1(19) 
+config_edit,name=eda_sync_systems,value=powerpcb,mode=user (-1)
+***********  COMMAND 25Jul2016.201322.131 get 11584 pads_user 9.2.0 Update 1(19) 
+config_edit,name=eda_powerpcb_sync_nt,value=yes,mode=user (-1)
+***********  COMMAND 25Jul2016.201322.134 get 11584 pads_user 9.2.0 Update 1(19) 
+config_edit,name=eda_sync_units,value=editor,mode=user (-1)
+***********  COMMAND 25Jul2016.201322.137 get 11584 pads_user 9.2.0 Update 1(19) 
+create_entity,job=,is_fw=no,type=job,name=psdr,db=C:\Users\micha\Desktop,fw_type=form (-1)
+read file - C:/MentorGraphics/9.5PADS/SDD_HOME/dfm/e91/all/lyr_types
+saving job - psdr
+create directory - C:\Users\micha\Desktop/psdr/misc
+create directory - C:\Users\micha\Desktop/psdr/stackups
+create directory - C:\Users\micha\Desktop/psdr/input
+create directory - C:\Users\micha\Desktop/psdr/output
+create directory - C:\Users\micha\Desktop/psdr/steps
+create directory - C:\Users\micha\Desktop/psdr/symbols
+create directory - C:\Users\micha\Desktop/psdr/fonts
+create directory - C:\Users\micha\Desktop/psdr/wheels
+create directory - C:\Users\micha\Desktop/psdr/matrix
+create directory - C:\Users\micha\Desktop/psdr/whltemps
+create directory - C:\Users\micha\Desktop/psdr/user
+create directory - C:\Users\micha\Desktop/psdr/ext
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/misc/attrlist
+saving matrix - matrix
+write file - C:\Users\micha\Desktop/psdr/matrix/matrix
+saving font - standard
+saving attributes - attr
+write file - C:\Users\micha\Desktop/psdr/misc/info
+***********  COMMAND 25Jul2016.201322.219 get 11584 pads_user 9.2.0 Update 1(19) 
+eda_params_pads,unhatched_mode=discard,default_cam_layers=yes,prefer_closed_shapes=yes,comp_outline_layer=20,non_shape_pins=use_drill (-1)
+***********  COMMAND 25Jul2016.201322.219 get 11584 pads_user 9.2.0 Update 1(19) 
+eda_translate,path=C:\Users\micha\workspace\PSDR\Hardware\PSDR_PCB\PSDR_tmp.tmp,job=psdr,step=pcb,source=pads_powerpcb,step_autodetection=no,overwrite=merge (-1)
+*********** ERROR INTERNAL 25Jul2016.201322.751 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.790 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.798 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.812 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.812 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.822 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.823 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.827 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.828 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.828 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.846 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.858 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.883 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.896 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.907 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.951 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.960 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.971 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.974 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.986 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.989 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.992 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201322.996 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.000 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.006 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.006 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.014 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.015 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.029 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.032 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.037 get 11584 pads_user 9.2.0 Update 1(19) 
+(min_conflict || cand_conflict || bv_cand != bv_min) at D:\vSureSRC\s92\mat\mat_cop.c 8449
+*********** ERROR INTERNAL 25Jul2016.201323.042 get 11584 pads_user 9.2.0 Update 1(19) 
+(min_conflict || cand_conflict || bv_cand != bv_min) at D:\vSureSRC\s92\mat\mat_cop.c 8449
+*********** ERROR INTERNAL 25Jul2016.201323.058 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.077 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.084 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.084 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.089 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.090 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.102 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.104 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.114 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.125 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.125 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.132 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.134 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.141 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.149 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.163 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.169 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.173 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.195 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.202 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.214 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.215 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.222 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.222 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.226 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.227 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.254 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.279 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.315 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+*********** ERROR INTERNAL 25Jul2016.201323.315 get 11584 pads_user 9.2.0 Update 1(19) 
+((ng % 2) == 0) at D:\vSureSRC\s92\mat\mat_cop.c 10103
+***********  COMMAND 25Jul2016.201323.884 get 11584 pads_user 9.2.0 Update 1(19) 
+open_job,job=psdr (-1)
+***********  COMMAND 25Jul2016.201323.897 get 11584 pads_user 9.2.0 Update 1(19) 
+entity_exist,type=step,name=*,parent_job=psdr,parent_step=,op=count (-1)
+***********  COMMAND 25Jul2016.201323.913 get 11584 pads_user 9.2.0 Update 1(19) 
+entity_exist,type=step,name=*,parent_job=psdr,parent_step=,op=first (-1)
+***********  COMMAND 25Jul2016.201323.945 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201323.945 get 11584 pads_user 9.2.0 Update 1(19) 
+save_job,job=psdr,override=no (-1)
+saving job - psdr
+saving matrix - matrix
+write file - C:\Users\micha\Desktop/psdr/matrix/matrix
+saving step - pcb
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/stephdr
+write step profile - C:\Users\micha\Desktop/psdr/steps/pcb/profile
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/profile
+saving netlist - cadnet
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/netlists
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/netlists/cadnet
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/netlists/cadnet/netlist
+saving netlist - refnet
+saving netlist - curnet
+saving netlist - curcadnet
+saving films - films
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/attrlist
+saving eda - eda
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/eda
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/eda/data.Z
+saving layer - top-silkscreen
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-silkscreen
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-silkscreen/features
+saving relation - relation
+compressing features file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-silkscreen/features
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-silkscreen/attrlist
+saving layer - top-soldermask
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-soldermask
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-soldermask/features
+saving relation - relation
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-soldermask/attrlist
+saving layer - top-artwork
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-artwork
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-artwork/features
+saving relation - relation
+compressing features file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-artwork/features
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/top-artwork/attrlist
+saving layer - power-artwork
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/power-artwork
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/power-artwork/features
+saving relation - relation
+compressing features file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/power-artwork/features
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/power-artwork/attrlist
+saving layer - ground-artwork
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/ground-artwork
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/ground-artwork/features
+saving relation - relation
+compressing features file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/ground-artwork/features
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/ground-artwork/attrlist
+saving layer - bottom-artwork
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-artwork
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-artwork/features
+saving relation - relation
+compressing features file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-artwork/features
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-artwork/attrlist
+saving layer - bottom-soldermask
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-soldermask
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-soldermask/features
+saving relation - relation
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-soldermask/attrlist
+saving layer - bottom-silkscreen
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-silkscreen
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-silkscreen/features
+saving relation - relation
+compressing features file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-silkscreen/features
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/bottom-silkscreen/attrlist
+saving layer - drill
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/drill
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/drill/features
+saving relation - relation
+compressing features file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/drill/features
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/drill/tools
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/drill/attrlist
+saving layer - rout
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/rout
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/rout/features
+saving relation - relation
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/rout/tools
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/rout/attrlist
+saving layer - comp_+_bot
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/comp_+_bot
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/comp_+_bot/components.Z
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/comp_+_bot/features
+saving relation - relation
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/comp_+_bot/attrlist
+saving layer - comp_+_top
+create directory - C:\Users\micha\Desktop/psdr/steps/pcb/layers/comp_+_top
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/comp_+_top/components.Z
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/comp_+_top/features
+saving relation - relation
+saving film1 - film1
+saving notes - notes
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/steps/pcb/layers/comp_+_top/attrlist
+saving symbol - drill_symbol1
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol1
+saving layer - drill_symbol1
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol1/attrlist
+saving symbol - drill_symbol2
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol2
+saving layer - drill_symbol2
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol2/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol2/attrlist
+saving symbol - drill_symbol3
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol3
+saving layer - drill_symbol3
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol3/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol3/attrlist
+saving symbol - drill_symbol4
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol4
+saving layer - drill_symbol4
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol4/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol4/attrlist
+saving symbol - drill_symbol5
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol5
+saving layer - drill_symbol5
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol5/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol5/attrlist
+saving symbol - drill_symbol6
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol6
+saving layer - drill_symbol6
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol6/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol6/attrlist
+saving symbol - drill_symbol7
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol7
+saving layer - drill_symbol7
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol7/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol7/attrlist
+saving symbol - drill_symbol8
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol8
+saving layer - drill_symbol8
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol8/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol8/attrlist
+saving symbol - drill_symbol1+1
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol1+1
+saving layer - drill_symbol1+1
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol1+1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol1+1/attrlist
+saving symbol - drill_symbol2+1
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol2+1
+saving layer - drill_symbol2+1
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol2+1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol2+1/attrlist
+saving symbol - drill_symbol3+1
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol3+1
+saving layer - drill_symbol3+1
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol3+1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol3+1/attrlist
+saving symbol - drill_symbol4+1
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol4+1
+saving layer - drill_symbol4+1
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol4+1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol4+1/attrlist
+saving symbol - drill_symbol5+1
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol5+1
+saving layer - drill_symbol5+1
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol5+1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol5+1/attrlist
+saving symbol - drill_symbol6+1
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol6+1
+saving layer - drill_symbol6+1
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol6+1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol6+1/attrlist
+saving symbol - drill_symbol7+1
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol7+1
+saving layer - drill_symbol7+1
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol7+1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol7+1/attrlist
+saving symbol - drill_symbol8+1
+create directory - C:\Users\micha\Desktop/psdr/symbols/drill_symbol8+1
+saving layer - drill_symbol8+1
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol8+1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/drill_symbol8+1/attrlist
+saving symbol - special
+create directory - C:\Users\micha\Desktop/psdr/symbols/special
+saving layer - special
+write file - C:\Users\micha\Desktop/psdr/symbols/special/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/special/attrlist
+saving symbol - special+1
+create directory - C:\Users\micha\Desktop/psdr/symbols/special+1
+saving layer - special+1
+write file - C:\Users\micha\Desktop/psdr/symbols/special+1/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/special+1/attrlist
+saving symbol - special+2
+create directory - C:\Users\micha\Desktop/psdr/symbols/special+2
+saving layer - special+2
+write file - C:\Users\micha\Desktop/psdr/symbols/special+2/features
+saving relation - relation
+saving ent_attributes - ent_attributes
+write file - C:\Users\micha\Desktop/psdr/symbols/special+2/attrlist
+write file - C:\Users\micha\Desktop/psdr/misc/info
+***********  COMMAND 25Jul2016.201325.488 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201325.488 get 11584 pads_user 9.2.0 Update 1(19) 
+get_job_path,job=psdr (-1)
+***********  COMMAND 25Jul2016.201325.507 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201325.507 get 11584 pads_user 9.2.0 Update 1(19) 
+export_job,job=psdr,mode=tar_gzip,submode=full,path=C:\Users\micha\Desktop (-1)
+***********  COMMAND 25Jul2016.201325.903 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201325.903 get 11584 pads_user 9.2.0 Update 1(19) 
+netlist_page_open,set=yes,job1=psdr,step1=pcb,type1=cad,job2=psdr,step2=pcb,type2=cur_cad,mode=hidden (-1)
+***********  COMMAND 25Jul2016.201326.505 get 11584 pads_user 9.2.0 Update 1(19) 
+netlist_control,auto_zoom=zoom_pan (-1)
+***********  COMMAND 25Jul2016.201326.506 get 11584 pads_user 9.2.0 Update 1(19) 
+netlist_control,auto_zoom=zoom_pan (-1)
+***********  COMMAND 25Jul2016.201326.517 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201326.517 get 11584 pads_user 9.2.0 Update 1(19) 
+netlist_recalc,job=psdr,step=pcb,type=cad,display=top (-1)
+***********  COMMAND 25Jul2016.201326.538 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201326.539 get 11584 pads_user 9.2.0 Update 1(19) 
+netlist_recalc,job=psdr,step=pcb,type=cur_cad,display=bottom (-1)
+***********  COMMAND 25Jul2016.201327.660 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201327.660 get 11584 pads_user 9.2.0 Update 1(19) 
+netlist_compare,job1=psdr,step1=pcb,type1=cad,job2=psdr,step2=pcb,type2=cur_cad,display=yes,pin_point=no (-1)
+***********  COMMAND 25Jul2016.201327.765 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201327.765 get 11584 pads_user 9.2.0 Update 1(19) 
+cam_compare,job=psdr,step=pcb,action=open,path=,show_modal=no (-1)
+***********  COMMAND 25Jul2016.201328.727 get 11584 pads_user 9.2.0 Update 1(19) 
+units,type=inch (0)
+***********  COMMAND 25Jul2016.201328.727 get 11584 pads_user 9.2.0 Update 1(19) 
+set_group,group=0 (-1)
+***********  COMMAND 25Jul2016.201328.728 get 11584 pads_user 9.2.0 Update 1(19) 
+display_comp_outline_mode,mode=Body (0)
+***********  COMMAND 25Jul2016.201329.104 get 11584 pads_user 9.2.0 Update 1(19) 
+multi_layer_disp,mode=many,show_board=no (0)
+***********  COMMAND 25Jul2016.201329.327 get 11584 pads_user 9.2.0 Update 1(19) 
+zoom_home (0)
+***********  COMMAND 25Jul2016.201332.547 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=comp_+_top,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201332.590 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=comp_+_top (0)
+***********  COMMAND 25Jul2016.201338.940 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=top-silkscreen,display=yes,number=2 (0)
+***********  COMMAND 25Jul2016.201341.140 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=comp_+_top,display=no,number=1 (0)
+***********  COMMAND 25Jul2016.201341.191 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=top-silkscreen (0)
+***********  COMMAND 25Jul2016.201341.852 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=top-silkscreen,display=no,number=2 (0)
+***********  COMMAND 25Jul2016.201342.660 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=top-soldermask,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201342.713 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=top-soldermask (0)
+***********  COMMAND 25Jul2016.201345.612 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=top-soldermask,display=no,number=1 (0)
+***********  COMMAND 25Jul2016.201346.067 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=top-artwork,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201346.236 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=top-artwork (0)
+***********  COMMAND 25Jul2016.201347.108 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=top-artwork,display=no,number=1 (0)
+***********  COMMAND 25Jul2016.201347.859 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=power-artwork,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201347.906 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=power-artwork (0)
+***********  COMMAND 25Jul2016.201348.460 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=ground-artwork,display=yes,number=2 (0)
+***********  COMMAND 25Jul2016.201349.508 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=bottom-artwork,display=yes,number=3 (0)
+***********  COMMAND 25Jul2016.201350.195 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=power-artwork,display=no,number=1 (0)
+***********  COMMAND 25Jul2016.201350.434 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=ground-artwork (0)
+***********  COMMAND 25Jul2016.201352.324 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=ground-artwork,display=no,number=2 (0)
+***********  COMMAND 25Jul2016.201352.521 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=bottom-artwork (0)
+***********  COMMAND 25Jul2016.201353.043 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=bottom-artwork,display=no,number=3 (0)
+***********  COMMAND 25Jul2016.201353.851 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=bottom-soldermask,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201353.912 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=bottom-soldermask (0)
+***********  COMMAND 25Jul2016.201354.964 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=bottom-soldermask,display=no,number=1 (0)
+***********  COMMAND 25Jul2016.201355.636 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=bottom-silkscreen,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201355.690 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=bottom-silkscreen (0)
+***********  COMMAND 25Jul2016.201358.204 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=bottom-silkscreen,display=no,number=1 (0)
+***********  COMMAND 25Jul2016.201358.628 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=drill,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201358.644 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=drill (0)
+***********  COMMAND 25Jul2016.201359.876 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=drill,display=no,number=1 (0)
+***********  COMMAND 25Jul2016.201400.267 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=rout,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201400.273 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=rout (0)
+***********  COMMAND 25Jul2016.201400.868 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=rout,display=no,number=1 (0)
+***********  COMMAND 25Jul2016.201401.884 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=rout,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201401.889 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=rout (0)
+***********  COMMAND 25Jul2016.201402.500 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=rout,display=no,number=1 (0)
+***********  COMMAND 25Jul2016.201403.468 get 11584 pads_user 9.2.0 Update 1(19) 
+display_layer,name=comp_+_bot,display=yes,number=1 (0)
+***********  COMMAND 25Jul2016.201403.487 get 11584 pads_user 9.2.0 Update 1(19) 
+work_layer,name=comp_+_bot (0)
+***********  COMMAND 25Jul2016.201410.441 get 11584 pads_user 9.2.0 Update 1(19) 
+multi_layer_disp,mode=default,show_board=no (0)
+***********  COMMAND 25Jul2016.201410.442 get 11584 pads_user 9.2.0 Update 1(19) 
+dpw_do,op=continue (-1)
+***********  COMMAND 25Jul2016.201410.477 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201410.477 get 11584 pads_user 9.2.0 Update 1(19) 
+cam_compare,job=psdr,step=pcb,action=close (0)
+***********  COMMAND 25Jul2016.201410.498 get 11584 pads_user 9.2.0 Update 1(19) 
+editor_group,job=psdr,name=pcb,is_step=yes (-1)
+***********  COMMAND 25Jul2016.201410.498 get 11584 pads_user 9.2.0 Update 1(19) 
+close_job,job=psdr (0)
+***********  COMMAND 25Jul2016.201410.737 get 11584 pads_user 9.2.0 Update 1(19) 
+close_form,job=psdr (-1)
+***********  COMMAND 25Jul2016.201410.737 get 11584 pads_user 9.2.0 Update 1(19) 
+close_flow,job=psdr (-1)
+***********  COMMAND 25Jul2016.201410.738 get 11584 pads_user 9.2.0 Update 1(19) 
+job_path_exists,job_name=psdr (-1)
+***********  COMMAND 25Jul2016.201410.743 get 11584 pads_user 9.2.0 Update 1(19) 
+delete_entity,job=,type=job,name=psdr (-1)
+***********  COMMAND 25Jul2016.201410.801 get 11584 pads_user 9.2.0 Update 1(19) 
+close_form,job=psdr (-1)
+***********  COMMAND 25Jul2016.201410.801 get 11584 pads_user 9.2.0 Update 1(19) 
+close_flow,job=psdr (-1)
+***********  COMMAND 25Jul2016.201410.812 get 11584 pads_user 9.2.0 Update 1(19) 
+close_toolkit,save_log=yes (-1)
