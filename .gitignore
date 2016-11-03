@@ -19,3 +19,5 @@ Hardware/PSDR_PCB/3D/3DSettings.xml
 Hardware/PSDR_PCB/PSDR_3DViewer.cce
 Hardware/STM32F756_Config.ioc
 Source/STM32F4 Test.launch
+Hardware/Enclosure/~$PSDR2.SLDDRW
+Hardware/Enclosure/Face Cover.x_t
