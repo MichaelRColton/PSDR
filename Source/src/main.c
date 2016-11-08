@@ -791,6 +791,139 @@ void configUartPeripheral()
 //	  }
 }
 
+enum signalPaths
+{
+  recieve_no_filter = 0,
+  recieve_with_filter = 1,
+  transmit_no_amp_no_filter = 2,
+  transmit_with_amp_no_filter = 3,
+  tramsmit_with_amp_with_filter = 4,
+  vna_reflected = 5,
+  vna_through = 6
+};
+
+//Set up the signal path for various scenarios.
+void signalPath(int signalPath)
+{
+  //Remember the relays operate in pairs (there is a pin that needs to be off and one that needs to be on.)
+  switch(signalPath)
+  {
+    case recieve_no_filter:
+      //Amp power off
+      HAL_GPIO_WritePin (AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.
+
+      //Filter power off
+
+      //So 5V power can be off
+      HAL_GPIO_WritePin (FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 0);
+
+      //Amp relay set to bypass
+      HAL_GPIO_WritePin (AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); // 0 to bypass (I think!)
+      HAL_GPIO_WritePin (AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
+
+      //Impedance bridge relay set to bypass
+      HAL_GPIO_WritePin (IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, 0); //0 to bypass
+      HAL_GPIO_WritePin (IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, 1); //always reverse of above.
+
+      //VNA port relay (called TX_RF_Switch) set to bypass
+      HAL_GPIO_WritePin (TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, 1); //0 to route to VNA Out SMA connector
+      HAL_GPIO_WritePin (TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, 0); //always reverse of above.
+
+      //DAC Mux set to Speaker
+      HAL_GPIO_WritePin (DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone.
+
+      //Both TX/RX Muxes set to RX
+      HAL_GPIO_WritePin (TRX_SWITCH.port, TRX_SWITCH.pin, 0);
+
+      //Filter Muxes set to bypass
+      HAL_GPIO_WritePin (FILTER_S0.port, FILTER_S0.pin, 1);
+      HAL_GPIO_WritePin (FILTER_S1.port, FILTER_S1.pin, 0);
+
+      break;
+    case recieve_with_filter:
+
+          break;
+    case transmit_no_amp_no_filter:
+      //Amp power off
+      HAL_GPIO_WritePin (AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.
+
+      //Filter power off
+
+      //So 5V power can be off
+      HAL_GPIO_WritePin (FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 0);
+
+      //Amp relay set to bypass
+      HAL_GPIO_WritePin (AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); // 0 to bypass (I think!)
+      HAL_GPIO_WritePin (AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
+
+      //Impedance bridge relay set to bypass
+      HAL_GPIO_WritePin (IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, 0); //0 to bypass
+      HAL_GPIO_WritePin (IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, 1); //always reverse of above.
+
+      //VNA port relay (called TX_RF_Switch) set to bypass
+      HAL_GPIO_WritePin (TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, 1); //0 to route to VNA Out SMA connector
+      HAL_GPIO_WritePin (TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, 0); //always reverse of above.
+
+      //DAC Mux set to RF
+      HAL_GPIO_WritePin (DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone.
+
+      //Both TX/RX Muxes set to TX
+      HAL_GPIO_WritePin (TRX_SWITCH.port, TRX_SWITCH.pin, 1);
+
+      //Filter Muxes set to bypass
+      HAL_GPIO_WritePin (FILTER_S0.port, FILTER_S0.pin, 1);
+      HAL_GPIO_WritePin (FILTER_S1.port, FILTER_S1.pin, 0);
+
+
+      break;
+    case transmit_with_amp_no_filter:
+      //Amp power on
+      HAL_GPIO_WritePin (AMP_POWER.port, AMP_POWER.pin, 0); //1 is off.
+
+      //Filter power off
+
+      //So 5V power needs to be on
+      HAL_GPIO_WritePin (FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 1); //1 is on.
+
+      //Amp relay set to on
+      HAL_GPIO_WritePin (AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); // 0 to bypass (I think!)
+      HAL_GPIO_WritePin (AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
+
+      //Impedance bridge relay set to bypass
+      HAL_GPIO_WritePin (IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, 0); //0 to bypass
+      HAL_GPIO_WritePin (IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, 1); //always reverse of above.
+
+      //VNA port relay (called TX_RF_Switch) set to bypass
+      HAL_GPIO_WritePin (TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, 1); //0 to route to VNA Out SMA connector
+      HAL_GPIO_WritePin (TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, 0); //always reverse of above.
+
+      //DAC Mux set to RF
+      HAL_GPIO_WritePin (DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone.
+
+      //Both TX/RX Muxes set to TX
+      HAL_GPIO_WritePin (TRX_SWITCH.port, TRX_SWITCH.pin, 1);
+
+      //Filter Muxes set to bypass
+      HAL_GPIO_WritePin (FILTER_S0.port, FILTER_S0.pin, 1);
+      HAL_GPIO_WritePin (FILTER_S1.port, FILTER_S1.pin, 0);
+
+      break;
+    case tramsmit_with_amp_with_filter:
+
+      break;
+    case vna_reflected:
+
+      break;
+    case vna_through:
+
+      break;
+//    default:
+//      #ifdef debug
+//        trace_puts("Bad signalPath Value");
+//      #endif
+  }
+}
+
 
 int
 main(int argc, char* argv[])
@@ -991,23 +1124,26 @@ setFreq(vfoAFrequency);
 		//if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
-	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
-//	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
-//	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
-	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 1); //Route through amp.
-	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 0); //always reverse of above.
-	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 0); //0 is on.
-	        //tone = 200;
+			signalPath(transmit_no_amp_no_filter);
+			//signalPath(transmit_with_amp_no_filter);
+//	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
+////	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
+////	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
+//	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 1); //Route through amp.
+//	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 0); //always reverse of above.
+//	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 0); //0 is on.
+//	        //tone = 200;
 	        tone = 0;
 		} else {
 			transmitting = 0;
-	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
-//	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
-//	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
-	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); //Bypass amp.
-	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
-	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.
-	        tone = 0;
+			signalPath(recieve_no_filter);
+//	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
+////	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
+////	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
+//	        HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); //Bypass amp.
+//	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
+//	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.
+//	        tone = 0;
 		}
 	}
 }

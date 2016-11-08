@@ -165,6 +165,8 @@ extern const Gpio_Pin RED_LED;
 
 extern const Gpio_Pin CHARGE_POWER_SOURCE;
 
+extern const Gpio_Pin FIVE_VOLT_REGULATOR_ENABLE;
+
 //    extern const Gpio_Pin NC_1;
 //    extern const Gpio_Pin DAC_SWITCHES;
 //    extern const Gpio_Pin GSM_PWRKEY;
