@@ -383,14 +383,14 @@ int isFwd;
 #define EncoderPinP 21	// Rotary Encoder Click //
 
 
-	Encoder()
-	{
-		Position = 0;
-		Position2 = 0;
-		Max = 127;
-		Min = 0;
-		clickMultiply = 100;
-	}
+void Encoder(void)
+{
+	Position = 0;
+	Position2 = 0;
+	Max = 127;
+	Min = 0;
+	clickMultiply = 100;
+}
 
 	void Tick(void)
 	{
@@ -1150,7 +1150,7 @@ setFreq(vfoAFrequency);
 
 float passBandRms = 0;
 int lastSMeterBarWidth = 0;
-void drawSMeter()
+void drawSMeter(void)
 {
 
 	//Adafruit_GFX_fillRect(150, 160, 170, 3, ILI9340_BLACK);
@@ -1327,7 +1327,7 @@ void updateDisplay(uint8_t force)
 		//Adafruit_GFX_drawColorBitmap(320 - 45 - 2, 240 - 46 - 2, bitmapHadLogo, 45, 46, MASKWHITE);
 	}
 
-	sprintf(&freqChar, "%9d", vfoAFrequency);
+	sprintf(freqChar, "%9ld", vfoAFrequency);
 
 	//So on each of these elements, we update when the value changes, when we're forced to, when the item becomes selected, or unselected.
 	if(freqChar[0] != lastFreqChar[0]
@@ -1399,7 +1399,7 @@ void updateDisplay(uint8_t force)
 	    || (menuPos != menuLastPos && (menuPos == filterLowMenuItem
 	    || menuLastPos == filterLowMenuItem)))
 	{
-		sprintf(&freqChar, "%4d", filterLowerLimit * 40);
+		sprintf(freqChar, "%4d", filterLowerLimit * 40);
 		//Adafruit_GFX_setTextSize(2);
 		//Adafruit_GFX_setTextColor(menuPos == 7 ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
 		//Adafruit_GFX_setCursor(200, 135 );
@@ -1421,7 +1421,7 @@ void updateDisplay(uint8_t force)
 	    || (menuPos != menuLastPos && (menuPos == filterHighMenuItem
 	    || menuLastPos == filterHighMenuItem)))
 	{
-		sprintf(&freqChar, "%-4d", filterUpperLimit * 40);
+		sprintf(freqChar, "%-4d", filterUpperLimit * 40);
 		//Adafruit_GFX_setTextSize(2);
 		//Adafruit_GFX_setTextColor(menuPos == 8 ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
 		//Adafruit_GFX_setCursor(265, 135 );
@@ -1440,7 +1440,11 @@ void updateDisplay(uint8_t force)
 
 	if(afGainLast != afGain || force || (menuPos != menuLastPos && (menuPos == volumeMenuItem || menuLastPos == volumeMenuItem)))
 	{
-		sprintf(&freqChar, "%-4f", afGain * 100);
+		freqChar[0] = '4';
+		freqChar[1] = '3';
+		freqChar[2] = '2';
+		freqChar[3] = '1';
+		sprintf(freqChar, "%4d", (int)(afGain * 10));
 		int i;
 		for(i = 0; i < 4; i++)
 		{
@@ -1504,7 +1508,7 @@ void updateDisplay(uint8_t force)
 }
 
 int newWaterFallData = 0;
-void drawWaterfall()
+void drawWaterfall(void)
 {
   if(newWaterFallData == 1)
     {
@@ -1515,9 +1519,9 @@ void drawWaterfall()
       unsigned short *gradient;
 
       if(transmitting)
-        gradient = &bitmapIronGradient;
+        gradient = bitmapIronGradient;
       else
-        gradient = &bitmapWebSdrGradient;
+        gradient = bitmapWebSdrGradient;
 
       //arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
       arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
@@ -1731,7 +1735,7 @@ void processStream()
 	//clearTimUpdateFlag(&TimHandle4);
 }
 
-void updateVfo()
+void updateVfo(void)
 {
 	encoderPos = getPos();
 	if(encoderPos != encoderLastPos)
@@ -2003,19 +2007,19 @@ HAL_NVIC_EnableIRQ(TIM4_IRQn);
 
 }
 
-TIM3_IRQHandler(void)
+void TIM3_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&TimHandle);
 }
 
-TIM4_IRQHandler(void)
+void TIM4_IRQHandler(void)
 {
   processStream();
   HAL_TIM_IRQHandler(&TimHandle4);
 }
 
 int ledState = 0;
-HAL_TIM_PeriodElapsedCallback(htim)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	captureSamples();
 //	doNothing();

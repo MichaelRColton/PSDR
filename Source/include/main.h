@@ -108,3 +108,27 @@ TIM_HandleTypeDef    TimHandle4;
 
 SPI_HandleTypeDef SpiHandle;
 UART_HandleTypeDef UartHandle;
+
+
+/* main.c functions */
+
+void drawNumber(char c, uint16_t x, uint16_t y, uint16_t tintMask);
+void drawNumberSmall(char c, uint16_t x, uint16_t y, uint16_t tintMask);
+void TIM_Try(void);
+void TIM3_IRQHandler(void);
+void TIM4_IRQHandler(void);
+void initDac1();
+void dac1SetValue(uint16_t value);
+void dac2SetValue(uint16_t value);
+void drawSMeter(void);
+void updateMenu();
+void updateDisplay(uint8_t force);
+void drawWaterfall(void);
+void Tick(void);
+void updateVfo(void);
+void zeroSampleBank(float *samples);
+
+
+
+
+
