@@ -73,3 +73,8 @@ volatile uint8_t sampleRun;
 
 
 #endif /* ADC_H_ */
+
+
+void adcGetConversion(void);
+void adcStartConversion(void);
+

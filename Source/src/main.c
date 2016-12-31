@@ -9,7 +9,6 @@
 
 #include "main.h"
 
-
 // ----------------------------------------------------------------------------
 //
 // Standalone STM32F4 led blink sample (trace via NONE).
@@ -1570,11 +1569,10 @@ void drawWaterfall(void)
 
       waterfallScanLine++;
       if(waterfallScanLine > 119) waterfallScanLine = 0;
-      Adafruit_ILI9340_setVertialScrollStartAddress((/*119 -*/ waterfallScanLine) /*+ 200*/);
+      Adafruit_ILI9340_setVerticalScrollStartAddress((/*119 -*/ waterfallScanLine) /*+ 200*/);
 
       newWaterFallData = 0;
     }
-
 }
 
 void fillSamepleWithTone(int tone, float *samples)

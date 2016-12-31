@@ -585,7 +585,7 @@ uint16_t Adafruit_ILI9340_Color565(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 
-void Adafruit_ILI9340_setVertialScrollStartAddress(uint16_t address)
+void Adafruit_ILI9340_setVerticalScrollStartAddress(uint16_t address)
 {
 	Adafruit_ILI9340_writecommand(ILI9340_VSCRSADD);
 	Adafruit_ILI9340_writedata((address >> 8) & 0xFF);

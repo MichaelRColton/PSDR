@@ -177,3 +177,10 @@
 //};
 
 #endif
+
+/* Function declarations to keep the compiler happy */
+void Adafruit_ILI9340_setVerticalScrollDefinition(uint16_t topFixedArea,
+  		uint16_t verticalScrollArea, uint16_t bottomFixedArea);
+void Adafruit_ILI9340_setVerticalScrollStartAddress(uint16_t address);
+
+

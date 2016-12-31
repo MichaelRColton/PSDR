@@ -124,7 +124,7 @@ void initAdc()
 		  }
 	}
 
-	void adcGetConversion()
+	void adcGetConversion(void)
 	{
 		 HAL_StatusTypeDef result =  HAL_ADC_PollForConversion(&AdcHandle1, 100);
 		  result = HAL_ADC_PollForConversion(&AdcHandle2, 100);
@@ -156,7 +156,7 @@ void initAdc()
 	}
 
 
-	void adcStartConversion()
+	void adcStartConversion(void)
 	{
 		if(HAL_ADC_Start(&AdcHandle1) != HAL_OK)
 		{

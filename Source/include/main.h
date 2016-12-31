@@ -74,6 +74,10 @@
 #include "math.h"
 #include "images.h"
 #include "i2c.h"
+#include "Adafruit_GFX.h"
+#include "Adafruit_ILI9340.h"
+#include "spi.h"
+
 //#include "stm32f4xx_hal_rcc.h"
 //#include "stm32f4xx_hal.h"
 //#include "stm32f4xx_hal_rtc.h"

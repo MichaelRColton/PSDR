@@ -4701,6 +4701,9 @@ Discarded input sections
  .group         0x0000000000000000        0x8 ./src/Adafruit_GFX.o
  .group         0x0000000000000000        0x8 ./src/Adafruit_GFX.o
  .group         0x0000000000000000        0x8 ./src/Adafruit_GFX.o
+ .group         0x0000000000000000        0x8 ./src/Adafruit_GFX.o
+ .group         0x0000000000000000        0x8 ./src/Adafruit_GFX.o
+ .group         0x0000000000000000        0x8 ./src/Adafruit_GFX.o
  .text          0x0000000000000000        0x0 ./src/Adafruit_GFX.o
  .data          0x0000000000000000        0x0 ./src/Adafruit_GFX.o
  .bss           0x0000000000000000        0x0 ./src/Adafruit_GFX.o
@@ -4746,6 +4749,23 @@ Discarded input sections
                 0x0000000000000000        0x4 ./src/Adafruit_GFX.o
  .rodata.font   0x0000000000000000      0x4fb ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000      0x8b0 ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x22 ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x4c ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x8d ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x35 ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x9c ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x16 ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000      0x10e ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x8d ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x4a ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x52 ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x1f ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x43 ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x20 ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000      0x187 ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000      0x30d ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x16 ./src/Adafruit_GFX.o
+ .debug_macro   0x0000000000000000       0x29 ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000       0x2e ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000       0x3b ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000      0x34e ./src/Adafruit_GFX.o
@@ -4757,22 +4777,8 @@ Discarded input sections
  .debug_macro   0x0000000000000000      0x19c ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000      0x1a7 ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000     0x32ff ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x22 ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x4c ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x8d ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000       0x35 ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x9c ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x16 ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x4a ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x97 ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000      0x30d ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0xfd ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000       0x10 ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x52 ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x1f ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x43 ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x20 ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000      0x187 ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000       0x10 ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000       0x5e ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000       0x1c ./src/Adafruit_GFX.o
@@ -4813,7 +4819,6 @@ Discarded input sections
  .debug_macro   0x0000000000000000      0x24f ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000      0x138 ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000       0x16 ./src/Adafruit_GFX.o
- .debug_macro   0x0000000000000000       0x35 ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000       0x16 ./src/Adafruit_GFX.o
  .debug_macro   0x0000000000000000      0x513 ./src/Adafruit_GFX.o
  .group         0x0000000000000000        0x8 ./src/Adafruit_ILI9340.o
@@ -5159,21 +5164,136 @@ Discarded input sections
  .group         0x0000000000000000        0x8 ./src/Timer.o
  .group         0x0000000000000000        0x8 ./src/Timer.o
  .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
+ .group         0x0000000000000000        0x8 ./src/Timer.o
  .text          0x0000000000000000        0x0 ./src/Timer.o
  .data          0x0000000000000000        0x0 ./src/Timer.o
  .bss           0x0000000000000000        0x0 ./src/Timer.o
  .text.timer_sleep
-                0x0000000000000000       0x28 ./src/Timer.o
- .debug_macro   0x0000000000000000      0x8aa ./src/Timer.o
- .debug_macro   0x0000000000000000       0x28 ./src/Timer.o
- .debug_macro   0x0000000000000000       0x28 ./src/Timer.o
+                0x0000000000000000       0x14 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x8b0 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x2e ./src/Timer.o
  .debug_macro   0x0000000000000000       0x3b ./src/Timer.o
  .debug_macro   0x0000000000000000      0x34e ./src/Timer.o
- .debug_macro   0x0000000000000000       0x2d ./src/Timer.o
- .debug_macro   0x0000000000000000       0x26 ./src/Timer.o
- .debug_macro   0x0000000000000000      0xd39 ./src/Timer.o
- .debug_macro   0x0000000000000000     0x9e6b ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x35 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x50 ./src/Timer.o
+ .debug_macro   0x0000000000000000     0x1114 ./src/Timer.o
+ .debug_macro   0x0000000000000000     0xa75c ./src/Timer.o
  .debug_macro   0x0000000000000000       0x43 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x19c ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x1a7 ./src/Timer.o
+ .debug_macro   0x0000000000000000     0x32ff ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x22 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x4c ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x8d ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x35 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x9c ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x16 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x4a ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x97 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x30d ./src/Timer.o
+ .debug_macro   0x0000000000000000       0xfd ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x10 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x52 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x1f ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x43 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x20 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x187 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x10 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x5e ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x1c ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x52 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x40 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x10 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x40 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0xd7 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x16 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x189 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x57 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x5c9 ./src/Timer.o
+ .debug_macro   0x0000000000000000     0x18a6 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0xdd ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x11e ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x1f3 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x27 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x272 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x5f ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x23a ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x38a ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x161 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0xf9 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0xe6 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0xa1 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x3c ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x111 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x293 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x12 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x1d0 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x22 ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x66 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x133 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x10c ./src/Timer.o
+ .debug_macro   0x0000000000000000       0x3c ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x2e2 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x677 ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x24f ./src/Timer.o
+ .debug_macro   0x0000000000000000      0x138 ./src/Timer.o
  .group         0x0000000000000000        0x8 ./src/TinyGPS.o
  .group         0x0000000000000000        0x8 ./src/TinyGPS.o
  .group         0x0000000000000000        0x8 ./src/TinyGPS.o
@@ -5325,14 +5445,14 @@ Discarded input sections
                 0x0000000000000000        0x4 ./src/TinyGPS.o
  .rodata.TinyGPS_GPS_INVALID_F_ALTITUDE
                 0x0000000000000000        0x4 ./src/TinyGPS.o
+ .rodata.directions.12406
+                0x0000000000000000       0x40 ./src/TinyGPS.o
  .rodata.str1.4
                 0x0000000000000000       0x50 ./src/TinyGPS.o
  .rodata.TinyGPS_GPS_INVALID_F_ANGLE
                 0x0000000000000000        0x4 ./src/TinyGPS.o
  .rodata.TinyGPS_GPS_INVALID_F_SPEED
                 0x0000000000000000        0x4 ./src/TinyGPS.o
- .rodata.directions.12324
-                0x0000000000000000       0x40 ./src/TinyGPS.o
  .bss.timeOfLastChar
                 0x0000000000000000        0x4 ./src/TinyGPS.o
  .debug_info    0x0000000000000000     0x201c ./src/TinyGPS.o
@@ -5341,7 +5461,7 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0xf0 ./src/TinyGPS.o
  .debug_ranges  0x0000000000000000       0xf8 ./src/TinyGPS.o
- .debug_macro   0x0000000000000000      0x4f3 ./src/TinyGPS.o
+ .debug_macro   0x0000000000000000      0x505 ./src/TinyGPS.o
  .debug_macro   0x0000000000000000      0x8b0 ./src/TinyGPS.o
  .debug_macro   0x0000000000000000       0x22 ./src/TinyGPS.o
  .debug_macro   0x0000000000000000       0x4c ./src/TinyGPS.o
@@ -5434,8 +5554,8 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x1c ./src/TinyGPS.o
  .debug_macro   0x0000000000000000       0x5e ./src/TinyGPS.o
  .debug_macro   0x0000000000000000       0x1c ./src/TinyGPS.o
- .debug_line    0x0000000000000000      0xaa9 ./src/TinyGPS.o
- .debug_str     0x0000000000000000    0xa079f ./src/TinyGPS.o
+ .debug_line    0x0000000000000000      0xab2 ./src/TinyGPS.o
+ .debug_str     0x0000000000000000    0xa07a7 ./src/TinyGPS.o
  .comment       0x0000000000000000       0x2c ./src/TinyGPS.o
  .debug_frame   0x0000000000000000      0x300 ./src/TinyGPS.o
  .ARM.attributes
@@ -5865,7 +5985,7 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x38 ./src/dds.o
  .debug_ranges  0x0000000000000000       0x28 ./src/dds.o
- .debug_macro   0x0000000000000000      0x49c ./src/dds.o
+ .debug_macro   0x0000000000000000      0x4ae ./src/dds.o
  .debug_macro   0x0000000000000000      0x8b0 ./src/dds.o
  .debug_macro   0x0000000000000000       0x10 ./src/dds.o
  .debug_macro   0x0000000000000000       0x2e ./src/dds.o
@@ -5954,8 +6074,8 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x1c ./src/dds.o
  .debug_macro   0x0000000000000000       0x5e ./src/dds.o
  .debug_macro   0x0000000000000000       0x1c ./src/dds.o
- .debug_line    0x0000000000000000      0x708 ./src/dds.o
- .debug_str     0x0000000000000000    0x9feea ./src/dds.o
+ .debug_line    0x0000000000000000      0x711 ./src/dds.o
+ .debug_str     0x0000000000000000    0x9fef2 ./src/dds.o
  .comment       0x0000000000000000       0x2c ./src/dds.o
  .debug_frame   0x0000000000000000       0x58 ./src/dds.o
  .ARM.attributes
@@ -25032,10 +25152,10 @@ END GROUP
 
 .inits          0x000000000800042c       0x28
                 0x000000000800042c                __data_regions_array_start = .
-                0x000000000800042c        0x4 LONG 0x8017044 LOADADDR (.data)
+                0x000000000800042c        0x4 LONG 0x8017004 LOADADDR (.data)
                 0x0000000008000430        0x4 LONG 0x20000000 ADDR (.data)
                 0x0000000008000434        0x4 LONG 0x200004f0 (ADDR (.data) + SIZEOF (.data))
-                0x0000000008000438        0x4 LONG 0x8017044 LOADADDR (.data_CCMRAM)
+                0x0000000008000438        0x4 LONG 0x8017004 LOADADDR (.data_CCMRAM)
                 0x000000000800043c        0x4 LONG 0x10000000 ADDR (.data_CCMRAM)
                 0x0000000008000440        0x4 LONG 0x10000000 (ADDR (.data_CCMRAM) + SIZEOF (.data_CCMRAM))
                 0x0000000008000444                __data_regions_array_end = .
@@ -25067,7 +25187,7 @@ END GROUP
 .flashtext
  *(.flashtext .flashtext.*)
 
-.text           0x0000000008000480    0x16bbc
+.text           0x0000000008000480    0x16b7c
  *(.text .text.*)
  .text.HAL_InitTick
                 0x0000000008000480       0x28 ./system/src/stm32f7-hal/stm32f7xx_hal.o
@@ -25322,9 +25442,9 @@ END GROUP
  .text.Adafruit_ILI9340_fillRect
                 0x00000000080045e8       0xdc ./src/Adafruit_ILI9340.o
                 0x00000000080045e8                Adafruit_ILI9340_fillRect
- .text.Adafruit_ILI9340_setVertialScrollStartAddress
+ .text.Adafruit_ILI9340_setVerticalScrollStartAddress
                 0x00000000080046c4       0x18 ./src/Adafruit_ILI9340.o
-                0x00000000080046c4                Adafruit_ILI9340_setVertialScrollStartAddress
+                0x00000000080046c4                Adafruit_ILI9340_setVerticalScrollStartAddress
  .text.Adafruit_ILI9340_setVerticalScrollDefinition
                 0x00000000080046dc       0x40 ./src/Adafruit_ILI9340.o
                 0x00000000080046dc                Adafruit_ILI9340_setVerticalScrollDefinition
@@ -25334,604 +25454,601 @@ END GROUP
  .text.blink_led_init
                 0x0000000008004798       0x40 ./src/BlinkLed.o
                 0x0000000008004798                blink_led_init
- .text.NVIC_SetPriority
-                0x00000000080047d8       0x54 ./src/Timer.o
- .text.SysTick_Config
-                0x000000000800482c       0x44 ./src/Timer.o
  .text.timer_start
-                0x0000000008004870       0x24 ./src/Timer.o
-                0x0000000008004870                timer_start
+                0x00000000080047d8       0x3c ./src/Timer.o
+                0x00000000080047d8                timer_start
  .text.timer_tick
-                0x0000000008004894       0x24 ./src/Timer.o
-                0x0000000008004894                timer_tick
+                0x0000000008004814       0x14 ./src/Timer.o
+                0x0000000008004814                timer_tick
  .text.SystemClock_Config
-                0x00000000080048b8       0xa4 ./src/_initialize_hardware.o
-                0x00000000080048b8                SystemClock_Config
+                0x0000000008004828       0xa4 ./src/_initialize_hardware.o
+                0x0000000008004828                SystemClock_Config
  .text.__initialize_hardware
-                0x000000000800495c       0x84 ./src/_initialize_hardware.o
-                0x000000000800495c                __initialize_hardware
- .text.initAdc  0x00000000080049e0      0x1e4 ./src/adc.o
-                0x00000000080049e0                initAdc
+                0x00000000080048cc       0x84 ./src/_initialize_hardware.o
+                0x00000000080048cc                __initialize_hardware
+ .text.initAdc  0x0000000008004950      0x1e4 ./src/adc.o
+                0x0000000008004950                initAdc
  .text.adcGetConversion
-                0x0000000008004bc4       0x80 ./src/adc.o
-                0x0000000008004bc4                adcGetConversion
+                0x0000000008004b34       0x80 ./src/adc.o
+                0x0000000008004b34                adcGetConversion
  .text.adcStartConversion
-                0x0000000008004c44       0x44 ./src/adc.o
-                0x0000000008004c44                adcStartConversion
+                0x0000000008004bb4       0x44 ./src/adc.o
+                0x0000000008004bb4                adcStartConversion
  .text.hal_delay_ms
-                0x0000000008004c88       0x14 ./src/hal.o
-                0x0000000008004c88                hal_delay_ms
+                0x0000000008004bf8       0x14 ./src/hal.o
+                0x0000000008004bf8                hal_delay_ms
  .text.hal_setupPins
-                0x0000000008004c9c      0x4b8 ./src/hal.o
-                0x0000000008004c9c                hal_setupPins
+                0x0000000008004c0c      0x4b8 ./src/hal.o
+                0x0000000008004c0c                hal_setupPins
  .text.HAL_I2C_MspInit
-                0x0000000008005154       0x58 ./src/i2c.o
-                0x0000000008005154                HAL_I2C_MspInit
+                0x00000000080050c4       0x48 ./src/i2c.o
+                0x00000000080050c4                HAL_I2C_MspInit
  .text.write_Si5338
-                0x00000000080051ac       0x28 ./src/i2c.o
-                0x00000000080051ac                write_Si5338
+                0x000000000800510c       0x28 ./src/i2c.o
+                0x000000000800510c                write_Si5338
  .text.writeMultiSynthParameters
-                0x00000000080051d4       0x9c ./src/i2c.o
-                0x00000000080051d4                writeMultiSynthParameters
+                0x0000000008005134       0x9c ./src/i2c.o
+                0x0000000008005134                writeMultiSynthParameters
  .text.read_Si5338
-                0x0000000008005270       0x40 ./src/i2c.o
-                0x0000000008005270                read_Si5338
+                0x00000000080051d0       0x40 ./src/i2c.o
+                0x00000000080051d0                read_Si5338
  .text.sendRegToSi5338
-                0x00000000080052b0       0x40 ./src/i2c.o
-                0x00000000080052b0                sendRegToSi5338
+                0x0000000008005210       0x40 ./src/i2c.o
+                0x0000000008005210                sendRegToSi5338
  .text.i2cSetup
-                0x00000000080052f0      0x108 ./src/i2c.o
-                0x00000000080052f0                i2cSetup
- .text.setFreq  0x00000000080053f8       0x60 ./src/i2c.o
-                0x00000000080053f8                setFreq
+                0x0000000008005250      0x108 ./src/i2c.o
+                0x0000000008005250                i2cSetup
+ .text.setFreq  0x0000000008005358       0x60 ./src/i2c.o
+                0x0000000008005358                setFreq
  .text.CPU_CACHE_Enable
-                0x0000000008005458       0x7c ./src/main.o
+                0x00000000080053b8       0x7c ./src/main.o
  .text.populateCoeficients
-                0x00000000080054d4       0xb8 ./src/main.o
-                0x00000000080054d4                populateCoeficients
+                0x0000000008005434       0xb8 ./src/main.o
+                0x0000000008005434                populateCoeficients
  .text.applyCoeficient
-                0x000000000800558c       0xa4 ./src/main.o
-                0x000000000800558c                applyCoeficient
+                0x00000000080054ec       0xa4 ./src/main.o
+                0x00000000080054ec                applyCoeficient
  .text.setupPeripheralPower
-                0x0000000008005630       0xb0 ./src/main.o
-                0x0000000008005630                setupPeripheralPower
+                0x0000000008005590       0xb0 ./src/main.o
+                0x0000000008005590                setupPeripheralPower
  .text.doNothing
-                0x00000000080056e0       0x10 ./src/main.o
-                0x00000000080056e0                doNothing
- .text.Encoder  0x00000000080056f0       0x30 ./src/main.o
-                0x00000000080056f0                Encoder
- .text.Tick     0x0000000008005720       0xec ./src/main.o
-                0x0000000008005720                Tick
+                0x0000000008005640       0x10 ./src/main.o
+                0x0000000008005640                doNothing
+ .text.Encoder  0x0000000008005650       0x30 ./src/main.o
+                0x0000000008005650                Encoder
+ .text.Tick     0x0000000008005680       0xec ./src/main.o
+                0x0000000008005680                Tick
  .text.SysTick_Handler
-                0x000000000800580c       0x38 ./src/main.o
-                0x000000000800580c                SysTick_Handler
- .text.getPos   0x0000000008005844       0x14 ./src/main.o
-                0x0000000008005844                getPos
+                0x000000000800576c       0x38 ./src/main.o
+                0x000000000800576c                SysTick_Handler
+ .text.getPos   0x00000000080057a4       0x14 ./src/main.o
+                0x00000000080057a4                getPos
  .text.zeroSampleBank
-                0x0000000008005858       0x40 ./src/main.o
-                0x0000000008005858                zeroSampleBank
+                0x00000000080057b8       0x40 ./src/main.o
+                0x00000000080057b8                zeroSampleBank
  .text.setGainPot
-                0x0000000008005898      0x104 ./src/main.o
-                0x0000000008005898                setGainPot
+                0x00000000080057f8      0x104 ./src/main.o
+                0x00000000080057f8                setGainPot
  .text.signalPath
-                0x000000000800599c      0x1f8 ./src/main.o
-                0x000000000800599c                signalPath
+                0x00000000080058fc      0x1f8 ./src/main.o
+                0x00000000080058fc                signalPath
  .text.drawSMeter
-                0x0000000008005b94       0x84 ./src/main.o
-                0x0000000008005b94                drawSMeter
+                0x0000000008005af4       0x8c ./src/main.o
+                0x0000000008005af4                drawSMeter
  .text.calculateRmsOfSample
-                0x0000000008005c18       0x58 ./src/main.o
-                0x0000000008005c18                calculateRmsOfSample
+                0x0000000008005b80       0x58 ./src/main.o
+                0x0000000008005b80                calculateRmsOfSample
  .text.drawWaterfall
-                0x0000000008005c70      0x284 ./src/main.o
-                0x0000000008005c70                drawWaterfall
+                0x0000000008005bd8      0x284 ./src/main.o
+                0x0000000008005bd8                drawWaterfall
  .text.fillSamepleWithTone
-                0x0000000008005ef4       0x30 ./src/main.o
-                0x0000000008005ef4                fillSamepleWithTone
+                0x0000000008005e5c       0x30 ./src/main.o
+                0x0000000008005e5c                fillSamepleWithTone
  .text.processStream
-                0x0000000008005f24      0x29c ./src/main.o
-                0x0000000008005f24                processStream
+                0x0000000008005e8c      0x29c ./src/main.o
+                0x0000000008005e8c                processStream
  .text.updateVfo
-                0x00000000080061c0       0x70 ./src/main.o
-                0x00000000080061c0                updateVfo
+                0x0000000008006128       0x70 ./src/main.o
+                0x0000000008006128                updateVfo
  .text.updateMenu
-                0x0000000008006230      0x224 ./src/main.o
-                0x0000000008006230                updateMenu
+                0x0000000008006198      0x224 ./src/main.o
+                0x0000000008006198                updateMenu
  .text.drawNumber
-                0x0000000008006454      0x124 ./src/main.o
-                0x0000000008006454                drawNumber
+                0x00000000080063bc      0x13c ./src/main.o
+                0x00000000080063bc                drawNumber
  .text.drawNumberSmall
-                0x0000000008006578      0x180 ./src/main.o
-                0x0000000008006578                drawNumberSmall
+                0x00000000080064f8      0x19c ./src/main.o
+                0x00000000080064f8                drawNumberSmall
+ *fill*         0x0000000008006694        0x4 
  .text.updateDisplay
-                0x00000000080066f8      0x6dc ./src/main.o
-                0x00000000080066f8                updateDisplay
- .text.TIM_Try  0x0000000008006dd4       0xe0 ./src/main.o
-                0x0000000008006dd4                TIM_Try
+                0x0000000008006698      0x6f4 ./src/main.o
+                0x0000000008006698                updateDisplay
+ .text.TIM_Try  0x0000000008006d8c       0xe0 ./src/main.o
+                0x0000000008006d8c                TIM_Try
  .text.TIM3_IRQHandler
-                0x0000000008006eb4       0x10 ./src/main.o
-                0x0000000008006eb4                TIM3_IRQHandler
+                0x0000000008006e6c       0x10 ./src/main.o
+                0x0000000008006e6c                TIM3_IRQHandler
  .text.TIM4_IRQHandler
-                0x0000000008006ec4       0x14 ./src/main.o
-                0x0000000008006ec4                TIM4_IRQHandler
+                0x0000000008006e7c       0x14 ./src/main.o
+                0x0000000008006e7c                TIM4_IRQHandler
  .text.initDac1
-                0x0000000008006ed8       0xa8 ./src/main.o
-                0x0000000008006ed8                initDac1
- .text.main     0x0000000008006f80      0x244 ./src/main.o
-                0x0000000008006f80                main
+                0x0000000008006e90       0xa8 ./src/main.o
+                0x0000000008006e90                initDac1
+ .text.main     0x0000000008006f38      0x244 ./src/main.o
+                0x0000000008006f38                main
  .text.dac1SetValue
-                0x00000000080071c4       0x18 ./src/main.o
-                0x00000000080071c4                dac1SetValue
+                0x000000000800717c       0x18 ./src/main.o
+                0x000000000800717c                dac1SetValue
  .text.dac2SetValue
-                0x00000000080071dc       0x18 ./src/main.o
-                0x00000000080071dc                dac2SetValue
- *fill*         0x00000000080071f4        0x4 
+                0x0000000008007194       0x18 ./src/main.o
+                0x0000000008007194                dac2SetValue
+ *fill*         0x00000000080071ac        0x4 
  .text.captureSamples
-                0x00000000080071f8      0x734 ./src/main.o
-                0x00000000080071f8                captureSamples
+                0x00000000080071b0      0x734 ./src/main.o
+                0x00000000080071b0                captureSamples
  .text.HAL_TIM_PeriodElapsedCallback
-                0x000000000800792c        0x8 ./src/main.o
-                0x000000000800792c                HAL_TIM_PeriodElapsedCallback
+                0x00000000080078e4        0x8 ./src/main.o
+                0x00000000080078e4                HAL_TIM_PeriodElapsedCallback
  .text.spi_init
-                0x0000000008007934       0xf0 ./src/spi.o
-                0x0000000008007934                spi_init
+                0x00000000080078ec       0xf0 ./src/spi.o
+                0x00000000080078ec                spi_init
  .text.spi_readWrite
-                0x0000000008007a24       0x34 ./src/spi.o
-                0x0000000008007a24                spi_readWrite
+                0x00000000080079dc       0x34 ./src/spi.o
+                0x00000000080079dc                spi_readWrite
  .text.HAL_MspInit
-                0x0000000008007a58        0x4 ./src/stm32f7xx_hal_msp.o
-                0x0000000008007a58                HAL_MspInit
+                0x0000000008007a10        0x4 ./src/stm32f7xx_hal_msp.o
+                0x0000000008007a10                HAL_MspInit
  .text.NMI_Handler
-                0x0000000008007a5c        0x4 ./src/stm32f7xx_it.o
-                0x0000000008007a5c                NMI_Handler
+                0x0000000008007a14        0x4 ./src/stm32f7xx_it.o
+                0x0000000008007a14                NMI_Handler
  .text.HardFault_Handler
-                0x0000000008007a60        0x4 ./src/stm32f7xx_it.o
-                0x0000000008007a60                HardFault_Handler
+                0x0000000008007a18        0x4 ./src/stm32f7xx_it.o
+                0x0000000008007a18                HardFault_Handler
  .text.MemManage_Handler
-                0x0000000008007a64        0x4 ./src/stm32f7xx_it.o
-                0x0000000008007a64                MemManage_Handler
+                0x0000000008007a1c        0x4 ./src/stm32f7xx_it.o
+                0x0000000008007a1c                MemManage_Handler
  .text.BusFault_Handler
-                0x0000000008007a68        0x4 ./src/stm32f7xx_it.o
-                0x0000000008007a68                BusFault_Handler
+                0x0000000008007a20        0x4 ./src/stm32f7xx_it.o
+                0x0000000008007a20                BusFault_Handler
  .text.UsageFault_Handler
-                0x0000000008007a6c        0x4 ./src/stm32f7xx_it.o
-                0x0000000008007a6c                UsageFault_Handler
+                0x0000000008007a24        0x4 ./src/stm32f7xx_it.o
+                0x0000000008007a24                UsageFault_Handler
  .text.DebugMon_Handler
-                0x0000000008007a70        0x4 ./src/stm32f7xx_it.o
-                0x0000000008007a70                DebugMon_Handler
+                0x0000000008007a28        0x4 ./src/stm32f7xx_it.o
+                0x0000000008007a28                DebugMon_Handler
  .text.arm_bitreversal_f32
-                0x0000000008007a74       0xe4 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
-                0x0000000008007a74                arm_bitreversal_f32
+                0x0000000008007a2c       0xe4 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+                0x0000000008007a2c                arm_bitreversal_f32
  .text.arm_radix4_butterfly_f32
-                0x0000000008007b58      0x388 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
-                0x0000000008007b58                arm_radix4_butterfly_f32
+                0x0000000008007b10      0x388 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+                0x0000000008007b10                arm_radix4_butterfly_f32
  .text.arm_radix4_butterfly_inverse_f32
-                0x0000000008007ee0      0x3a8 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
-                0x0000000008007ee0                arm_radix4_butterfly_inverse_f32
+                0x0000000008007e98      0x3a8 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+                0x0000000008007e98                arm_radix4_butterfly_inverse_f32
  .text.arm_cfft_radix4_f32
-                0x0000000008008288       0x40 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
-                0x0000000008008288                arm_cfft_radix4_f32
+                0x0000000008008240       0x40 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+                0x0000000008008240                arm_cfft_radix4_f32
  .text.arm_cfft_radix4_init_f32
-                0x00000000080082c8       0xb4 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
-                0x00000000080082c8                arm_cfft_radix4_init_f32
+                0x0000000008008280       0xb4 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+                0x0000000008008280                arm_cfft_radix4_init_f32
  .text.arm_cmplx_mag_f32
-                0x000000000800837c      0x174 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
-                0x000000000800837c                arm_cmplx_mag_f32
- .text          0x00000000080084f0      0x110 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
-                0x00000000080084f0                log
- .text          0x0000000008008600       0xac /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
-                0x0000000008008600                sqrtf
- *fill*         0x00000000080086ac        0x4 
- .text          0x00000000080086b0      0x408 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
-                0x00000000080086b0                __ieee754_log
- .text          0x0000000008008ab8       0xa4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
-                0x0000000008008ab8                __ieee754_sqrtf
- .text          0x0000000008008b5c        0x4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
-                0x0000000008008b5c                matherr
- .text          0x0000000008008b60       0x10 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
-                0x0000000008008b60                nan
- .text          0x0000000008008b70      0x370 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
-                0x0000000008008b70                __aeabi_drsub
-                0x0000000008008b78                __aeabi_dsub
-                0x0000000008008b78                __subdf3
-                0x0000000008008b7c                __adddf3
-                0x0000000008008b7c                __aeabi_dadd
-                0x0000000008008df4                __aeabi_ui2d
-                0x0000000008008df4                __floatunsidf
-                0x0000000008008e14                __floatsidf
-                0x0000000008008e14                __aeabi_i2d
-                0x0000000008008e38                __extendsfdf2
-                0x0000000008008e38                __aeabi_f2d
-                0x0000000008008e74                __aeabi_ul2d
-                0x0000000008008e74                __floatundidf
-                0x0000000008008e84                __floatdidf
-                0x0000000008008e84                __aeabi_l2d
- .text          0x0000000008008ee0      0x424 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
-                0x0000000008008ee0                __aeabi_dmul
-                0x0000000008008ee0                __muldf3
-                0x0000000008009134                __aeabi_ddiv
-                0x0000000008009134                __divdf3
- .text          0x0000000008009304      0x110 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
-                0x0000000008009304                __gtdf2
-                0x0000000008009304                __gedf2
-                0x000000000800930c                __ltdf2
-                0x000000000800930c                __ledf2
-                0x0000000008009314                __cmpdf2
-                0x0000000008009314                __eqdf2
-                0x0000000008009314                __nedf2
-                0x0000000008009390                __aeabi_cdrcmple
-                0x00000000080093a0                __aeabi_cdcmple
-                0x00000000080093a0                __aeabi_cdcmpeq
-                0x00000000080093b0                __aeabi_dcmpeq
-                0x00000000080093c4                __aeabi_dcmplt
-                0x00000000080093d8                __aeabi_dcmple
-                0x00000000080093ec                __aeabi_dcmpge
-                0x0000000008009400                __aeabi_dcmpgt
- .text          0x0000000008009414       0x2c /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
-                0x0000000008009414                __aeabi_dcmpun
-                0x0000000008009414                __unorddf2
- .text          0x0000000008009440       0x50 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
-                0x0000000008009440                __fixdfsi
-                0x0000000008009440                __aeabi_d2iz
- .text          0x0000000008009490       0xa0 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
-                0x0000000008009490                __aeabi_d2f
-                0x0000000008009490                __truncdfsf2
- .text          0x0000000008009530       0x30 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
-                0x0000000008009530                __aeabi_uldivmod
- .text          0x0000000008009560      0x2e4 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
-                0x0000000008009560                __udivmoddi4
- .text          0x0000000008009844        0x4 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
-                0x0000000008009844                __aeabi_ldiv0
-                0x0000000008009844                __aeabi_idiv0
- .text          0x0000000008009848        0xc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
-                0x0000000008009848                __errno
- .text          0x0000000008009854      0x134 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
-                0x0000000008009854                memcpy
- .text          0x0000000008009988       0x90 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
-                0x0000000008009988                _siprintf_r
-                0x0000000008009988                _sprintf_r
-                0x00000000080099cc                sprintf
-                0x00000000080099cc                siprintf
- .text          0x0000000008009a18       0xbc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
-                0x0000000008009a18                strcpy
- *fill*         0x0000000008009ad4       0x2c 
- .text          0x0000000008009b00       0xdc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
-                0x0000000008009b00                strlen
- .text          0x0000000008009bdc       0x94 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
-                0x0000000008009bdc                _vsnprintf_r
-                0x0000000008009bdc                _vsniprintf_r
-                0x0000000008009c50                vsnprintf
-                0x0000000008009c50                vsniprintf
- .text          0x0000000008009c70      0x3f8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
-                0x0000000008009c70                __ssputs_r
-                0x0000000008009d3c                __ssprint_r
-                0x0000000008009e3c                _svfprintf_r
-                0x0000000008009e3c                _svfiprintf_r
- .text          0x000000000800a068      0x3d8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
-                0x000000000800a068                _printf_common
-                0x000000000800a198                _printf_i
- .text          0x000000000800a440       0xa0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
-                0x000000000800a440                memchr
- .text          0x000000000800a4e0       0xc8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
-                0x000000000800a4e0                memmove
- .text          0x000000000800a5a8       0x8c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
-                0x000000000800a5a8                _free_r
- .text          0x000000000800a634       0xbc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
-                0x000000000800a634                _malloc_r
- .text          0x000000000800a6f0       0x48 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
-                0x000000000800a6f0                _realloc_r
- .text          0x000000000800a738       0x24 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
-                0x000000000800a738                _sbrk_r
- .text          0x000000000800a75c       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
-                0x000000000800a75c                _malloc_usable_size_r
+                0x0000000008008334      0x174 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+                0x0000000008008334                arm_cmplx_mag_f32
+ .text          0x00000000080084a8      0x110 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
+                0x00000000080084a8                log
+ .text          0x00000000080085b8       0xac /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
+                0x00000000080085b8                sqrtf
+ *fill*         0x0000000008008664        0x4 
+ .text          0x0000000008008668      0x408 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
+                0x0000000008008668                __ieee754_log
+ .text          0x0000000008008a70       0xa4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
+                0x0000000008008a70                __ieee754_sqrtf
+ .text          0x0000000008008b14        0x4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
+                0x0000000008008b14                matherr
+ .text          0x0000000008008b18       0x10 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
+                0x0000000008008b18                nan
+ .text          0x0000000008008b28      0x370 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
+                0x0000000008008b28                __aeabi_drsub
+                0x0000000008008b30                __aeabi_dsub
+                0x0000000008008b30                __subdf3
+                0x0000000008008b34                __adddf3
+                0x0000000008008b34                __aeabi_dadd
+                0x0000000008008dac                __aeabi_ui2d
+                0x0000000008008dac                __floatunsidf
+                0x0000000008008dcc                __floatsidf
+                0x0000000008008dcc                __aeabi_i2d
+                0x0000000008008df0                __extendsfdf2
+                0x0000000008008df0                __aeabi_f2d
+                0x0000000008008e2c                __aeabi_ul2d
+                0x0000000008008e2c                __floatundidf
+                0x0000000008008e3c                __floatdidf
+                0x0000000008008e3c                __aeabi_l2d
+ .text          0x0000000008008e98      0x424 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
+                0x0000000008008e98                __aeabi_dmul
+                0x0000000008008e98                __muldf3
+                0x00000000080090ec                __aeabi_ddiv
+                0x00000000080090ec                __divdf3
+ .text          0x00000000080092bc      0x110 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
+                0x00000000080092bc                __gtdf2
+                0x00000000080092bc                __gedf2
+                0x00000000080092c4                __ltdf2
+                0x00000000080092c4                __ledf2
+                0x00000000080092cc                __cmpdf2
+                0x00000000080092cc                __eqdf2
+                0x00000000080092cc                __nedf2
+                0x0000000008009348                __aeabi_cdrcmple
+                0x0000000008009358                __aeabi_cdcmple
+                0x0000000008009358                __aeabi_cdcmpeq
+                0x0000000008009368                __aeabi_dcmpeq
+                0x000000000800937c                __aeabi_dcmplt
+                0x0000000008009390                __aeabi_dcmple
+                0x00000000080093a4                __aeabi_dcmpge
+                0x00000000080093b8                __aeabi_dcmpgt
+ .text          0x00000000080093cc       0x2c /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
+                0x00000000080093cc                __aeabi_dcmpun
+                0x00000000080093cc                __unorddf2
+ .text          0x00000000080093f8       0x50 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
+                0x00000000080093f8                __fixdfsi
+                0x00000000080093f8                __aeabi_d2iz
+ .text          0x0000000008009448       0xa0 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
+                0x0000000008009448                __aeabi_d2f
+                0x0000000008009448                __truncdfsf2
+ .text          0x00000000080094e8       0x30 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
+                0x00000000080094e8                __aeabi_uldivmod
+ .text          0x0000000008009518      0x2e4 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+                0x0000000008009518                __udivmoddi4
+ .text          0x00000000080097fc        0x4 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
+                0x00000000080097fc                __aeabi_ldiv0
+                0x00000000080097fc                __aeabi_idiv0
+ .text          0x0000000008009800        0xc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
+                0x0000000008009800                __errno
+ .text          0x000000000800980c      0x134 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
+                0x000000000800980c                memcpy
+ .text          0x0000000008009940       0x90 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
+                0x0000000008009940                _siprintf_r
+                0x0000000008009940                _sprintf_r
+                0x0000000008009984                sprintf
+                0x0000000008009984                siprintf
+ .text          0x00000000080099d0       0xbc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
+                0x00000000080099d0                strcpy
+ *fill*         0x0000000008009a8c       0x34 
+ .text          0x0000000008009ac0       0xdc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
+                0x0000000008009ac0                strlen
+ .text          0x0000000008009b9c       0x94 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
+                0x0000000008009b9c                _vsnprintf_r
+                0x0000000008009b9c                _vsniprintf_r
+                0x0000000008009c10                vsnprintf
+                0x0000000008009c10                vsniprintf
+ .text          0x0000000008009c30      0x3f8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+                0x0000000008009c30                __ssputs_r
+                0x0000000008009cfc                __ssprint_r
+                0x0000000008009dfc                _svfprintf_r
+                0x0000000008009dfc                _svfiprintf_r
+ .text          0x000000000800a028      0x3d8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+                0x000000000800a028                _printf_common
+                0x000000000800a158                _printf_i
+ .text          0x000000000800a400       0xa0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
+                0x000000000800a400                memchr
+ .text          0x000000000800a4a0       0xc8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
+                0x000000000800a4a0                memmove
+ .text          0x000000000800a568       0x8c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
+                0x000000000800a568                _free_r
+ .text          0x000000000800a5f4       0xbc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
+                0x000000000800a5f4                _malloc_r
+ .text          0x000000000800a6b0       0x48 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
+                0x000000000800a6b0                _realloc_r
+ .text          0x000000000800a6f8       0x24 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
+                0x000000000800a6f8                _sbrk_r
+ .text          0x000000000800a71c       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
+                0x000000000800a71c                _malloc_usable_size_r
  *(.rodata .rodata.* .constdata .constdata.*)
  .rodata.str1.4
-                0x000000000800a770       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_adc.o
- *fill*         0x000000000800a79e        0x2 
+                0x000000000800a730       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_adc.o
+ *fill*         0x000000000800a75e        0x2 
  .rodata.str1.4
-                0x000000000800a7a0       0x31 ./system/src/stm32f7-hal/stm32f7xx_hal_cortex.o
- *fill*         0x000000000800a7d1        0x3 
+                0x000000000800a760       0x31 ./system/src/stm32f7-hal/stm32f7xx_hal_cortex.o
+ *fill*         0x000000000800a791        0x3 
  .rodata.str1.4
-                0x000000000800a7d4       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_dac.o
- *fill*         0x000000000800a802        0x2 
+                0x000000000800a794       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_dac.o
+ *fill*         0x000000000800a7c2        0x2 
  .rodata.str1.4
-                0x000000000800a804       0x2f ./system/src/stm32f7-hal/stm32f7xx_hal_gpio.o
- *fill*         0x000000000800a833        0x1 
+                0x000000000800a7c4       0x2f ./system/src/stm32f7-hal/stm32f7xx_hal_gpio.o
+ *fill*         0x000000000800a7f3        0x1 
  .rodata.str1.4
-                0x000000000800a834       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_i2c.o
- *fill*         0x000000000800a862        0x2 
+                0x000000000800a7f4       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_i2c.o
+ *fill*         0x000000000800a822        0x2 
  .rodata.APBAHBPrescTable
-                0x000000000800a864       0x10 ./system/src/stm32f7-hal/stm32f7xx_hal_rcc.o
-                0x000000000800a864                APBAHBPrescTable
+                0x000000000800a824       0x10 ./system/src/stm32f7-hal/stm32f7xx_hal_rcc.o
+                0x000000000800a824                APBAHBPrescTable
  .rodata.str1.4
-                0x000000000800a874       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_rcc.o
- *fill*         0x000000000800a8a2        0x2 
+                0x000000000800a834       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_rcc.o
+ *fill*         0x000000000800a862        0x2 
  .rodata.str1.4
-                0x000000000800a8a4       0x31 ./system/src/stm32f7-hal/stm32f7xx_hal_rcc_ex.o
- *fill*         0x000000000800a8d5        0x3 
+                0x000000000800a864       0x31 ./system/src/stm32f7-hal/stm32f7xx_hal_rcc_ex.o
+ *fill*         0x000000000800a895        0x3 
  .rodata.str1.4
-                0x000000000800a8d8       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_spi.o
- *fill*         0x000000000800a906        0x2 
+                0x000000000800a898       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_spi.o
+ *fill*         0x000000000800a8c6        0x2 
  .rodata.str1.4
-                0x000000000800a908       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_tim.o
- *fill*         0x000000000800a936        0x2 
+                0x000000000800a8c8       0x2e ./system/src/stm32f7-hal/stm32f7xx_hal_tim.o
+ *fill*         0x000000000800a8f6        0x2 
  .rodata.str1.4
-                0x000000000800a938       0x14 ./system/src/newlib/_exit.o
+                0x000000000800a8f8       0x14 ./system/src/newlib/_exit.o
  .rodata.str1.4
-                0x000000000800a94c       0x6b ./system/src/newlib/assert.o
+                0x000000000800a90c       0x6b ./system/src/newlib/assert.o
                                          0x6f (size before relaxing)
- *fill*         0x000000000800a9b7        0x1 
- .rodata        0x000000000800a9b8       0x2d ./system/src/diag/Trace.o
- *fill*         0x000000000800a9e5        0x3 
+ *fill*         0x000000000800a977        0x1 
+ .rodata        0x000000000800a978       0x2d ./system/src/diag/Trace.o
+ *fill*         0x000000000800a9a5        0x3 
  .rodata.str1.4
-                0x000000000800a9e8      0x146 ./system/src/cortexm/exception_handlers.o
- *fill*         0x000000000800ab2e        0x2 
+                0x000000000800a9a8      0x146 ./system/src/cortexm/exception_handlers.o
+ *fill*         0x000000000800aaee        0x2 
  .rodata.AHBPrescTable
-                0x000000000800ab30       0x10 ./system/src/cmsis/system_stm32f7xx.o
-                0x000000000800ab30                AHBPrescTable
+                0x000000000800aaf0       0x10 ./system/src/cmsis/system_stm32f7xx.o
+                0x000000000800aaf0                AHBPrescTable
  .rodata.GPS_PPS
-                0x000000000800ab40        0x8 ./src/hal.o
-                0x000000000800ab40                GPS_PPS
+                0x000000000800ab00        0x8 ./src/hal.o
+                0x000000000800ab00                GPS_PPS
  .rodata.AMP_SWITCH_B
-                0x000000000800ab48        0x8 ./src/hal.o
-                0x000000000800ab48                AMP_SWITCH_B
+                0x000000000800ab08        0x8 ./src/hal.o
+                0x000000000800ab08                AMP_SWITCH_B
  .rodata.encoderB
-                0x000000000800ab50        0x8 ./src/hal.o
-                0x000000000800ab50                encoderB
+                0x000000000800ab10        0x8 ./src/hal.o
+                0x000000000800ab10                encoderB
  .rodata.LCD_RESET
-                0x000000000800ab58        0x8 ./src/hal.o
-                0x000000000800ab58                LCD_RESET
+                0x000000000800ab18        0x8 ./src/hal.o
+                0x000000000800ab18                LCD_RESET
  .rodata.encoderP
-                0x000000000800ab60        0x8 ./src/hal.o
-                0x000000000800ab60                encoderP
+                0x000000000800ab20        0x8 ./src/hal.o
+                0x000000000800ab20                encoderP
  .rodata.TRX_SWITCH
-                0x000000000800ab68        0x8 ./src/hal.o
-                0x000000000800ab68                TRX_SWITCH
+                0x000000000800ab28        0x8 ./src/hal.o
+                0x000000000800ab28                TRX_SWITCH
  .rodata.FILTER_GAIN_POT_SCLK
-                0x000000000800ab70        0x8 ./src/hal.o
-                0x000000000800ab70                FILTER_GAIN_POT_SCLK
+                0x000000000800ab30        0x8 ./src/hal.o
+                0x000000000800ab30                FILTER_GAIN_POT_SCLK
  .rodata.I2C_SDA
-                0x000000000800ab78        0x8 ./src/hal.o
-                0x000000000800ab78                I2C_SDA
+                0x000000000800ab38        0x8 ./src/hal.o
+                0x000000000800ab38                I2C_SDA
  .rodata.FILTER_S0
-                0x000000000800ab80        0x8 ./src/hal.o
-                0x000000000800ab80                FILTER_S0
+                0x000000000800ab40        0x8 ./src/hal.o
+                0x000000000800ab40                FILTER_S0
  .rodata.FILTER_S1
-                0x000000000800ab88        0x8 ./src/hal.o
-                0x000000000800ab88                FILTER_S1
+                0x000000000800ab48        0x8 ./src/hal.o
+                0x000000000800ab48                FILTER_S1
  .rodata.FIVE_VOLT_REGULATOR_ENABLE
-                0x000000000800ab90        0x8 ./src/hal.o
-                0x000000000800ab90                FIVE_VOLT_REGULATOR_ENABLE
+                0x000000000800ab50        0x8 ./src/hal.o
+                0x000000000800ab50                FIVE_VOLT_REGULATOR_ENABLE
  .rodata.RED_LED
-                0x000000000800ab98        0x8 ./src/hal.o
-                0x000000000800ab98                RED_LED
+                0x000000000800ab58        0x8 ./src/hal.o
+                0x000000000800ab58                RED_LED
  .rodata.encoderBee
-                0x000000000800aba0        0x8 ./src/hal.o
-                0x000000000800aba0                encoderBee
+                0x000000000800ab60        0x8 ./src/hal.o
+                0x000000000800ab60                encoderBee
  .rodata.TX_RF_SWITCH_A
-                0x000000000800aba8        0x8 ./src/hal.o
-                0x000000000800aba8                TX_RF_SWITCH_A
+                0x000000000800ab68        0x8 ./src/hal.o
+                0x000000000800ab68                TX_RF_SWITCH_A
  .rodata.TX_RF_SWITCH_B
-                0x000000000800abb0        0x8 ./src/hal.o
-                0x000000000800abb0                TX_RF_SWITCH_B
+                0x000000000800ab70        0x8 ./src/hal.o
+                0x000000000800ab70                TX_RF_SWITCH_B
  .rodata.IMP_BRIDGE_SWITCH_A
-                0x000000000800abb8        0x8 ./src/hal.o
-                0x000000000800abb8                IMP_BRIDGE_SWITCH_A
+                0x000000000800ab78        0x8 ./src/hal.o
+                0x000000000800ab78                IMP_BRIDGE_SWITCH_A
  .rodata.IMP_BRIDGE_SWITCH_B
-                0x000000000800abc0        0x8 ./src/hal.o
-                0x000000000800abc0                IMP_BRIDGE_SWITCH_B
+                0x000000000800ab80        0x8 ./src/hal.o
+                0x000000000800ab80                IMP_BRIDGE_SWITCH_B
  .rodata.LCD_SCK
-                0x000000000800abc8        0x8 ./src/hal.o
-                0x000000000800abc8                LCD_SCK
+                0x000000000800ab88        0x8 ./src/hal.o
+                0x000000000800ab88                LCD_SCK
  .rodata.LCD_DC
-                0x000000000800abd0        0x8 ./src/hal.o
-                0x000000000800abd0                LCD_DC
+                0x000000000800ab90        0x8 ./src/hal.o
+                0x000000000800ab90                LCD_DC
  .rodata.LCD_NSS
-                0x000000000800abd8        0x8 ./src/hal.o
-                0x000000000800abd8                LCD_NSS
+                0x000000000800ab98        0x8 ./src/hal.o
+                0x000000000800ab98                LCD_NSS
  .rodata.LCD_MOSI
-                0x000000000800abe0        0x8 ./src/hal.o
-                0x000000000800abe0                LCD_MOSI
+                0x000000000800aba0        0x8 ./src/hal.o
+                0x000000000800aba0                LCD_MOSI
  .rodata.AMP_POWER
-                0x000000000800abe8        0x8 ./src/hal.o
-                0x000000000800abe8                AMP_POWER
+                0x000000000800aba8        0x8 ./src/hal.o
+                0x000000000800aba8                AMP_POWER
  .rodata.PADDLE_THUMB_NC
-                0x000000000800abf0        0x8 ./src/hal.o
-                0x000000000800abf0                PADDLE_THUMB_NC
+                0x000000000800abb0        0x8 ./src/hal.o
+                0x000000000800abb0                PADDLE_THUMB_NC
  .rodata.DAC_MUX
-                0x000000000800abf8        0x8 ./src/hal.o
-                0x000000000800abf8                DAC_MUX
+                0x000000000800abb8        0x8 ./src/hal.o
+                0x000000000800abb8                DAC_MUX
  .rodata.PADDLE_INDEX_NO
-                0x000000000800ac00        0x8 ./src/hal.o
-                0x000000000800ac00                PADDLE_INDEX_NO
+                0x000000000800abc0        0x8 ./src/hal.o
+                0x000000000800abc0                PADDLE_INDEX_NO
  .rodata.GAIN_POT_NSS
-                0x000000000800ac08        0x8 ./src/hal.o
-                0x000000000800ac08                GAIN_POT_NSS
+                0x000000000800abc8        0x8 ./src/hal.o
+                0x000000000800abc8                GAIN_POT_NSS
  .rodata.PADDLE_INDEX_NC
-                0x000000000800ac10        0x8 ./src/hal.o
-                0x000000000800ac10                PADDLE_INDEX_NC
+                0x000000000800abd0        0x8 ./src/hal.o
+                0x000000000800abd0                PADDLE_INDEX_NC
  .rodata.PADDLE_THUMB_NO
-                0x000000000800ac18        0x8 ./src/hal.o
-                0x000000000800ac18                PADDLE_THUMB_NO
+                0x000000000800abd8        0x8 ./src/hal.o
+                0x000000000800abd8                PADDLE_THUMB_NO
  .rodata.LCD_MISO
-                0x000000000800ac20        0x8 ./src/hal.o
-                0x000000000800ac20                LCD_MISO
+                0x000000000800abe0        0x8 ./src/hal.o
+                0x000000000800abe0                LCD_MISO
  .rodata.FILTER_GAIN_POT_MOSI
-                0x000000000800ac28        0x8 ./src/hal.o
-                0x000000000800ac28                FILTER_GAIN_POT_MOSI
+                0x000000000800abe8        0x8 ./src/hal.o
+                0x000000000800abe8                FILTER_GAIN_POT_MOSI
  .rodata.I2C_SCL
-                0x000000000800ac30        0x8 ./src/hal.o
-                0x000000000800ac30                I2C_SCL
+                0x000000000800abf0        0x8 ./src/hal.o
+                0x000000000800abf0                I2C_SCL
  .rodata.AMP_SWITCH_A
-                0x000000000800ac38        0x8 ./src/hal.o
-                0x000000000800ac38                AMP_SWITCH_A
+                0x000000000800abf8        0x8 ./src/hal.o
+                0x000000000800abf8                AMP_SWITCH_A
  .rodata.bitmapFilter
-                0x000000000800ac40      0x468 ./src/images.o
-                0x000000000800ac40                bitmapFilter
+                0x000000000800ac00      0x468 ./src/images.o
+                0x000000000800ac00                bitmapFilter
  .rodata.sevenSmall
-                0x000000000800b0a8       0x90 ./src/images.o
-                0x000000000800b0a8                sevenSmall
+                0x000000000800b068       0x90 ./src/images.o
+                0x000000000800b068                sevenSmall
  .rodata.bitmapIronGradient
-                0x000000000800b138      0x100 ./src/images.o
-                0x000000000800b138                bitmapIronGradient
+                0x000000000800b0f8      0x100 ./src/images.o
+                0x000000000800b0f8                bitmapIronGradient
  .rodata.bitmapNine
-                0x000000000800b238      0x23a ./src/images.o
-                0x000000000800b238                bitmapNine
- *fill*         0x000000000800b472        0x2 
+                0x000000000800b1f8      0x23a ./src/images.o
+                0x000000000800b1f8                bitmapNine
+ *fill*         0x000000000800b432        0x2 
  .rodata.bitmapMode
-                0x000000000800b474      0x3c0 ./src/images.o
-                0x000000000800b474                bitmapMode
+                0x000000000800b434      0x3c0 ./src/images.o
+                0x000000000800b434                bitmapMode
  .rodata.bitmapSeven
-                0x000000000800b834      0x23a ./src/images.o
-                0x000000000800b834                bitmapSeven
- *fill*         0x000000000800ba6e        0x2 
+                0x000000000800b7f4      0x23a ./src/images.o
+                0x000000000800b7f4                bitmapSeven
+ *fill*         0x000000000800ba2e        0x2 
  .rodata.hyphenSmall
-                0x000000000800ba70       0x90 ./src/images.o
-                0x000000000800ba70                hyphenSmall
+                0x000000000800ba30       0x90 ./src/images.o
+                0x000000000800ba30                hyphenSmall
  .rodata.bitmapPeriod
-                0x000000000800bb00      0x23a ./src/images.o
-                0x000000000800bb00                bitmapPeriod
- *fill*         0x000000000800bd3a        0x2 
+                0x000000000800bac0      0x23a ./src/images.o
+                0x000000000800bac0                bitmapPeriod
+ *fill*         0x000000000800bcfa        0x2 
  .rodata.bitmapAM
-                0x000000000800bd3c      0x1f8 ./src/images.o
-                0x000000000800bd3c                bitmapAM
+                0x000000000800bcfc      0x1f8 ./src/images.o
+                0x000000000800bcfc                bitmapAM
  .rodata.sixSmall
-                0x000000000800bf34       0x90 ./src/images.o
-                0x000000000800bf34                sixSmall
+                0x000000000800bef4       0x90 ./src/images.o
+                0x000000000800bef4                sixSmall
  .rodata.bitmapFour
-                0x000000000800bfc4      0x23a ./src/images.o
-                0x000000000800bfc4                bitmapFour
- *fill*         0x000000000800c1fe        0x2 
+                0x000000000800bf84      0x23a ./src/images.o
+                0x000000000800bf84                bitmapFour
+ *fill*         0x000000000800c1be        0x2 
  .rodata.threeSmall
-                0x000000000800c200       0x90 ./src/images.o
-                0x000000000800c200                threeSmall
+                0x000000000800c1c0       0x90 ./src/images.o
+                0x000000000800c1c0                threeSmall
  .rodata.eightSmall
-                0x000000000800c290       0x90 ./src/images.o
-                0x000000000800c290                eightSmall
+                0x000000000800c250       0x90 ./src/images.o
+                0x000000000800c250                eightSmall
  .rodata.oneSmall
-                0x000000000800c320       0x90 ./src/images.o
-                0x000000000800c320                oneSmall
+                0x000000000800c2e0       0x90 ./src/images.o
+                0x000000000800c2e0                oneSmall
  .rodata.bitmapTwo
-                0x000000000800c3b0      0x23a ./src/images.o
-                0x000000000800c3b0                bitmapTwo
- *fill*         0x000000000800c5ea        0x2 
+                0x000000000800c370      0x23a ./src/images.o
+                0x000000000800c370                bitmapTwo
+ *fill*         0x000000000800c5aa        0x2 
  .rodata.bitmapEight
-                0x000000000800c5ec      0x23a ./src/images.o
-                0x000000000800c5ec                bitmapEight
- *fill*         0x000000000800c826        0x2 
+                0x000000000800c5ac      0x23a ./src/images.o
+                0x000000000800c5ac                bitmapEight
+ *fill*         0x000000000800c7e6        0x2 
  .rodata.zeroSmall
-                0x000000000800c828       0x90 ./src/images.o
-                0x000000000800c828                zeroSmall
+                0x000000000800c7e8       0x90 ./src/images.o
+                0x000000000800c7e8                zeroSmall
  .rodata.tildeSmall
-                0x000000000800c8b8       0x90 ./src/images.o
-                0x000000000800c8b8                tildeSmall
+                0x000000000800c878       0x90 ./src/images.o
+                0x000000000800c878                tildeSmall
  .rodata.bitmapThree
-                0x000000000800c948      0x23a ./src/images.o
-                0x000000000800c948                bitmapThree
- *fill*         0x000000000800cb82        0x2 
+                0x000000000800c908      0x23a ./src/images.o
+                0x000000000800c908                bitmapThree
+ *fill*         0x000000000800cb42        0x2 
  .rodata.bitmapWebSdrGradient
-                0x000000000800cb84      0x100 ./src/images.o
-                0x000000000800cb84                bitmapWebSdrGradient
+                0x000000000800cb44      0x100 ./src/images.o
+                0x000000000800cb44                bitmapWebSdrGradient
  .rodata.bitmapFive
-                0x000000000800cc84      0x23a ./src/images.o
-                0x000000000800cc84                bitmapFive
- *fill*         0x000000000800cebe        0x2 
+                0x000000000800cc44      0x23a ./src/images.o
+                0x000000000800cc44                bitmapFive
+ *fill*         0x000000000800ce7e        0x2 
  .rodata.bitmapLSB
-                0x000000000800cec0      0x1f8 ./src/images.o
-                0x000000000800cec0                bitmapLSB
+                0x000000000800ce80      0x1f8 ./src/images.o
+                0x000000000800ce80                bitmapLSB
  .rodata.twoSmall
-                0x000000000800d0b8       0x90 ./src/images.o
-                0x000000000800d0b8                twoSmall
+                0x000000000800d078       0x90 ./src/images.o
+                0x000000000800d078                twoSmall
  .rodata.bitmapUSB
-                0x000000000800d148      0x1f8 ./src/images.o
-                0x000000000800d148                bitmapUSB
+                0x000000000800d108      0x1f8 ./src/images.o
+                0x000000000800d108                bitmapUSB
  .rodata.fiveSmall
-                0x000000000800d340       0x90 ./src/images.o
-                0x000000000800d340                fiveSmall
+                0x000000000800d300       0x90 ./src/images.o
+                0x000000000800d300                fiveSmall
  .rodata.bitmapSMeter
-                0x000000000800d3d0      0xc1c ./src/images.o
-                0x000000000800d3d0                bitmapSMeter
+                0x000000000800d390      0xc1c ./src/images.o
+                0x000000000800d390                bitmapSMeter
  .rodata.bitmapZero
-                0x000000000800dfec      0x23a ./src/images.o
-                0x000000000800dfec                bitmapZero
- *fill*         0x000000000800e226        0x2 
+                0x000000000800dfac      0x23a ./src/images.o
+                0x000000000800dfac                bitmapZero
+ *fill*         0x000000000800e1e6        0x2 
  .rodata.nineSmall
-                0x000000000800e228       0x90 ./src/images.o
-                0x000000000800e228                nineSmall
+                0x000000000800e1e8       0x90 ./src/images.o
+                0x000000000800e1e8                nineSmall
  .rodata.fourSmall
-                0x000000000800e2b8       0x90 ./src/images.o
-                0x000000000800e2b8                fourSmall
+                0x000000000800e278       0x90 ./src/images.o
+                0x000000000800e278                fourSmall
  .rodata.bitmapOne
-                0x000000000800e348      0x23a ./src/images.o
-                0x000000000800e348                bitmapOne
- *fill*         0x000000000800e582        0x2 
+                0x000000000800e308      0x23a ./src/images.o
+                0x000000000800e308                bitmapOne
+ *fill*         0x000000000800e542        0x2 
  .rodata.bitmapSix
-                0x000000000800e584      0x23a ./src/images.o
-                0x000000000800e584                bitmapSix
- *fill*         0x000000000800e7be        0x2 
+                0x000000000800e544      0x23a ./src/images.o
+                0x000000000800e544                bitmapSix
+ *fill*         0x000000000800e77e        0x2 
  .rodata.str1.4
-                0x000000000800e7c0       0x2e ./src/main.o
- *fill*         0x000000000800e7ee        0x2 
+                0x000000000800e780       0x2e ./src/main.o
+ *fill*         0x000000000800e7ae        0x2 
  .rodata.armBitRevTable
-                0x000000000800e7f0      0x800 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
-                0x000000000800e7f0                armBitRevTable
+                0x000000000800e7b0      0x800 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
+                0x000000000800e7b0                armBitRevTable
  .rodata.twiddleCoef_4096
-                0x000000000800eff0     0x8000 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
-                0x000000000800eff0                twiddleCoef_4096
+                0x000000000800efb0     0x8000 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
+                0x000000000800efb0                twiddleCoef_4096
  .rodata.str1.4
-                0x0000000008016ff0        0x4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
+                0x0000000008016fb0        0x4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
                                           0x5 (size before relaxing)
  .rodata.str1.4
-                0x0000000008016ff4        0x6 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
- *fill*         0x0000000008016ffa        0x2 
+                0x0000000008016fb4        0x6 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
+ *fill*         0x0000000008016fba        0x2 
  .rodata.str1.4
-                0x0000000008016ffc        0x2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
- *fill*         0x0000000008016ffe        0x2 
+                0x0000000008016fbc        0x2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
+ *fill*         0x0000000008016fbe        0x2 
  .rodata.str1.4
-                0x0000000008017000       0x13 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
- *fill*         0x0000000008017013        0x1 
+                0x0000000008016fc0       0x13 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+ *fill*         0x0000000008016fd3        0x1 
  .rodata.str1.4
-                0x0000000008017014       0x28 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+                0x0000000008016fd4       0x28 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
                                          0x25 (size before relaxing)
  *(vtable)
  *(.eh_frame*)
  *(.glue_7)
- .glue_7        0x000000000801703c        0x0 linker stubs
+ .glue_7        0x0000000008016ffc        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x000000000801703c        0x0 linker stubs
+ .glue_7t       0x0000000008016ffc        0x0 linker stubs
 
-.vfp11_veneer   0x000000000801703c        0x0
- .vfp11_veneer  0x000000000801703c        0x0 linker stubs
+.vfp11_veneer   0x0000000008016ffc        0x0
+ .vfp11_veneer  0x0000000008016ffc        0x0 linker stubs
 
-.v4_bx          0x000000000801703c        0x0
- .v4_bx         0x000000000801703c        0x0 linker stubs
+.v4_bx          0x0000000008016ffc        0x0
+ .v4_bx         0x0000000008016ffc        0x0 linker stubs
 
-.iplt           0x000000000801703c        0x0
- .iplt          0x000000000801703c        0x0 ./system/src/stm32f7-hal/stm32f7xx_hal.o
+.iplt           0x0000000008016ffc        0x0
+ .iplt          0x0000000008016ffc        0x0 ./system/src/stm32f7-hal/stm32f7xx_hal.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x000000000801703c                . = ALIGN (0x4)
-                0x000000000801703c                __exidx_start = .
+                0x0000000008016ffc                . = ALIGN (0x4)
+                0x0000000008016ffc                __exidx_start = .
 
-.ARM.exidx      0x000000000801703c        0x8
+.ARM.exidx      0x0000000008016ffc        0x8
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
- .ARM.exidx     0x000000000801703c        0x8 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
-                0x0000000008017044                __exidx_end = .
+ .ARM.exidx     0x0000000008016ffc        0x8 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+                0x0000000008017004                __exidx_end = .
 
-.rel.dyn        0x0000000008017044        0x0
- .rel.iplt      0x0000000008017044        0x0 ./system/src/stm32f7-hal/stm32f7xx_hal.o
-                0x0000000008017044                . = ALIGN (0x4)
-                0x0000000008017044                _etext = .
-                0x0000000008017044                __etext = .
+.rel.dyn        0x0000000008017004        0x0
+ .rel.iplt      0x0000000008017004        0x0 ./system/src/stm32f7-hal/stm32f7xx_hal.o
+                0x0000000008017004                . = ALIGN (0x4)
+                0x0000000008017004                _etext = .
+                0x0000000008017004                __etext = .
 
-.data_CCMRAM    0x0000000010000000        0x0 load address 0x0000000008017044
+.data_CCMRAM    0x0000000010000000        0x0 load address 0x0000000008017004
  FILL mask 0xff
  *(.data.CCMRAM .data.CCMRAM.*)
                 0x0000000010000000                . = ALIGN (0x4)
-                0x0000000008017044                _sidata = LOADADDR (.data)
+                0x0000000008017004                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000      0x4f0 load address 0x0000000008017044
+.data           0x0000000020000000      0x4f0 load address 0x0000000008017004
  FILL mask 0xff
                 0x0000000020000000                _sdata = .
                 0x0000000020000000                __data_start__ = .
@@ -25960,7 +26077,7 @@ END GROUP
                 0x0000000020000438        0x2 ./src/main.o
                 0x0000000020000438                menuCount
  *fill*         0x000000002000043a        0x2 ff
- .data.lastFreqChar.11956
+ .data.lastFreqChar.12017
                 0x000000002000043c        0xf ./src/main.o
  *fill*         0x000000002000044b        0x1 ff
  .data.filterLastLowerLimit
@@ -26021,7 +26138,7 @@ END GROUP
                 0x00000000200004f0                _edata = .
                 0x00000000200004f0                __data_end__ = .
 
-.igot.plt       0x00000000200004f0        0x0 load address 0x0000000008017534
+.igot.plt       0x00000000200004f0        0x0 load address 0x00000000080174f4
  .igot.plt      0x00000000200004f0        0x0 ./system/src/stm32f7-hal/stm32f7xx_hal.o
 
 .bss_CCMRAM     0x0000000010000000        0x0
@@ -26040,92 +26157,92 @@ END GROUP
                 0x00000000200004fc        0x1 ./system/src/newlib/_syscalls.o
  *fill*         0x00000000200004fd        0x3 
  .bss.buf.5052  0x0000000020000500       0x80 ./system/src/diag/Trace.o
- .bss.freqChar.11955
-                0x0000000020000580        0xf ./src/main.o
- *fill*         0x000000002000058f        0x1 
  .bss.transmitting
-                0x0000000020000590        0x4 ./src/main.o
-                0x0000000020000590                transmitting
+                0x0000000020000580        0x4 ./src/main.o
+                0x0000000020000580                transmitting
  .bss.waterfallBusy
-                0x0000000020000594        0x1 ./src/main.o
-                0x0000000020000594                waterfallBusy
- *fill*         0x0000000020000595        0x3 
- .bss.millis    0x0000000020000598        0x8 ./src/main.o
-                0x0000000020000598                millis
- .bss.magnitudes.11986
-                0x00000000200005a0      0x400 ./src/main.o
+                0x0000000020000584        0x1 ./src/main.o
+                0x0000000020000584                waterfallBusy
+ *fill*         0x0000000020000585        0x3 
+ .bss.millis    0x0000000020000588        0x8 ./src/main.o
+                0x0000000020000588                millis
+ .bss.magnitudes.12043
+                0x0000000020000590      0x400 ./src/main.o
  .bss.sampleBank
-                0x00000000200009a0        0x4 ./src/main.o
-                0x00000000200009a0                sampleBank
+                0x0000000020000990        0x4 ./src/main.o
+                0x0000000020000990                sampleBank
  .bss.lastSMeterBarWidth
-                0x00000000200009a4        0x4 ./src/main.o
-                0x00000000200009a4                lastSMeterBarWidth
+                0x0000000020000994        0x4 ./src/main.o
+                0x0000000020000994                lastSMeterBarWidth
  .bss.sampleBankAReady
-                0x00000000200009a8        0x4 ./src/main.o
-                0x00000000200009a8                sampleBankAReady
+                0x0000000020000998        0x4 ./src/main.o
+                0x0000000020000998                sampleBankAReady
  .bss.menuEncoderTicks
-                0x00000000200009ac        0x2 ./src/main.o
-                0x00000000200009ac                menuEncoderTicks
- *fill*         0x00000000200009ae        0x2 
+                0x000000002000099c        0x2 ./src/main.o
+                0x000000002000099c                menuEncoderTicks
+ *fill*         0x000000002000099e        0x2 
  .bss.dac1OutVal
-                0x00000000200009b0        0x4 ./src/main.o
-                0x00000000200009b0                dac1OutVal
+                0x00000000200009a0        0x4 ./src/main.o
+                0x00000000200009a0                dac1OutVal
+ .bss.fftMaxMax.12049
+                0x00000000200009a4        0x4 ./src/main.o
  .bss.dac2OutVal
-                0x00000000200009b4        0x4 ./src/main.o
-                0x00000000200009b4                dac2OutVal
+                0x00000000200009a8        0x4 ./src/main.o
+                0x00000000200009a8                dac2OutVal
+ .bss.mode      0x00000000200009ac        0x1 ./src/main.o
+                0x00000000200009ac                mode
+ *fill*         0x00000000200009ad        0x3 
+ .bss.dacSConfig
+                0x00000000200009b0        0x8 ./src/main.o
  .bss.passBandRms
                 0x00000000200009b8        0x4 ./src/main.o
                 0x00000000200009b8                passBandRms
- .bss.mode      0x00000000200009bc        0x1 ./src/main.o
-                0x00000000200009bc                mode
- *fill*         0x00000000200009bd        0x3 
- .bss.dacSConfig
-                0x00000000200009c0        0x8 ./src/main.o
- .bss.cap.11770
-                0x00000000200009c8        0x4 ./src/main.o
  .bss.newWaterFallData
-                0x00000000200009cc        0x4 ./src/main.o
-                0x00000000200009cc                newWaterFallData
+                0x00000000200009bc        0x4 ./src/main.o
+                0x00000000200009bc                newWaterFallData
  .bss.maxAmplitude
-                0x00000000200009d0        0x2 ./src/main.o
-                0x00000000200009d0                maxAmplitude
+                0x00000000200009c0        0x2 ./src/main.o
+                0x00000000200009c0                maxAmplitude
  .bss.displayUpdating
-                0x00000000200009d2        0x1 ./src/main.o
-                0x00000000200009d2                displayUpdating
- *fill*         0x00000000200009d3        0x1 
+                0x00000000200009c2        0x1 ./src/main.o
+                0x00000000200009c2                displayUpdating
+ *fill*         0x00000000200009c3        0x1 
  .bss.sampleBankBReady
-                0x00000000200009d4        0x4 ./src/main.o
-                0x00000000200009d4                sampleBankBReady
- .bss.menuPos   0x00000000200009d8        0x2 ./src/main.o
-                0x00000000200009d8                menuPos
- *fill*         0x00000000200009da        0x2 
+                0x00000000200009c4        0x4 ./src/main.o
+                0x00000000200009c4                sampleBankBReady
+ .bss.menuPos   0x00000000200009c8        0x2 ./src/main.o
+                0x00000000200009c8                menuPos
+ *fill*         0x00000000200009ca        0x2 
  .bss.txDacOutValMax
-                0x00000000200009dc        0x4 ./src/main.o
-                0x00000000200009dc                txDacOutValMax
- .bss.agcLevel  0x00000000200009e0        0x4 ./src/main.o
-                0x00000000200009e0                agcLevel
+                0x00000000200009cc        0x4 ./src/main.o
+                0x00000000200009cc                txDacOutValMax
+ .bss.agcLevel  0x00000000200009d0        0x4 ./src/main.o
+                0x00000000200009d0                agcLevel
  .bss.uwPrescalerValue
-                0x00000000200009e4        0x4 ./src/main.o
-                0x00000000200009e4                uwPrescalerValue
- .bss.ifShift   0x00000000200009e8        0x4 ./src/main.o
-                0x00000000200009e8                ifShift
+                0x00000000200009d4        0x4 ./src/main.o
+                0x00000000200009d4                uwPrescalerValue
+ .bss.waterfallScanLine.12045
+                0x00000000200009d8        0x1 ./src/main.o
+ *fill*         0x00000000200009d9        0x3 
+ .bss.ifShift   0x00000000200009dc        0x4 ./src/main.o
+                0x00000000200009dc                ifShift
  .bss.filterLowerLimit
-                0x00000000200009ec        0x2 ./src/main.o
-                0x00000000200009ec                filterLowerLimit
- *fill*         0x00000000200009ee        0x2 
- .bss.tone      0x00000000200009f0        0x4 ./src/main.o
-                0x00000000200009f0                tone
+                0x00000000200009e0        0x2 ./src/main.o
+                0x00000000200009e0                filterLowerLimit
+ *fill*         0x00000000200009e2        0x2 
+ .bss.tone      0x00000000200009e4        0x4 ./src/main.o
+                0x00000000200009e4                tone
+ .bss.cap.11852
+                0x00000000200009e8        0x4 ./src/main.o
  .bss.vfoALastFreq
-                0x00000000200009f4        0x4 ./src/main.o
-                0x00000000200009f4                vfoALastFreq
- .bss.waterfallScanLine.11988
-                0x00000000200009f8        0x1 ./src/main.o
- *fill*         0x00000000200009f9        0x3 
+                0x00000000200009ec        0x4 ./src/main.o
+                0x00000000200009ec                vfoALastFreq
  .bss.sampleBankCReady
-                0x00000000200009fc        0x4 ./src/main.o
-                0x00000000200009fc                sampleBankCReady
- .bss.fftMaxMax.11992
-                0x0000000020000a00        0x4 ./src/main.o
+                0x00000000200009f0        0x4 ./src/main.o
+                0x00000000200009f0                sampleBankCReady
+ .bss.freqChar.12016
+                0x00000000200009f4        0xf ./src/main.o
+ *fill*         0x0000000020000a03        0x1 
  .bss.txTmp     0x0000000020000a04        0x2 ./src/spi.o
                 0x0000000020000a04                txTmp
  *fill*         0x0000000020000a06        0x2 
@@ -26490,7 +26607,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x0000000000000000     0x18b8
+.debug_aranges  0x0000000000000000     0x18a8
  *(.debug_aranges)
  .debug_aranges
                 0x0000000000000000       0xd0 ./system/src/stm32f7-hal/stm32f7xx_hal.o
@@ -26545,104 +26662,104 @@ END GROUP
  .debug_aranges
                 0x00000000000010d0       0x20 ./src/BlinkLed.o
  .debug_aranges
-                0x00000000000010f0       0x40 ./src/Timer.o
+                0x00000000000010f0       0x30 ./src/Timer.o
  .debug_aranges
-                0x0000000000001130       0x28 ./src/_initialize_hardware.o
+                0x0000000000001120       0x28 ./src/_initialize_hardware.o
  .debug_aranges
-                0x0000000000001158       0x38 ./src/adc.o
+                0x0000000000001148       0x38 ./src/adc.o
  .debug_aranges
-                0x0000000000001190       0x38 ./src/hal.o
+                0x0000000000001180       0x38 ./src/hal.o
  .debug_aranges
-                0x00000000000011c8       0x58 ./src/i2c.o
+                0x00000000000011b8       0x58 ./src/i2c.o
  .debug_aranges
-                0x0000000000001220       0x18 ./src/images.o
+                0x0000000000001210       0x18 ./src/images.o
  .debug_aranges
-                0x0000000000001238      0x130 ./src/main.o
+                0x0000000000001228      0x130 ./src/main.o
  .debug_aranges
-                0x0000000000001368       0x28 ./src/spi.o
+                0x0000000000001358       0x28 ./src/spi.o
  .debug_aranges
-                0x0000000000001390       0x38 ./src/stm32f7xx_hal_msp.o
+                0x0000000000001380       0x38 ./src/stm32f7xx_hal_msp.o
  .debug_aranges
-                0x00000000000013c8       0x48 ./src/stm32f7xx_it.o
+                0x00000000000013b8       0x48 ./src/stm32f7xx_it.o
  .debug_aranges
-                0x0000000000001410       0x30 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+                0x0000000000001400       0x30 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
  .debug_aranges
-                0x0000000000001440       0x30 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+                0x0000000000001430       0x30 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
  .debug_aranges
-                0x0000000000001470       0x20 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+                0x0000000000001460       0x20 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
  .debug_aranges
-                0x0000000000001490       0x20 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+                0x0000000000001480       0x20 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
  .debug_aranges
-                0x00000000000014b0       0x18 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
+                0x00000000000014a0       0x18 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
  .debug_aranges
-                0x00000000000014c8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
+                0x00000000000014b8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
  .debug_aranges
-                0x00000000000014e8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
+                0x00000000000014d8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
  .debug_aranges
-                0x0000000000001508       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
+                0x00000000000014f8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
  .debug_aranges
-                0x0000000000001528       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
+                0x0000000000001518       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
  .debug_aranges
-                0x0000000000001548       0x18 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
+                0x0000000000001538       0x18 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
  .debug_aranges
-                0x0000000000001560       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
+                0x0000000000001550       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
  .debug_aranges
-                0x0000000000001580       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
+                0x0000000000001570       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
  .debug_aranges
-                0x00000000000015a0       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
+                0x0000000000001590       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
  .debug_aranges
-                0x00000000000015c0       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
+                0x00000000000015b0       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
  .debug_aranges
-                0x00000000000015e0       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
+                0x00000000000015d0       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
  .debug_aranges
-                0x0000000000001600       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
+                0x00000000000015f0       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
  .debug_aranges
-                0x0000000000001620       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
+                0x0000000000001610       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
  .debug_aranges
-                0x0000000000001640       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
+                0x0000000000001630       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
  .debug_aranges
-                0x0000000000001660       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
+                0x0000000000001650       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
  .debug_aranges
-                0x0000000000001680       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+                0x0000000000001670       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
  .debug_aranges
-                0x00000000000016a0       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
+                0x0000000000001690       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
  .debug_aranges
-                0x00000000000016c0       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
+                0x00000000000016b0       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
  .debug_aranges
-                0x00000000000016e0       0x18 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
+                0x00000000000016d0       0x18 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
  .debug_aranges
-                0x00000000000016f8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
+                0x00000000000016e8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
  .debug_aranges
-                0x0000000000001718       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
+                0x0000000000001708       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
  .debug_aranges
-                0x0000000000001738       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
+                0x0000000000001728       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
  .debug_aranges
-                0x0000000000001758       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
+                0x0000000000001748       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
  .debug_aranges
-                0x0000000000001778       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
+                0x0000000000001768       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
  .debug_aranges
-                0x0000000000001798       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+                0x0000000000001788       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
  .debug_aranges
-                0x00000000000017b8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+                0x00000000000017a8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
  .debug_aranges
-                0x00000000000017d8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
+                0x00000000000017c8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
  .debug_aranges
-                0x00000000000017f8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
+                0x00000000000017e8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
  .debug_aranges
-                0x0000000000001818       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
+                0x0000000000001808       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
  .debug_aranges
-                0x0000000000001838       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
+                0x0000000000001828       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
  .debug_aranges
-                0x0000000000001858       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
+                0x0000000000001848       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
  .debug_aranges
-                0x0000000000001878       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
+                0x0000000000001868       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
  .debug_aranges
-                0x0000000000001898       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
+                0x0000000000001888       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000    0x2f9ab
+.debug_info     0x0000000000000000    0x2f9ca
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x0000000000000000      0x910 ./system/src/stm32f7-hal/stm32f7xx_hal.o
  .debug_info    0x0000000000000910     0x119a ./system/src/stm32f7-hal/stm32f7xx_hal_adc.o
@@ -26667,58 +26784,58 @@ END GROUP
  .debug_info    0x0000000000013157      0xab6 ./system/src/cortexm/exception_handlers.o
  .debug_info    0x0000000000013c0d      0x6a2 ./system/src/cmsis/system_stm32f7xx.o
  .debug_info    0x00000000000142af       0xd1 ./system/src/cmsis/vectors_stm32f746xx.o
- .debug_info    0x0000000000014380     0x2812 ./src/Adafruit_GFX.o
- .debug_info    0x0000000000016b92     0x2587 ./src/Adafruit_ILI9340.o
- .debug_info    0x0000000000019119      0x413 ./src/BlinkLed.o
- .debug_info    0x000000000001952c      0x708 ./src/Timer.o
- .debug_info    0x0000000000019c34      0x9bf ./src/_initialize_hardware.o
- .debug_info    0x000000000001a5f3     0x16ea ./src/adc.o
- .debug_info    0x000000000001bcdd     0x1fe7 ./src/hal.o
- .debug_info    0x000000000001dcc4     0x1b8d ./src/i2c.o
- .debug_info    0x000000000001f851      0x3bb ./src/images.o
- .debug_info    0x000000000001fc0c     0x4e75 ./src/main.o
- .debug_info    0x0000000000024a81     0x1685 ./src/spi.o
- .debug_info    0x0000000000026106       0xe5 ./src/stm32f7xx_hal_msp.o
- .debug_info    0x00000000000261eb      0x107 ./src/stm32f7xx_it.o
- .debug_info    0x00000000000262f2      0x2b8 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
- .debug_info    0x00000000000265aa      0x9a5 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
- .debug_info    0x0000000000026f4f      0x234 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
- .debug_info    0x0000000000027183      0x283 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
- .debug_info    0x0000000000027406      0x959 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
- .debug_info    0x0000000000027d5f      0x20a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
- .debug_info    0x0000000000027f69      0x1c8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
- .debug_info    0x0000000000028131      0x2ff /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
- .debug_info    0x0000000000028430      0x1c8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
- .debug_info    0x00000000000285f8       0xc2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
- .debug_info    0x00000000000286ba      0x129 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
- .debug_info    0x00000000000287e3       0xd0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
- .debug_info    0x00000000000288b3       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
- .debug_info    0x0000000000028984       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
- .debug_info    0x0000000000028a55       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
- .debug_info    0x0000000000028b26       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
- .debug_info    0x0000000000028bf7       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
- .debug_info    0x0000000000028cc8       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
- .debug_info    0x0000000000028d99       0xcc /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
- .debug_info    0x0000000000028e65      0x42c /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
- .debug_info    0x0000000000029291       0xd0 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
- .debug_info    0x0000000000029361      0x73c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
- .debug_info    0x0000000000029a9d      0x7da /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
- .debug_info    0x000000000002a277       0xde /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
- .debug_info    0x000000000002a355      0x88c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
- .debug_info    0x000000000002abe1       0xc4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
- .debug_info    0x000000000002aca5       0xdd /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
- .debug_info    0x000000000002ad82      0x8b2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
- .debug_info    0x000000000002b634      0xd39 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
- .debug_info    0x000000000002c36d      0xb3b /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
- .debug_info    0x000000000002cea8       0xd7 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
- .debug_info    0x000000000002cf7f      0x138 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
- .debug_info    0x000000000002d0b7      0x825 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
- .debug_info    0x000000000002d8dc      0x8ec /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
- .debug_info    0x000000000002e1c8      0x882 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
- .debug_info    0x000000000002ea4a      0x7a1 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
- .debug_info    0x000000000002f1eb      0x7c0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
+ .debug_info    0x0000000000014380     0x2801 ./src/Adafruit_GFX.o
+ .debug_info    0x0000000000016b81     0x2587 ./src/Adafruit_ILI9340.o
+ .debug_info    0x0000000000019108      0x413 ./src/BlinkLed.o
+ .debug_info    0x000000000001951b      0x927 ./src/Timer.o
+ .debug_info    0x0000000000019e42      0x9bf ./src/_initialize_hardware.o
+ .debug_info    0x000000000001a801     0x16ea ./src/adc.o
+ .debug_info    0x000000000001beeb     0x1fe7 ./src/hal.o
+ .debug_info    0x000000000001ded2     0x1b90 ./src/i2c.o
+ .debug_info    0x000000000001fa62      0x3bb ./src/images.o
+ .debug_info    0x000000000001fe1d     0x4c83 ./src/main.o
+ .debug_info    0x0000000000024aa0     0x1685 ./src/spi.o
+ .debug_info    0x0000000000026125       0xe5 ./src/stm32f7xx_hal_msp.o
+ .debug_info    0x000000000002620a      0x107 ./src/stm32f7xx_it.o
+ .debug_info    0x0000000000026311      0x2b8 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_info    0x00000000000265c9      0x9a5 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+ .debug_info    0x0000000000026f6e      0x234 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+ .debug_info    0x00000000000271a2      0x283 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+ .debug_info    0x0000000000027425      0x959 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
+ .debug_info    0x0000000000027d7e      0x20a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
+ .debug_info    0x0000000000027f88      0x1c8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
+ .debug_info    0x0000000000028150      0x2ff /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
+ .debug_info    0x000000000002844f      0x1c8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
+ .debug_info    0x0000000000028617       0xc2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
+ .debug_info    0x00000000000286d9      0x129 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
+ .debug_info    0x0000000000028802       0xd0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
+ .debug_info    0x00000000000288d2       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
+ .debug_info    0x00000000000289a3       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
+ .debug_info    0x0000000000028a74       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
+ .debug_info    0x0000000000028b45       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
+ .debug_info    0x0000000000028c16       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
+ .debug_info    0x0000000000028ce7       0xd1 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
+ .debug_info    0x0000000000028db8       0xcc /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
+ .debug_info    0x0000000000028e84      0x42c /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+ .debug_info    0x00000000000292b0       0xd0 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
+ .debug_info    0x0000000000029380      0x73c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
+ .debug_info    0x0000000000029abc      0x7da /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
+ .debug_info    0x000000000002a296       0xde /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
+ .debug_info    0x000000000002a374      0x88c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
+ .debug_info    0x000000000002ac00       0xc4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
+ .debug_info    0x000000000002acc4       0xdd /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
+ .debug_info    0x000000000002ada1      0x8b2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
+ .debug_info    0x000000000002b653      0xd39 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+ .debug_info    0x000000000002c38c      0xb3b /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+ .debug_info    0x000000000002cec7       0xd7 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
+ .debug_info    0x000000000002cf9e      0x138 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
+ .debug_info    0x000000000002d0d6      0x825 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
+ .debug_info    0x000000000002d8fb      0x8ec /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
+ .debug_info    0x000000000002e1e7      0x882 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
+ .debug_info    0x000000000002ea69      0x7a1 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
+ .debug_info    0x000000000002f20a      0x7c0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
 
-.debug_abbrev   0x0000000000000000     0x6114
+.debug_abbrev   0x0000000000000000     0x6099
  *(.debug_abbrev)
  .debug_abbrev  0x0000000000000000      0x1c2 ./system/src/stm32f7-hal/stm32f7xx_hal.o
  .debug_abbrev  0x00000000000001c2      0x27e ./system/src/stm32f7-hal/stm32f7xx_hal_adc.o
@@ -26743,58 +26860,58 @@ END GROUP
  .debug_abbrev  0x0000000000002330      0x256 ./system/src/cortexm/exception_handlers.o
  .debug_abbrev  0x0000000000002586      0x120 ./system/src/cmsis/system_stm32f7xx.o
  .debug_abbrev  0x00000000000026a6       0x9d ./system/src/cmsis/vectors_stm32f746xx.o
- .debug_abbrev  0x0000000000002743      0x333 ./src/Adafruit_GFX.o
- .debug_abbrev  0x0000000000002a76      0x266 ./src/Adafruit_ILI9340.o
- .debug_abbrev  0x0000000000002cdc      0x152 ./src/BlinkLed.o
- .debug_abbrev  0x0000000000002e2e      0x1b4 ./src/Timer.o
- .debug_abbrev  0x0000000000002fe2      0x1ce ./src/_initialize_hardware.o
- .debug_abbrev  0x00000000000031b0      0x1d6 ./src/adc.o
- .debug_abbrev  0x0000000000003386      0x1f9 ./src/hal.o
- .debug_abbrev  0x000000000000357f      0x2c3 ./src/i2c.o
- .debug_abbrev  0x0000000000003842       0x62 ./src/images.o
- .debug_abbrev  0x00000000000038a4      0x4f4 ./src/main.o
- .debug_abbrev  0x0000000000003d98      0x1eb ./src/spi.o
- .debug_abbrev  0x0000000000003f83       0x6a ./src/stm32f7xx_hal_msp.o
- .debug_abbrev  0x0000000000003fed       0x85 ./src/stm32f7xx_it.o
- .debug_abbrev  0x0000000000004072       0xbe ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
- .debug_abbrev  0x0000000000004130      0x190 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
- .debug_abbrev  0x00000000000042c0      0x10f ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
- .debug_abbrev  0x00000000000043cf      0x11d ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
- .debug_abbrev  0x00000000000044ec       0x87 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
- .debug_abbrev  0x0000000000004573      0x13f /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
- .debug_abbrev  0x00000000000046b2      0x123 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
- .debug_abbrev  0x00000000000047d5      0x114 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
- .debug_abbrev  0x00000000000048e9       0xed /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
- .debug_abbrev  0x00000000000049d6       0x5a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
- .debug_abbrev  0x0000000000004a30       0x9a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
- .debug_abbrev  0x0000000000004aca       0x72 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
- .debug_abbrev  0x0000000000004b3c       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
- .debug_abbrev  0x0000000000004b50       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
- .debug_abbrev  0x0000000000004b64       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
- .debug_abbrev  0x0000000000004b78       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
- .debug_abbrev  0x0000000000004b8c       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
- .debug_abbrev  0x0000000000004ba0       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
- .debug_abbrev  0x0000000000004bb4       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
- .debug_abbrev  0x0000000000004bc8      0x101 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
- .debug_abbrev  0x0000000000004cc9       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
- .debug_abbrev  0x0000000000004cdd      0x134 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
- .debug_abbrev  0x0000000000004e11      0x136 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
- .debug_abbrev  0x0000000000004f47       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
- .debug_abbrev  0x0000000000004f5b      0x1c0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
- .debug_abbrev  0x000000000000511b       0x72 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
- .debug_abbrev  0x000000000000518d       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
- .debug_abbrev  0x00000000000051a1      0x1e6 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
- .debug_abbrev  0x0000000000005387      0x250 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
- .debug_abbrev  0x00000000000055d7      0x1f5 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
- .debug_abbrev  0x00000000000057cc       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
- .debug_abbrev  0x00000000000057e0       0xab /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
- .debug_abbrev  0x000000000000588b      0x1b8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
- .debug_abbrev  0x0000000000005a43      0x22e /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
- .debug_abbrev  0x0000000000005c71      0x1a2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
- .debug_abbrev  0x0000000000005e13      0x1a0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
- .debug_abbrev  0x0000000000005fb3      0x161 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
+ .debug_abbrev  0x0000000000002743      0x31b ./src/Adafruit_GFX.o
+ .debug_abbrev  0x0000000000002a5e      0x266 ./src/Adafruit_ILI9340.o
+ .debug_abbrev  0x0000000000002cc4      0x152 ./src/BlinkLed.o
+ .debug_abbrev  0x0000000000002e16      0x1b3 ./src/Timer.o
+ .debug_abbrev  0x0000000000002fc9      0x1ce ./src/_initialize_hardware.o
+ .debug_abbrev  0x0000000000003197      0x1be ./src/adc.o
+ .debug_abbrev  0x0000000000003355      0x1f9 ./src/hal.o
+ .debug_abbrev  0x000000000000354e      0x291 ./src/i2c.o
+ .debug_abbrev  0x00000000000037df       0x62 ./src/images.o
+ .debug_abbrev  0x0000000000003841      0x4dc ./src/main.o
+ .debug_abbrev  0x0000000000003d1d      0x1eb ./src/spi.o
+ .debug_abbrev  0x0000000000003f08       0x6a ./src/stm32f7xx_hal_msp.o
+ .debug_abbrev  0x0000000000003f72       0x85 ./src/stm32f7xx_it.o
+ .debug_abbrev  0x0000000000003ff7       0xbe ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_abbrev  0x00000000000040b5      0x190 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+ .debug_abbrev  0x0000000000004245      0x10f ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+ .debug_abbrev  0x0000000000004354      0x11d ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+ .debug_abbrev  0x0000000000004471       0x87 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
+ .debug_abbrev  0x00000000000044f8      0x13f /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
+ .debug_abbrev  0x0000000000004637      0x123 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
+ .debug_abbrev  0x000000000000475a      0x114 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
+ .debug_abbrev  0x000000000000486e       0xed /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
+ .debug_abbrev  0x000000000000495b       0x5a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
+ .debug_abbrev  0x00000000000049b5       0x9a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
+ .debug_abbrev  0x0000000000004a4f       0x72 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
+ .debug_abbrev  0x0000000000004ac1       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
+ .debug_abbrev  0x0000000000004ad5       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
+ .debug_abbrev  0x0000000000004ae9       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
+ .debug_abbrev  0x0000000000004afd       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
+ .debug_abbrev  0x0000000000004b11       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
+ .debug_abbrev  0x0000000000004b25       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
+ .debug_abbrev  0x0000000000004b39       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
+ .debug_abbrev  0x0000000000004b4d      0x101 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+ .debug_abbrev  0x0000000000004c4e       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
+ .debug_abbrev  0x0000000000004c62      0x134 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
+ .debug_abbrev  0x0000000000004d96      0x136 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
+ .debug_abbrev  0x0000000000004ecc       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
+ .debug_abbrev  0x0000000000004ee0      0x1c0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
+ .debug_abbrev  0x00000000000050a0       0x72 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
+ .debug_abbrev  0x0000000000005112       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
+ .debug_abbrev  0x0000000000005126      0x1e6 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
+ .debug_abbrev  0x000000000000530c      0x250 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+ .debug_abbrev  0x000000000000555c      0x1f5 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+ .debug_abbrev  0x0000000000005751       0x14 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
+ .debug_abbrev  0x0000000000005765       0xab /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
+ .debug_abbrev  0x0000000000005810      0x1b8 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
+ .debug_abbrev  0x00000000000059c8      0x22e /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
+ .debug_abbrev  0x0000000000005bf6      0x1a2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
+ .debug_abbrev  0x0000000000005d98      0x1a0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
+ .debug_abbrev  0x0000000000005f38      0x161 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
 
-.debug_line     0x0000000000000000    0x16558
+.debug_line     0x0000000000000000    0x169a6
  *(.debug_line)
  .debug_line    0x0000000000000000      0x70d ./system/src/stm32f7-hal/stm32f7xx_hal.o
  .debug_line    0x000000000000070d      0xb9e ./system/src/stm32f7-hal/stm32f7xx_hal_adc.o
@@ -26819,58 +26936,58 @@ END GROUP
  .debug_line    0x000000000000c3d5      0x6b6 ./system/src/cortexm/exception_handlers.o
  .debug_line    0x000000000000ca8b      0x58f ./system/src/cmsis/system_stm32f7xx.o
  .debug_line    0x000000000000d01a       0xd1 ./system/src/cmsis/vectors_stm32f746xx.o
- .debug_line    0x000000000000d0eb      0xa3f ./src/Adafruit_GFX.o
- .debug_line    0x000000000000db2a      0x95a ./src/Adafruit_ILI9340.o
- .debug_line    0x000000000000e484      0x580 ./src/BlinkLed.o
- .debug_line    0x000000000000ea04      0x1d4 ./src/Timer.o
- .debug_line    0x000000000000ebd8      0x5e9 ./src/_initialize_hardware.o
- .debug_line    0x000000000000f1c1      0x772 ./src/adc.o
- .debug_line    0x000000000000f933      0x810 ./src/hal.o
- .debug_line    0x0000000000010143      0x7d7 ./src/i2c.o
- .debug_line    0x000000000001091a       0x47 ./src/images.o
- .debug_line    0x0000000000010961     0x1033 ./src/main.o
- .debug_line    0x0000000000011994      0x723 ./src/spi.o
- .debug_line    0x00000000000120b7      0x59a ./src/stm32f7xx_hal_msp.o
- .debug_line    0x0000000000012651      0x5c6 ./src/stm32f7xx_it.o
- .debug_line    0x0000000000012c17      0x338 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
- .debug_line    0x0000000000012f4f      0x8bc ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
- .debug_line    0x000000000001380b      0x292 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
- .debug_line    0x0000000000013a9d      0x2b8 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
- .debug_line    0x0000000000013d55      0x23a ./DSP_Lib/Source/CommonTables/arm_common_tables.o
- .debug_line    0x0000000000013f8f      0x179 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
- .debug_line    0x0000000000014108      0x161 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
- .debug_line    0x0000000000014269      0x1b6 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
- .debug_line    0x000000000001441f      0x145 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
- .debug_line    0x0000000000014564       0xa0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
- .debug_line    0x0000000000014604       0xb1 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
- .debug_line    0x00000000000146b5       0xae /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
- .debug_line    0x0000000000014763      0x17c /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
- .debug_line    0x00000000000148df      0x1a0 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
- .debug_line    0x0000000000014a7f       0xbd /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
- .debug_line    0x0000000000014b3c       0x72 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
- .debug_line    0x0000000000014bae       0x7d /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
- .debug_line    0x0000000000014c2b       0x91 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
- .debug_line    0x0000000000014cbc       0x64 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
- .debug_line    0x0000000000014d20      0x1ad /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
- .debug_line    0x0000000000014ecd       0x64 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
- .debug_line    0x0000000000014f31      0x107 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
- .debug_line    0x0000000000015038       0xec /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
- .debug_line    0x0000000000015124       0xbe /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
- .debug_line    0x00000000000151e2      0x1a1 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
- .debug_line    0x0000000000015383       0xb7 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
- .debug_line    0x000000000001543a       0xaf /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
- .debug_line    0x00000000000154e9      0x1bc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
- .debug_line    0x00000000000156a5      0x32a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
- .debug_line    0x00000000000159cf      0x324 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
- .debug_line    0x0000000000015cf3       0xa4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
- .debug_line    0x0000000000015d97      0x11a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
- .debug_line    0x0000000000015eb1      0x150 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
- .debug_line    0x0000000000016001      0x19a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
- .debug_line    0x000000000001619b      0x164 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
- .debug_line    0x00000000000162ff      0x151 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
- .debug_line    0x0000000000016450      0x108 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
+ .debug_line    0x000000000000d0eb      0xa6d ./src/Adafruit_GFX.o
+ .debug_line    0x000000000000db58      0x95a ./src/Adafruit_ILI9340.o
+ .debug_line    0x000000000000e4b2      0x580 ./src/BlinkLed.o
+ .debug_line    0x000000000000ea32      0x5d0 ./src/Timer.o
+ .debug_line    0x000000000000f002      0x5e9 ./src/_initialize_hardware.o
+ .debug_line    0x000000000000f5eb      0x77b ./src/adc.o
+ .debug_line    0x000000000000fd66      0x819 ./src/hal.o
+ .debug_line    0x000000000001057f      0x7e0 ./src/i2c.o
+ .debug_line    0x0000000000010d5f       0x47 ./src/images.o
+ .debug_line    0x0000000000010da6     0x103c ./src/main.o
+ .debug_line    0x0000000000011de2      0x723 ./src/spi.o
+ .debug_line    0x0000000000012505      0x59a ./src/stm32f7xx_hal_msp.o
+ .debug_line    0x0000000000012a9f      0x5c6 ./src/stm32f7xx_it.o
+ .debug_line    0x0000000000013065      0x338 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_line    0x000000000001339d      0x8bc ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+ .debug_line    0x0000000000013c59      0x292 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+ .debug_line    0x0000000000013eeb      0x2b8 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+ .debug_line    0x00000000000141a3      0x23a ./DSP_Lib/Source/CommonTables/arm_common_tables.o
+ .debug_line    0x00000000000143dd      0x179 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
+ .debug_line    0x0000000000014556      0x161 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
+ .debug_line    0x00000000000146b7      0x1b6 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
+ .debug_line    0x000000000001486d      0x145 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
+ .debug_line    0x00000000000149b2       0xa0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
+ .debug_line    0x0000000000014a52       0xb1 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
+ .debug_line    0x0000000000014b03       0xae /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
+ .debug_line    0x0000000000014bb1      0x17c /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_addsubdf3.o)
+ .debug_line    0x0000000000014d2d      0x1a0 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_muldivdf3.o)
+ .debug_line    0x0000000000014ecd       0xbd /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_cmpdf2.o)
+ .debug_line    0x0000000000014f8a       0x72 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_unorddf2.o)
+ .debug_line    0x0000000000014ffc       0x7d /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_fixdfsi.o)
+ .debug_line    0x0000000000015079       0x91 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_arm_truncdfsf2.o)
+ .debug_line    0x000000000001510a       0x64 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
+ .debug_line    0x000000000001516e      0x1ad /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+ .debug_line    0x000000000001531b       0x64 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_dvmd_tls.o)
+ .debug_line    0x000000000001537f      0x107 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
+ .debug_line    0x0000000000015486       0xec /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
+ .debug_line    0x0000000000015572       0xbe /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memcpy.o)
+ .debug_line    0x0000000000015630      0x1a1 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
+ .debug_line    0x00000000000157d1       0xb7 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
+ .debug_line    0x0000000000015888       0xaf /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strlen.o)
+ .debug_line    0x0000000000015937      0x1bc /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
+ .debug_line    0x0000000000015af3      0x32a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+ .debug_line    0x0000000000015e1d      0x324 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+ .debug_line    0x0000000000016141       0xa4 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memchr.o)
+ .debug_line    0x00000000000161e5      0x11a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
+ .debug_line    0x00000000000162ff      0x150 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
+ .debug_line    0x000000000001644f      0x19a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
+ .debug_line    0x00000000000165e9      0x164 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
+ .debug_line    0x000000000001674d      0x151 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
+ .debug_line    0x000000000001689e      0x108 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
 
-.debug_frame    0x0000000000000000     0x3f9c
+.debug_frame    0x0000000000000000     0x3f0c
  *(.debug_frame)
  .debug_frame   0x0000000000000000      0x1b8 ./system/src/stm32f7-hal/stm32f7xx_hal.o
  .debug_frame   0x00000000000001b8      0x27c ./system/src/stm32f7-hal/stm32f7xx_hal_adc.o
@@ -26898,41 +27015,41 @@ END GROUP
  .debug_frame   0x0000000000002ae0      0x364 ./src/Adafruit_GFX.o
  .debug_frame   0x0000000000002e44      0x23c ./src/Adafruit_ILI9340.o
  .debug_frame   0x0000000000003080       0x30 ./src/BlinkLed.o
- .debug_frame   0x00000000000030b0       0xc0 ./src/Timer.o
- .debug_frame   0x0000000000003170       0x48 ./src/_initialize_hardware.o
- .debug_frame   0x00000000000031b8       0x78 ./src/adc.o
- .debug_frame   0x0000000000003230       0x70 ./src/hal.o
- .debug_frame   0x00000000000032a0      0x120 ./src/i2c.o
- .debug_frame   0x00000000000033c0      0x400 ./src/main.o
- .debug_frame   0x00000000000037c0       0x5c ./src/spi.o
- .debug_frame   0x000000000000381c       0x50 ./src/stm32f7xx_hal_msp.o
- .debug_frame   0x000000000000386c       0x70 ./src/stm32f7xx_it.o
- .debug_frame   0x00000000000038dc       0x7c ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
- .debug_frame   0x0000000000003958       0xc8 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
- .debug_frame   0x0000000000003a20       0x2c ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
- .debug_frame   0x0000000000003a4c       0x30 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
- .debug_frame   0x0000000000003a7c       0x58 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
- .debug_frame   0x0000000000003ad4       0x50 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
- .debug_frame   0x0000000000003b24       0x54 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
- .debug_frame   0x0000000000003b78       0x3c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
- .debug_frame   0x0000000000003bb4       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
- .debug_frame   0x0000000000003bd4       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
- .debug_frame   0x0000000000003bf4       0x2c /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
- .debug_frame   0x0000000000003c20       0x34 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
- .debug_frame   0x0000000000003c54       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
- .debug_frame   0x0000000000003c74       0x84 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
- .debug_frame   0x0000000000003cf8       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
- .debug_frame   0x0000000000003d18       0x60 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
- .debug_frame   0x0000000000003d78       0x9c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
- .debug_frame   0x0000000000003e14       0x68 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
- .debug_frame   0x0000000000003e7c       0x30 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
- .debug_frame   0x0000000000003eac       0x40 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
- .debug_frame   0x0000000000003eec       0x2c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
- .debug_frame   0x0000000000003f18       0x38 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
- .debug_frame   0x0000000000003f50       0x2c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
- .debug_frame   0x0000000000003f7c       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
+ .debug_frame   0x00000000000030b0       0x40 ./src/Timer.o
+ .debug_frame   0x00000000000030f0       0x48 ./src/_initialize_hardware.o
+ .debug_frame   0x0000000000003138       0x78 ./src/adc.o
+ .debug_frame   0x00000000000031b0       0x70 ./src/hal.o
+ .debug_frame   0x0000000000003220      0x110 ./src/i2c.o
+ .debug_frame   0x0000000000003330      0x400 ./src/main.o
+ .debug_frame   0x0000000000003730       0x5c ./src/spi.o
+ .debug_frame   0x000000000000378c       0x50 ./src/stm32f7xx_hal_msp.o
+ .debug_frame   0x00000000000037dc       0x70 ./src/stm32f7xx_it.o
+ .debug_frame   0x000000000000384c       0x7c ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_frame   0x00000000000038c8       0xc8 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+ .debug_frame   0x0000000000003990       0x2c ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+ .debug_frame   0x00000000000039bc       0x30 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+ .debug_frame   0x00000000000039ec       0x58 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
+ .debug_frame   0x0000000000003a44       0x50 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
+ .debug_frame   0x0000000000003a94       0x54 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
+ .debug_frame   0x0000000000003ae8       0x3c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
+ .debug_frame   0x0000000000003b24       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
+ .debug_frame   0x0000000000003b44       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
+ .debug_frame   0x0000000000003b64       0x2c /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_aeabi_uldivmod.o)
+ .debug_frame   0x0000000000003b90       0x34 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+ .debug_frame   0x0000000000003bc4       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
+ .debug_frame   0x0000000000003be4       0x84 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
+ .debug_frame   0x0000000000003c68       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
+ .debug_frame   0x0000000000003c88       0x60 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
+ .debug_frame   0x0000000000003ce8       0x9c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+ .debug_frame   0x0000000000003d84       0x68 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+ .debug_frame   0x0000000000003dec       0x30 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
+ .debug_frame   0x0000000000003e1c       0x40 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
+ .debug_frame   0x0000000000003e5c       0x2c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
+ .debug_frame   0x0000000000003e88       0x38 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
+ .debug_frame   0x0000000000003ec0       0x2c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
+ .debug_frame   0x0000000000003eec       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
 
-.debug_str      0x0000000000000000    0xb6ea9
+.debug_str      0x0000000000000000    0xa9289
  *(.debug_str)
  .debug_str     0x0000000000000000    0x96c2d ./system/src/stm32f7-hal/stm32f7xx_hal.o
                                       0x9703a (size before relaxing)
@@ -26980,86 +27097,86 @@ END GROUP
                                       0x9575a (size before relaxing)
  .debug_str     0x000000000009dd68       0x59 ./system/src/cmsis/vectors_stm32f746xx.o
                                        0x307a (size before relaxing)
- .debug_str     0x000000000009ddc1     0x839d ./src/Adafruit_GFX.o
-                                      0xa0321 (size before relaxing)
- .debug_str     0x00000000000a615e      0x233 ./src/Adafruit_ILI9340.o
-                                      0xa01de (size before relaxing)
- .debug_str     0x00000000000a6391       0x42 ./src/BlinkLed.o
+ .debug_str     0x000000000009ddc1     0x83a5 ./src/Adafruit_GFX.o
+                                      0xa040b (size before relaxing)
+ .debug_str     0x00000000000a6166      0x22c ./src/Adafruit_ILI9340.o
+                                      0xa01df (size before relaxing)
+ .debug_str     0x00000000000a6392       0x42 ./src/BlinkLed.o
                                       0x967db (size before relaxing)
- .debug_str     0x00000000000a63d3     0xdc72 ./src/Timer.o
-                                      0x4240e (size before relaxing)
- .debug_str     0x00000000000b4045       0x6a ./src/_initialize_hardware.o
+ .debug_str     0x00000000000a63d4       0x51 ./src/Timer.o
+                                      0x95cf6 (size before relaxing)
+ .debug_str     0x00000000000a6425       0x6a ./src/_initialize_hardware.o
                                       0x9698b (size before relaxing)
- .debug_str     0x00000000000b40af       0x43 ./src/adc.o
-                                      0xa00c6 (size before relaxing)
- .debug_str     0x00000000000b40f2      0x2af ./src/hal.o
-                                      0xa0219 (size before relaxing)
- .debug_str     0x00000000000b43a1      0x14d ./src/i2c.o
-                                      0xa00f8 (size before relaxing)
- .debug_str     0x00000000000b44ee      0x187 ./src/images.o
+ .debug_str     0x00000000000a648f       0x43 ./src/adc.o
+                                      0xa00ce (size before relaxing)
+ .debug_str     0x00000000000a64d2      0x2af ./src/hal.o
+                                      0xa0221 (size before relaxing)
+ .debug_str     0x00000000000a6781      0x14d ./src/i2c.o
+                                      0xa0100 (size before relaxing)
+ .debug_str     0x00000000000a68ce      0x187 ./src/images.o
                                        0x26fb (size before relaxing)
- .debug_str     0x00000000000b4675      0xb21 ./src/main.o
-                                      0xa1cb7 (size before relaxing)
- .debug_str     0x00000000000b5196       0x29 ./src/spi.o
+ .debug_str     0x00000000000a6a55      0xb21 ./src/main.o
+                                      0xa1cc0 (size before relaxing)
+ .debug_str     0x00000000000a7576       0x29 ./src/spi.o
                                       0xa0115 (size before relaxing)
- .debug_str     0x00000000000b51bf       0x3d ./src/stm32f7xx_hal_msp.o
+ .debug_str     0x00000000000a759f       0x3d ./src/stm32f7xx_hal_msp.o
                                       0x96548 (size before relaxing)
- .debug_str     0x00000000000b51fc       0x16 ./src/stm32f7xx_it.o
+ .debug_str     0x00000000000a75dc       0x16 ./src/stm32f7xx_it.o
                                       0x9657e (size before relaxing)
- .debug_str     0x00000000000b5212      0x4ec ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_str     0x00000000000a75f2      0x4ec ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
                                        0x75c1 (size before relaxing)
- .debug_str     0x00000000000b56fe      0x15e ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+ .debug_str     0x00000000000a7ade      0x15e ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
                                        0x72b3 (size before relaxing)
- .debug_str     0x00000000000b585c       0x4f ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+ .debug_str     0x00000000000a7c3c       0x4f ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
                                        0x7670 (size before relaxing)
- .debug_str     0x00000000000b58ab       0x60 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+ .debug_str     0x00000000000a7c8b       0x60 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
                                        0x71d3 (size before relaxing)
- .debug_str     0x00000000000b590b      0x4e9 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
+ .debug_str     0x00000000000a7ceb      0x4e9 ./DSP_Lib/Source/CommonTables/arm_common_tables.o
                                        0x79f8 (size before relaxing)
- .debug_str     0x00000000000b5df4      0x16c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
+ .debug_str     0x00000000000a81d4      0x16c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
                                         0x284 (size before relaxing)
- .debug_str     0x00000000000b5f60       0x43 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
+ .debug_str     0x00000000000a8340       0x43 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
                                         0x28e (size before relaxing)
- .debug_str     0x00000000000b5fa3       0x90 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
+ .debug_str     0x00000000000a8383       0x90 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
                                         0x259 (size before relaxing)
- .debug_str     0x00000000000b6033       0x5d /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
+ .debug_str     0x00000000000a8413       0x5d /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
                                         0x23d (size before relaxing)
- .debug_str     0x00000000000b6090       0xa2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
+ .debug_str     0x00000000000a8470       0xa2 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_lib_ver.o)
                                         0x249 (size before relaxing)
- .debug_str     0x00000000000b6132       0x37 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
+ .debug_str     0x00000000000a8512       0x37 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
                                         0x21b (size before relaxing)
- .debug_str     0x00000000000b6169       0x3a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
+ .debug_str     0x00000000000a8549       0x3a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_nan.o)
                                         0x1f1 (size before relaxing)
- .debug_str     0x00000000000b61a3      0x1cb /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+ .debug_str     0x00000000000a8583      0x1cb /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
                                         0x260 (size before relaxing)
- .debug_str     0x00000000000b636e      0x39c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
+ .debug_str     0x00000000000a874e      0x39c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-errno.o)
                                         0x542 (size before relaxing)
- .debug_str     0x00000000000b670a       0xed /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
+ .debug_str     0x00000000000a8aea       0xed /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-impure.o)
                                         0x599 (size before relaxing)
- .debug_str     0x00000000000b67f7       0xbb /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
+ .debug_str     0x00000000000a8bd7       0xbb /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
                                         0x587 (size before relaxing)
- .debug_str     0x00000000000b68b2       0xb1 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
+ .debug_str     0x00000000000a8c92       0xb1 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
                                         0x1f7 (size before relaxing)
- .debug_str     0x00000000000b6963       0x4d /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
+ .debug_str     0x00000000000a8d43       0x4d /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
                                         0x599 (size before relaxing)
- .debug_str     0x00000000000b69b0      0x1e6 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+ .debug_str     0x00000000000a8d90      0x1e6 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
                                         0x6bf (size before relaxing)
- .debug_str     0x00000000000b6b96       0x94 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+ .debug_str     0x00000000000a8f76       0x94 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
                                         0x65e (size before relaxing)
- .debug_str     0x00000000000b6c2a       0xcf /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
+ .debug_str     0x00000000000a900a       0xcf /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
                                         0x224 (size before relaxing)
- .debug_str     0x00000000000b6cf9      0x106 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
+ .debug_str     0x00000000000a90d9      0x106 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
                                         0x5b2 (size before relaxing)
- .debug_str     0x00000000000b6dff       0x46 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
+ .debug_str     0x00000000000a91df       0x46 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
                                         0x5dd (size before relaxing)
- .debug_str     0x00000000000b6e45       0x23 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
+ .debug_str     0x00000000000a9225       0x23 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
                                         0x5ba (size before relaxing)
- .debug_str     0x00000000000b6e68       0x32 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
+ .debug_str     0x00000000000a9248       0x32 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
                                         0x551 (size before relaxing)
- .debug_str     0x00000000000b6e9a        0xf /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
+ .debug_str     0x00000000000a927a        0xf /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
                                         0x598 (size before relaxing)
 
-.debug_loc      0x0000000000000000    0x1174b
+.debug_loc      0x0000000000000000    0x117db
  *(.debug_loc)
  .debug_loc     0x0000000000000000       0x6a ./system/src/stm32f7-hal/stm32f7xx_hal.o
  .debug_loc     0x000000000000006a      0x6b2 ./system/src/stm32f7-hal/stm32f7xx_hal_adc.o
@@ -27082,31 +27199,32 @@ END GROUP
  .debug_loc     0x0000000000009cf4      0x132 ./system/src/cmsis/system_stm32f7xx.o
  .debug_loc     0x0000000000009e26     0x1008 ./src/Adafruit_GFX.o
  .debug_loc     0x000000000000ae2e      0x5a4 ./src/Adafruit_ILI9340.o
- .debug_loc     0x000000000000b3d2       0xa2 ./src/_initialize_hardware.o
- .debug_loc     0x000000000000b474       0x34 ./src/adc.o
- .debug_loc     0x000000000000b4a8      0x2cd ./src/i2c.o
- .debug_loc     0x000000000000b775      0xb8a ./src/main.o
- .debug_loc     0x000000000000c2ff      0x276 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
- .debug_loc     0x000000000000c575     0x1b08 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
- .debug_loc     0x000000000000e07d      0x19d ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
- .debug_loc     0x000000000000e21a      0x40f ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
- .debug_loc     0x000000000000e629       0x8c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
- .debug_loc     0x000000000000e6b5       0x6c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
- .debug_loc     0x000000000000e721      0x5ac /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
- .debug_loc     0x000000000000eccd      0x270 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
- .debug_loc     0x000000000000ef3d       0x21 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
- .debug_loc     0x000000000000ef5e      0xe94 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
- .debug_loc     0x000000000000fdf2       0x7a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
- .debug_loc     0x000000000000fe6c       0x21 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
- .debug_loc     0x000000000000fe8d      0x21f /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
- .debug_loc     0x00000000000100ac      0x692 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
- .debug_loc     0x000000000001073e      0x69d /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
- .debug_loc     0x0000000000010ddb      0x292 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
- .debug_loc     0x000000000001106d      0x135 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
- .debug_loc     0x00000000000111a2      0x389 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
- .debug_loc     0x000000000001152b      0x11e /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
- .debug_loc     0x0000000000011649       0x4d /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
- .debug_loc     0x0000000000011696       0xb5 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
+ .debug_loc     0x000000000000b3d2       0x59 ./src/Timer.o
+ .debug_loc     0x000000000000b42b       0xa2 ./src/_initialize_hardware.o
+ .debug_loc     0x000000000000b4cd       0x34 ./src/adc.o
+ .debug_loc     0x000000000000b501      0x2ee ./src/i2c.o
+ .debug_loc     0x000000000000b7ef      0xba0 ./src/main.o
+ .debug_loc     0x000000000000c38f      0x276 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_loc     0x000000000000c605     0x1b08 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+ .debug_loc     0x000000000000e10d      0x19d ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+ .debug_loc     0x000000000000e2aa      0x40f ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+ .debug_loc     0x000000000000e6b9       0x8c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-w_log.o)
+ .debug_loc     0x000000000000e745       0x6c /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-wf_sqrt.o)
+ .debug_loc     0x000000000000e7b1      0x5ac /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
+ .debug_loc     0x000000000000ed5d      0x270 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-ef_sqrt.o)
+ .debug_loc     0x000000000000efcd       0x21 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-s_matherr.o)
+ .debug_loc     0x000000000000efee      0xe94 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+ .debug_loc     0x000000000000fe82       0x7a /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sprintf.o)
+ .debug_loc     0x000000000000fefc       0x21 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
+ .debug_loc     0x000000000000ff1d      0x21f /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-vsnprintf.o)
+ .debug_loc     0x000000000001013c      0x692 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+ .debug_loc     0x00000000000107ce      0x69d /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+ .debug_loc     0x0000000000010e6b      0x292 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-memmove.o)
+ .debug_loc     0x00000000000110fd      0x135 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-freer.o)
+ .debug_loc     0x0000000000011232      0x389 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
+ .debug_loc     0x00000000000115bb      0x11e /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-reallocr.o)
+ .debug_loc     0x00000000000116d9       0x4d /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-sbrkr.o)
+ .debug_loc     0x0000000000011726       0xb5 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-msizer.o)
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -27124,7 +27242,7 @@ END GROUP
  *(.debug_varnames)
 OUTPUT(PSDR.elf elf32-littlearm)
 
-.debug_ranges   0x0000000000000000     0x14b8
+.debug_ranges   0x0000000000000000     0x14a8
  .debug_ranges  0x0000000000000000       0xc0 ./system/src/stm32f7-hal/stm32f7xx_hal.o
  .debug_ranges  0x00000000000000c0       0xd8 ./system/src/stm32f7-hal/stm32f7xx_hal_adc.o
  .debug_ranges  0x0000000000000198       0x88 ./system/src/stm32f7-hal/stm32f7xx_hal_cortex.o
@@ -27151,27 +27269,27 @@ OUTPUT(PSDR.elf elf32-littlearm)
  .debug_ranges  0x0000000000000df8       0xe0 ./src/Adafruit_GFX.o
  .debug_ranges  0x0000000000000ed8       0x98 ./src/Adafruit_ILI9340.o
  .debug_ranges  0x0000000000000f70       0x10 ./src/BlinkLed.o
- .debug_ranges  0x0000000000000f80       0x30 ./src/Timer.o
- .debug_ranges  0x0000000000000fb0       0x18 ./src/_initialize_hardware.o
- .debug_ranges  0x0000000000000fc8       0x28 ./src/adc.o
- .debug_ranges  0x0000000000000ff0       0x28 ./src/hal.o
- .debug_ranges  0x0000000000001018       0x48 ./src/i2c.o
- .debug_ranges  0x0000000000001060      0x150 ./src/main.o
- .debug_ranges  0x00000000000011b0       0x18 ./src/spi.o
- .debug_ranges  0x00000000000011c8       0x28 ./src/stm32f7xx_hal_msp.o
- .debug_ranges  0x00000000000011f0       0x38 ./src/stm32f7xx_it.o
- .debug_ranges  0x0000000000001228       0x20 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
- .debug_ranges  0x0000000000001248       0x20 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
- .debug_ranges  0x0000000000001268       0x10 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
- .debug_ranges  0x0000000000001278       0x10 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
- .debug_ranges  0x0000000000001288       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
- .debug_ranges  0x00000000000012a8       0xd8 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
- .debug_ranges  0x0000000000001380       0x10 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
- .debug_ranges  0x0000000000001390       0x38 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
- .debug_ranges  0x00000000000013c8       0xb0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
- .debug_ranges  0x0000000000001478       0x40 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
+ .debug_ranges  0x0000000000000f80       0x20 ./src/Timer.o
+ .debug_ranges  0x0000000000000fa0       0x18 ./src/_initialize_hardware.o
+ .debug_ranges  0x0000000000000fb8       0x28 ./src/adc.o
+ .debug_ranges  0x0000000000000fe0       0x28 ./src/hal.o
+ .debug_ranges  0x0000000000001008       0x48 ./src/i2c.o
+ .debug_ranges  0x0000000000001050      0x150 ./src/main.o
+ .debug_ranges  0x00000000000011a0       0x18 ./src/spi.o
+ .debug_ranges  0x00000000000011b8       0x28 ./src/stm32f7xx_hal_msp.o
+ .debug_ranges  0x00000000000011e0       0x38 ./src/stm32f7xx_it.o
+ .debug_ranges  0x0000000000001218       0x20 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_ranges  0x0000000000001238       0x20 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+ .debug_ranges  0x0000000000001258       0x10 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+ .debug_ranges  0x0000000000001268       0x10 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+ .debug_ranges  0x0000000000001278       0x20 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libm.a(lib_a-e_log.o)
+ .debug_ranges  0x0000000000001298       0xd8 /usr/lib/gcc/arm-none-eabi/5.4.1/armv7e-m/fpu/fpv5-sp-d16/libgcc.a(_udivmoddi4.o)
+ .debug_ranges  0x0000000000001370       0x10 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-strcpy.o)
+ .debug_ranges  0x0000000000001380       0x38 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-svfprintf.o)
+ .debug_ranges  0x00000000000013b8       0xb0 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-vfprintf_i.o)
+ .debug_ranges  0x0000000000001468       0x40 /usr/lib/gcc/arm-none-eabi/5.4.1/../../../arm-none-eabi/lib/armv7e-m/fpu/fpv5-sp-d16/libg_nano.a(lib_a-nano-mallocr.o)
 
-.debug_macro    0x0000000000000000    0x1fc62
+.debug_macro    0x0000000000000000    0x1ffdb
  .debug_macro   0x0000000000000000      0x35c ./system/src/stm32f7-hal/stm32f7xx_hal.o
  .debug_macro   0x000000000000035c      0x8b0 ./system/src/stm32f7-hal/stm32f7xx_hal.o
  .debug_macro   0x0000000000000c0c      0x19c ./system/src/stm32f7-hal/stm32f7xx_hal.o
@@ -27299,43 +27417,45 @@ OUTPUT(PSDR.elf elf32-littlearm)
  .debug_macro   0x000000000001b3c1       0x3b ./system/src/cortexm/exception_handlers.o
  .debug_macro   0x000000000001b3fc      0x32f ./system/src/cmsis/system_stm32f7xx.o
  .debug_macro   0x000000000001b72b       0x34 ./system/src/cmsis/vectors_stm32f746xx.o
- .debug_macro   0x000000000001b75f      0x4ac ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001bc0b       0x22 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001bc2d      0x17e ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001bdab       0x10 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001bdbb       0x10 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001bdcb      0x136 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001bf01      0x4e8 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c3e9       0x47 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c430      0x1df ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c60f       0x29 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c638       0x58 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c690       0x12 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c6a2      0x1e1 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c883       0xd6 ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c959       0x5e ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c9b7       0x2e ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001c9e5       0x1c ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001ca01       0x5e ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001ca5f       0x1c ./src/Adafruit_GFX.o
- .debug_macro   0x000000000001ca7b      0x4ad ./src/Adafruit_ILI9340.o
- .debug_macro   0x000000000001cf28      0x341 ./src/BlinkLed.o
- .debug_macro   0x000000000001d269       0x28 ./src/BlinkLed.o
- .debug_macro   0x000000000001d291       0x9f ./src/Timer.o
- .debug_macro   0x000000000001d330      0x332 ./src/_initialize_hardware.o
- .debug_macro   0x000000000001d662      0x49e ./src/adc.o
- .debug_macro   0x000000000001db00       0x58 ./src/adc.o
- .debug_macro   0x000000000001db58      0x498 ./src/hal.o
- .debug_macro   0x000000000001dff0      0x4bb ./src/i2c.o
- .debug_macro   0x000000000001e4ab       0x1a ./src/images.o
- .debug_macro   0x000000000001e4c5      0x515 ./src/main.o
- .debug_macro   0x000000000001e9da      0x49c ./src/spi.o
- .debug_macro   0x000000000001ee76      0x338 ./src/stm32f7xx_hal_msp.o
- .debug_macro   0x000000000001f1ae      0x342 ./src/stm32f7xx_it.o
- .debug_macro   0x000000000001f4f0      0x16a ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
- .debug_macro   0x000000000001f65a       0x10 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
- .debug_macro   0x000000000001f66a       0x76 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
- .debug_macro   0x000000000001f6e0      0x157 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
- .debug_macro   0x000000000001f837      0x16a ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
- .debug_macro   0x000000000001f9a1      0x157 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
- .debug_macro   0x000000000001faf8      0x16a ./DSP_Lib/Source/CommonTables/arm_common_tables.o
+ .debug_macro   0x000000000001b75f      0x4ec ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001bc4b       0x22 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001bc6d       0x1c ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001bc89      0x17e ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001be07       0x10 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001be17       0x10 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001be27      0x136 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001bf5d      0x4e8 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001c445       0x47 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001c48c      0x1df ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001c66b       0x29 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001c694       0x58 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001c6ec       0x12 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001c6fe      0x1e1 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001c8df       0xd6 ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001c9b5       0x5e ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001ca13       0x2e ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001ca41       0x1c ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001ca5d       0x5e ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001cabb       0x1c ./src/Adafruit_GFX.o
+ .debug_macro   0x000000000001cad7      0x4b9 ./src/Adafruit_ILI9340.o
+ .debug_macro   0x000000000001cf90      0x341 ./src/BlinkLed.o
+ .debug_macro   0x000000000001d2d1       0x28 ./src/BlinkLed.o
+ .debug_macro   0x000000000001d2f9      0x34c ./src/Timer.o
+ .debug_macro   0x000000000001d645       0x10 ./src/Timer.o
+ .debug_macro   0x000000000001d655      0x332 ./src/_initialize_hardware.o
+ .debug_macro   0x000000000001d987      0x4b0 ./src/adc.o
+ .debug_macro   0x000000000001de37       0x58 ./src/adc.o
+ .debug_macro   0x000000000001de8f      0x4aa ./src/hal.o
+ .debug_macro   0x000000000001e339      0x4cd ./src/i2c.o
+ .debug_macro   0x000000000001e806       0x1a ./src/images.o
+ .debug_macro   0x000000000001e820      0x527 ./src/main.o
+ .debug_macro   0x000000000001ed47      0x4a8 ./src/spi.o
+ .debug_macro   0x000000000001f1ef      0x338 ./src/stm32f7xx_hal_msp.o
+ .debug_macro   0x000000000001f527      0x342 ./src/stm32f7xx_it.o
+ .debug_macro   0x000000000001f869      0x16a ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_macro   0x000000000001f9d3       0x10 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_macro   0x000000000001f9e3       0x76 ./DSP_Lib/Source/TransformFunctions/arm_bitreversal.o
+ .debug_macro   0x000000000001fa59      0x157 ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.o
+ .debug_macro   0x000000000001fbb0      0x16a ./DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_init_f32.o
+ .debug_macro   0x000000000001fd1a      0x157 ./DSP_Lib/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+ .debug_macro   0x000000000001fe71      0x16a ./DSP_Lib/Source/CommonTables/arm_common_tables.o

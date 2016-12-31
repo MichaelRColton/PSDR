@@ -3,7 +3,7 @@
 
 
 
-HAL_I2C_MspInit(I2C_HandleTypeDef hi2c)
+void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 {
   //Ensure that appropriate GPIO and I2C hardware is powered up
   //um, they are elsewhere. Good enough for now.
@@ -68,7 +68,7 @@ HAL_I2C_MspInit(I2C_HandleTypeDef hi2c)
 }
 
 
-clearStuckBusyFlag()
+void clearStuckBusyFlag(void)
 {
   //disable I2C peripheral
   //__I2C2_CLK_DISABLE();
@@ -503,7 +503,7 @@ void write_Si5338(unsigned char address, unsigned char value)
   txBuf[0] = address;
   txBuf[1] = value;
 
-  HAL_I2C_Master_Transmit(&handleI2C, 0xE0, &txBuf, 2, 100);
+  HAL_I2C_Master_Transmit(&handleI2C, 0xE0, txBuf, 2, 100);
   //HAL_I2C_Mem_Write(&handleI2C, 0xE0, address, 1, value, 1, 100);
 
 //  Wire.beginTransmission(SI5338_ADDRESS);
@@ -609,7 +609,7 @@ void sendRegToSi5338(int increment)
 }
 
 
-void i2cSetup() {
+void i2cSetup(void) {
   // put your setup code here, to run once:
 
   //pinMode(A3, INPUT);

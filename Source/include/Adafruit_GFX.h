@@ -94,3 +94,9 @@
 //};
 
 #endif // _ADAFRUIT_GFX_H
+
+/* function declerations to help the compiler */
+void Adafruit_GFX_drawColorBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h, uint16_t tintMask);
+void Adafruit_GFX_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
+  			    uint16_t color);
+void Adafruit_GFX_fillScreen(uint16_t color);

@@ -9,3 +9,8 @@
 I2C_HandleTypeDef handleI2C;
 
 #endif /* DDS_H_ */
+
+void clearStuckBusyFlag(void);
+void i2cSetup(void);
+void setFreq(unsigned long frequency);
+
