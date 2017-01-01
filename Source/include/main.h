@@ -32,6 +32,8 @@
 #include "stm32f4xx_hal_dac.h"
 #include "stm32f4xx_hal_uart.h"
 #include "stm32f4xx_hal_usart.h"
+#include "stm32f4xx_hal_pwr.h"
+
 #endif
 
 #ifdef PSDR257
@@ -132,6 +134,7 @@ void Tick(void);
 void updateVfo(void);
 void zeroSampleBank(float *samples);
 
+void shutDown(void);
 
 
 

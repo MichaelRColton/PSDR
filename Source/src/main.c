@@ -67,7 +67,7 @@ uint16_t filterKernelLength = 100; //what's a good value? How does it relate to 
 uint16_t menuPos = 0;
 uint16_t menuEncoderTicks = 0;
 uint16_t menuLastPos = 1;
-uint16_t menuCount = 11;
+uint16_t menuCount = 12;
 uint32_t frequencyDialMultiplier = 1;
 
 long vfoAFrequency = 7030000;
@@ -1174,7 +1174,8 @@ enum menuItems
   tenHertzMenuItem,
   hertzMenuItem,
   filterLowMenuItem,
-  filterHighMenuItem
+  filterHighMenuItem,
+  offMenuItem
 };
 
 //enum menuItems
@@ -1268,6 +1269,13 @@ void updateMenu()
 			if(afGain > afGainMax) afGain = afGainMax;
 			if(afGain <= 0) afGain = 0;
 			encoderLastPos = encoderPos;
+		}
+		break;
+	case offMenuItem:
+		encoderPos = getPos();
+		if(encoderPos != encoderLastPos)
+		{
+			shutDown();
 		}
 		break;
 	default:
@@ -1452,6 +1460,11 @@ void updateDisplay(uint8_t force)
 		}
 
 		afGainLast = afGain;
+	}
+
+	if(force || (menuPos != menuLastPos && (menuPos == offMenuItem || menuLastPos == offMenuItem)))
+	{
+		Adafruit_GFX_drawColorBitmap(220, 10, bitmapOff, 20, 9, menuPos == offMenuItem ? MASKRED : MASKWHITE);
 	}
 
 	//I think I want to make this more like the Draw S Meter, where it only draws the parts that have changed. Also, I think I want to do gray pixels when half
@@ -2154,6 +2167,11 @@ static void CPU_CACHE_Enable(void)
 
   /* Enable D-Cache */
   SCB_EnableDCache();
+}
+
+void shutDown(void)
+{
+	HAL_PWR_EnterSTANDBYMode();
 }
 
 #pragma GCC diagnostic pop

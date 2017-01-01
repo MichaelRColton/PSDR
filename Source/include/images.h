@@ -31,6 +31,7 @@ extern const unsigned short bitmapWebSdrGradient[];
 extern const unsigned short bitmapFilter[];
 extern const unsigned short bitmapHadLogo[];
 extern const unsigned short bitmapSMeter[];
+extern const unsigned short bitmapOff[];
 
 extern const unsigned short oneSmall[];
 extern const unsigned short twoSmall[];
