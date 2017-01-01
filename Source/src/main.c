@@ -1444,13 +1444,8 @@ void updateDisplay(uint8_t force)
 		filterLastUpperLimit = filterUpperLimit;
 	}
 
-
 	if(afGainLast != afGain || force || (menuPos != menuLastPos && (menuPos == volumeMenuItem || menuLastPos == volumeMenuItem)))
 	{
-		freqChar[0] = '4';
-		freqChar[1] = '3';
-		freqChar[2] = '2';
-		freqChar[3] = '1';
 		sprintf(freqChar, "%4d", (int)(afGain * 10));
 		int i;
 		for(i = 0; i < 4; i++)
