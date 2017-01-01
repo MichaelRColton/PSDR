@@ -57,7 +57,7 @@
 #include "stm32f7xx_hal_i2c.h"
 #include "stm32f7xx_hal_i2c_ex.h"
 #include "stm32f7xx_hal_tim_ex.h"
-
+#include "stm32f7xx_hal_pwr.h"
 #endif
 
 

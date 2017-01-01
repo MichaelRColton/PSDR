@@ -291,6 +291,19 @@ void setupPeripheralPower()
 	__I2C2_CLK_ENABLE();
 }
 
+void teardownPeripheralPower()
+{
+	__GPIOA_CLK_DISABLE();
+	__GPIOB_CLK_DISABLE();
+	__GPIOC_CLK_DISABLE();
+	__GPIOD_CLK_DISABLE();
+	__GPIOE_CLK_DISABLE();
+	__DMA1_CLK_DISABLE();
+	__DMA2_CLK_DISABLE();
+	__I2C2_CLK_DISABLE();
+}
+
+
 void configDMA(SPI_HandleTypeDef *hspi)
 {
 //	  static DMA_HandleTypeDef hdma_tx;
@@ -1275,6 +1288,7 @@ void updateMenu()
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
+			teardownPeripheralPower();
 			shutDown();
 		}
 		break;
