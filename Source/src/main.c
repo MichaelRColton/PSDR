@@ -268,10 +268,10 @@ void applyCoeficient(float *samples, int shift)
 		filterTemp[i * 2 + 1] = samples[i * 2 + 1] * fftFilterCoeficient[i * 2 + 1] + samples[i * 2] * fftFilterCoeficient[i * 2];
 	}
 
-	int shifter;
+	//int shifter;
 	for(i = 0; i < FFT_BUFFER_SIZE; i++)
 	{
-		shifter = i + 2 * shift;
+		//shifter = i + 2 * shift;
 		if(i < 0) samples[i] = 0;
 		if(i > FFT_BUFFER_SIZE - 1) samples[i] = 0;
 		samples[i] = filterTemp[i + 2 * shift];
@@ -1080,7 +1080,7 @@ setFreq(vfoAFrequency);
 	//TIM_Config();
 	TIM_Try();
 
-	long long timeMeasurement = 0;
+	//long long timeMeasurement = 0;
 
 	updateDisplay(1);
 
@@ -1115,9 +1115,9 @@ setFreq(vfoAFrequency);
 
 		//HAL_UART_Receive_IT(&UartHandle, (uint8_t*)aRxBuffer, 16);
 
-		int* p = UartHandle.pRxBuffPtr;
-		int* q = &aRxBuffer;
-		int difference = p- q;
+		//int* p = UartHandle.pRxBuffPtr;
+		//int* q = &aRxBuffer;
+		//int difference = p- q;
 
 
 		updateMenu();
@@ -1550,7 +1550,7 @@ void drawWaterfall(void)
       float fftMax = 0; //AH! These are being reset each time! Static makes them persistant right? Does it also ensure they are
       float fftMin = 100; //only initialized once? Have to try it when I get home. It would certainly be nice if the waterfall
       static float fftMaxMax = 0; //didn't change in brightness so much. Later, I may want to fix these values, or at least, make them
-      static float logMax; //manually controllable, sorta, you know?
+      //static float logMax; //manually controllable, sorta, you know?
       uint8_t i;
       for(i = 1; i < 255; i++) //If bin 0 is the DC offset, should we skip it in this calculation?
       {
@@ -1561,7 +1561,7 @@ void drawWaterfall(void)
       //logMax = log2(fftMax);
 
       if(fftMax > fftMaxMax) fftMaxMax += fftMax * 0.1;
-      logMax = log2(fftMaxMax);
+      //logMax = log2(fftMaxMax);
       fftMaxMax *= 0.99;
       if (fftMaxMax > fftMaxMaxMax) fftMaxMax = fftMaxMaxMax;
       if (fftMaxMax < fftMaxMaxMin) fftMaxMax = fftMaxMaxMin;

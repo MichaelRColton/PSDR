@@ -22,7 +22,7 @@
 
 void spi_init(void)
 {
-    SPI_InitTypeDef  spiInitStructure;
+    //SPI_InitTypeDef  spiInitStructure;
     GPIO_InitTypeDef gpioInitStructure;
 
     HAL_SPI_MspInit(&SpiHandle);

@@ -393,7 +393,7 @@ void Adafruit_GFX_drawBitmap(int16_t x, int16_t y,
 #endif
 void Adafruit_GFX_drawColorBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h, uint16_t tintMask)
 {
-	int16_t i, j, bmIndex;
+	int16_t i; //, j, bmIndex;
 
 	Adafruit_ILI9340_setAddrWindow(x,y,x+w-1, y+h-1);
 

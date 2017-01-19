@@ -185,8 +185,8 @@ extern const Gpio_Pin FIVE_VOLT_REGULATOR_ENABLE;
 //    extern const Timer_Pin SERVO1;
 //    extern const Timer_Pin SERVO2;
 
-extern inline bool
-hal_checkTimeout (uint32_t startTime_ms, uint32_t interval_ms);
+//extern inline bool
+//hal_checkTimeout (uint32_t startTime_ms, uint32_t interval_ms);
 // returns true if the interval has timed out
 
 int
