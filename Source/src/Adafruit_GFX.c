@@ -241,9 +241,11 @@ void Adafruit_GFX_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 			    uint16_t color) {
   // Update in subclasses if desired!
 	int16_t i;
-  for ( i=x; i<x+w; i++) {
-	  Adafruit_ILI9340_drawFastVLine(i, y, h, color);
-  }
+//  for ( i=x; i<x+w; i++) {
+//	  Adafruit_ILI9340_drawFastVLine(i, y, h, color);
+//  }
+
+  Adafruit_ILI9340_fillRect(x, y, w, h, color);
 }
 
 void Adafruit_GFX_fillScreen(uint16_t color) {

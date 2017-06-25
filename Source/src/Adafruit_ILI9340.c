@@ -65,6 +65,7 @@
 //   int  _height = ILI9340_TFTHEIGHT; //320
 	uint16_t rxBuf[10];
 	uint16_t txBuf[2];
+  uint8_t txBuf2[320 * 240 * 2];
 
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
@@ -127,8 +128,8 @@ void Adafruit_ILI9340_writecommand(uint16_t c) {
 	txBuf[0] = c; // & 0xFF;
 	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
 	HAL_SPI_Transmit(&SpiHandle, txBuf, 1 /*cnt * 2*/, 1);
-
-	//HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)txBuf, (uint8_t *)rxBuf, 1, 1000);
+	//HAL_SPI_Transmit_DMA(&SpiHandle, txBuf, 1);
+	//while(SpiHandle.State ==  HAL_SPI_STATE_BUSY_TX);
 
   //SET_BIT(csport, cspinmask);
 	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
@@ -151,7 +152,8 @@ void Adafruit_ILI9340_writedata(uint16_t c) {
 	txBuf[0] = c; // & 0xFF;
 	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
 	HAL_SPI_Transmit(&SpiHandle, txBuf, 1 /*cnt * 2*/, 1);
-	//HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)txBuf, (uint8_t *)rxBuf, 1, 1000);
+	//HAL_SPI_Transmit_DMA(&SpiHandle, txBuf, 1);
+	//while(SpiHandle.State ==  HAL_SPI_STATE_BUSY_TX);
 
   //digitalWrite(_cs, HIGH);
   //SET_BIT(csport, cspinmask);
@@ -561,18 +563,44 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
   //digitalWrite(_cs, LOW);
 
-  for(y=h; y>0; y--) {
-    for(x=w; x>0; x--) {
+  //for(y=h; y>0; y--) {
+  //  for(x=w; x>0; x--) {
       //spiwrite(hi);
       //spiwrite(lo);
   	//txBuf[0] = hi;
   	//txBuf[1] = lo;
-    	txBuf[0] = color;
+  uint32_t totalPixels = h * w;
+  //uint8_t	txBuf2[totalPixels * 2];
 
-  	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
-  	//HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)txBuf, (uint8_t*)rxBuf, 2, 1000);
-    }
-  }
+    	for(uint32_t i = 0; i < totalPixels; i+=2)
+    	  {
+    	    //txBuf2[i] = color;
+    	    txBuf2[i] = color >> 8;
+    	    txBuf2[i + 1] = color & 0xFF;
+    	  }
+
+
+    	//for()= color;
+
+
+
+
+  	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+    	//hdma_tx.Init.MemInc = DMA_MINC_DISABLE;
+    	//HAL_DMA_Init(&hdma_tx);
+
+
+    	HAL_SPI_Transmit_DMA(&SpiHandle, &txBuf2, 0xFFFF);
+    	while(SpiHandle.State ==  HAL_SPI_STATE_BUSY_TX);
+      //HAL_SPI_Transmit_DMA(&SpiHandle, &txBuf2, 0xFFFF);
+      //while(SpiHandle.State ==  HAL_SPI_STATE_BUSY_TX);
+    	//HAL_Delay(1000);
+
+
+      //hdma_tx.Init.MemInc = DMA_MINC_ENABLE;
+      //HAL_DMA_Init(&hdma_tx);
+    //}
+  //}
   //digitalWrite(_cs, HIGH);
   //SET_BIT(csport, cspinmask);
   HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
