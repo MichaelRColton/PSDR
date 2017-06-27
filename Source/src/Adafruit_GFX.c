@@ -412,16 +412,32 @@ void Adafruit_GFX_drawColorBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_
 		uint8_t txBuf[10];
 
 		//HAL_SPI_Transmit(&SpiHandle, bitmap, 1 /*cnt * 2*/, 1);
-		for(i = 0; i < w*h; i++)
-		{
-			txBuf[0] = (bitmap[i] & tintMask ) >> 8;
-			txBuf[1] = (bitmap[i] & tintMask ) & 0xFF;
-				//spi_readWrite(SpiHandle, rxBuf, bitmap, w*h);
-				HAL_SPI_Transmit(&SpiHandle, txBuf, 2 /*cnt * 2*/, 1);
-				//HAL_SPI_Transmit(&SpiHandle, bitmap[i+1], 1 /*cnt * 2*/, 1);
-			  //}
-			  //SET_BIT(csport, cspinmask);
-		}
+
+		//Using DMA is going to mean that I can't alter the image, so for now we'll
+		//use different code when using the tintMask
+		if(tintMask == 0xFFFF)
+		  {
+		    HAL_SPI_Transmit_DMA(&SpiHandle, bitmap, w*h*2);
+		    while(SpiHandle.State != HAL_SPI_STATE_READY);
+		  }
+		else
+		  {
+        for(i = 0; i < w*h; i++)
+        {
+          txBuf[0] = (bitmap[i] & tintMask ) >> 8;
+          txBuf[1] = (bitmap[i] & tintMask ) & 0xFF;
+            //spi_readWrite(SpiHandle, rxBuf, bitmap, w*h);
+            //HAL_SPI_Transmit(&SpiHandle, txBuf, 2 /*cnt * 2*/, 1);
+            HAL_SPI_Transmit_DMA(&SpiHandle, txBuf, 2);
+            //HAL_SPI_Transmit(&SpiHandle, bitmap[i+1], 1 /*cnt * 2*/, 1);
+            //}
+            //SET_BIT(csport, cspinmask);
+        }
+	    }
+
+
+
+
 	}
 		  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
 

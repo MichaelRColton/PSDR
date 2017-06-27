@@ -65,7 +65,7 @@
 //   int  _height = ILI9340_TFTHEIGHT; //320
 	uint16_t rxBuf[10];
 	uint16_t txBuf[2];
-  uint8_t txBuf2[320 * 240 * 2];
+  //uint8_t txBuf2[320 * 240 * 2];
 
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
@@ -570,9 +570,10 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   	//txBuf[0] = hi;
   	//txBuf[1] = lo;
   uint32_t totalPixels = h * w;
-  //uint8_t	txBuf2[totalPixels * 2];
+  uint8_t	txBuf2[totalPixels * 2];
 
-    	for(uint32_t i = 0; i < totalPixels; i+=2)
+    //while(SpiHandle.State != HAL_SPI_STATE_READY);
+    	for(uint32_t i = (totalPixels * 2); i > 0; i-=2)
     	  {
     	    //txBuf2[i] = color;
     	    txBuf2[i] = color >> 8;
@@ -580,20 +581,36 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
     	  }
 
 
+    	//uint32_t txBuf2Address = &txBuf2;
+    	//uint32_t txBuf2AddressEnd = txBuf2Address + (320 * 240* 2);
+
     	//for()= color;
 
-
+    	//txBuf2[153000] = 0xFF;
+    	//txBuf2[150000] = 0xFF;
 
 
   	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
     	//hdma_tx.Init.MemInc = DMA_MINC_DISABLE;
     	//HAL_DMA_Init(&hdma_tx);
 
-
-    	HAL_SPI_Transmit_DMA(&SpiHandle, &txBuf2, 0xFFFF);
-    	while(SpiHandle.State ==  HAL_SPI_STATE_BUSY_TX);
-      //HAL_SPI_Transmit_DMA(&SpiHandle, &txBuf2, 0xFFFF);
-      //while(SpiHandle.State ==  HAL_SPI_STATE_BUSY_TX);
+    	//uint32_t pixelsWritten = 0;
+    	//utin16_t pixelsInBurst = 0;
+    	uint16_t fullPasses = (totalPixels * 2) / 0xFFFF;
+    	uint16_t partialPass = (totalPixels * 2) % 0xFFFF;
+    	uint32_t offset = 0;
+    	while(fullPasses > 0)
+      {
+        HAL_SPI_Transmit_DMA(&SpiHandle, txBuf2 + offset, 0xFFFF);  //txBuf2 or &txBuf2 doesn't seem to make a difference
+        fullPasses--;
+        offset+=0xFFFF;
+        while(SpiHandle.State != HAL_SPI_STATE_READY);
+      }
+    	if(partialPass > 0)
+    	  {
+          HAL_SPI_Transmit_DMA(&SpiHandle, txBuf2 + offset, partialPass);  //txBuf2 or &txBuf2 doesn't seem to make a difference
+          while(SpiHandle.State != HAL_SPI_STATE_READY);
+    	  }
     	//HAL_Delay(1000);
 
 

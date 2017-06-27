@@ -1068,13 +1068,15 @@ setFreq(vfoAFrequency);
 	drawNumber('3', 0,0, 0xFFFF);
 	Adafruit_GFX_fillScreen(ILI9340_BLACK);
 
-	while(1)
-	  {
-	   // drawNumber('3', 0,0, 0xFFFF);
-	    Adafruit_GFX_fillScreen(ILI9340_BLUE);
-	   // drawNumber('3', 5,5, 0xFFFF);
-	    Adafruit_GFX_fillScreen(ILI9340_RED);
-	  }
+	//while(1)
+//	  {
+//	    drawNumber('3', 0,0, 0xFFFF);
+//	    Adafruit_GFX_fillScreen(ILI9340_GREEN);
+//	   drawNumber('3', 5,5, 0xFFFF);
+//	    //Adafruit_GFX_fillScreen(ILI9340_BLACK);
+//	    Adafruit_GFX_fillScreen(ILI9340_RED);
+//	    Adafruit_GFX_fillScreen(ILI9340_BLUE);
+//	  }
 
 	Adafruit_GFX_setTextSize(3);
 	Adafruit_GFX_setTextWrap(1);

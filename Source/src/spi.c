@@ -100,7 +100,7 @@ void spi_init(void)
     SpiHandle.Init.CLKPolarity 		  = SPI_POLARITY_HIGH;
     SpiHandle.Init.CLKPhase			  = SPI_PHASE_2EDGE;
     SpiHandle.Init.NSS                = SPI_NSS_SOFT; //SPI_NSS_SOFT;
-    SpiHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_2;  //SPI_BAUDRATEPRESCALER_2;
+    SpiHandle.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_2; //SPI_BAUDRATEPRESCALER_2;
     SpiHandle.Init.FirstBit           = SPI_FIRSTBIT_MSB;
     SpiHandle.Init.CRCCalculation 	  = SPI_CRCCALCULATION_DISABLED;
     SpiHandle.Init.TIMode 			  = SPI_TIMODE_DISABLED;
@@ -150,7 +150,8 @@ void spi_readWrite(SPI_HandleTypeDef SpiH, uint16_t* rxBuf, uint16_t* txBuf, uin
 	//HAL_SPI_TransmitReceive(&SpiHandle, txBuf, rxBuf, cnt, 1000);
 	//HAL_SPI_Transmit(&SpiHandle, txTmp, 2 /*cnt * 2*/, 1);
 	//while(HAL_SPI_GetState(&SpiH) != HAL_SPI_STATE_READY);
-	HAL_SPI_Transmit_DMA(&SpiHandle, txTmp, cnt);
+	HAL_SPI_Transmit_DMA(&SpiHandle, txTmp, 2/*cnt*/);
+	while(SpiHandle.State != HAL_SPI_STATE_READY);
 	//while(HAL_SPI_GetState(&SpiH) != HAL_SPI_STATE_READY);
 
 //	//High, second edge
