@@ -311,6 +311,28 @@ void configDMA(SPI_HandleTypeDef *hspi)
 
 	hdma_tx.Instance                 = SPIx_TX_DMA_STREAM;
 
+  /* Configure the DMA handler for Transmission process */
+  hdma_rx.Instance                 = SPIx_RX_DMA_STREAM;
+
+  hdma_rx.Init.Channel             = SPIx_RX_DMA_CHANNEL;
+  hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+  hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
+  hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
+  hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+  hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+  hdma_rx.Init.Mode                = DMA_NORMAL;
+  hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
+  hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+  hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+  hdma_rx.Init.MemBurst            = DMA_MBURST_INC4;
+  hdma_rx.Init.PeriphBurst         = DMA_PBURST_INC4;
+
+  HAL_DMA_Init(&hdma_rx);
+
+  /* Associate the initialized DMA handle to the the SPI handle */
+  __HAL_LINKDMA(hspi, hdmarx, hdma_rx);
+
+
 	  hdma_tx.Init.Channel             = SPIx_TX_DMA_CHANNEL;
 	  hdma_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
 	  hdma_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
@@ -318,7 +340,7 @@ void configDMA(SPI_HandleTypeDef *hspi)
 	  hdma_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
 	  hdma_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
 	  hdma_tx.Init.Mode                = DMA_NORMAL;
-	  hdma_tx.Init.Priority            = DMA_PRIORITY_LOW;
+	  hdma_tx.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
 	  hdma_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 	  hdma_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
 	  hdma_tx.Init.MemBurst            = DMA_MBURST_INC4;
@@ -329,26 +351,7 @@ void configDMA(SPI_HandleTypeDef *hspi)
 	  /* Associate the initialized DMA handle to the the SPI handle */
 	  __HAL_LINKDMA(hspi, hdmatx, hdma_tx);
 
-	  /* Configure the DMA handler for Transmission process */
-	  hdma_rx.Instance                 = SPIx_RX_DMA_STREAM;
 
-	  hdma_rx.Init.Channel             = SPIx_RX_DMA_CHANNEL;
-	  hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
-	  hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
-	  hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
-	  hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-	  hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-	  hdma_rx.Init.Mode                = DMA_NORMAL;
-	  hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
-	  hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
-	  hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-	  hdma_rx.Init.MemBurst            = DMA_MBURST_INC4;
-	  hdma_rx.Init.PeriphBurst         = DMA_PBURST_INC4;
-
-	  HAL_DMA_Init(&hdma_rx);
-
-	  /* Associate the initialized DMA handle to the the SPI handle */
-	  __HAL_LINKDMA(hspi, hdmarx, hdma_rx);
 
 	  /*##-4- Configure the NVIC for DMA #########################################*/
 	  /* NVIC configuration for DMA transfer complete interrupt (SPI3_TX) */

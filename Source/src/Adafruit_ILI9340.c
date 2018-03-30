@@ -416,8 +416,12 @@ void Adafruit_ILI9340_pushColor(uint16_t color) {
 	//uint16_t rxBuf[10];
 	//uint16_t txBuf[2] = {color >> 8, color};
 	txBuf[0] = color;
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
-
+	uint8_t txBuf3[2];
+	txBuf3[1] = color & 0xFF;
+	txBuf3[0] = color >> 8;
+	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	HAL_SPI_Transmit(&SpiHandle, txBuf3, 2 /*cnt * 2*/, 1);
+	//while(SpiHandle.State != HAL_SPI_STATE_READY);
 
 
   //SET_BIT(csport, cspinmask);
@@ -444,7 +448,8 @@ void Adafruit_ILI9340_drawPixel(int16_t x, int16_t y, uint16_t color) {
 	//uint8_t rxBuf[10];
 	//uint8_t txBuf[2] = {color >> 8, color};
   txBuf[0] = color;
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	HAL_SPI_Transmit(&SpiHandle, txBuf, 1 /*cnt * 2*/, 1);
 
   //SET_BIT(csport, cspinmask);
 	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
@@ -467,7 +472,8 @@ void Adafruit_ILI9340_drawNextPixel(uint16_t color) {
 		//uint8_t rxBuf[10];
 		//uint8_t txBuf[2] = {color >> 8, color};
 	  txBuf[0] = color;
-		spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+		//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+		HAL_SPI_Transmit(&SpiHandle, txBuf, 1 /*cnt * 2*/, 1);
 
 	  //SET_BIT(csport, cspinmask);
 		HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
@@ -502,7 +508,8 @@ void Adafruit_ILI9340_drawFastVLine(int16_t x, int16_t y, int16_t h,
 	//txBuf[0] = hi;
 	//txBuf[1] = lo;
 txBuf[0] = color;
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	HAL_SPI_Transmit(&SpiHandle, txBuf, 1 /*cnt * 2*/, 1);
   }
   //SET_BIT(csport, cspinmask);
   HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
@@ -532,7 +539,8 @@ void Adafruit_ILI9340_drawFastHLine(int16_t x, int16_t y, int16_t w,
 	//txBuf[0] = hi;
 	//txBuf[1] = lo;
 	  txBuf[0] = color;
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	//spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
+	HAL_SPI_Transmit(&SpiHandle, txBuf, 1 /*cnt * 2*/, 1);
   }
   //SET_BIT(csport, cspinmask);
   HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);

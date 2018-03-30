@@ -150,7 +150,7 @@ void spi_readWrite(SPI_HandleTypeDef SpiH, uint16_t* rxBuf, uint16_t* txBuf, uin
 	//HAL_SPI_TransmitReceive(&SpiHandle, txBuf, rxBuf, cnt, 1000);
 	//HAL_SPI_Transmit(&SpiHandle, txTmp, 2 /*cnt * 2*/, 1);
 	//while(HAL_SPI_GetState(&SpiH) != HAL_SPI_STATE_READY);
-	HAL_SPI_Transmit_DMA(&SpiHandle, txTmp, 2/*cnt*/);
+	HAL_SPI_Transmit_DMA(&SpiH, txTmp, cnt);
 	while(SpiHandle.State != HAL_SPI_STATE_READY);
 	//while(HAL_SPI_GetState(&SpiH) != HAL_SPI_STATE_READY);
 
