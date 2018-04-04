@@ -588,6 +588,10 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
     	    txBuf2[i + 1] = color & 0xFF;
     	  }
 
+//    	for(uint32_t i = (totalPixels * 2); i > 0; i--)
+//    	  {
+//    	    if txBuf2[i] != color
+//    	  }
 
     	//uint32_t txBuf2Address = &txBuf2;
     	//uint32_t txBuf2AddressEnd = txBuf2Address + (320 * 240* 2);
