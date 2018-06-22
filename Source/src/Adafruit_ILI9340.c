@@ -579,14 +579,33 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   	//txBuf[1] = lo;
   uint32_t totalPixels = h * w;
   uint8_t	txBuf2[totalPixels * 2];
+  //uint16_t txBuf2[totalPixels];
 
     //while(SpiHandle.State != HAL_SPI_STATE_READY);
     	for(uint32_t i = (totalPixels * 2); i > 0; i-=2)
     	  {
     	    //txBuf2[i] = color;
-    	    txBuf2[i] = color >> 8;
+    	    txBuf2[i] = (color & 0xFF00) >> 8;
     	    txBuf2[i + 1] = color & 0xFF;
     	  }
+
+    	static int errors = 0;
+      for(uint32_t i = (totalPixels * 2); i > 0; i-=2)
+        {
+          //txBuf2[i] = color;
+          if (txBuf2[i] != ((color & 0xFF00) >> 8) || txBuf2[i + 1] != (color & 0xFF))
+            errors++;
+
+        }
+
+
+
+//      for(uint32_t i = totalPixels; i > 0; i--)
+//        {
+//          //txBuf2[i] = color;
+//          txBuf2[i] = color; // & 0xFF00) >> 8;
+//          //txBuf2[i + 1] = color & 0xFF;
+//        }
 
 //    	for(uint32_t i = (totalPixels * 2); i > 0; i--)
 //    	  {
@@ -608,20 +627,48 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 
     	//uint32_t pixelsWritten = 0;
     	//utin16_t pixelsInBurst = 0;
-    	uint16_t fullPasses = (totalPixels * 2) / 0xFFFF;
-    	uint16_t partialPass = (totalPixels * 2) % 0xFFFF;
+    	//uint16_t fullPasses = (totalPixels * 2) / 0xFFFF;
+    	//uint16_t partialPass = (totalPixels * 2) % 0xFFFF;
+      uint16_t fullPasses = sizeof(txBuf2) / 0xFFFF;
+      uint16_t partialPass = sizeof(txBuf2) % 0xFFFF;
     	uint32_t offset = 0;
     	while(fullPasses > 0)
       {
+          for(uint32_t i = (totalPixels * 2); i > 0; i-=2)
+            {
+              //txBuf2[i] = color;
+              if (txBuf2[i] != ((color & 0xFF00) >> 8) || txBuf2[i + 1] != (color & 0xFF))
+                errors++;
+
+            }
+    	  while(HAL_SPI_GetState(&SpiHandle) != HAL_SPI_STATE_READY);
         HAL_SPI_Transmit_DMA(&SpiHandle, txBuf2 + offset, 0xFFFF);  //txBuf2 or &txBuf2 doesn't seem to make a difference
         fullPasses--;
         offset+=0xFFFF;
-        while(SpiHandle.State != HAL_SPI_STATE_READY);
+        //__IO HAL_DMA_StateTypeDef dmaState = HAL_DMA_GetState(&hdma_tx);
+        //if(dmaState = 0x01) dmaState++;
+        //while(HAL_DMA_GetState(&SpiHandle) !=
+
+
+        //while(SpiHandle.State != HAL_SPI_STATE_READY);
+        //hal_delay_ms(1000);
+//        int temp = millis;
+//        while (millis < temp + 1000);
       }
     	if(partialPass > 0)
     	  {
+    	    while(SpiHandle.State != HAL_SPI_STATE_READY);
+          for(uint32_t i = (totalPixels * 2); i > 0; i-=2)
+            {
+              //txBuf2[i] = color;
+              if (txBuf2[i] != ((color & 0xFF00) >> 8) || txBuf2[i + 1] != (color & 0xFF))
+                errors++;
+
+            }
           HAL_SPI_Transmit_DMA(&SpiHandle, txBuf2 + offset, partialPass);  //txBuf2 or &txBuf2 doesn't seem to make a difference
           while(SpiHandle.State != HAL_SPI_STATE_READY);
+//          int temp = millis;
+//          while (millis < temp + 1000);
     	  }
     	//HAL_Delay(1000);
 

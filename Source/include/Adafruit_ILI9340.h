@@ -29,6 +29,7 @@
 #endif
 #include <stdbool.h>
 #include <Adafruit_GFX.h>
+#include <main.h>
 
 #define ILI9340_TFTWIDTH  240
 #define ILI9340_TFTHEIGHT 320

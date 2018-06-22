@@ -23,6 +23,8 @@
 #include "stm32f746xx.h"
 #include <stm32f7xx_hal_gpio.h>
 #include "stm32f7xx_hal_dma.h"
+#include "stm32f7xx_hal_dma2d.h"
+#include "stm32f7xx_hal_dma_ex.h"
 #include "stm32f7xx_hal_usart.h"
 #include "stm32f7xx_hal_i2c.h"
 #endif
