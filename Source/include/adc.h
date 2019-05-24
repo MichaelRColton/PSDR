@@ -19,9 +19,10 @@
 #endif
 
 #ifdef PSDR257
-#include "stm32f7xx_hal_dma.h"
-#include "stm32f7xx_hal_adc.h"
-#include "stm32f7xx_hal_rcc.h"
+#include "stm32f746xx.h"
+//#include "stm32f7xx_hal_dma.h"
+//#include "stm32f7xx_hal_adc.h"
+//#include "stm32f7xx_hal_rcc.h"
 #endif
 
 __IO uint16_t uhADCxConvertedValue1;

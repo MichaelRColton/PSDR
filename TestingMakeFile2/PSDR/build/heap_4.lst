@@ -1,0 +1,1576 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"heap_4.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.prvHeapInit,"ax",%progbits
+  18              		.align	1
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu fpv5-sp-d16
+  24              	prvHeapInit:
+  25              	.LFB10:
+  26              		.file 1 "Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c"
+   1:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*
+   2:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
+   3:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     All rights reserved
+   4:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+   5:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+   6:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+   7:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     This file is part of the FreeRTOS distribution.
+   8:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+   9:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     FreeRTOS is free software; you can redistribute it and/or modify it under
+  10:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     the terms of the GNU General Public License (version 2) as published by the
+  11:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     Free Software Foundation >>>> AND MODIFIED BY <<<< the FreeRTOS exception.
+  12:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  13:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     ***************************************************************************
+  14:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
+  15:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     >>!   distribute a combined work that includes FreeRTOS without being   !<<
+  16:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     >>!   obliged to provide the source code for proprietary components     !<<
+  17:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     >>!   outside of the FreeRTOS kernel.                                   !<<
+  18:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     ***************************************************************************
+  19:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  20:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
+  21:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  22:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     FOR A PARTICULAR PURPOSE.  Full license text is available on the following
+  23:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     link: http://www.freertos.org/a00114.html
+  24:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  25:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     ***************************************************************************
+  26:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *                                                                       *
+  27:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *    FreeRTOS provides completely free yet professionally developed,    *
+  28:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *    robust, strictly quality controlled, supported, and cross          *
+  29:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *    platform software that is more than just the market leader, it     *
+  30:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *    is the industry's de facto standard.                               *
+  31:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *                                                                       *
+  32:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *    Help yourself get started quickly while simultaneously helping     *
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 2
+
+
+  33:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *    to support the FreeRTOS project by purchasing a FreeRTOS           *
+  34:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *    tutorial book, reference manual, or both:                          *
+  35:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *    http://www.FreeRTOS.org/Documentation                              *
+  36:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****      *                                                                       *
+  37:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     ***************************************************************************
+  38:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  39:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
+  40:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     the FAQ page "My application does not run, what could be wrong?".  Have you
+  41:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     defined configASSERT()?
+  42:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  43:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     http://www.FreeRTOS.org/support - In return for receiving this top quality
+  44:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     embedded software for free we request you assist our global community by
+  45:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     participating in the support forum.
+  46:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  47:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     http://www.FreeRTOS.org/training - Investing in training allows your team to
+  48:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     be as productive as possible as early as possible.  Now you can receive
+  49:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
+  50:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     Ltd, and the world's leading authority on the world's leading RTOS.
+  51:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  52:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
+  53:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
+  54:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     compatible FAT file system, and our tiny thread aware UDP/IP stack.
+  55:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  56:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     http://www.FreeRTOS.org/labs - Where new FreeRTOS products go to incubate.
+  57:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     Come and try FreeRTOS+TCP, our new open source TCP/IP stack for FreeRTOS.
+  58:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  59:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     http://www.OpenRTOS.com - Real Time Engineers ltd. license FreeRTOS to High
+  60:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     Integrity Systems ltd. to sell under the OpenRTOS brand.  Low cost OpenRTOS
+  61:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     licenses offer ticketed support, indemnification and commercial middleware.
+  62:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  63:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     http://www.SafeRTOS.com - High Integrity Systems also provide a safety
+  64:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     engineered and independently SIL3 certified version for use in safety and
+  65:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     mission critical applications that require provable dependability.
+  66:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  67:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****     1 tab == 4 spaces!
+  68:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** */
+  69:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  70:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*
+  71:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * A sample implementation of pvPortMalloc() and vPortFree() that combines
+  72:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * (coalescences) adjacent memory blocks as they are freed, and in so doing
+  73:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * limits memory fragmentation.
+  74:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  *
+  75:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * See heap_1.c, heap_2.c and heap_3.c for alternative implementations, and the
+  76:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * memory management pages of http://www.FreeRTOS.org for more information.
+  77:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  */
+  78:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #include <stdlib.h>
+  79:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  80:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
+  81:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** all the API functions to use the MPU wrappers.  That should only be done when
+  82:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** task.h is included from an application file. */
+  83:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
+  84:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  85:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #include "FreeRTOS.h"
+  86:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #include "task.h"
+  87:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  88:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
+  89:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 3
+
+
+  90:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #if( configSUPPORT_DYNAMIC_ALLOCATION == 0 )
+  91:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	#error This file must not be used if configSUPPORT_DYNAMIC_ALLOCATION is 0
+  92:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #endif
+  93:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  94:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /* Block sizes must not get too small. */
+  95:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #define heapMINIMUM_BLOCK_SIZE	( ( size_t ) ( xHeapStructSize << 1 ) )
+  96:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+  97:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /* Assumes 8bit bytes! */
+  98:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #define heapBITS_PER_BYTE		( ( size_t ) 8 )
+  99:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 100:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /* Allocate the memory for the heap. */
+ 101:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #if( configAPPLICATION_ALLOCATED_HEAP == 1 )
+ 102:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* The application writer has already defined the array used for the RTOS
+ 103:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	heap - probably so it can be placed in a special segment or address. */
+ 104:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	extern uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
+ 105:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #else
+ 106:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	static uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
+ 107:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** #endif /* configAPPLICATION_ALLOCATED_HEAP */
+ 108:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 109:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /* Define the linked list structure.  This is used to link free blocks in order
+ 110:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** of their memory address. */
+ 111:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** typedef struct A_BLOCK_LINK
+ 112:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** {
+ 113:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	struct A_BLOCK_LINK *pxNextFreeBlock;	/*<< The next free block in the list. */
+ 114:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	size_t xBlockSize;						/*<< The size of the free block. */
+ 115:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** } BlockLink_t;
+ 116:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 117:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 118:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 119:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*
+ 120:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * Inserts a block of memory that is being freed into the correct position in
+ 121:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * the list of free memory blocks.  The block being freed will be merged with
+ 122:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * the block in front it and/or the block behind it if the memory blocks are
+ 123:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * adjacent to each other.
+ 124:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  */
+ 125:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** static void prvInsertBlockIntoFreeList( BlockLink_t *pxBlockToInsert );
+ 126:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 127:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*
+ 128:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * Called automatically to setup the required heap structures the first time
+ 129:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  * pvPortMalloc() is called.
+ 130:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c ****  */
+ 131:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** static void prvHeapInit( void );
+ 132:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 133:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 134:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 135:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /* The size of the structure placed at the beginning of each allocated memory
+ 136:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** block must by correctly byte aligned. */
+ 137:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** static const size_t xHeapStructSize	= ( sizeof( BlockLink_t ) + ( ( size_t ) ( portBYTE_ALIGNMENT -
+ 138:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 139:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /* Create a couple of list links to mark the start and end of the list. */
+ 140:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** static BlockLink_t xStart, *pxEnd = NULL;
+ 141:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 142:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /* Keeps track of the number of free bytes remaining, but says nothing about
+ 143:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** fragmentation. */
+ 144:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** static size_t xFreeBytesRemaining = 0U;
+ 145:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** static size_t xMinimumEverFreeBytesRemaining = 0U;
+ 146:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 4
+
+
+ 147:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /* Gets set to the top bit of an size_t type.  When this bit in the xBlockSize
+ 148:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** member of an BlockLink_t structure is set then the block belongs to the
+ 149:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** application.  When the bit is free the block is still part of the free heap
+ 150:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** space. */
+ 151:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** static size_t xBlockAllocatedBit = 0;
+ 152:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 153:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 154:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 155:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** void *pvPortMalloc( size_t xWantedSize )
+ 156:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** {
+ 157:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** BlockLink_t *pxBlock, *pxPreviousBlock, *pxNewBlockLink;
+ 158:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** void *pvReturn = NULL;
+ 159:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 160:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	vTaskSuspendAll();
+ 161:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 162:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		/* If this is the first call to malloc then the heap will require
+ 163:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		initialisation to setup the list of free blocks. */
+ 164:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		if( pxEnd == NULL )
+ 165:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 166:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			prvHeapInit();
+ 167:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 168:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		else
+ 169:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 170:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			mtCOVERAGE_TEST_MARKER();
+ 171:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 172:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 173:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		/* Check the requested block size is not so large that the top bit is
+ 174:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		set.  The top bit of the block size member of the BlockLink_t structure
+ 175:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		is used to determine who owns the block - the application or the
+ 176:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		kernel, so it must be free. */
+ 177:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		if( ( xWantedSize & xBlockAllocatedBit ) == 0 )
+ 178:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 179:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			/* The wanted size is increased so it can contain a BlockLink_t
+ 180:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			structure in addition to the requested amount of bytes. */
+ 181:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			if( xWantedSize > 0 )
+ 182:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			{
+ 183:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				xWantedSize += xHeapStructSize;
+ 184:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 185:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				/* Ensure that blocks are always aligned to the required number
+ 186:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				of bytes. */
+ 187:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				if( ( xWantedSize & portBYTE_ALIGNMENT_MASK ) != 0x00 )
+ 188:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 189:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					/* Byte alignment required. */
+ 190:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					xWantedSize += ( portBYTE_ALIGNMENT - ( xWantedSize & portBYTE_ALIGNMENT_MASK ) );
+ 191:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					configASSERT( ( xWantedSize & portBYTE_ALIGNMENT_MASK ) == 0 );
+ 192:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 193:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				else
+ 194:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 195:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					mtCOVERAGE_TEST_MARKER();
+ 196:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 197:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			}
+ 198:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			else
+ 199:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			{
+ 200:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				mtCOVERAGE_TEST_MARKER();
+ 201:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			}
+ 202:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 203:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			if( ( xWantedSize > 0 ) && ( xWantedSize <= xFreeBytesRemaining ) )
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 5
+
+
+ 204:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			{
+ 205:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				/* Traverse the list from the start	(lowest address) block until
+ 206:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				one	of adequate size is found. */
+ 207:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				pxPreviousBlock = &xStart;
+ 208:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				pxBlock = xStart.pxNextFreeBlock;
+ 209:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				while( ( pxBlock->xBlockSize < xWantedSize ) && ( pxBlock->pxNextFreeBlock != NULL ) )
+ 210:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 211:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					pxPreviousBlock = pxBlock;
+ 212:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					pxBlock = pxBlock->pxNextFreeBlock;
+ 213:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 214:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 215:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				/* If the end marker was reached then a block of adequate size
+ 216:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				was	not found. */
+ 217:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				if( pxBlock != pxEnd )
+ 218:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 219:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					/* Return the memory space pointed to - jumping over the
+ 220:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					BlockLink_t structure at its start. */
+ 221:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					pvReturn = ( void * ) ( ( ( uint8_t * ) pxPreviousBlock->pxNextFreeBlock ) + xHeapStructSize )
+ 222:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 223:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					/* This block is being returned for use so must be taken out
+ 224:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					of the list of free blocks. */
+ 225:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					pxPreviousBlock->pxNextFreeBlock = pxBlock->pxNextFreeBlock;
+ 226:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 227:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					/* If the block is larger than required it can be split into
+ 228:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					two. */
+ 229:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					if( ( pxBlock->xBlockSize - xWantedSize ) > heapMINIMUM_BLOCK_SIZE )
+ 230:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					{
+ 231:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						/* This block is to be split into two.  Create a new
+ 232:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						block following the number of bytes requested. The void
+ 233:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						cast is used to prevent byte alignment warnings from the
+ 234:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						compiler. */
+ 235:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						pxNewBlockLink = ( void * ) ( ( ( uint8_t * ) pxBlock ) + xWantedSize );
+ 236:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						configASSERT( ( ( ( size_t ) pxNewBlockLink ) & portBYTE_ALIGNMENT_MASK ) == 0 );
+ 237:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 238:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						/* Calculate the sizes of two blocks split from the
+ 239:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						single block. */
+ 240:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						pxNewBlockLink->xBlockSize = pxBlock->xBlockSize - xWantedSize;
+ 241:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						pxBlock->xBlockSize = xWantedSize;
+ 242:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 243:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						/* Insert the new block into the list of free blocks. */
+ 244:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						prvInsertBlockIntoFreeList( pxNewBlockLink );
+ 245:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					}
+ 246:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					else
+ 247:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					{
+ 248:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						mtCOVERAGE_TEST_MARKER();
+ 249:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					}
+ 250:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 251:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					xFreeBytesRemaining -= pxBlock->xBlockSize;
+ 252:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 253:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					if( xFreeBytesRemaining < xMinimumEverFreeBytesRemaining )
+ 254:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					{
+ 255:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						xMinimumEverFreeBytesRemaining = xFreeBytesRemaining;
+ 256:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					}
+ 257:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					else
+ 258:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					{
+ 259:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						mtCOVERAGE_TEST_MARKER();
+ 260:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					}
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 6
+
+
+ 261:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 262:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					/* The block is being returned - it is allocated and owned
+ 263:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					by the application and has no "next" block. */
+ 264:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					pxBlock->xBlockSize |= xBlockAllocatedBit;
+ 265:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					pxBlock->pxNextFreeBlock = NULL;
+ 266:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 267:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				else
+ 268:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 269:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					mtCOVERAGE_TEST_MARKER();
+ 270:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 271:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			}
+ 272:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			else
+ 273:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			{
+ 274:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				mtCOVERAGE_TEST_MARKER();
+ 275:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			}
+ 276:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 277:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		else
+ 278:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 279:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			mtCOVERAGE_TEST_MARKER();
+ 280:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 281:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 282:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		traceMALLOC( pvReturn, xWantedSize );
+ 283:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 284:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	( void ) xTaskResumeAll();
+ 285:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 286:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	#if( configUSE_MALLOC_FAILED_HOOK == 1 )
+ 287:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 288:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		if( pvReturn == NULL )
+ 289:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 290:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			extern void vApplicationMallocFailedHook( void );
+ 291:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			vApplicationMallocFailedHook();
+ 292:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 293:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		else
+ 294:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 295:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			mtCOVERAGE_TEST_MARKER();
+ 296:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 297:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 298:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	#endif
+ 299:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 300:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	configASSERT( ( ( ( size_t ) pvReturn ) & ( size_t ) portBYTE_ALIGNMENT_MASK ) == 0 );
+ 301:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	return pvReturn;
+ 302:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** }
+ 303:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 304:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 305:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** void vPortFree( void *pv )
+ 306:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** {
+ 307:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** uint8_t *puc = ( uint8_t * ) pv;
+ 308:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** BlockLink_t *pxLink;
+ 309:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 310:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	if( pv != NULL )
+ 311:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 312:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		/* The memory being freed will have an BlockLink_t structure immediately
+ 313:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		before it. */
+ 314:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		puc -= xHeapStructSize;
+ 315:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 316:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		/* This casting is to keep the compiler from issuing warnings. */
+ 317:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		pxLink = ( void * ) puc;
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 7
+
+
+ 318:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 319:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		/* Check the block is actually allocated. */
+ 320:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		configASSERT( ( pxLink->xBlockSize & xBlockAllocatedBit ) != 0 );
+ 321:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		configASSERT( pxLink->pxNextFreeBlock == NULL );
+ 322:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 323:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		if( ( pxLink->xBlockSize & xBlockAllocatedBit ) != 0 )
+ 324:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 325:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			if( pxLink->pxNextFreeBlock == NULL )
+ 326:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			{
+ 327:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				/* The block is being returned to the heap - it is no longer
+ 328:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				allocated. */
+ 329:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				pxLink->xBlockSize &= ~xBlockAllocatedBit;
+ 330:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 331:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				vTaskSuspendAll();
+ 332:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 333:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					/* Add this block to the list of free blocks. */
+ 334:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					xFreeBytesRemaining += pxLink->xBlockSize;
+ 335:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					traceFREE( pv, pxLink->xBlockSize );
+ 336:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					prvInsertBlockIntoFreeList( ( ( BlockLink_t * ) pxLink ) );
+ 337:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 338:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				( void ) xTaskResumeAll();
+ 339:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			}
+ 340:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			else
+ 341:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			{
+ 342:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				mtCOVERAGE_TEST_MARKER();
+ 343:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			}
+ 344:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 345:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		else
+ 346:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 347:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			mtCOVERAGE_TEST_MARKER();
+ 348:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 349:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 350:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** }
+ 351:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 352:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 353:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** size_t xPortGetFreeHeapSize( void )
+ 354:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** {
+ 355:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	return xFreeBytesRemaining;
+ 356:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** }
+ 357:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 358:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 359:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** size_t xPortGetMinimumEverFreeHeapSize( void )
+ 360:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** {
+ 361:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	return xMinimumEverFreeBytesRemaining;
+ 362:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** }
+ 363:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 364:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 365:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** void vPortInitialiseBlocks( void )
+ 366:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** {
+ 367:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* This just exists to keep the linker quiet. */
+ 368:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** }
+ 369:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 370:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 371:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** static void prvHeapInit( void )
+ 372:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** {
+  27              		.loc 1 372 0
+  28              		.cfi_startproc
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 8
+
+
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32              	.LVL0:
+ 373:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** BlockLink_t *pxFirstFreeBlock;
+ 374:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** uint8_t *pucAlignedHeap;
+ 375:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** size_t uxAddress;
+ 376:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** size_t xTotalHeapSize = configTOTAL_HEAP_SIZE;
+ 377:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 378:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* Ensure the heap starts on a correctly aligned boundary. */
+ 379:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	uxAddress = ( size_t ) ucHeap;
+  33              		.loc 1 379 0
+  34 0000 124A     		ldr	r2, .L4
+  35              	.LVL1:
+ 380:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 381:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	if( ( uxAddress & portBYTE_ALIGNMENT_MASK ) != 0 )
+  36              		.loc 1 381 0
+  37 0002 12F0070F 		tst	r2, #7
+  38 0006 1ED0     		beq	.L3
+ 382:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 383:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		uxAddress += ( portBYTE_ALIGNMENT - 1 );
+  39              		.loc 1 383 0
+  40 0008 D11D     		adds	r1, r2, #7
+  41              	.LVL2:
+ 384:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		uxAddress &= ~( ( size_t ) portBYTE_ALIGNMENT_MASK );
+  42              		.loc 1 384 0
+  43 000a 21F00701 		bic	r1, r1, #7
+  44              	.LVL3:
+ 385:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		xTotalHeapSize -= uxAddress - ( size_t ) ucHeap;
+  45              		.loc 1 385 0
+  46 000e C1F57053 		rsb	r3, r1, #15360
+  47 0012 1344     		add	r3, r3, r2
+  48              	.LVL4:
+ 384:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		uxAddress &= ~( ( size_t ) portBYTE_ALIGNMENT_MASK );
+  49              		.loc 1 384 0
+  50 0014 0A46     		mov	r2, r1
+  51              	.LVL5:
+  52              	.L2:
+ 386:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 387:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 388:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	pucAlignedHeap = ( uint8_t * ) uxAddress;
+ 389:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 390:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* xStart is used to hold a pointer to the first item in the list of free
+ 391:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	blocks.  The void cast is used to prevent compiler warnings. */
+ 392:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	xStart.pxNextFreeBlock = ( void * ) pucAlignedHeap;
+  53              		.loc 1 392 0
+  54 0016 0E48     		ldr	r0, .L4+4
+  55 0018 0260     		str	r2, [r0]
+ 393:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	xStart.xBlockSize = ( size_t ) 0;
+  56              		.loc 1 393 0
+  57 001a 0021     		movs	r1, #0
+  58 001c 4160     		str	r1, [r0, #4]
+ 394:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 395:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* pxEnd is used to mark the end of the list of free blocks and is inserted
+ 396:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	at the end of the heap space. */
+ 397:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	uxAddress = ( ( size_t ) pucAlignedHeap ) + xTotalHeapSize;
+  59              		.loc 1 397 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 9
+
+
+  60 001e 1344     		add	r3, r3, r2
+  61              	.LVL6:
+ 398:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	uxAddress -= xHeapStructSize;
+  62              		.loc 1 398 0
+  63 0020 083B     		subs	r3, r3, #8
+  64              	.LVL7:
+ 399:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	uxAddress &= ~( ( size_t ) portBYTE_ALIGNMENT_MASK );
+  65              		.loc 1 399 0
+  66 0022 23F00703 		bic	r3, r3, #7
+  67              	.LVL8:
+ 400:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	pxEnd = ( void * ) uxAddress;
+  68              		.loc 1 400 0
+  69 0026 0B48     		ldr	r0, .L4+8
+  70 0028 0360     		str	r3, [r0]
+ 401:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	pxEnd->xBlockSize = 0;
+  71              		.loc 1 401 0
+  72 002a 5960     		str	r1, [r3, #4]
+ 402:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	pxEnd->pxNextFreeBlock = NULL;
+  73              		.loc 1 402 0
+  74 002c 1960     		str	r1, [r3]
+  75              	.LVL9:
+ 403:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 404:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* To start with there is a single free block that is sized to take up the
+ 405:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	entire heap space, minus the space taken by pxEnd. */
+ 406:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	pxFirstFreeBlock = ( void * ) pucAlignedHeap;
+ 407:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	pxFirstFreeBlock->xBlockSize = uxAddress - ( size_t ) pxFirstFreeBlock;
+  76              		.loc 1 407 0
+  77 002e 991A     		subs	r1, r3, r2
+  78 0030 5160     		str	r1, [r2, #4]
+ 408:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	pxFirstFreeBlock->pxNextFreeBlock = pxEnd;
+  79              		.loc 1 408 0
+  80 0032 1360     		str	r3, [r2]
+ 409:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 410:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* Only one block exists - and it covers the entire usable heap space. */
+ 411:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	xMinimumEverFreeBytesRemaining = pxFirstFreeBlock->xBlockSize;
+  81              		.loc 1 411 0
+  82 0034 084B     		ldr	r3, .L4+12
+  83              	.LVL10:
+  84 0036 1960     		str	r1, [r3]
+ 412:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	xFreeBytesRemaining = pxFirstFreeBlock->xBlockSize;
+  85              		.loc 1 412 0
+  86 0038 084B     		ldr	r3, .L4+16
+  87 003a 1960     		str	r1, [r3]
+ 413:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 414:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* Work out the position of the top bit in a size_t variable. */
+ 415:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	xBlockAllocatedBit = ( ( size_t ) 1 ) << ( ( sizeof( size_t ) * heapBITS_PER_BYTE ) - 1 );
+  88              		.loc 1 415 0
+  89 003c 084B     		ldr	r3, .L4+20
+  90 003e 4FF00042 		mov	r2, #-2147483648
+  91              	.LVL11:
+  92 0042 1A60     		str	r2, [r3]
+ 416:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** }
+  93              		.loc 1 416 0
+  94 0044 7047     		bx	lr
+  95              	.LVL12:
+  96              	.L3:
+ 376:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 10
+
+
+  97              		.loc 1 376 0
+  98 0046 4FF47053 		mov	r3, #15360
+  99 004a E4E7     		b	.L2
+ 100              	.L5:
+ 101              		.align	2
+ 102              	.L4:
+ 103 004c 00000000 		.word	ucHeap
+ 104 0050 00000000 		.word	.LANCHOR0
+ 105 0054 00000000 		.word	.LANCHOR1
+ 106 0058 00000000 		.word	.LANCHOR2
+ 107 005c 00000000 		.word	.LANCHOR3
+ 108 0060 00000000 		.word	.LANCHOR4
+ 109              		.cfi_endproc
+ 110              	.LFE10:
+ 112              		.section	.text.prvInsertBlockIntoFreeList,"ax",%progbits
+ 113              		.align	1
+ 114              		.syntax unified
+ 115              		.thumb
+ 116              		.thumb_func
+ 117              		.fpu fpv5-sp-d16
+ 119              	prvInsertBlockIntoFreeList:
+ 120              	.LFB11:
+ 417:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 418:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 419:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** static void prvInsertBlockIntoFreeList( BlockLink_t *pxBlockToInsert )
+ 420:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** {
+ 121              		.loc 1 420 0
+ 122              		.cfi_startproc
+ 123              		@ args = 0, pretend = 0, frame = 0
+ 124              		@ frame_needed = 0, uses_anonymous_args = 0
+ 125              		@ link register save eliminated.
+ 126              	.LVL13:
+ 127 0000 10B4     		push	{r4}
+ 128              	.LCFI0:
+ 129              		.cfi_def_cfa_offset 4
+ 130              		.cfi_offset 4, -4
+ 131              	.LVL14:
+ 421:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** BlockLink_t *pxIterator;
+ 422:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** uint8_t *puc;
+ 423:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 424:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* Iterate through the list until a block is found that has a higher address
+ 425:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	than the block being inserted. */
+ 426:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	for( pxIterator = &xStart; pxIterator->pxNextFreeBlock < pxBlockToInsert; pxIterator = pxIterator-
+ 132              		.loc 1 426 0
+ 133 0002 134B     		ldr	r3, .L15
+ 134              	.LVL15:
+ 135              	.L7:
+ 136              		.loc 1 426 0 is_stmt 0 discriminator 1
+ 137 0004 1A68     		ldr	r2, [r3]
+ 138 0006 8242     		cmp	r2, r0
+ 139 0008 1BD3     		bcc	.L13
+ 140              	.LVL16:
+ 427:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 428:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		/* Nothing to do here, just iterate to the right position. */
+ 429:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 430:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 431:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* Do the block being inserted, and the block it is being inserted after
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 11
+
+
+ 432:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	make a contiguous block of memory? */
+ 433:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	puc = ( uint8_t * ) pxIterator;
+ 434:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	if( ( puc + pxIterator->xBlockSize ) == ( uint8_t * ) pxBlockToInsert )
+ 141              		.loc 1 434 0 is_stmt 1
+ 142 000a 5968     		ldr	r1, [r3, #4]
+ 143 000c 5C18     		adds	r4, r3, r1
+ 144 000e 8442     		cmp	r4, r0
+ 145 0010 03D1     		bne	.L8
+ 435:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 436:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		pxIterator->xBlockSize += pxBlockToInsert->xBlockSize;
+ 146              		.loc 1 436 0
+ 147 0012 4068     		ldr	r0, [r0, #4]
+ 148              	.LVL17:
+ 149 0014 0144     		add	r1, r1, r0
+ 150 0016 5960     		str	r1, [r3, #4]
+ 151              	.LVL18:
+ 437:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		pxBlockToInsert = pxIterator;
+ 152              		.loc 1 437 0
+ 153 0018 1846     		mov	r0, r3
+ 154              	.LVL19:
+ 155              	.L8:
+ 438:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 439:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	else
+ 440:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 441:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		mtCOVERAGE_TEST_MARKER();
+ 442:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 443:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 444:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* Do the block being inserted, and the block it is being inserted before
+ 445:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	make a contiguous block of memory? */
+ 446:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	puc = ( uint8_t * ) pxBlockToInsert;
+ 447:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	if( ( puc + pxBlockToInsert->xBlockSize ) == ( uint8_t * ) pxIterator->pxNextFreeBlock )
+ 156              		.loc 1 447 0
+ 157 001a 4168     		ldr	r1, [r0, #4]
+ 158 001c 4418     		adds	r4, r0, r1
+ 159 001e A242     		cmp	r2, r4
+ 160 0020 13D1     		bne	.L9
+ 448:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 449:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		if( pxIterator->pxNextFreeBlock != pxEnd )
+ 161              		.loc 1 449 0
+ 162 0022 0C4C     		ldr	r4, .L15+4
+ 163 0024 2468     		ldr	r4, [r4]
+ 164 0026 A242     		cmp	r2, r4
+ 165 0028 0DD0     		beq	.L10
+ 450:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 451:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			/* Form one big block from the two blocks. */
+ 452:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			pxBlockToInsert->xBlockSize += pxIterator->pxNextFreeBlock->xBlockSize;
+ 166              		.loc 1 452 0
+ 167 002a 5268     		ldr	r2, [r2, #4]
+ 168 002c 1144     		add	r1, r1, r2
+ 169 002e 4160     		str	r1, [r0, #4]
+ 453:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			pxBlockToInsert->pxNextFreeBlock = pxIterator->pxNextFreeBlock->pxNextFreeBlock;
+ 170              		.loc 1 453 0
+ 171 0030 1A68     		ldr	r2, [r3]
+ 172 0032 1268     		ldr	r2, [r2]
+ 173 0034 0260     		str	r2, [r0]
+ 174              	.L11:
+ 454:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 12
+
+
+ 455:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		else
+ 456:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 457:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			pxBlockToInsert->pxNextFreeBlock = pxEnd;
+ 458:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 459:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 460:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	else
+ 461:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 462:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		pxBlockToInsert->pxNextFreeBlock = pxIterator->pxNextFreeBlock;
+ 463:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 464:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 465:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* If the block being inserted plugged a gab, so was merged with the block
+ 466:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	before and the block after, then it's pxNextFreeBlock pointer will have
+ 467:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	already been set, and should not be set here as that would make it point
+ 468:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	to itself. */
+ 469:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	if( pxIterator != pxBlockToInsert )
+ 175              		.loc 1 469 0
+ 176 0036 9842     		cmp	r0, r3
+ 177 0038 00D0     		beq	.L6
+ 470:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 471:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		pxIterator->pxNextFreeBlock = pxBlockToInsert;
+ 178              		.loc 1 471 0
+ 179 003a 1860     		str	r0, [r3]
+ 180              	.L6:
+ 472:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 473:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	else
+ 474:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 475:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		mtCOVERAGE_TEST_MARKER();
+ 476:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 477:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** }
+ 181              		.loc 1 477 0
+ 182 003c 5DF8044B 		ldr	r4, [sp], #4
+ 183              	.LCFI1:
+ 184              		.cfi_remember_state
+ 185              		.cfi_restore 4
+ 186              		.cfi_def_cfa_offset 0
+ 187 0040 7047     		bx	lr
+ 188              	.LVL20:
+ 189              	.L13:
+ 190              	.LCFI2:
+ 191              		.cfi_restore_state
+ 426:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 192              		.loc 1 426 0
+ 193 0042 1346     		mov	r3, r2
+ 194              	.LVL21:
+ 195 0044 DEE7     		b	.L7
+ 196              	.LVL22:
+ 197              	.L10:
+ 457:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 198              		.loc 1 457 0
+ 199 0046 0460     		str	r4, [r0]
+ 200 0048 F5E7     		b	.L11
+ 201              	.L9:
+ 462:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	}
+ 202              		.loc 1 462 0
+ 203 004a 0260     		str	r2, [r0]
+ 204 004c F3E7     		b	.L11
+ 205              	.L16:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 13
+
+
+ 206 004e 00BF     		.align	2
+ 207              	.L15:
+ 208 0050 00000000 		.word	.LANCHOR0
+ 209 0054 00000000 		.word	.LANCHOR1
+ 210              		.cfi_endproc
+ 211              	.LFE11:
+ 213              		.section	.text.pvPortMalloc,"ax",%progbits
+ 214              		.align	1
+ 215              		.global	pvPortMalloc
+ 216              		.syntax unified
+ 217              		.thumb
+ 218              		.thumb_func
+ 219              		.fpu fpv5-sp-d16
+ 221              	pvPortMalloc:
+ 222              	.LFB5:
+ 156:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** BlockLink_t *pxBlock, *pxPreviousBlock, *pxNewBlockLink;
+ 223              		.loc 1 156 0
+ 224              		.cfi_startproc
+ 225              		@ args = 0, pretend = 0, frame = 0
+ 226              		@ frame_needed = 0, uses_anonymous_args = 0
+ 227              	.LVL23:
+ 228 0000 70B5     		push	{r4, r5, r6, lr}
+ 229              	.LCFI3:
+ 230              		.cfi_def_cfa_offset 16
+ 231              		.cfi_offset 4, -16
+ 232              		.cfi_offset 5, -12
+ 233              		.cfi_offset 6, -8
+ 234              		.cfi_offset 14, -4
+ 235 0002 0446     		mov	r4, r0
+ 236              	.LVL24:
+ 160:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 237              		.loc 1 160 0
+ 238 0004 FFF7FEFF 		bl	vTaskSuspendAll
+ 239              	.LVL25:
+ 164:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 240              		.loc 1 164 0
+ 241 0008 3D4B     		ldr	r3, .L37
+ 242 000a 1B68     		ldr	r3, [r3]
+ 243 000c CBB1     		cbz	r3, .L36
+ 244              	.L18:
+ 177:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		{
+ 245              		.loc 1 177 0
+ 246 000e 3D4B     		ldr	r3, .L37+4
+ 247 0010 1B68     		ldr	r3, [r3]
+ 248 0012 1C42     		tst	r4, r3
+ 249 0014 69D1     		bne	.L30
+ 181:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			{
+ 250              		.loc 1 181 0
+ 251 0016 BCB1     		cbz	r4, .L20
+ 183:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 252              		.loc 1 183 0
+ 253 0018 0834     		adds	r4, r4, #8
+ 254              	.LVL26:
+ 187:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 255              		.loc 1 187 0
+ 256 001a 14F0070F 		tst	r4, #7
+ 257 001e 13D0     		beq	.L20
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 14
+
+
+ 190:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					configASSERT( ( xWantedSize & portBYTE_ALIGNMENT_MASK ) == 0 );
+ 258              		.loc 1 190 0
+ 259 0020 24F00704 		bic	r4, r4, #7
+ 260              	.LVL27:
+ 261 0024 0834     		adds	r4, r4, #8
+ 262              	.LVL28:
+ 191:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 263              		.loc 1 191 0
+ 264 0026 04F00703 		and	r3, r4, #7
+ 265 002a 6BB1     		cbz	r3, .L20
+ 266              	.LBB12:
+ 267              	.LBB13:
+ 268              		.file 2 "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h"
+   1:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*
+   2:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
+   3:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     All rights reserved
+   4:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+   5:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+   6:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+   7:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     This file is part of the FreeRTOS distribution.
+   8:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+   9:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     FreeRTOS is free software; you can redistribute it and/or modify it under
+  10:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     the terms of the GNU General Public License (version 2) as published by the
+  11:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     Free Software Foundation >>>> AND MODIFIED BY <<<< the FreeRTOS exception.
+  12:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  13:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     ***************************************************************************
+  14:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     >>!   NOTE: The modification to the GPL is included to allow you to     !<<
+  15:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     >>!   distribute a combined work that includes FreeRTOS without being   !<<
+  16:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     >>!   obliged to provide the source code for proprietary components     !<<
+  17:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     >>!   outside of the FreeRTOS kernel.                                   !<<
+  18:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     ***************************************************************************
+  19:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  20:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
+  21:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  22:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     FOR A PARTICULAR PURPOSE.  Full license text is available on the following
+  23:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     link: http://www.freertos.org/a00114.html
+  24:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  25:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     ***************************************************************************
+  26:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *                                                                       *
+  27:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *    FreeRTOS provides completely free yet professionally developed,    *
+  28:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *    robust, strictly quality controlled, supported, and cross          *
+  29:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *    platform software that is more than just the market leader, it     *
+  30:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *    is the industry's de facto standard.                               *
+  31:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *                                                                       *
+  32:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *    Help yourself get started quickly while simultaneously helping     *
+  33:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *    to support the FreeRTOS project by purchasing a FreeRTOS           *
+  34:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *    tutorial book, reference manual, or both:                          *
+  35:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *    http://www.FreeRTOS.org/Documentation                              *
+  36:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****      *                                                                       *
+  37:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     ***************************************************************************
+  38:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  39:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
+  40:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     the FAQ page "My application does not run, what could be wrong?".  Have you
+  41:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     defined configASSERT()?
+  42:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  43:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     http://www.FreeRTOS.org/support - In return for receiving this top quality
+  44:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     embedded software for free we request you assist our global community by
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 15
+
+
+  45:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     participating in the support forum.
+  46:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  47:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     http://www.FreeRTOS.org/training - Investing in training allows your team to
+  48:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     be as productive as possible as early as possible.  Now you can receive
+  49:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
+  50:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     Ltd, and the world's leading authority on the world's leading RTOS.
+  51:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  52:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
+  53:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     including FreeRTOS+Trace - an indispensable productivity tool, a DOS
+  54:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     compatible FAT file system, and our tiny thread aware UDP/IP stack.
+  55:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  56:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     http://www.FreeRTOS.org/labs - Where new FreeRTOS products go to incubate.
+  57:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     Come and try FreeRTOS+TCP, our new open source TCP/IP stack for FreeRTOS.
+  58:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  59:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     http://www.OpenRTOS.com - Real Time Engineers ltd. license FreeRTOS to High
+  60:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     Integrity Systems ltd. to sell under the OpenRTOS brand.  Low cost OpenRTOS
+  61:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     licenses offer ticketed support, indemnification and commercial middleware.
+  62:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  63:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     http://www.SafeRTOS.com - High Integrity Systems also provide a safety
+  64:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     engineered and independently SIL3 certified version for use in safety and
+  65:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     mission critical applications that require provable dependability.
+  66:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  67:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****     1 tab == 4 spaces!
+  68:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** */
+  69:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  70:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  71:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #ifndef PORTMACRO_H
+  72:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define PORTMACRO_H
+  73:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  74:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #ifdef __cplusplus
+  75:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** extern "C" {
+  76:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #endif
+  77:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  78:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------
+  79:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * Port specific definitions.
+  80:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *
+  81:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * The settings in this file configure FreeRTOS correctly for the
+  82:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * given hardware and compiler.
+  83:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *
+  84:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  * These settings should not be altered.
+  85:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  *-----------------------------------------------------------
+  86:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h ****  */
+  87:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  88:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Type definitions. */
+  89:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portCHAR		char
+  90:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portFLOAT		float
+  91:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portDOUBLE		double
+  92:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portLONG		long
+  93:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portSHORT		short
+  94:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portSTACK_TYPE	uint32_t
+  95:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portBASE_TYPE	long
+  96:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+  97:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** typedef portSTACK_TYPE StackType_t;
+  98:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** typedef long BaseType_t;
+  99:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** typedef unsigned long UBaseType_t;
+ 100:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 101:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #if( configUSE_16_BIT_TICKS == 1 )
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 16
+
+
+ 102:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	typedef uint16_t TickType_t;
+ 103:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define portMAX_DELAY ( TickType_t ) 0xffff
+ 104:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #else
+ 105:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	typedef uint32_t TickType_t;
+ 106:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define portMAX_DELAY ( TickType_t ) 0xffffffffUL
+ 107:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 108:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	/* 32-bit tick type on a 32-bit architecture, so reads of the tick count do
+ 109:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	not need to be guarded with a critical section. */
+ 110:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define portTICK_TYPE_IS_ATOMIC 1
+ 111:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #endif
+ 112:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 113:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 114:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Architecture specifics. */
+ 115:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portSTACK_GROWTH			( -1 )
+ 116:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portTICK_PERIOD_MS			( ( TickType_t ) 1000 / configTICK_RATE_HZ )
+ 117:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portBYTE_ALIGNMENT			8
+ 118:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 119:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 120:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Scheduler utilities. */
+ 121:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portYIELD() 															\
+ 122:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** {																				\
+ 123:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	/* Set a PendSV to request a context switch. */								\
+ 124:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;								\
+ 125:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 																				\
+ 126:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	/* Barriers are normally not required but do ensure the code is completely	\
+ 127:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	within the specified behaviour for the architecture. */						\
+ 128:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	__asm volatile( "dsb" );													\
+ 129:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	__asm volatile( "isb" );													\
+ 130:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** }
+ 131:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 132:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portNVIC_INT_CTRL_REG		( * ( ( volatile uint32_t * ) 0xe000ed04 ) )
+ 133:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portNVIC_PENDSVSET_BIT		( 1UL << 28UL )
+ 134:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portEND_SWITCHING_ISR( xSwitchRequired ) if( xSwitchRequired != pdFALSE ) portYIELD()
+ 135:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portYIELD_FROM_ISR( x ) portEND_SWITCHING_ISR( x )
+ 136:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 137:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 138:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Critical section management. */
+ 139:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** extern void vPortEnterCritical( void );
+ 140:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** extern void vPortExitCritical( void );
+ 141:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portSET_INTERRUPT_MASK_FROM_ISR()		ulPortRaiseBASEPRI()
+ 142:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portCLEAR_INTERRUPT_MASK_FROM_ISR(x)	vPortSetBASEPRI(x)
+ 143:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portDISABLE_INTERRUPTS()				vPortRaiseBASEPRI()
+ 144:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portENABLE_INTERRUPTS()					vPortSetBASEPRI(0)
+ 145:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portENTER_CRITICAL()					vPortEnterCritical()
+ 146:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portEXIT_CRITICAL()						vPortExitCritical()
+ 147:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 148:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 149:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 150:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Task function macros as described on the FreeRTOS.org WEB site.  These are
+ 151:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** not necessary for to use this port.  They are defined so the common demo files
+ 152:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** (which build with all the ports) will build. */
+ 153:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portTASK_FUNCTION_PROTO( vFunction, pvParameters ) void vFunction( void *pvParameters )
+ 154:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portTASK_FUNCTION( vFunction, pvParameters ) void vFunction( void *pvParameters )
+ 155:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 156:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 157:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Tickless idle/low power functionality. */
+ 158:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #ifndef portSUPPRESS_TICKS_AND_SLEEP
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 17
+
+
+ 159:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	extern void vPortSuppressTicksAndSleep( TickType_t xExpectedIdleTime );
+ 160:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define portSUPPRESS_TICKS_AND_SLEEP( xExpectedIdleTime ) vPortSuppressTicksAndSleep( xExpectedIdl
+ 161:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #endif
+ 162:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 163:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 164:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* Architecture specific optimisations. */
+ 165:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #ifndef configUSE_PORT_OPTIMISED_TASK_SELECTION
+ 166:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define configUSE_PORT_OPTIMISED_TASK_SELECTION 1
+ 167:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #endif
+ 168:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 169:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #if configUSE_PORT_OPTIMISED_TASK_SELECTION == 1
+ 170:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 171:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	/* Generic helper function. */
+ 172:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	__attribute__( ( always_inline ) ) static inline uint8_t ucPortCountLeadingZeros( uint32_t ulBitma
+ 173:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	{
+ 174:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	uint8_t ucReturn;
+ 175:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 176:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 		__asm volatile ( "clz %0, %1" : "=r" ( ucReturn ) : "r" ( ulBitmap ) );
+ 177:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 		return ucReturn;
+ 178:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	}
+ 179:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 180:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	/* Check the configuration. */
+ 181:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#if( configMAX_PRIORITIES > 32 )
+ 182:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 		#error configUSE_PORT_OPTIMISED_TASK_SELECTION can only be set to 1 when configMAX_PRIORITIES is 
+ 183:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#endif
+ 184:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 185:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	/* Store/clear the ready priorities in a bit map. */
+ 186:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define portRECORD_READY_PRIORITY( uxPriority, uxReadyPriorities ) ( uxReadyPriorities ) |= ( 1UL 
+ 187:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define portRESET_READY_PRIORITY( uxPriority, uxReadyPriorities ) ( uxReadyPriorities ) &= ~( 1UL 
+ 188:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 189:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	/*-----------------------------------------------------------*/
+ 190:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 191:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities ) uxTopPriority = ( 31UL - ( ui
+ 192:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 193:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
+ 194:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 195:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 196:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 197:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #ifdef configASSERT
+ 198:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	void vPortValidateInterruptPriority( void );
+ 199:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define portASSERT_IF_INTERRUPT_PRIORITY_INVALID() 	vPortValidateInterruptPriority()
+ 200:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #endif
+ 201:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 202:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /* portNOP() is not required by this port. */
+ 203:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portNOP()
+ 204:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 205:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #define portINLINE	__inline
+ 206:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 207:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #ifndef portFORCE_INLINE
+ 208:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	#define portFORCE_INLINE inline __attribute__(( always_inline))
+ 209:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** #endif
+ 210:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 211:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** portFORCE_INLINE static BaseType_t xPortIsInsideInterrupt( void )
+ 212:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** {
+ 213:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** uint32_t ulCurrentInterrupt;
+ 214:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** BaseType_t xReturn;
+ 215:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 18
+
+
+ 216:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	/* Obtain the number of the currently executing interrupt. */
+ 217:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	__asm volatile( "mrs %0, ipsr" : "=r"( ulCurrentInterrupt ) );
+ 218:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 219:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	if( ulCurrentInterrupt == 0 )
+ 220:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	{
+ 221:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 		xReturn = pdFALSE;
+ 222:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	}
+ 223:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	else
+ 224:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	{
+ 225:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 		xReturn = pdTRUE;
+ 226:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	}
+ 227:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 228:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	return xReturn;
+ 229:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** }
+ 230:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 231:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** /*-----------------------------------------------------------*/
+ 232:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 233:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** portFORCE_INLINE static void vPortRaiseBASEPRI( void )
+ 234:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** {
+ 235:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** uint32_t ulNewBASEPRI;
+ 236:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 
+ 237:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h **** 	__asm volatile
+ 269              		.loc 2 237 0
+ 270              		.syntax unified
+ 271              	@ 237 "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 272 002c 4FF05003 			mov r3, #80												
+ 273 0030 72B6     		cpsid i													
+ 274 0032 83F31188 		msr basepri, r3											
+ 275 0036 BFF36F8F 		isb														
+ 276 003a BFF34F8F 		dsb														
+ 277 003e 62B6     		cpsie i													
+ 278              	
+ 279              	@ 0 "" 2
+ 280              	.LVL29:
+ 281              		.thumb
+ 282              		.syntax unified
+ 283              	.L21:
+ 284 0040 FEE7     		b	.L21
+ 285              	.L36:
+ 286              	.LBE13:
+ 287              	.LBE12:
+ 166:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		}
+ 288              		.loc 1 166 0
+ 289 0042 FFF7FEFF 		bl	prvHeapInit
+ 290              	.LVL30:
+ 291 0046 E2E7     		b	.L18
+ 292              	.L20:
+ 203:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			{
+ 293              		.loc 1 203 0
+ 294 0048 002C     		cmp	r4, #0
+ 295 004a 50D0     		beq	.L31
+ 203:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			{
+ 296              		.loc 1 203 0 is_stmt 0 discriminator 1
+ 297 004c 2E4B     		ldr	r3, .L37+8
+ 298 004e 1B68     		ldr	r3, [r3]
+ 299 0050 A342     		cmp	r3, r4
+ 300 0052 4ED3     		bcc	.L32
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 19
+
+
+ 301              	.LVL31:
+ 208:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				while( ( pxBlock->xBlockSize < xWantedSize ) && ( pxBlock->pxNextFreeBlock != NULL ) )
+ 302              		.loc 1 208 0 is_stmt 1
+ 303 0054 2D4B     		ldr	r3, .L37+12
+ 304 0056 1D68     		ldr	r5, [r3]
+ 305              	.LVL32:
+ 209:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 306              		.loc 1 209 0
+ 307 0058 01E0     		b	.L23
+ 308              	.LVL33:
+ 309              	.L33:
+ 211:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					pxBlock = pxBlock->pxNextFreeBlock;
+ 310              		.loc 1 211 0
+ 311 005a 2B46     		mov	r3, r5
+ 312              	.LVL34:
+ 212:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 313              		.loc 1 212 0
+ 314 005c 1546     		mov	r5, r2
+ 315              	.LVL35:
+ 316              	.L23:
+ 209:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 317              		.loc 1 209 0
+ 318 005e 6A68     		ldr	r2, [r5, #4]
+ 319 0060 A242     		cmp	r2, r4
+ 320 0062 02D2     		bcs	.L22
+ 209:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 321              		.loc 1 209 0 is_stmt 0 discriminator 1
+ 322 0064 2A68     		ldr	r2, [r5]
+ 323 0066 002A     		cmp	r2, #0
+ 324 0068 F7D1     		bne	.L33
+ 325              	.L22:
+ 217:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 326              		.loc 1 217 0 is_stmt 1
+ 327 006a 254A     		ldr	r2, .L37
+ 328 006c 1268     		ldr	r2, [r2]
+ 329 006e AA42     		cmp	r2, r5
+ 330 0070 41D0     		beq	.L34
+ 221:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 331              		.loc 1 221 0
+ 332 0072 1E68     		ldr	r6, [r3]
+ 333 0074 0836     		adds	r6, r6, #8
+ 334              	.LVL36:
+ 225:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 335              		.loc 1 225 0
+ 336 0076 2A68     		ldr	r2, [r5]
+ 337 0078 1A60     		str	r2, [r3]
+ 229:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					{
+ 338              		.loc 1 229 0
+ 339 007a 6B68     		ldr	r3, [r5, #4]
+ 340              	.LVL37:
+ 341 007c 1B1B     		subs	r3, r3, r4
+ 342 007e 102B     		cmp	r3, #16
+ 343 0080 12D9     		bls	.L24
+ 235:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						configASSERT( ( ( ( size_t ) pxNewBlockLink ) & portBYTE_ALIGNMENT_MASK ) == 0 );
+ 344              		.loc 1 235 0
+ 345 0082 2819     		adds	r0, r5, r4
+ 346              	.LVL38:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 20
+
+
+ 236:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 347              		.loc 1 236 0
+ 348 0084 10F0070F 		tst	r0, #7
+ 349 0088 0AD0     		beq	.L25
+ 350              	.LBB14:
+ 351              	.LBB15:
+ 352              		.loc 2 237 0
+ 353              		.syntax unified
+ 354              	@ 237 "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 355 008a 4FF05003 			mov r3, #80												
+ 356 008e 72B6     		cpsid i													
+ 357 0090 83F31188 		msr basepri, r3											
+ 358 0094 BFF36F8F 		isb														
+ 359 0098 BFF34F8F 		dsb														
+ 360 009c 62B6     		cpsie i													
+ 361              	
+ 362              	@ 0 "" 2
+ 363              	.LVL39:
+ 364              		.thumb
+ 365              		.syntax unified
+ 366              	.L26:
+ 367 009e FEE7     		b	.L26
+ 368              	.L25:
+ 369              	.LBE15:
+ 370              	.LBE14:
+ 240:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 						pxBlock->xBlockSize = xWantedSize;
+ 371              		.loc 1 240 0
+ 372 00a0 4360     		str	r3, [r0, #4]
+ 241:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 373              		.loc 1 241 0
+ 374 00a2 6C60     		str	r4, [r5, #4]
+ 244:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					}
+ 375              		.loc 1 244 0
+ 376 00a4 FFF7FEFF 		bl	prvInsertBlockIntoFreeList
+ 377              	.LVL40:
+ 378              	.L24:
+ 251:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 379              		.loc 1 251 0
+ 380 00a8 6A68     		ldr	r2, [r5, #4]
+ 381 00aa 1749     		ldr	r1, .L37+8
+ 382 00ac 0B68     		ldr	r3, [r1]
+ 383 00ae 9B1A     		subs	r3, r3, r2
+ 384 00b0 0B60     		str	r3, [r1]
+ 253:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					{
+ 385              		.loc 1 253 0
+ 386 00b2 1749     		ldr	r1, .L37+16
+ 387 00b4 0968     		ldr	r1, [r1]
+ 388 00b6 8B42     		cmp	r3, r1
+ 389 00b8 01D2     		bcs	.L27
+ 255:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					}
+ 390              		.loc 1 255 0
+ 391 00ba 1549     		ldr	r1, .L37+16
+ 392 00bc 0B60     		str	r3, [r1]
+ 393              	.L27:
+ 264:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					pxBlock->pxNextFreeBlock = NULL;
+ 394              		.loc 1 264 0
+ 395 00be 114B     		ldr	r3, .L37+4
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 21
+
+
+ 396 00c0 1B68     		ldr	r3, [r3]
+ 397 00c2 1343     		orrs	r3, r3, r2
+ 398 00c4 6B60     		str	r3, [r5, #4]
+ 265:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 399              		.loc 1 265 0
+ 400 00c6 0023     		movs	r3, #0
+ 401 00c8 2B60     		str	r3, [r5]
+ 402              	.LVL41:
+ 403              	.L19:
+ 284:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 404              		.loc 1 284 0
+ 405 00ca FFF7FEFF 		bl	xTaskResumeAll
+ 406              	.LVL42:
+ 300:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	return pvReturn;
+ 407              		.loc 1 300 0
+ 408 00ce 16F0070F 		tst	r6, #7
+ 409 00d2 12D0     		beq	.L17
+ 410              	.LBB16:
+ 411              	.LBB17:
+ 412              		.loc 2 237 0
+ 413              		.syntax unified
+ 414              	@ 237 "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 415 00d4 4FF05003 			mov r3, #80												
+ 416 00d8 72B6     		cpsid i													
+ 417 00da 83F31188 		msr basepri, r3											
+ 418 00de BFF36F8F 		isb														
+ 419 00e2 BFF34F8F 		dsb														
+ 420 00e6 62B6     		cpsie i													
+ 421              	
+ 422              	@ 0 "" 2
+ 423              	.LVL43:
+ 424              		.thumb
+ 425              		.syntax unified
+ 426              	.L29:
+ 427 00e8 FEE7     		b	.L29
+ 428              	.LVL44:
+ 429              	.L30:
+ 430              	.LBE17:
+ 431              	.LBE16:
+ 158:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 432              		.loc 1 158 0
+ 433 00ea 0026     		movs	r6, #0
+ 434 00ec EDE7     		b	.L19
+ 435              	.L31:
+ 436 00ee 0026     		movs	r6, #0
+ 437 00f0 EBE7     		b	.L19
+ 438              	.L32:
+ 439 00f2 0026     		movs	r6, #0
+ 440 00f4 E9E7     		b	.L19
+ 441              	.LVL45:
+ 442              	.L34:
+ 443 00f6 0026     		movs	r6, #0
+ 444 00f8 E7E7     		b	.L19
+ 445              	.LVL46:
+ 446              	.L17:
+ 302:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 447              		.loc 1 302 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 22
+
+
+ 448 00fa 3046     		mov	r0, r6
+ 449 00fc 70BD     		pop	{r4, r5, r6, pc}
+ 450              	.LVL47:
+ 451              	.L38:
+ 452 00fe 00BF     		.align	2
+ 453              	.L37:
+ 454 0100 00000000 		.word	.LANCHOR1
+ 455 0104 00000000 		.word	.LANCHOR4
+ 456 0108 00000000 		.word	.LANCHOR3
+ 457 010c 00000000 		.word	.LANCHOR0
+ 458 0110 00000000 		.word	.LANCHOR2
+ 459              		.cfi_endproc
+ 460              	.LFE5:
+ 462              		.section	.text.vPortFree,"ax",%progbits
+ 463              		.align	1
+ 464              		.global	vPortFree
+ 465              		.syntax unified
+ 466              		.thumb
+ 467              		.thumb_func
+ 468              		.fpu fpv5-sp-d16
+ 470              	vPortFree:
+ 471              	.LFB6:
+ 306:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** uint8_t *puc = ( uint8_t * ) pv;
+ 472              		.loc 1 306 0
+ 473              		.cfi_startproc
+ 474              		@ args = 0, pretend = 0, frame = 0
+ 475              		@ frame_needed = 0, uses_anonymous_args = 0
+ 476              	.LVL48:
+ 310:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	{
+ 477              		.loc 1 310 0
+ 478 0000 0028     		cmp	r0, #0
+ 479 0002 34D0     		beq	.L46
+ 306:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** uint8_t *puc = ( uint8_t * ) pv;
+ 480              		.loc 1 306 0
+ 481 0004 38B5     		push	{r3, r4, r5, lr}
+ 482              	.LCFI4:
+ 483              		.cfi_def_cfa_offset 16
+ 484              		.cfi_offset 3, -16
+ 485              		.cfi_offset 4, -12
+ 486              		.cfi_offset 5, -8
+ 487              		.cfi_offset 14, -4
+ 488 0006 0446     		mov	r4, r0
+ 314:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 489              		.loc 1 314 0
+ 490 0008 A0F10805 		sub	r5, r0, #8
+ 491              	.LVL49:
+ 320:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 		configASSERT( pxLink->pxNextFreeBlock == NULL );
+ 492              		.loc 1 320 0
+ 493 000c 50F8042C 		ldr	r2, [r0, #-4]
+ 494 0010 1749     		ldr	r1, .L49
+ 495 0012 0968     		ldr	r1, [r1]
+ 496 0014 0A42     		tst	r2, r1
+ 497 0016 0AD1     		bne	.L41
+ 498              	.LBB18:
+ 499              	.LBB19:
+ 500              		.loc 2 237 0
+ 501              		.syntax unified
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 23
+
+
+ 502              	@ 237 "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 503 0018 4FF05003 			mov r3, #80												
+ 504 001c 72B6     		cpsid i													
+ 505 001e 83F31188 		msr basepri, r3											
+ 506 0022 BFF36F8F 		isb														
+ 507 0026 BFF34F8F 		dsb														
+ 508 002a 62B6     		cpsie i													
+ 509              	
+ 510              	@ 0 "" 2
+ 511              	.LVL50:
+ 512              		.thumb
+ 513              		.syntax unified
+ 514              	.L42:
+ 515 002c FEE7     		b	.L42
+ 516              	.L41:
+ 517              	.LBE19:
+ 518              	.LBE18:
+ 321:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 519              		.loc 1 321 0
+ 520 002e 50F8080C 		ldr	r0, [r0, #-8]
+ 521              	.LVL51:
+ 522 0032 50B1     		cbz	r0, .L43
+ 523              	.LBB20:
+ 524              	.LBB21:
+ 525              		.loc 2 237 0
+ 526              		.syntax unified
+ 527              	@ 237 "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/portmacro.h" 1
+ 528 0034 4FF05003 			mov r3, #80												
+ 529 0038 72B6     		cpsid i													
+ 530 003a 83F31188 		msr basepri, r3											
+ 531 003e BFF36F8F 		isb														
+ 532 0042 BFF34F8F 		dsb														
+ 533 0046 62B6     		cpsie i													
+ 534              	
+ 535              	@ 0 "" 2
+ 536              	.LVL52:
+ 537              		.thumb
+ 538              		.syntax unified
+ 539              	.L44:
+ 540 0048 FEE7     		b	.L44
+ 541              	.L43:
+ 542              	.LBE21:
+ 543              	.LBE20:
+ 329:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 
+ 544              		.loc 1 329 0
+ 545 004a 22EA0102 		bic	r2, r2, r1
+ 546 004e 44F8042C 		str	r2, [r4, #-4]
+ 331:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				{
+ 547              		.loc 1 331 0
+ 548 0052 FFF7FEFF 		bl	vTaskSuspendAll
+ 549              	.LVL53:
+ 334:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 					traceFREE( pv, pxLink->xBlockSize );
+ 550              		.loc 1 334 0
+ 551 0056 54F8041C 		ldr	r1, [r4, #-4]
+ 552 005a 064A     		ldr	r2, .L49+4
+ 553 005c 1368     		ldr	r3, [r2]
+ 554 005e 0B44     		add	r3, r3, r1
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 24
+
+
+ 555 0060 1360     		str	r3, [r2]
+ 336:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 				}
+ 556              		.loc 1 336 0
+ 557 0062 2846     		mov	r0, r5
+ 558 0064 FFF7FEFF 		bl	prvInsertBlockIntoFreeList
+ 559              	.LVL54:
+ 338:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 			}
+ 560              		.loc 1 338 0
+ 561 0068 FFF7FEFF 		bl	xTaskResumeAll
+ 562              	.LVL55:
+ 350:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 563              		.loc 1 350 0
+ 564 006c 38BD     		pop	{r3, r4, r5, pc}
+ 565              	.LVL56:
+ 566              	.L46:
+ 567              	.LCFI5:
+ 568              		.cfi_def_cfa_offset 0
+ 569              		.cfi_restore 3
+ 570              		.cfi_restore 4
+ 571              		.cfi_restore 5
+ 572              		.cfi_restore 14
+ 573 006e 7047     		bx	lr
+ 574              	.L50:
+ 575              		.align	2
+ 576              	.L49:
+ 577 0070 00000000 		.word	.LANCHOR4
+ 578 0074 00000000 		.word	.LANCHOR3
+ 579              		.cfi_endproc
+ 580              	.LFE6:
+ 582              		.section	.text.xPortGetFreeHeapSize,"ax",%progbits
+ 583              		.align	1
+ 584              		.global	xPortGetFreeHeapSize
+ 585              		.syntax unified
+ 586              		.thumb
+ 587              		.thumb_func
+ 588              		.fpu fpv5-sp-d16
+ 590              	xPortGetFreeHeapSize:
+ 591              	.LFB7:
+ 354:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	return xFreeBytesRemaining;
+ 592              		.loc 1 354 0
+ 593              		.cfi_startproc
+ 594              		@ args = 0, pretend = 0, frame = 0
+ 595              		@ frame_needed = 0, uses_anonymous_args = 0
+ 596              		@ link register save eliminated.
+ 356:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 597              		.loc 1 356 0
+ 598 0000 014B     		ldr	r3, .L52
+ 599 0002 1868     		ldr	r0, [r3]
+ 600 0004 7047     		bx	lr
+ 601              	.L53:
+ 602 0006 00BF     		.align	2
+ 603              	.L52:
+ 604 0008 00000000 		.word	.LANCHOR3
+ 605              		.cfi_endproc
+ 606              	.LFE7:
+ 608              		.section	.text.xPortGetMinimumEverFreeHeapSize,"ax",%progbits
+ 609              		.align	1
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 25
+
+
+ 610              		.global	xPortGetMinimumEverFreeHeapSize
+ 611              		.syntax unified
+ 612              		.thumb
+ 613              		.thumb_func
+ 614              		.fpu fpv5-sp-d16
+ 616              	xPortGetMinimumEverFreeHeapSize:
+ 617              	.LFB8:
+ 360:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	return xMinimumEverFreeBytesRemaining;
+ 618              		.loc 1 360 0
+ 619              		.cfi_startproc
+ 620              		@ args = 0, pretend = 0, frame = 0
+ 621              		@ frame_needed = 0, uses_anonymous_args = 0
+ 622              		@ link register save eliminated.
+ 362:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 623              		.loc 1 362 0
+ 624 0000 014B     		ldr	r3, .L55
+ 625 0002 1868     		ldr	r0, [r3]
+ 626 0004 7047     		bx	lr
+ 627              	.L56:
+ 628 0006 00BF     		.align	2
+ 629              	.L55:
+ 630 0008 00000000 		.word	.LANCHOR2
+ 631              		.cfi_endproc
+ 632              	.LFE8:
+ 634              		.section	.text.vPortInitialiseBlocks,"ax",%progbits
+ 635              		.align	1
+ 636              		.global	vPortInitialiseBlocks
+ 637              		.syntax unified
+ 638              		.thumb
+ 639              		.thumb_func
+ 640              		.fpu fpv5-sp-d16
+ 642              	vPortInitialiseBlocks:
+ 643              	.LFB9:
+ 366:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** 	/* This just exists to keep the linker quiet. */
+ 644              		.loc 1 366 0
+ 645              		.cfi_startproc
+ 646              		@ args = 0, pretend = 0, frame = 0
+ 647              		@ frame_needed = 0, uses_anonymous_args = 0
+ 648              		@ link register save eliminated.
+ 368:Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c **** /*-----------------------------------------------------------*/
+ 649              		.loc 1 368 0
+ 650 0000 7047     		bx	lr
+ 651              		.cfi_endproc
+ 652              	.LFE9:
+ 654              		.section	.bss.pxEnd,"aw",%nobits
+ 655              		.align	2
+ 656              		.set	.LANCHOR1,. + 0
+ 659              	pxEnd:
+ 660 0000 00000000 		.space	4
+ 661              		.section	.bss.ucHeap,"aw",%nobits
+ 662              		.align	2
+ 665              	ucHeap:
+ 666 0000 00000000 		.space	15360
+ 666      00000000 
+ 666      00000000 
+ 666      00000000 
+ 666      00000000 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 26
+
+
+ 667              		.section	.bss.xBlockAllocatedBit,"aw",%nobits
+ 668              		.align	2
+ 669              		.set	.LANCHOR4,. + 0
+ 672              	xBlockAllocatedBit:
+ 673 0000 00000000 		.space	4
+ 674              		.section	.bss.xFreeBytesRemaining,"aw",%nobits
+ 675              		.align	2
+ 676              		.set	.LANCHOR3,. + 0
+ 679              	xFreeBytesRemaining:
+ 680 0000 00000000 		.space	4
+ 681              		.section	.bss.xMinimumEverFreeBytesRemaining,"aw",%nobits
+ 682              		.align	2
+ 683              		.set	.LANCHOR2,. + 0
+ 686              	xMinimumEverFreeBytesRemaining:
+ 687 0000 00000000 		.space	4
+ 688              		.section	.bss.xStart,"aw",%nobits
+ 689              		.align	2
+ 690              		.set	.LANCHOR0,. + 0
+ 693              	xStart:
+ 694 0000 00000000 		.space	8
+ 694      00000000 
+ 695              		.text
+ 696              	.Letext0:
+ 697              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 698              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 699              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 700              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 701              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 702              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 703              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 704              		.file 10 "Inc/FreeRTOSConfig.h"
+ 705              		.file 11 "Middlewares/Third_Party/FreeRTOS/Source/include/task.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc43OpAy.s 			page 27
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 heap_4.c
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:18     .text.prvHeapInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:24     .text.prvHeapInit:00000000 prvHeapInit
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:103    .text.prvHeapInit:0000004c $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:665    .bss.ucHeap:00000000 ucHeap
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:113    .text.prvInsertBlockIntoFreeList:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:119    .text.prvInsertBlockIntoFreeList:00000000 prvInsertBlockIntoFreeList
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:208    .text.prvInsertBlockIntoFreeList:00000050 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:214    .text.pvPortMalloc:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:221    .text.pvPortMalloc:00000000 pvPortMalloc
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:454    .text.pvPortMalloc:00000100 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:463    .text.vPortFree:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:470    .text.vPortFree:00000000 vPortFree
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:577    .text.vPortFree:00000070 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:583    .text.xPortGetFreeHeapSize:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:590    .text.xPortGetFreeHeapSize:00000000 xPortGetFreeHeapSize
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:604    .text.xPortGetFreeHeapSize:00000008 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:609    .text.xPortGetMinimumEverFreeHeapSize:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:616    .text.xPortGetMinimumEverFreeHeapSize:00000000 xPortGetMinimumEverFreeHeapSize
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:630    .text.xPortGetMinimumEverFreeHeapSize:00000008 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:635    .text.vPortInitialiseBlocks:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:642    .text.vPortInitialiseBlocks:00000000 vPortInitialiseBlocks
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:655    .bss.pxEnd:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:659    .bss.pxEnd:00000000 pxEnd
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:662    .bss.ucHeap:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:668    .bss.xBlockAllocatedBit:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:672    .bss.xBlockAllocatedBit:00000000 xBlockAllocatedBit
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:675    .bss.xFreeBytesRemaining:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:679    .bss.xFreeBytesRemaining:00000000 xFreeBytesRemaining
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:682    .bss.xMinimumEverFreeBytesRemaining:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:686    .bss.xMinimumEverFreeBytesRemaining:00000000 xMinimumEverFreeBytesRemaining
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:689    .bss.xStart:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cc43OpAy.s:693    .bss.xStart:00000000 xStart
+
+UNDEFINED SYMBOLS
+vTaskSuspendAll
+xTaskResumeAll

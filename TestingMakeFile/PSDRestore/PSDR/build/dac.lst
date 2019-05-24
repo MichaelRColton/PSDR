@@ -1,0 +1,438 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"dac.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MX_DAC_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	MX_DAC_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	MX_DAC_Init:
+  26              	.LFB138:
+  27              		.file 1 "Src/dac.c"
+   1:Src/dac.c     **** /**
+   2:Src/dac.c     ****   ******************************************************************************
+   3:Src/dac.c     ****   * File Name          : DAC.c
+   4:Src/dac.c     ****   * Description        : This file provides code for the configuration
+   5:Src/dac.c     ****   *                      of the DAC instances.
+   6:Src/dac.c     ****   ******************************************************************************
+   7:Src/dac.c     ****   * This notice applies to any and all portions of this file
+   8:Src/dac.c     ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/dac.c     ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/dac.c     ****   * inserted by the user or by software development tools
+  11:Src/dac.c     ****   * are owned by their respective copyright owners.
+  12:Src/dac.c     ****   *
+  13:Src/dac.c     ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/dac.c     ****   * All rights reserved.
+  15:Src/dac.c     ****   *
+  16:Src/dac.c     ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/dac.c     ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/dac.c     ****   *
+  19:Src/dac.c     ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/dac.c     ****   *    this list of conditions and the following disclaimer.
+  21:Src/dac.c     ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/dac.c     ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/dac.c     ****   *    and/or other materials provided with the distribution.
+  24:Src/dac.c     ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/dac.c     ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/dac.c     ****   *    derived from this software without specific written permission.
+  27:Src/dac.c     ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/dac.c     ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/dac.c     ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/dac.c     ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/dac.c     ****   *    this license is void and will automatically terminate your rights under 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s 			page 2
+
+
+  32:Src/dac.c     ****   *    this license. 
+  33:Src/dac.c     ****   *
+  34:Src/dac.c     ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/dac.c     ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/dac.c     ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/dac.c     ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/dac.c     ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/dac.c     ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/dac.c     ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/dac.c     ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/dac.c     ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/dac.c     ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/dac.c     ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/dac.c     ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/dac.c     ****   *
+  47:Src/dac.c     ****   ******************************************************************************
+  48:Src/dac.c     ****   */
+  49:Src/dac.c     **** 
+  50:Src/dac.c     **** /* Includes ------------------------------------------------------------------*/
+  51:Src/dac.c     **** #include "dac.h"
+  52:Src/dac.c     **** 
+  53:Src/dac.c     **** #include "gpio.h"
+  54:Src/dac.c     **** 
+  55:Src/dac.c     **** /* USER CODE BEGIN 0 */
+  56:Src/dac.c     **** 
+  57:Src/dac.c     **** /* USER CODE END 0 */
+  58:Src/dac.c     **** 
+  59:Src/dac.c     **** DAC_HandleTypeDef hdac;
+  60:Src/dac.c     **** 
+  61:Src/dac.c     **** /* DAC init function */
+  62:Src/dac.c     **** void MX_DAC_Init(void)
+  63:Src/dac.c     **** {
+  28              		.loc 1 63 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 00B5     		push	{lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 4
+  35              		.cfi_offset 14, -4
+  36 0002 83B0     		sub	sp, sp, #12
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 16
+  64:Src/dac.c     ****   DAC_ChannelConfTypeDef sConfig;
+  65:Src/dac.c     **** 
+  66:Src/dac.c     ****     /**DAC Initialization 
+  67:Src/dac.c     ****     */
+  68:Src/dac.c     ****   hdac.Instance = DAC;
+  39              		.loc 1 68 0
+  40 0004 1248     		ldr	r0, .L9
+  41 0006 134B     		ldr	r3, .L9+4
+  42 0008 0360     		str	r3, [r0]
+  69:Src/dac.c     ****   if (HAL_DAC_Init(&hdac) != HAL_OK)
+  43              		.loc 1 69 0
+  44 000a FFF7FEFF 		bl	HAL_DAC_Init
+  45              	.LVL0:
+  46 000e 80B9     		cbnz	r0, .L6
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s 			page 3
+
+
+  47              	.L2:
+  70:Src/dac.c     ****   {
+  71:Src/dac.c     ****     _Error_Handler(__FILE__, __LINE__);
+  72:Src/dac.c     ****   }
+  73:Src/dac.c     **** 
+  74:Src/dac.c     ****     /**DAC channel OUT1 config 
+  75:Src/dac.c     ****     */
+  76:Src/dac.c     ****   sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
+  48              		.loc 1 76 0
+  49 0010 0022     		movs	r2, #0
+  50 0012 0092     		str	r2, [sp]
+  77:Src/dac.c     ****   sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
+  51              		.loc 1 77 0
+  52 0014 0192     		str	r2, [sp, #4]
+  78:Src/dac.c     ****   if (HAL_DAC_ConfigChannel(&hdac, &sConfig, DAC_CHANNEL_1) != HAL_OK)
+  53              		.loc 1 78 0
+  54 0016 6946     		mov	r1, sp
+  55 0018 0D48     		ldr	r0, .L9
+  56 001a FFF7FEFF 		bl	HAL_DAC_ConfigChannel
+  57              	.LVL1:
+  58 001e 68B9     		cbnz	r0, .L7
+  59              	.L3:
+  79:Src/dac.c     ****   {
+  80:Src/dac.c     ****     _Error_Handler(__FILE__, __LINE__);
+  81:Src/dac.c     ****   }
+  82:Src/dac.c     **** 
+  83:Src/dac.c     ****     /**DAC channel OUT2 config 
+  84:Src/dac.c     ****     */
+  85:Src/dac.c     ****   if (HAL_DAC_ConfigChannel(&hdac, &sConfig, DAC_CHANNEL_2) != HAL_OK)
+  60              		.loc 1 85 0
+  61 0020 1022     		movs	r2, #16
+  62 0022 6946     		mov	r1, sp
+  63 0024 0A48     		ldr	r0, .L9
+  64 0026 FFF7FEFF 		bl	HAL_DAC_ConfigChannel
+  65              	.LVL2:
+  66 002a 60B9     		cbnz	r0, .L8
+  67              	.L1:
+  86:Src/dac.c     ****   {
+  87:Src/dac.c     ****     _Error_Handler(__FILE__, __LINE__);
+  88:Src/dac.c     ****   }
+  89:Src/dac.c     **** 
+  90:Src/dac.c     **** }
+  68              		.loc 1 90 0
+  69 002c 03B0     		add	sp, sp, #12
+  70              	.LCFI2:
+  71              		.cfi_remember_state
+  72              		.cfi_def_cfa_offset 4
+  73              		@ sp needed
+  74 002e 5DF804FB 		ldr	pc, [sp], #4
+  75              	.L6:
+  76              	.LCFI3:
+  77              		.cfi_restore_state
+  71:Src/dac.c     ****   }
+  78              		.loc 1 71 0
+  79 0032 4721     		movs	r1, #71
+  80 0034 0848     		ldr	r0, .L9+8
+  81 0036 FFF7FEFF 		bl	_Error_Handler
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s 			page 4
+
+
+  82              	.LVL3:
+  83 003a E9E7     		b	.L2
+  84              	.L7:
+  80:Src/dac.c     ****   }
+  85              		.loc 1 80 0
+  86 003c 5021     		movs	r1, #80
+  87 003e 0648     		ldr	r0, .L9+8
+  88 0040 FFF7FEFF 		bl	_Error_Handler
+  89              	.LVL4:
+  90 0044 ECE7     		b	.L3
+  91              	.L8:
+  87:Src/dac.c     ****   }
+  92              		.loc 1 87 0
+  93 0046 5721     		movs	r1, #87
+  94 0048 0348     		ldr	r0, .L9+8
+  95 004a FFF7FEFF 		bl	_Error_Handler
+  96              	.LVL5:
+  97              		.loc 1 90 0
+  98 004e EDE7     		b	.L1
+  99              	.L10:
+ 100              		.align	2
+ 101              	.L9:
+ 102 0050 00000000 		.word	hdac
+ 103 0054 00740040 		.word	1073771520
+ 104 0058 00000000 		.word	.LC0
+ 105              		.cfi_endproc
+ 106              	.LFE138:
+ 108              		.section	.text.HAL_DAC_MspInit,"ax",%progbits
+ 109              		.align	1
+ 110              		.global	HAL_DAC_MspInit
+ 111              		.syntax unified
+ 112              		.thumb
+ 113              		.thumb_func
+ 114              		.fpu fpv5-sp-d16
+ 116              	HAL_DAC_MspInit:
+ 117              	.LFB139:
+  91:Src/dac.c     **** 
+  92:Src/dac.c     **** void HAL_DAC_MspInit(DAC_HandleTypeDef* dacHandle)
+  93:Src/dac.c     **** {
+ 118              		.loc 1 93 0
+ 119              		.cfi_startproc
+ 120              		@ args = 0, pretend = 0, frame = 24
+ 121              		@ frame_needed = 0, uses_anonymous_args = 0
+ 122              	.LVL6:
+  94:Src/dac.c     **** 
+  95:Src/dac.c     ****   GPIO_InitTypeDef GPIO_InitStruct;
+  96:Src/dac.c     ****   if(dacHandle->Instance==DAC)
+ 123              		.loc 1 96 0
+ 124 0000 0268     		ldr	r2, [r0]
+ 125 0002 0F4B     		ldr	r3, .L18
+ 126 0004 9A42     		cmp	r2, r3
+ 127 0006 00D0     		beq	.L17
+ 128 0008 7047     		bx	lr
+ 129              	.L17:
+  93:Src/dac.c     **** 
+ 130              		.loc 1 93 0
+ 131 000a 00B5     		push	{lr}
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s 			page 5
+
+
+ 132              	.LCFI4:
+ 133              		.cfi_def_cfa_offset 4
+ 134              		.cfi_offset 14, -4
+ 135 000c 87B0     		sub	sp, sp, #28
+ 136              	.LCFI5:
+ 137              		.cfi_def_cfa_offset 32
+ 138              	.LBB2:
+  97:Src/dac.c     ****   {
+  98:Src/dac.c     ****   /* USER CODE BEGIN DAC_MspInit 0 */
+  99:Src/dac.c     **** 
+ 100:Src/dac.c     ****   /* USER CODE END DAC_MspInit 0 */
+ 101:Src/dac.c     ****     /* DAC clock enable */
+ 102:Src/dac.c     ****     __HAL_RCC_DAC_CLK_ENABLE();
+ 139              		.loc 1 102 0
+ 140 000e 03F5E233 		add	r3, r3, #115712
+ 141 0012 1A6C     		ldr	r2, [r3, #64]
+ 142 0014 42F00052 		orr	r2, r2, #536870912
+ 143 0018 1A64     		str	r2, [r3, #64]
+ 144 001a 1B6C     		ldr	r3, [r3, #64]
+ 145 001c 03F00053 		and	r3, r3, #536870912
+ 146 0020 0093     		str	r3, [sp]
+ 147 0022 009B     		ldr	r3, [sp]
+ 148              	.LBE2:
+ 103:Src/dac.c     ****   
+ 104:Src/dac.c     ****     /**DAC GPIO Configuration    
+ 105:Src/dac.c     ****     PA4     ------> DAC_OUT1
+ 106:Src/dac.c     ****     PA5     ------> DAC_OUT2 
+ 107:Src/dac.c     ****     */
+ 108:Src/dac.c     ****     GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
+ 149              		.loc 1 108 0
+ 150 0024 3023     		movs	r3, #48
+ 151 0026 0193     		str	r3, [sp, #4]
+ 109:Src/dac.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+ 152              		.loc 1 109 0
+ 153 0028 0323     		movs	r3, #3
+ 154 002a 0293     		str	r3, [sp, #8]
+ 110:Src/dac.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 155              		.loc 1 110 0
+ 156 002c 0023     		movs	r3, #0
+ 157 002e 0393     		str	r3, [sp, #12]
+ 111:Src/dac.c     ****     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 158              		.loc 1 111 0
+ 159 0030 01A9     		add	r1, sp, #4
+ 160 0032 0448     		ldr	r0, .L18+4
+ 161              	.LVL7:
+ 162 0034 FFF7FEFF 		bl	HAL_GPIO_Init
+ 163              	.LVL8:
+ 112:Src/dac.c     **** 
+ 113:Src/dac.c     ****   /* USER CODE BEGIN DAC_MspInit 1 */
+ 114:Src/dac.c     **** 
+ 115:Src/dac.c     ****   /* USER CODE END DAC_MspInit 1 */
+ 116:Src/dac.c     ****   }
+ 117:Src/dac.c     **** }
+ 164              		.loc 1 117 0
+ 165 0038 07B0     		add	sp, sp, #28
+ 166              	.LCFI6:
+ 167              		.cfi_def_cfa_offset 4
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s 			page 6
+
+
+ 168              		@ sp needed
+ 169 003a 5DF804FB 		ldr	pc, [sp], #4
+ 170              	.L19:
+ 171 003e 00BF     		.align	2
+ 172              	.L18:
+ 173 0040 00740040 		.word	1073771520
+ 174 0044 00000240 		.word	1073872896
+ 175              		.cfi_endproc
+ 176              	.LFE139:
+ 178              		.section	.text.HAL_DAC_MspDeInit,"ax",%progbits
+ 179              		.align	1
+ 180              		.global	HAL_DAC_MspDeInit
+ 181              		.syntax unified
+ 182              		.thumb
+ 183              		.thumb_func
+ 184              		.fpu fpv5-sp-d16
+ 186              	HAL_DAC_MspDeInit:
+ 187              	.LFB140:
+ 118:Src/dac.c     **** 
+ 119:Src/dac.c     **** void HAL_DAC_MspDeInit(DAC_HandleTypeDef* dacHandle)
+ 120:Src/dac.c     **** {
+ 188              		.loc 1 120 0
+ 189              		.cfi_startproc
+ 190              		@ args = 0, pretend = 0, frame = 0
+ 191              		@ frame_needed = 0, uses_anonymous_args = 0
+ 192              	.LVL9:
+ 193 0000 08B5     		push	{r3, lr}
+ 194              	.LCFI7:
+ 195              		.cfi_def_cfa_offset 8
+ 196              		.cfi_offset 3, -8
+ 197              		.cfi_offset 14, -4
+ 121:Src/dac.c     **** 
+ 122:Src/dac.c     ****   if(dacHandle->Instance==DAC)
+ 198              		.loc 1 122 0
+ 199 0002 0268     		ldr	r2, [r0]
+ 200 0004 064B     		ldr	r3, .L24
+ 201 0006 9A42     		cmp	r2, r3
+ 202 0008 00D0     		beq	.L23
+ 203              	.LVL10:
+ 204              	.L20:
+ 123:Src/dac.c     ****   {
+ 124:Src/dac.c     ****   /* USER CODE BEGIN DAC_MspDeInit 0 */
+ 125:Src/dac.c     **** 
+ 126:Src/dac.c     ****   /* USER CODE END DAC_MspDeInit 0 */
+ 127:Src/dac.c     ****     /* Peripheral clock disable */
+ 128:Src/dac.c     ****     __HAL_RCC_DAC_CLK_DISABLE();
+ 129:Src/dac.c     ****   
+ 130:Src/dac.c     ****     /**DAC GPIO Configuration    
+ 131:Src/dac.c     ****     PA4     ------> DAC_OUT1
+ 132:Src/dac.c     ****     PA5     ------> DAC_OUT2 
+ 133:Src/dac.c     ****     */
+ 134:Src/dac.c     ****     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4|GPIO_PIN_5);
+ 135:Src/dac.c     **** 
+ 136:Src/dac.c     ****   /* USER CODE BEGIN DAC_MspDeInit 1 */
+ 137:Src/dac.c     **** 
+ 138:Src/dac.c     ****   /* USER CODE END DAC_MspDeInit 1 */
+ 139:Src/dac.c     ****   }
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s 			page 7
+
+
+ 140:Src/dac.c     **** } 
+ 205              		.loc 1 140 0
+ 206 000a 08BD     		pop	{r3, pc}
+ 207              	.LVL11:
+ 208              	.L23:
+ 128:Src/dac.c     ****   
+ 209              		.loc 1 128 0
+ 210 000c 054A     		ldr	r2, .L24+4
+ 211 000e 136C     		ldr	r3, [r2, #64]
+ 212 0010 23F00053 		bic	r3, r3, #536870912
+ 213 0014 1364     		str	r3, [r2, #64]
+ 134:Src/dac.c     **** 
+ 214              		.loc 1 134 0
+ 215 0016 3021     		movs	r1, #48
+ 216 0018 0348     		ldr	r0, .L24+8
+ 217              	.LVL12:
+ 218 001a FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 219              	.LVL13:
+ 220              		.loc 1 140 0
+ 221 001e F4E7     		b	.L20
+ 222              	.L25:
+ 223              		.align	2
+ 224              	.L24:
+ 225 0020 00740040 		.word	1073771520
+ 226 0024 00380240 		.word	1073887232
+ 227 0028 00000240 		.word	1073872896
+ 228              		.cfi_endproc
+ 229              	.LFE140:
+ 231              		.comm	hdac,20,4
+ 232              		.section	.rodata.MX_DAC_Init.str1.4,"aMS",%progbits,1
+ 233              		.align	2
+ 234              	.LC0:
+ 235 0000 5372632F 		.ascii	"Src/dac.c\000"
+ 235      6461632E 
+ 235      6300
+ 236              		.text
+ 237              	.Letext0:
+ 238              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 239              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 240              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ 241              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 242              		.file 6 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f756xx.h"
+ 243              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 244              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 245              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 246              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+ 247              		.file 11 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_def.h"
+ 248              		.file 12 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio.h"
+ 249              		.file 13 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma.h"
+ 250              		.file 14 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dac.h"
+ 251              		.file 15 "Inc/dac.h"
+ 252              		.file 16 "Inc/gpio.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 dac.c
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:18     .text.MX_DAC_Init:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:25     .text.MX_DAC_Init:00000000 MX_DAC_Init
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:102    .text.MX_DAC_Init:00000050 $d
+                            *COM*:00000014 hdac
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:109    .text.HAL_DAC_MspInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:116    .text.HAL_DAC_MspInit:00000000 HAL_DAC_MspInit
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:173    .text.HAL_DAC_MspInit:00000040 $d
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:179    .text.HAL_DAC_MspDeInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:186    .text.HAL_DAC_MspDeInit:00000000 HAL_DAC_MspDeInit
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:225    .text.HAL_DAC_MspDeInit:00000020 $d
+C:\Users\micha\AppData\Local\Temp\cc2QNa6D.s:233    .rodata.MX_DAC_Init.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_DAC_Init
+HAL_DAC_ConfigChannel
+_Error_Handler
+HAL_GPIO_Init
+HAL_GPIO_DeInit

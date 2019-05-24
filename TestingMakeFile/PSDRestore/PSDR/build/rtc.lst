@@ -1,0 +1,324 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"rtc.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MX_RTC_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	MX_RTC_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	MX_RTC_Init:
+  26              	.LFB138:
+  27              		.file 1 "Src/rtc.c"
+   1:Src/rtc.c     **** /**
+   2:Src/rtc.c     ****   ******************************************************************************
+   3:Src/rtc.c     ****   * File Name          : RTC.c
+   4:Src/rtc.c     ****   * Description        : This file provides code for the configuration
+   5:Src/rtc.c     ****   *                      of the RTC instances.
+   6:Src/rtc.c     ****   ******************************************************************************
+   7:Src/rtc.c     ****   * This notice applies to any and all portions of this file
+   8:Src/rtc.c     ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/rtc.c     ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/rtc.c     ****   * inserted by the user or by software development tools
+  11:Src/rtc.c     ****   * are owned by their respective copyright owners.
+  12:Src/rtc.c     ****   *
+  13:Src/rtc.c     ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/rtc.c     ****   * All rights reserved.
+  15:Src/rtc.c     ****   *
+  16:Src/rtc.c     ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/rtc.c     ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/rtc.c     ****   *
+  19:Src/rtc.c     ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/rtc.c     ****   *    this list of conditions and the following disclaimer.
+  21:Src/rtc.c     ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/rtc.c     ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/rtc.c     ****   *    and/or other materials provided with the distribution.
+  24:Src/rtc.c     ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/rtc.c     ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/rtc.c     ****   *    derived from this software without specific written permission.
+  27:Src/rtc.c     ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/rtc.c     ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/rtc.c     ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/rtc.c     ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/rtc.c     ****   *    this license is void and will automatically terminate your rights under 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s 			page 2
+
+
+  32:Src/rtc.c     ****   *    this license. 
+  33:Src/rtc.c     ****   *
+  34:Src/rtc.c     ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/rtc.c     ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/rtc.c     ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/rtc.c     ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/rtc.c     ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/rtc.c     ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/rtc.c     ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/rtc.c     ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/rtc.c     ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/rtc.c     ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/rtc.c     ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/rtc.c     ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/rtc.c     ****   *
+  47:Src/rtc.c     ****   ******************************************************************************
+  48:Src/rtc.c     ****   */
+  49:Src/rtc.c     **** 
+  50:Src/rtc.c     **** /* Includes ------------------------------------------------------------------*/
+  51:Src/rtc.c     **** #include "rtc.h"
+  52:Src/rtc.c     **** 
+  53:Src/rtc.c     **** /* USER CODE BEGIN 0 */
+  54:Src/rtc.c     **** 
+  55:Src/rtc.c     **** /* USER CODE END 0 */
+  56:Src/rtc.c     **** 
+  57:Src/rtc.c     **** RTC_HandleTypeDef hrtc;
+  58:Src/rtc.c     **** 
+  59:Src/rtc.c     **** /* RTC init function */
+  60:Src/rtc.c     **** void MX_RTC_Init(void)
+  61:Src/rtc.c     **** {
+  28              		.loc 1 61 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  62:Src/rtc.c     **** 
+  63:Src/rtc.c     ****     /**Initialize RTC Only 
+  64:Src/rtc.c     ****     */
+  65:Src/rtc.c     ****   hrtc.Instance = RTC;
+  37              		.loc 1 65 0
+  38 0002 0A48     		ldr	r0, .L5
+  39 0004 0A4B     		ldr	r3, .L5+4
+  40 0006 0360     		str	r3, [r0]
+  66:Src/rtc.c     ****   hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  41              		.loc 1 66 0
+  42 0008 0023     		movs	r3, #0
+  43 000a 4360     		str	r3, [r0, #4]
+  67:Src/rtc.c     ****   hrtc.Init.AsynchPrediv = 127;
+  44              		.loc 1 67 0
+  45 000c 7F22     		movs	r2, #127
+  46 000e 8260     		str	r2, [r0, #8]
+  68:Src/rtc.c     ****   hrtc.Init.SynchPrediv = 255;
+  47              		.loc 1 68 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s 			page 3
+
+
+  48 0010 FF22     		movs	r2, #255
+  49 0012 C260     		str	r2, [r0, #12]
+  69:Src/rtc.c     ****   hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  50              		.loc 1 69 0
+  51 0014 0361     		str	r3, [r0, #16]
+  70:Src/rtc.c     ****   hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  52              		.loc 1 70 0
+  53 0016 4361     		str	r3, [r0, #20]
+  71:Src/rtc.c     ****   hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  54              		.loc 1 71 0
+  55 0018 8361     		str	r3, [r0, #24]
+  72:Src/rtc.c     ****   if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  56              		.loc 1 72 0
+  57 001a FFF7FEFF 		bl	HAL_RTC_Init
+  58              	.LVL0:
+  59 001e 00B9     		cbnz	r0, .L4
+  60              	.L1:
+  73:Src/rtc.c     ****   {
+  74:Src/rtc.c     ****     _Error_Handler(__FILE__, __LINE__);
+  75:Src/rtc.c     ****   }
+  76:Src/rtc.c     **** 
+  77:Src/rtc.c     **** }
+  61              		.loc 1 77 0
+  62 0020 08BD     		pop	{r3, pc}
+  63              	.L4:
+  74:Src/rtc.c     ****   }
+  64              		.loc 1 74 0
+  65 0022 4A21     		movs	r1, #74
+  66 0024 0348     		ldr	r0, .L5+8
+  67 0026 FFF7FEFF 		bl	_Error_Handler
+  68              	.LVL1:
+  69              		.loc 1 77 0
+  70 002a F9E7     		b	.L1
+  71              	.L6:
+  72              		.align	2
+  73              	.L5:
+  74 002c 00000000 		.word	hrtc
+  75 0030 00280040 		.word	1073752064
+  76 0034 00000000 		.word	.LC0
+  77              		.cfi_endproc
+  78              	.LFE138:
+  80              		.section	.text.HAL_RTC_MspInit,"ax",%progbits
+  81              		.align	1
+  82              		.global	HAL_RTC_MspInit
+  83              		.syntax unified
+  84              		.thumb
+  85              		.thumb_func
+  86              		.fpu fpv5-sp-d16
+  88              	HAL_RTC_MspInit:
+  89              	.LFB139:
+  78:Src/rtc.c     **** 
+  79:Src/rtc.c     **** void HAL_RTC_MspInit(RTC_HandleTypeDef* rtcHandle)
+  80:Src/rtc.c     **** {
+  90              		.loc 1 80 0
+  91              		.cfi_startproc
+  92              		@ args = 0, pretend = 0, frame = 0
+  93              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s 			page 4
+
+
+  94              		@ link register save eliminated.
+  95              	.LVL2:
+  81:Src/rtc.c     **** 
+  82:Src/rtc.c     ****   if(rtcHandle->Instance==RTC)
+  96              		.loc 1 82 0
+  97 0000 0268     		ldr	r2, [r0]
+  98 0002 054B     		ldr	r3, .L10
+  99 0004 9A42     		cmp	r2, r3
+ 100 0006 00D0     		beq	.L9
+ 101              	.L7:
+  83:Src/rtc.c     ****   {
+  84:Src/rtc.c     ****   /* USER CODE BEGIN RTC_MspInit 0 */
+  85:Src/rtc.c     **** 
+  86:Src/rtc.c     ****   /* USER CODE END RTC_MspInit 0 */
+  87:Src/rtc.c     ****     /* RTC clock enable */
+  88:Src/rtc.c     ****     __HAL_RCC_RTC_ENABLE();
+  89:Src/rtc.c     ****   /* USER CODE BEGIN RTC_MspInit 1 */
+  90:Src/rtc.c     **** 
+  91:Src/rtc.c     ****   /* USER CODE END RTC_MspInit 1 */
+  92:Src/rtc.c     ****   }
+  93:Src/rtc.c     **** }
+ 102              		.loc 1 93 0
+ 103 0008 7047     		bx	lr
+ 104              	.L9:
+  88:Src/rtc.c     ****   /* USER CODE BEGIN RTC_MspInit 1 */
+ 105              		.loc 1 88 0
+ 106 000a 044A     		ldr	r2, .L10+4
+ 107 000c 136F     		ldr	r3, [r2, #112]
+ 108 000e 43F40043 		orr	r3, r3, #32768
+ 109 0012 1367     		str	r3, [r2, #112]
+ 110              		.loc 1 93 0
+ 111 0014 F8E7     		b	.L7
+ 112              	.L11:
+ 113 0016 00BF     		.align	2
+ 114              	.L10:
+ 115 0018 00280040 		.word	1073752064
+ 116 001c 00380240 		.word	1073887232
+ 117              		.cfi_endproc
+ 118              	.LFE139:
+ 120              		.section	.text.HAL_RTC_MspDeInit,"ax",%progbits
+ 121              		.align	1
+ 122              		.global	HAL_RTC_MspDeInit
+ 123              		.syntax unified
+ 124              		.thumb
+ 125              		.thumb_func
+ 126              		.fpu fpv5-sp-d16
+ 128              	HAL_RTC_MspDeInit:
+ 129              	.LFB140:
+  94:Src/rtc.c     **** 
+  95:Src/rtc.c     **** void HAL_RTC_MspDeInit(RTC_HandleTypeDef* rtcHandle)
+  96:Src/rtc.c     **** {
+ 130              		.loc 1 96 0
+ 131              		.cfi_startproc
+ 132              		@ args = 0, pretend = 0, frame = 0
+ 133              		@ frame_needed = 0, uses_anonymous_args = 0
+ 134              		@ link register save eliminated.
+ 135              	.LVL3:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s 			page 5
+
+
+  97:Src/rtc.c     **** 
+  98:Src/rtc.c     ****   if(rtcHandle->Instance==RTC)
+ 136              		.loc 1 98 0
+ 137 0000 0268     		ldr	r2, [r0]
+ 138 0002 054B     		ldr	r3, .L15
+ 139 0004 9A42     		cmp	r2, r3
+ 140 0006 00D0     		beq	.L14
+ 141              	.L12:
+  99:Src/rtc.c     ****   {
+ 100:Src/rtc.c     ****   /* USER CODE BEGIN RTC_MspDeInit 0 */
+ 101:Src/rtc.c     **** 
+ 102:Src/rtc.c     ****   /* USER CODE END RTC_MspDeInit 0 */
+ 103:Src/rtc.c     ****     /* Peripheral clock disable */
+ 104:Src/rtc.c     ****     __HAL_RCC_RTC_DISABLE();
+ 105:Src/rtc.c     ****   /* USER CODE BEGIN RTC_MspDeInit 1 */
+ 106:Src/rtc.c     **** 
+ 107:Src/rtc.c     ****   /* USER CODE END RTC_MspDeInit 1 */
+ 108:Src/rtc.c     ****   }
+ 109:Src/rtc.c     **** } 
+ 142              		.loc 1 109 0
+ 143 0008 7047     		bx	lr
+ 144              	.L14:
+ 104:Src/rtc.c     ****   /* USER CODE BEGIN RTC_MspDeInit 1 */
+ 145              		.loc 1 104 0
+ 146 000a 044A     		ldr	r2, .L15+4
+ 147 000c 136F     		ldr	r3, [r2, #112]
+ 148 000e 23F40043 		bic	r3, r3, #32768
+ 149 0012 1367     		str	r3, [r2, #112]
+ 150              		.loc 1 109 0
+ 151 0014 F8E7     		b	.L12
+ 152              	.L16:
+ 153 0016 00BF     		.align	2
+ 154              	.L15:
+ 155 0018 00280040 		.word	1073752064
+ 156 001c 00380240 		.word	1073887232
+ 157              		.cfi_endproc
+ 158              	.LFE140:
+ 160              		.comm	hrtc,32,4
+ 161              		.section	.rodata.MX_RTC_Init.str1.4,"aMS",%progbits,1
+ 162              		.align	2
+ 163              	.LC0:
+ 164 0000 5372632F 		.ascii	"Src/rtc.c\000"
+ 164      7274632E 
+ 164      6300
+ 165              		.text
+ 166              	.Letext0:
+ 167              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 168              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 169              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ 170              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 171              		.file 6 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f756xx.h"
+ 172              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 173              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 174              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 175              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+ 176              		.file 11 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_def.h"
+ 177              		.file 12 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_rtc.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s 			page 6
+
+
+ 178              		.file 13 "Inc/rtc.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 rtc.c
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:18     .text.MX_RTC_Init:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:25     .text.MX_RTC_Init:00000000 MX_RTC_Init
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:74     .text.MX_RTC_Init:0000002c $d
+                            *COM*:00000020 hrtc
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:81     .text.HAL_RTC_MspInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:88     .text.HAL_RTC_MspInit:00000000 HAL_RTC_MspInit
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:115    .text.HAL_RTC_MspInit:00000018 $d
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:121    .text.HAL_RTC_MspDeInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:128    .text.HAL_RTC_MspDeInit:00000000 HAL_RTC_MspDeInit
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:155    .text.HAL_RTC_MspDeInit:00000018 $d
+C:\Users\micha\AppData\Local\Temp\ccgEkyRb.s:162    .rodata.MX_RTC_Init.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_RTC_Init
+_Error_Handler

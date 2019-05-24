@@ -1,0 +1,240 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccHle4au.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"stm32f7xx_hal_msp.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.HAL_MspInit,"ax",%progbits
+  18              		.align	1
+  19              		.global	HAL_MspInit
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	HAL_MspInit:
+  26              	.LFB138:
+  27              		.file 1 "Src/stm32f7xx_hal_msp.c"
+   1:Src/stm32f7xx_hal_msp.c **** /**
+   2:Src/stm32f7xx_hal_msp.c ****   ******************************************************************************
+   3:Src/stm32f7xx_hal_msp.c ****   * File Name          : stm32f7xx_hal_msp.c
+   4:Src/stm32f7xx_hal_msp.c ****   * Description        : This file provides code for the MSP Initialization 
+   5:Src/stm32f7xx_hal_msp.c ****   *                      and de-Initialization codes.
+   6:Src/stm32f7xx_hal_msp.c ****   ******************************************************************************
+   7:Src/stm32f7xx_hal_msp.c ****   * This notice applies to any and all portions of this file
+   8:Src/stm32f7xx_hal_msp.c ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/stm32f7xx_hal_msp.c ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/stm32f7xx_hal_msp.c ****   * inserted by the user or by software development tools
+  11:Src/stm32f7xx_hal_msp.c ****   * are owned by their respective copyright owners.
+  12:Src/stm32f7xx_hal_msp.c ****   *
+  13:Src/stm32f7xx_hal_msp.c ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/stm32f7xx_hal_msp.c ****   * All rights reserved.
+  15:Src/stm32f7xx_hal_msp.c ****   *
+  16:Src/stm32f7xx_hal_msp.c ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/stm32f7xx_hal_msp.c ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/stm32f7xx_hal_msp.c ****   *
+  19:Src/stm32f7xx_hal_msp.c ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/stm32f7xx_hal_msp.c ****   *    this list of conditions and the following disclaimer.
+  21:Src/stm32f7xx_hal_msp.c ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/stm32f7xx_hal_msp.c ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/stm32f7xx_hal_msp.c ****   *    and/or other materials provided with the distribution.
+  24:Src/stm32f7xx_hal_msp.c ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/stm32f7xx_hal_msp.c ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/stm32f7xx_hal_msp.c ****   *    derived from this software without specific written permission.
+  27:Src/stm32f7xx_hal_msp.c ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/stm32f7xx_hal_msp.c ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/stm32f7xx_hal_msp.c ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/stm32f7xx_hal_msp.c ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/stm32f7xx_hal_msp.c ****   *    this license is void and will automatically terminate your rights under 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccHle4au.s 			page 2
+
+
+  32:Src/stm32f7xx_hal_msp.c ****   *    this license. 
+  33:Src/stm32f7xx_hal_msp.c ****   *
+  34:Src/stm32f7xx_hal_msp.c ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/stm32f7xx_hal_msp.c ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/stm32f7xx_hal_msp.c ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/stm32f7xx_hal_msp.c ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/stm32f7xx_hal_msp.c ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/stm32f7xx_hal_msp.c ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/stm32f7xx_hal_msp.c ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/stm32f7xx_hal_msp.c ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/stm32f7xx_hal_msp.c ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/stm32f7xx_hal_msp.c ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/stm32f7xx_hal_msp.c ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/stm32f7xx_hal_msp.c ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/stm32f7xx_hal_msp.c ****   *
+  47:Src/stm32f7xx_hal_msp.c ****   ******************************************************************************
+  48:Src/stm32f7xx_hal_msp.c ****   */
+  49:Src/stm32f7xx_hal_msp.c **** /* Includes ------------------------------------------------------------------*/
+  50:Src/stm32f7xx_hal_msp.c **** #include "stm32f7xx_hal.h"
+  51:Src/stm32f7xx_hal_msp.c **** extern void _Error_Handler(char *, int);
+  52:Src/stm32f7xx_hal_msp.c **** /* USER CODE BEGIN 0 */
+  53:Src/stm32f7xx_hal_msp.c **** 
+  54:Src/stm32f7xx_hal_msp.c **** /* USER CODE END 0 */
+  55:Src/stm32f7xx_hal_msp.c **** /**
+  56:Src/stm32f7xx_hal_msp.c ****   * Initializes the Global MSP.
+  57:Src/stm32f7xx_hal_msp.c ****   */
+  58:Src/stm32f7xx_hal_msp.c **** void HAL_MspInit(void)
+  59:Src/stm32f7xx_hal_msp.c **** {
+  28              		.loc 1 59 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 00B5     		push	{lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 4
+  35              		.cfi_offset 14, -4
+  36 0002 83B0     		sub	sp, sp, #12
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 16
+  39              	.LBB2:
+  60:Src/stm32f7xx_hal_msp.c ****   /* USER CODE BEGIN MspInit 0 */
+  61:Src/stm32f7xx_hal_msp.c **** 
+  62:Src/stm32f7xx_hal_msp.c ****   /* USER CODE END MspInit 0 */
+  63:Src/stm32f7xx_hal_msp.c **** 
+  64:Src/stm32f7xx_hal_msp.c ****   __HAL_RCC_PWR_CLK_ENABLE();
+  40              		.loc 1 64 0
+  41 0004 214B     		ldr	r3, .L3
+  42 0006 1A6C     		ldr	r2, [r3, #64]
+  43 0008 42F08052 		orr	r2, r2, #268435456
+  44 000c 1A64     		str	r2, [r3, #64]
+  45 000e 1A6C     		ldr	r2, [r3, #64]
+  46 0010 02F08052 		and	r2, r2, #268435456
+  47 0014 0092     		str	r2, [sp]
+  48 0016 009A     		ldr	r2, [sp]
+  49              	.LBE2:
+  50              	.LBB3:
+  65:Src/stm32f7xx_hal_msp.c ****   __HAL_RCC_SYSCFG_CLK_ENABLE();
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccHle4au.s 			page 3
+
+
+  51              		.loc 1 65 0
+  52 0018 5A6C     		ldr	r2, [r3, #68]
+  53 001a 42F48042 		orr	r2, r2, #16384
+  54 001e 5A64     		str	r2, [r3, #68]
+  55 0020 5B6C     		ldr	r3, [r3, #68]
+  56 0022 03F48043 		and	r3, r3, #16384
+  57 0026 0193     		str	r3, [sp, #4]
+  58 0028 019B     		ldr	r3, [sp, #4]
+  59              	.LBE3:
+  66:Src/stm32f7xx_hal_msp.c **** 
+  67:Src/stm32f7xx_hal_msp.c ****   HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+  60              		.loc 1 67 0
+  61 002a 0320     		movs	r0, #3
+  62 002c FFF7FEFF 		bl	HAL_NVIC_SetPriorityGrouping
+  63              	.LVL0:
+  68:Src/stm32f7xx_hal_msp.c **** 
+  69:Src/stm32f7xx_hal_msp.c ****   /* System interrupt init*/
+  70:Src/stm32f7xx_hal_msp.c ****   /* MemoryManagement_IRQn interrupt configuration */
+  71:Src/stm32f7xx_hal_msp.c ****   HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);
+  64              		.loc 1 71 0
+  65 0030 0022     		movs	r2, #0
+  66 0032 1146     		mov	r1, r2
+  67 0034 6FF00B00 		mvn	r0, #11
+  68 0038 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+  69              	.LVL1:
+  72:Src/stm32f7xx_hal_msp.c ****   /* BusFault_IRQn interrupt configuration */
+  73:Src/stm32f7xx_hal_msp.c ****   HAL_NVIC_SetPriority(BusFault_IRQn, 0, 0);
+  70              		.loc 1 73 0
+  71 003c 0022     		movs	r2, #0
+  72 003e 1146     		mov	r1, r2
+  73 0040 6FF00A00 		mvn	r0, #10
+  74 0044 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+  75              	.LVL2:
+  74:Src/stm32f7xx_hal_msp.c ****   /* UsageFault_IRQn interrupt configuration */
+  75:Src/stm32f7xx_hal_msp.c ****   HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0);
+  76              		.loc 1 75 0
+  77 0048 0022     		movs	r2, #0
+  78 004a 1146     		mov	r1, r2
+  79 004c 6FF00900 		mvn	r0, #9
+  80 0050 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+  81              	.LVL3:
+  76:Src/stm32f7xx_hal_msp.c ****   /* SVCall_IRQn interrupt configuration */
+  77:Src/stm32f7xx_hal_msp.c ****   HAL_NVIC_SetPriority(SVCall_IRQn, 0, 0);
+  82              		.loc 1 77 0
+  83 0054 0022     		movs	r2, #0
+  84 0056 1146     		mov	r1, r2
+  85 0058 6FF00400 		mvn	r0, #4
+  86 005c FFF7FEFF 		bl	HAL_NVIC_SetPriority
+  87              	.LVL4:
+  78:Src/stm32f7xx_hal_msp.c ****   /* DebugMonitor_IRQn interrupt configuration */
+  79:Src/stm32f7xx_hal_msp.c ****   HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
+  88              		.loc 1 79 0
+  89 0060 0022     		movs	r2, #0
+  90 0062 1146     		mov	r1, r2
+  91 0064 6FF00300 		mvn	r0, #3
+  92 0068 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+  93              	.LVL5:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccHle4au.s 			page 4
+
+
+  80:Src/stm32f7xx_hal_msp.c ****   /* PendSV_IRQn interrupt configuration */
+  81:Src/stm32f7xx_hal_msp.c ****   HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
+  94              		.loc 1 81 0
+  95 006c 0022     		movs	r2, #0
+  96 006e 0F21     		movs	r1, #15
+  97 0070 6FF00100 		mvn	r0, #1
+  98 0074 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+  99              	.LVL6:
+  82:Src/stm32f7xx_hal_msp.c ****   /* SysTick_IRQn interrupt configuration */
+  83:Src/stm32f7xx_hal_msp.c ****   HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
+ 100              		.loc 1 83 0
+ 101 0078 0022     		movs	r2, #0
+ 102 007a 0F21     		movs	r1, #15
+ 103 007c 4FF0FF30 		mov	r0, #-1
+ 104 0080 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 105              	.LVL7:
+  84:Src/stm32f7xx_hal_msp.c **** 
+  85:Src/stm32f7xx_hal_msp.c ****   /* USER CODE BEGIN MspInit 1 */
+  86:Src/stm32f7xx_hal_msp.c **** 
+  87:Src/stm32f7xx_hal_msp.c ****   /* USER CODE END MspInit 1 */
+  88:Src/stm32f7xx_hal_msp.c **** }
+ 106              		.loc 1 88 0
+ 107 0084 03B0     		add	sp, sp, #12
+ 108              	.LCFI2:
+ 109              		.cfi_def_cfa_offset 4
+ 110              		@ sp needed
+ 111 0086 5DF804FB 		ldr	pc, [sp], #4
+ 112              	.L4:
+ 113 008a 00BF     		.align	2
+ 114              	.L3:
+ 115 008c 00380240 		.word	1073887232
+ 116              		.cfi_endproc
+ 117              	.LFE138:
+ 119              		.text
+ 120              	.Letext0:
+ 121              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 122              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 123              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ 124              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 125              		.file 6 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f746xx.h"
+ 126              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 127              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 128              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 129              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+ 130              		.file 11 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_cortex.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccHle4au.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f7xx_hal_msp.c
+C:\Users\micha\AppData\Local\Temp\ccHle4au.s:18     .text.HAL_MspInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccHle4au.s:25     .text.HAL_MspInit:00000000 HAL_MspInit
+C:\Users\micha\AppData\Local\Temp\ccHle4au.s:115    .text.HAL_MspInit:0000008c $d
+
+UNDEFINED SYMBOLS
+HAL_NVIC_SetPriorityGrouping
+HAL_NVIC_SetPriority

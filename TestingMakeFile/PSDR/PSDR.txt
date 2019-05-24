@@ -1,0 +1,165 @@
+Configuration	PSDR
+STM32CubeMX 	4.27.0
+Date	10/29/2018
+MCU	STM32F746VGTx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+ADC1	IN8	ADC1_IN8	PB0
+ADC1	IN9	ADC1_IN9	PB1
+ADC1	IN10	ADC1_IN10	PC0
+ADC1	IN14	ADC1_IN14	PC4
+ADC2	IN3	ADC2_IN3	PA3
+ADC2	IN15	ADC2_IN15	PC5
+ADC3	IN2	ADC3_IN2	PA2
+ADC3	IN10	ADC3_IN10	PC0
+DAC	DAC_OUT1	DAC_OUT1	PA4
+DAC	DAC_OUT2	DAC_OUT2	PA5
+I2C2	I2C	I2C2_SCL	PB10
+I2C2	I2C	I2C2_SDA	PB11
+RCC	Crystal/Ceramic Resonator	RCC_OSC_IN	PH0/OSC_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC_OUT	PH1/OSC_OUT
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_IN	PC14/OSC32_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_OUT	PC15/OSC32_OUT
+RTC	Activate Clock Source	RTC_VS_RTC_Activate	VP_RTC_VS_RTC_Activate
+SDMMC1	MMC 4 bits Wide bus	SDMMC1_CK	PC12
+SDMMC1	MMC 4 bits Wide bus	SDMMC1_CMD	PD2
+SDMMC1	MMC 4 bits Wide bus	SDMMC1_D0	PC8
+SDMMC1	MMC 4 bits Wide bus	SDMMC1_D1	PC9
+SDMMC1	MMC 4 bits Wide bus	SDMMC1_D2	PC10
+SDMMC1	MMC 4 bits Wide bus	SDMMC1_D3	PC11
+SPI1	Full-Duplex Master	SPI1_MISO	PB4
+SPI1	Full-Duplex Master	SPI1_MOSI	PB5
+SPI1	Full-Duplex Master	SPI1_SCK	PB3
+SPI2	Full-Duplex Master	SPI2_MISO	PB14
+SPI2	Full-Duplex Master	SPI2_MOSI	PB15
+SPI2	Full-Duplex Master	SPI2_SCK	PB13
+SPI2	Hardware NSS Output Signal	SPI2_NSS	PB12
+SYS	Serial Wire	SYS_JTCK-SWCLK	PA14
+SYS	Serial Wire	SYS_JTMS-SWDIO	PA13
+SYS	TIM2	SYS_VS_tim2	VP_SYS_VS_tim2
+TIM1	External Clock Mode 1	TIM1_VS_ControllerModeClock	VP_TIM1_VS_ControllerModeClock
+TIM1	ETR1	TIM1_ETR	PE7
+TIM1	Input Capture direct mode	TIM1_CH1	PE9
+TIM4	Internal Clock	TIM4_VS_ClockSourceINT	VP_TIM4_VS_ClockSourceINT
+TIM4	PWM Generation CH1	TIM4_CH1	PD12
+USART6	Asynchronous	USART6_RX	PC7
+USART6	Asynchronous	USART6_TX	PC6
+USB_OTG_FS	OTG/Dual_Role_Device	USB_OTG_FS_DM	PA11
+USB_OTG_FS	OTG/Dual_Role_Device	USB_OTG_FS_DP	PA12
+USB_OTG_FS	OTG/Dual_Role_Device	USB_OTG_FS_ID	PA10
+USB_OTG_FS	VBUS	USB_OTG_FS_VBUS	PA9
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+1	PE2	GPIO_Output	
+2	PE3	GPIO_Output	
+3	PE4	GPIO_Output	
+4	PE5	GPIO_Output	
+5	PE6	GPIO_Output	
+7	PC13	GPIO_Output	
+8	PC14/OSC32_IN	RCC_OSC32_IN	
+9	PC15/OSC32_OUT	RCC_OSC32_OUT	
+12	PH0/OSC_IN	RCC_OSC_IN	
+13	PH1/OSC_OUT	RCC_OSC_OUT	
+15	PC0	ADC3_IN10 ADC1_IN10	
+16	PC1	GPIO_Output	
+17	PC2	GPIO_Output	TESTTEST
+18	PC3	GPIO_Output	
+22	PA0/WKUP	GPIO_Output	
+23	PA1	GPIO_Input	
+24	PA2	ADC3_IN2	
+25	PA3	ADC2_IN3	
+28	PA4	DAC_OUT1	
+29	PA5	DAC_OUT2	
+30	PA6	GPIO_Output	
+31	PA7	GPIO_Output	
+32	PC4	ADC1_IN14	
+33	PC5	ADC2_IN15	
+34	PB0	ADC1_IN8	
+35	PB1	ADC1_IN9	
+36	PB2	GPIO_Output	
+37	PE7	TIM1_ETR	
+38	PE8	GPIO_Output	
+39	PE9	TIM1_CH1	
+40	PE10	GPIO_Output	
+41	PE11	GPIO_Output	
+42	PE12	GPIO_Output	
+43	PE13	GPIO_Output	
+44	PE14	GPIO_Output	
+45	PE15	GPIO_Output	
+46	PB10	I2C2_SCL	
+47	PB11	I2C2_SDA	
+51	PB12	SPI2_NSS	
+52	PB13	SPI2_SCK	
+53	PB14	SPI2_MISO	
+54	PB15	SPI2_MOSI	
+55	PD8	GPIO_Output	
+56	PD9	GPIO_Input	
+57	PD10	GPIO_Output	
+58	PD11	GPIO_Input	
+59	PD12	TIM4_CH1	
+60	PD13	GPIO_Input	
+61	PD14	GPIO_Output	
+62	PD15	GPIO_Output	
+63	PC6	USART6_TX	
+64	PC7	USART6_RX	
+65	PC8	SDMMC1_D0	
+66	PC9	SDMMC1_D1	
+67	PA8	GPIO_Output	
+68	PA9	USB_OTG_FS_VBUS	
+69	PA10	USB_OTG_FS_ID	
+70	PA11	USB_OTG_FS_DM	
+71	PA12	USB_OTG_FS_DP	
+72	PA13	SYS_JTMS-SWDIO	
+76	PA14	SYS_JTCK-SWCLK	
+77	PA15	GPIO_Output	
+78	PC10	SDMMC1_D2	
+79	PC11	SDMMC1_D3	
+80	PC12	SDMMC1_CK	
+81	PD0	GPIO_Input	
+82	PD1	GPIO_Input	
+83	PD2	SDMMC1_CMD	
+84	PD3	GPIO_Input	
+85	PD4	GPIO_Input	
+86	PD5	GPIO_Input	
+87	PD6	GPIO_Input	
+88	PD7	GPIO_Input	
+89	PB3	SPI1_SCK	
+90	PB4	SPI1_MISO	
+91	PB5	SPI1_MOSI	
+92	PB6	GPIO_Output	
+93	PB7	GPIO_Output	
+95	PB8	GPIO_Output	
+96	PB9	GPIO_Input	
+97	PE0	GPIO_Input	
+98	PE1	GPIO_Input	
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : PSDR
+Project Folder : C:\Users\micha\workspace\PSDR\TestingMakeFile\PSDR
+Toolchain / IDE : Makefile
+Firmware Package Name and Version : STM32Cube FW_F7 V1.12.0
+
+
+Code Generation Settings : 
+STM32Cube Firmware Library Package : Copy all used libraries into the project folder
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : Yes
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : 
+
+
+
+
+

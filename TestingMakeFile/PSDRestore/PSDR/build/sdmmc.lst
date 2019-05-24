@@ -1,0 +1,473 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"sdmmc.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MX_SDMMC1_MMC_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	MX_SDMMC1_MMC_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	MX_SDMMC1_MMC_Init:
+  26              	.LFB138:
+  27              		.file 1 "Src/sdmmc.c"
+   1:Src/sdmmc.c   **** /**
+   2:Src/sdmmc.c   ****   ******************************************************************************
+   3:Src/sdmmc.c   ****   * File Name          : SDMMC.c
+   4:Src/sdmmc.c   ****   * Description        : This file provides code for the configuration
+   5:Src/sdmmc.c   ****   *                      of the SDMMC instances.
+   6:Src/sdmmc.c   ****   ******************************************************************************
+   7:Src/sdmmc.c   ****   * This notice applies to any and all portions of this file
+   8:Src/sdmmc.c   ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/sdmmc.c   ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/sdmmc.c   ****   * inserted by the user or by software development tools
+  11:Src/sdmmc.c   ****   * are owned by their respective copyright owners.
+  12:Src/sdmmc.c   ****   *
+  13:Src/sdmmc.c   ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/sdmmc.c   ****   * All rights reserved.
+  15:Src/sdmmc.c   ****   *
+  16:Src/sdmmc.c   ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/sdmmc.c   ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/sdmmc.c   ****   *
+  19:Src/sdmmc.c   ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/sdmmc.c   ****   *    this list of conditions and the following disclaimer.
+  21:Src/sdmmc.c   ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/sdmmc.c   ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/sdmmc.c   ****   *    and/or other materials provided with the distribution.
+  24:Src/sdmmc.c   ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/sdmmc.c   ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/sdmmc.c   ****   *    derived from this software without specific written permission.
+  27:Src/sdmmc.c   ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/sdmmc.c   ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/sdmmc.c   ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/sdmmc.c   ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/sdmmc.c   ****   *    this license is void and will automatically terminate your rights under 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s 			page 2
+
+
+  32:Src/sdmmc.c   ****   *    this license. 
+  33:Src/sdmmc.c   ****   *
+  34:Src/sdmmc.c   ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/sdmmc.c   ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/sdmmc.c   ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/sdmmc.c   ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/sdmmc.c   ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/sdmmc.c   ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/sdmmc.c   ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/sdmmc.c   ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/sdmmc.c   ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/sdmmc.c   ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/sdmmc.c   ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/sdmmc.c   ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/sdmmc.c   ****   *
+  47:Src/sdmmc.c   ****   ******************************************************************************
+  48:Src/sdmmc.c   ****   */
+  49:Src/sdmmc.c   **** 
+  50:Src/sdmmc.c   **** /* Includes ------------------------------------------------------------------*/
+  51:Src/sdmmc.c   **** #include "sdmmc.h"
+  52:Src/sdmmc.c   **** 
+  53:Src/sdmmc.c   **** #include "gpio.h"
+  54:Src/sdmmc.c   **** 
+  55:Src/sdmmc.c   **** /* USER CODE BEGIN 0 */
+  56:Src/sdmmc.c   **** 
+  57:Src/sdmmc.c   **** /* USER CODE END 0 */
+  58:Src/sdmmc.c   **** 
+  59:Src/sdmmc.c   **** MMC_HandleTypeDef hmmc1;
+  60:Src/sdmmc.c   **** 
+  61:Src/sdmmc.c   **** /* SDMMC1 init function */
+  62:Src/sdmmc.c   **** 
+  63:Src/sdmmc.c   **** void MX_SDMMC1_MMC_Init(void)
+  64:Src/sdmmc.c   **** {
+  28              		.loc 1 64 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  65:Src/sdmmc.c   **** 
+  66:Src/sdmmc.c   ****   hmmc1.Instance = SDMMC1;
+  37              		.loc 1 66 0
+  38 0002 0F48     		ldr	r0, .L7
+  39 0004 0F4B     		ldr	r3, .L7+4
+  40 0006 0360     		str	r3, [r0]
+  67:Src/sdmmc.c   ****   hmmc1.Init.ClockEdge = SDMMC_CLOCK_EDGE_RISING;
+  41              		.loc 1 67 0
+  42 0008 0023     		movs	r3, #0
+  43 000a 4360     		str	r3, [r0, #4]
+  68:Src/sdmmc.c   ****   hmmc1.Init.ClockBypass = SDMMC_CLOCK_BYPASS_DISABLE;
+  44              		.loc 1 68 0
+  45 000c 8360     		str	r3, [r0, #8]
+  69:Src/sdmmc.c   ****   hmmc1.Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
+  46              		.loc 1 69 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s 			page 3
+
+
+  47 000e C360     		str	r3, [r0, #12]
+  70:Src/sdmmc.c   ****   hmmc1.Init.BusWide = SDMMC_BUS_WIDE_1B;
+  48              		.loc 1 70 0
+  49 0010 0361     		str	r3, [r0, #16]
+  71:Src/sdmmc.c   ****   hmmc1.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
+  50              		.loc 1 71 0
+  51 0012 4361     		str	r3, [r0, #20]
+  72:Src/sdmmc.c   ****   hmmc1.Init.ClockDiv = 0;
+  52              		.loc 1 72 0
+  53 0014 8361     		str	r3, [r0, #24]
+  73:Src/sdmmc.c   ****   if (HAL_MMC_Init(&hmmc1) != HAL_OK)
+  54              		.loc 1 73 0
+  55 0016 FFF7FEFF 		bl	HAL_MMC_Init
+  56              	.LVL0:
+  57 001a 30B9     		cbnz	r0, .L5
+  58              	.L2:
+  74:Src/sdmmc.c   ****   {
+  75:Src/sdmmc.c   ****     _Error_Handler(__FILE__, __LINE__);
+  76:Src/sdmmc.c   ****   }
+  77:Src/sdmmc.c   **** 
+  78:Src/sdmmc.c   ****   if (HAL_MMC_ConfigWideBusOperation(&hmmc1, SDMMC_BUS_WIDE_4B) != HAL_OK)
+  59              		.loc 1 78 0
+  60 001c 4FF40061 		mov	r1, #2048
+  61 0020 0748     		ldr	r0, .L7
+  62 0022 FFF7FEFF 		bl	HAL_MMC_ConfigWideBusOperation
+  63              	.LVL1:
+  64 0026 28B9     		cbnz	r0, .L6
+  65              	.L1:
+  79:Src/sdmmc.c   ****   {
+  80:Src/sdmmc.c   ****     _Error_Handler(__FILE__, __LINE__);
+  81:Src/sdmmc.c   ****   }
+  82:Src/sdmmc.c   **** 
+  83:Src/sdmmc.c   **** }
+  66              		.loc 1 83 0
+  67 0028 08BD     		pop	{r3, pc}
+  68              	.L5:
+  75:Src/sdmmc.c   ****   }
+  69              		.loc 1 75 0
+  70 002a 4B21     		movs	r1, #75
+  71 002c 0648     		ldr	r0, .L7+8
+  72 002e FFF7FEFF 		bl	_Error_Handler
+  73              	.LVL2:
+  74 0032 F3E7     		b	.L2
+  75              	.L6:
+  80:Src/sdmmc.c   ****   }
+  76              		.loc 1 80 0
+  77 0034 5021     		movs	r1, #80
+  78 0036 0448     		ldr	r0, .L7+8
+  79 0038 FFF7FEFF 		bl	_Error_Handler
+  80              	.LVL3:
+  81              		.loc 1 83 0
+  82 003c F4E7     		b	.L1
+  83              	.L8:
+  84 003e 00BF     		.align	2
+  85              	.L7:
+  86 0040 00000000 		.word	hmmc1
+  87 0044 002C0140 		.word	1073818624
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s 			page 4
+
+
+  88 0048 00000000 		.word	.LC0
+  89              		.cfi_endproc
+  90              	.LFE138:
+  92              		.section	.text.HAL_MMC_MspInit,"ax",%progbits
+  93              		.align	1
+  94              		.global	HAL_MMC_MspInit
+  95              		.syntax unified
+  96              		.thumb
+  97              		.thumb_func
+  98              		.fpu fpv5-sp-d16
+ 100              	HAL_MMC_MspInit:
+ 101              	.LFB139:
+  84:Src/sdmmc.c   **** 
+  85:Src/sdmmc.c   **** void HAL_MMC_MspInit(MMC_HandleTypeDef* mmcHandle)
+  86:Src/sdmmc.c   **** {
+ 102              		.loc 1 86 0
+ 103              		.cfi_startproc
+ 104              		@ args = 0, pretend = 0, frame = 24
+ 105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 106              	.LVL4:
+  87:Src/sdmmc.c   **** 
+  88:Src/sdmmc.c   ****   GPIO_InitTypeDef GPIO_InitStruct;
+  89:Src/sdmmc.c   ****   if(mmcHandle->Instance==SDMMC1)
+ 107              		.loc 1 89 0
+ 108 0000 0268     		ldr	r2, [r0]
+ 109 0002 164B     		ldr	r3, .L16
+ 110 0004 9A42     		cmp	r2, r3
+ 111 0006 00D0     		beq	.L15
+ 112 0008 7047     		bx	lr
+ 113              	.L15:
+  86:Src/sdmmc.c   **** 
+ 114              		.loc 1 86 0
+ 115 000a F0B5     		push	{r4, r5, r6, r7, lr}
+ 116              	.LCFI1:
+ 117              		.cfi_def_cfa_offset 20
+ 118              		.cfi_offset 4, -20
+ 119              		.cfi_offset 5, -16
+ 120              		.cfi_offset 6, -12
+ 121              		.cfi_offset 7, -8
+ 122              		.cfi_offset 14, -4
+ 123 000c 87B0     		sub	sp, sp, #28
+ 124              	.LCFI2:
+ 125              		.cfi_def_cfa_offset 48
+ 126              	.LBB2:
+  90:Src/sdmmc.c   ****   {
+  91:Src/sdmmc.c   ****   /* USER CODE BEGIN SDMMC1_MspInit 0 */
+  92:Src/sdmmc.c   **** 
+  93:Src/sdmmc.c   ****   /* USER CODE END SDMMC1_MspInit 0 */
+  94:Src/sdmmc.c   ****     /* SDMMC1 clock enable */
+  95:Src/sdmmc.c   ****     __HAL_RCC_SDMMC1_CLK_ENABLE();
+ 127              		.loc 1 95 0
+ 128 000e 03F58633 		add	r3, r3, #68608
+ 129 0012 5A6C     		ldr	r2, [r3, #68]
+ 130 0014 42F40062 		orr	r2, r2, #2048
+ 131 0018 5A64     		str	r2, [r3, #68]
+ 132 001a 5B6C     		ldr	r3, [r3, #68]
+ 133 001c 03F40063 		and	r3, r3, #2048
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s 			page 5
+
+
+ 134 0020 0093     		str	r3, [sp]
+ 135 0022 009B     		ldr	r3, [sp]
+ 136              	.LBE2:
+  96:Src/sdmmc.c   ****   
+  97:Src/sdmmc.c   ****     /**SDMMC1 GPIO Configuration    
+  98:Src/sdmmc.c   ****     PC8     ------> SDMMC1_D0
+  99:Src/sdmmc.c   ****     PC9     ------> SDMMC1_D1
+ 100:Src/sdmmc.c   ****     PC10     ------> SDMMC1_D2
+ 101:Src/sdmmc.c   ****     PC11     ------> SDMMC1_D3
+ 102:Src/sdmmc.c   ****     PC12     ------> SDMMC1_CK
+ 103:Src/sdmmc.c   ****     PD2     ------> SDMMC1_CMD 
+ 104:Src/sdmmc.c   ****     */
+ 105:Src/sdmmc.c   ****     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
+ 137              		.loc 1 105 0
+ 138 0024 4FF4F853 		mov	r3, #7936
+ 139 0028 0193     		str	r3, [sp, #4]
+ 106:Src/sdmmc.c   ****                           |GPIO_PIN_12;
+ 107:Src/sdmmc.c   ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ 140              		.loc 1 107 0
+ 141 002a 0227     		movs	r7, #2
+ 142 002c 0297     		str	r7, [sp, #8]
+ 108:Src/sdmmc.c   ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 143              		.loc 1 108 0
+ 144 002e 0026     		movs	r6, #0
+ 145 0030 0396     		str	r6, [sp, #12]
+ 109:Src/sdmmc.c   ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+ 146              		.loc 1 109 0
+ 147 0032 0325     		movs	r5, #3
+ 148 0034 0495     		str	r5, [sp, #16]
+ 110:Src/sdmmc.c   ****     GPIO_InitStruct.Alternate = GPIO_AF12_SDMMC1;
+ 149              		.loc 1 110 0
+ 150 0036 0C24     		movs	r4, #12
+ 151 0038 0594     		str	r4, [sp, #20]
+ 111:Src/sdmmc.c   ****     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+ 152              		.loc 1 111 0
+ 153 003a 01A9     		add	r1, sp, #4
+ 154 003c 0848     		ldr	r0, .L16+4
+ 155              	.LVL5:
+ 156 003e FFF7FEFF 		bl	HAL_GPIO_Init
+ 157              	.LVL6:
+ 112:Src/sdmmc.c   **** 
+ 113:Src/sdmmc.c   ****     GPIO_InitStruct.Pin = GPIO_PIN_2;
+ 158              		.loc 1 113 0
+ 159 0042 0423     		movs	r3, #4
+ 160 0044 0193     		str	r3, [sp, #4]
+ 114:Src/sdmmc.c   ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ 161              		.loc 1 114 0
+ 162 0046 0297     		str	r7, [sp, #8]
+ 115:Src/sdmmc.c   ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 163              		.loc 1 115 0
+ 164 0048 0396     		str	r6, [sp, #12]
+ 116:Src/sdmmc.c   ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+ 165              		.loc 1 116 0
+ 166 004a 0495     		str	r5, [sp, #16]
+ 117:Src/sdmmc.c   ****     GPIO_InitStruct.Alternate = GPIO_AF12_SDMMC1;
+ 167              		.loc 1 117 0
+ 168 004c 0594     		str	r4, [sp, #20]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s 			page 6
+
+
+ 118:Src/sdmmc.c   ****     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+ 169              		.loc 1 118 0
+ 170 004e 0DEB0301 		add	r1, sp, r3
+ 171 0052 0448     		ldr	r0, .L16+8
+ 172 0054 FFF7FEFF 		bl	HAL_GPIO_Init
+ 173              	.LVL7:
+ 119:Src/sdmmc.c   **** 
+ 120:Src/sdmmc.c   ****   /* USER CODE BEGIN SDMMC1_MspInit 1 */
+ 121:Src/sdmmc.c   **** 
+ 122:Src/sdmmc.c   ****   /* USER CODE END SDMMC1_MspInit 1 */
+ 123:Src/sdmmc.c   ****   }
+ 124:Src/sdmmc.c   **** }
+ 174              		.loc 1 124 0
+ 175 0058 07B0     		add	sp, sp, #28
+ 176              	.LCFI3:
+ 177              		.cfi_def_cfa_offset 20
+ 178              		@ sp needed
+ 179 005a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 180              	.L17:
+ 181              		.align	2
+ 182              	.L16:
+ 183 005c 002C0140 		.word	1073818624
+ 184 0060 00080240 		.word	1073874944
+ 185 0064 000C0240 		.word	1073875968
+ 186              		.cfi_endproc
+ 187              	.LFE139:
+ 189              		.section	.text.HAL_MMC_MspDeInit,"ax",%progbits
+ 190              		.align	1
+ 191              		.global	HAL_MMC_MspDeInit
+ 192              		.syntax unified
+ 193              		.thumb
+ 194              		.thumb_func
+ 195              		.fpu fpv5-sp-d16
+ 197              	HAL_MMC_MspDeInit:
+ 198              	.LFB140:
+ 125:Src/sdmmc.c   **** 
+ 126:Src/sdmmc.c   **** void HAL_MMC_MspDeInit(MMC_HandleTypeDef* mmcHandle)
+ 127:Src/sdmmc.c   **** {
+ 199              		.loc 1 127 0
+ 200              		.cfi_startproc
+ 201              		@ args = 0, pretend = 0, frame = 0
+ 202              		@ frame_needed = 0, uses_anonymous_args = 0
+ 203              	.LVL8:
+ 204 0000 08B5     		push	{r3, lr}
+ 205              	.LCFI4:
+ 206              		.cfi_def_cfa_offset 8
+ 207              		.cfi_offset 3, -8
+ 208              		.cfi_offset 14, -4
+ 128:Src/sdmmc.c   **** 
+ 129:Src/sdmmc.c   ****   if(mmcHandle->Instance==SDMMC1)
+ 209              		.loc 1 129 0
+ 210 0002 0268     		ldr	r2, [r0]
+ 211 0004 094B     		ldr	r3, .L22
+ 212 0006 9A42     		cmp	r2, r3
+ 213 0008 00D0     		beq	.L21
+ 214              	.LVL9:
+ 215              	.L18:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s 			page 7
+
+
+ 130:Src/sdmmc.c   ****   {
+ 131:Src/sdmmc.c   ****   /* USER CODE BEGIN SDMMC1_MspDeInit 0 */
+ 132:Src/sdmmc.c   **** 
+ 133:Src/sdmmc.c   ****   /* USER CODE END SDMMC1_MspDeInit 0 */
+ 134:Src/sdmmc.c   ****     /* Peripheral clock disable */
+ 135:Src/sdmmc.c   ****     __HAL_RCC_SDMMC1_CLK_DISABLE();
+ 136:Src/sdmmc.c   ****   
+ 137:Src/sdmmc.c   ****     /**SDMMC1 GPIO Configuration    
+ 138:Src/sdmmc.c   ****     PC8     ------> SDMMC1_D0
+ 139:Src/sdmmc.c   ****     PC9     ------> SDMMC1_D1
+ 140:Src/sdmmc.c   ****     PC10     ------> SDMMC1_D2
+ 141:Src/sdmmc.c   ****     PC11     ------> SDMMC1_D3
+ 142:Src/sdmmc.c   ****     PC12     ------> SDMMC1_CK
+ 143:Src/sdmmc.c   ****     PD2     ------> SDMMC1_CMD 
+ 144:Src/sdmmc.c   ****     */
+ 145:Src/sdmmc.c   ****     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
+ 146:Src/sdmmc.c   ****                           |GPIO_PIN_12);
+ 147:Src/sdmmc.c   **** 
+ 148:Src/sdmmc.c   ****     HAL_GPIO_DeInit(GPIOD, GPIO_PIN_2);
+ 149:Src/sdmmc.c   **** 
+ 150:Src/sdmmc.c   ****   /* USER CODE BEGIN SDMMC1_MspDeInit 1 */
+ 151:Src/sdmmc.c   **** 
+ 152:Src/sdmmc.c   ****   /* USER CODE END SDMMC1_MspDeInit 1 */
+ 153:Src/sdmmc.c   ****   }
+ 154:Src/sdmmc.c   **** } 
+ 216              		.loc 1 154 0
+ 217 000a 08BD     		pop	{r3, pc}
+ 218              	.LVL10:
+ 219              	.L21:
+ 135:Src/sdmmc.c   ****   
+ 220              		.loc 1 135 0
+ 221 000c 084A     		ldr	r2, .L22+4
+ 222 000e 536C     		ldr	r3, [r2, #68]
+ 223 0010 23F40063 		bic	r3, r3, #2048
+ 224 0014 5364     		str	r3, [r2, #68]
+ 145:Src/sdmmc.c   ****                           |GPIO_PIN_12);
+ 225              		.loc 1 145 0
+ 226 0016 4FF4F851 		mov	r1, #7936
+ 227 001a 0648     		ldr	r0, .L22+8
+ 228              	.LVL11:
+ 229 001c FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 230              	.LVL12:
+ 148:Src/sdmmc.c   **** 
+ 231              		.loc 1 148 0
+ 232 0020 0421     		movs	r1, #4
+ 233 0022 0548     		ldr	r0, .L22+12
+ 234 0024 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 235              	.LVL13:
+ 236              		.loc 1 154 0
+ 237 0028 EFE7     		b	.L18
+ 238              	.L23:
+ 239 002a 00BF     		.align	2
+ 240              	.L22:
+ 241 002c 002C0140 		.word	1073818624
+ 242 0030 00380240 		.word	1073887232
+ 243 0034 00080240 		.word	1073874944
+ 244 0038 000C0240 		.word	1073875968
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s 			page 8
+
+
+ 245              		.cfi_endproc
+ 246              	.LFE140:
+ 248              		.comm	hmmc1,128,4
+ 249              		.section	.rodata.MX_SDMMC1_MMC_Init.str1.4,"aMS",%progbits,1
+ 250              		.align	2
+ 251              	.LC0:
+ 252 0000 5372632F 		.ascii	"Src/sdmmc.c\000"
+ 252      73646D6D 
+ 252      632E6300 
+ 253              		.text
+ 254              	.Letext0:
+ 255              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 256              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 257              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ 258              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 259              		.file 6 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f756xx.h"
+ 260              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 261              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 262              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 263              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+ 264              		.file 11 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_def.h"
+ 265              		.file 12 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio.h"
+ 266              		.file 13 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma.h"
+ 267              		.file 14 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_sdmmc.h"
+ 268              		.file 15 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_mmc.h"
+ 269              		.file 16 "Inc/sdmmc.h"
+ 270              		.file 17 "Inc/gpio.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 sdmmc.c
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:18     .text.MX_SDMMC1_MMC_Init:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:25     .text.MX_SDMMC1_MMC_Init:00000000 MX_SDMMC1_MMC_Init
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:86     .text.MX_SDMMC1_MMC_Init:00000040 $d
+                            *COM*:00000080 hmmc1
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:93     .text.HAL_MMC_MspInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:100    .text.HAL_MMC_MspInit:00000000 HAL_MMC_MspInit
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:183    .text.HAL_MMC_MspInit:0000005c $d
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:190    .text.HAL_MMC_MspDeInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:197    .text.HAL_MMC_MspDeInit:00000000 HAL_MMC_MspDeInit
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:241    .text.HAL_MMC_MspDeInit:0000002c $d
+C:\Users\micha\AppData\Local\Temp\ccFS3mAl.s:250    .rodata.MX_SDMMC1_MMC_Init.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_MMC_Init
+HAL_MMC_ConfigWideBusOperation
+_Error_Handler
+HAL_GPIO_Init
+HAL_GPIO_DeInit

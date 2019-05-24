@@ -1,0 +1,1088 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"drawing.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.drawNumber,"ax",%progbits
+  18              		.align	1
+  19              		.global	drawNumber
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	drawNumber:
+  26              	.LFB138:
+  27              		.file 1 "Src/drawing.c"
+   1:Src/drawing.c **** #include "drawing.h"
+   2:Src/drawing.c **** #include "Adafruit_ILI9340.h"
+   3:Src/drawing.c **** #include "Adafruit_GFX.h"
+   4:Src/drawing.c **** #include "images.h"
+   5:Src/drawing.c **** #include "math.h"
+   6:Src/drawing.c **** 
+   7:Src/drawing.c **** void drawNumber(char c, uint16_t x, uint16_t y, uint16_t tintMask)
+   8:Src/drawing.c **** {
+  28              		.loc 1 8 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 30B5     		push	{r4, r5, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 12
+  36              		.cfi_offset 4, -12
+  37              		.cfi_offset 5, -8
+  38              		.cfi_offset 14, -4
+  39 0002 83B0     		sub	sp, sp, #12
+  40              	.LCFI1:
+  41              		.cfi_def_cfa_offset 24
+  42 0004 0C46     		mov	r4, r1
+  43 0006 1146     		mov	r1, r2
+  44              	.LVL1:
+   9:Src/drawing.c ****   switch(c)
+  45              		.loc 1 9 0
+  46 0008 2E38     		subs	r0, r0, #46
+  47              	.LVL2:
+  48 000a 0B28     		cmp	r0, #11
+  49 000c 00F2A380 		bhi	.L2
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 2
+
+
+  50 0010 DFE800F0 		tbb	[pc, r0]
+  51              	.LVL3:
+  52              	.L4:
+  53 0014 06       		.byte	(.L3-.L4)/2
+  54 0015 A1       		.byte	(.L2-.L4)/2
+  55 0016 93       		.byte	(.L5-.L4)/2
+  56 0017 15       		.byte	(.L6-.L4)/2
+  57 0018 23       		.byte	(.L7-.L4)/2
+  58 0019 31       		.byte	(.L8-.L4)/2
+  59 001a 3F       		.byte	(.L9-.L4)/2
+  60 001b 4D       		.byte	(.L10-.L4)/2
+  61 001c 5B       		.byte	(.L11-.L4)/2
+  62 001d 69       		.byte	(.L12-.L4)/2
+  63 001e 77       		.byte	(.L13-.L4)/2
+  64 001f 85       		.byte	(.L14-.L4)/2
+  65              		.p2align 1
+  66              	.L3:
+  10:Src/drawing.c ****   {
+  11:Src/drawing.c ****   case '.':
+  12:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imagePeriod.imageData, imagePeriod.width, imagePeriod.height
+  67              		.loc 1 12 0
+  68 0020 514A     		ldr	r2, .L17
+  69 0022 5068     		ldr	r0, [r2, #4]
+  70 0024 B2F90050 		ldrsh	r5, [r2]
+  71 0028 9268     		ldr	r2, [r2, #8]
+  72 002a 0193     		str	r3, [sp, #4]
+  73 002c 00B2     		sxth	r0, r0
+  74 002e 0090     		str	r0, [sp]
+  75 0030 2B46     		mov	r3, r5
+  76              	.LVL4:
+  77 0032 09B2     		sxth	r1, r1
+  78 0034 20B2     		sxth	r0, r4
+  79 0036 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+  80              	.LVL5:
+  81              	.L1:
+  13:Src/drawing.c ****     break;
+  14:Src/drawing.c ****   case '1':
+  15:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageOne.imageData, imageOne.width, imageOne.height, tintMas
+  16:Src/drawing.c ****     break;
+  17:Src/drawing.c ****   case '2':
+  18:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageTwo.imageData, imageTwo.width, imageTwo.height, tintMas
+  19:Src/drawing.c ****     break;
+  20:Src/drawing.c ****   case '3':
+  21:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageThree.imageData, imageThree.width, imageThree.height, t
+  22:Src/drawing.c ****     break;
+  23:Src/drawing.c ****   case '4':
+  24:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageFour.imageData, imageFour.width, imageFour.height, tint
+  25:Src/drawing.c ****     break;
+  26:Src/drawing.c ****   case '5':
+  27:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageFive.imageData, imageFive.width, imageFive.height, tint
+  28:Src/drawing.c ****     break;
+  29:Src/drawing.c ****   case '6':
+  30:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageSix.imageData, imageSix.width, imageSix.height, tintMas
+  31:Src/drawing.c ****     break;
+  32:Src/drawing.c ****   case '7':
+  33:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageSeven.imageData, imageSeven.width, imageSeven.height, t
+  34:Src/drawing.c ****     break;
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 3
+
+
+  35:Src/drawing.c ****   case '8':
+  36:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageEight.imageData, imageEight.width, imageEight.height, t
+  37:Src/drawing.c ****     break;
+  38:Src/drawing.c ****   case '9':
+  39:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageNine.imageData, imageNine.width, imageNine.height,tintM
+  40:Src/drawing.c ****     break;
+  41:Src/drawing.c ****   case '0':
+  42:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageZero.imageData, imageZero.width, imageZero.height, tint
+  43:Src/drawing.c ****     break;
+  44:Src/drawing.c ****   default:
+  45:Src/drawing.c ****     Adafruit_GFX_fillRect(x, y, 15, 19, ILI9340_BLACK);
+  46:Src/drawing.c ****   }
+  47:Src/drawing.c **** }
+  82              		.loc 1 47 0
+  83 003a 03B0     		add	sp, sp, #12
+  84              	.LCFI2:
+  85              		.cfi_remember_state
+  86              		.cfi_def_cfa_offset 12
+  87              		@ sp needed
+  88 003c 30BD     		pop	{r4, r5, pc}
+  89              	.LVL6:
+  90              	.L6:
+  91              	.LCFI3:
+  92              		.cfi_restore_state
+  15:Src/drawing.c ****     break;
+  93              		.loc 1 15 0
+  94 003e 4B4A     		ldr	r2, .L17+4
+  95 0040 5068     		ldr	r0, [r2, #4]
+  96 0042 B2F90050 		ldrsh	r5, [r2]
+  97 0046 9268     		ldr	r2, [r2, #8]
+  98 0048 0193     		str	r3, [sp, #4]
+  99 004a 00B2     		sxth	r0, r0
+ 100 004c 0090     		str	r0, [sp]
+ 101 004e 2B46     		mov	r3, r5
+ 102              	.LVL7:
+ 103 0050 09B2     		sxth	r1, r1
+ 104 0052 20B2     		sxth	r0, r4
+ 105 0054 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 106              	.LVL8:
+  16:Src/drawing.c ****   case '2':
+ 107              		.loc 1 16 0
+ 108 0058 EFE7     		b	.L1
+ 109              	.LVL9:
+ 110              	.L7:
+  18:Src/drawing.c ****     break;
+ 111              		.loc 1 18 0
+ 112 005a 454A     		ldr	r2, .L17+8
+ 113 005c 5068     		ldr	r0, [r2, #4]
+ 114 005e B2F90050 		ldrsh	r5, [r2]
+ 115 0062 9268     		ldr	r2, [r2, #8]
+ 116 0064 0193     		str	r3, [sp, #4]
+ 117 0066 00B2     		sxth	r0, r0
+ 118 0068 0090     		str	r0, [sp]
+ 119 006a 2B46     		mov	r3, r5
+ 120              	.LVL10:
+ 121 006c 09B2     		sxth	r1, r1
+ 122 006e 20B2     		sxth	r0, r4
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 4
+
+
+ 123 0070 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 124              	.LVL11:
+  19:Src/drawing.c ****   case '3':
+ 125              		.loc 1 19 0
+ 126 0074 E1E7     		b	.L1
+ 127              	.LVL12:
+ 128              	.L8:
+  21:Src/drawing.c ****     break;
+ 129              		.loc 1 21 0
+ 130 0076 3F4A     		ldr	r2, .L17+12
+ 131 0078 5068     		ldr	r0, [r2, #4]
+ 132 007a B2F90050 		ldrsh	r5, [r2]
+ 133 007e 9268     		ldr	r2, [r2, #8]
+ 134 0080 0193     		str	r3, [sp, #4]
+ 135 0082 00B2     		sxth	r0, r0
+ 136 0084 0090     		str	r0, [sp]
+ 137 0086 2B46     		mov	r3, r5
+ 138              	.LVL13:
+ 139 0088 09B2     		sxth	r1, r1
+ 140 008a 20B2     		sxth	r0, r4
+ 141 008c FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 142              	.LVL14:
+  22:Src/drawing.c ****   case '4':
+ 143              		.loc 1 22 0
+ 144 0090 D3E7     		b	.L1
+ 145              	.LVL15:
+ 146              	.L9:
+  24:Src/drawing.c ****     break;
+ 147              		.loc 1 24 0
+ 148 0092 394A     		ldr	r2, .L17+16
+ 149 0094 5068     		ldr	r0, [r2, #4]
+ 150 0096 B2F90050 		ldrsh	r5, [r2]
+ 151 009a 9268     		ldr	r2, [r2, #8]
+ 152 009c 0193     		str	r3, [sp, #4]
+ 153 009e 00B2     		sxth	r0, r0
+ 154 00a0 0090     		str	r0, [sp]
+ 155 00a2 2B46     		mov	r3, r5
+ 156              	.LVL16:
+ 157 00a4 09B2     		sxth	r1, r1
+ 158 00a6 20B2     		sxth	r0, r4
+ 159 00a8 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 160              	.LVL17:
+  25:Src/drawing.c ****   case '5':
+ 161              		.loc 1 25 0
+ 162 00ac C5E7     		b	.L1
+ 163              	.LVL18:
+ 164              	.L10:
+  27:Src/drawing.c ****     break;
+ 165              		.loc 1 27 0
+ 166 00ae 334A     		ldr	r2, .L17+20
+ 167 00b0 5068     		ldr	r0, [r2, #4]
+ 168 00b2 B2F90050 		ldrsh	r5, [r2]
+ 169 00b6 9268     		ldr	r2, [r2, #8]
+ 170 00b8 0193     		str	r3, [sp, #4]
+ 171 00ba 00B2     		sxth	r0, r0
+ 172 00bc 0090     		str	r0, [sp]
+ 173 00be 2B46     		mov	r3, r5
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 5
+
+
+ 174              	.LVL19:
+ 175 00c0 09B2     		sxth	r1, r1
+ 176 00c2 20B2     		sxth	r0, r4
+ 177 00c4 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 178              	.LVL20:
+  28:Src/drawing.c ****   case '6':
+ 179              		.loc 1 28 0
+ 180 00c8 B7E7     		b	.L1
+ 181              	.LVL21:
+ 182              	.L11:
+  30:Src/drawing.c ****     break;
+ 183              		.loc 1 30 0
+ 184 00ca 2D4A     		ldr	r2, .L17+24
+ 185 00cc 5068     		ldr	r0, [r2, #4]
+ 186 00ce B2F90050 		ldrsh	r5, [r2]
+ 187 00d2 9268     		ldr	r2, [r2, #8]
+ 188 00d4 0193     		str	r3, [sp, #4]
+ 189 00d6 00B2     		sxth	r0, r0
+ 190 00d8 0090     		str	r0, [sp]
+ 191 00da 2B46     		mov	r3, r5
+ 192              	.LVL22:
+ 193 00dc 09B2     		sxth	r1, r1
+ 194 00de 20B2     		sxth	r0, r4
+ 195 00e0 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 196              	.LVL23:
+  31:Src/drawing.c ****   case '7':
+ 197              		.loc 1 31 0
+ 198 00e4 A9E7     		b	.L1
+ 199              	.LVL24:
+ 200              	.L12:
+  33:Src/drawing.c ****     break;
+ 201              		.loc 1 33 0
+ 202 00e6 274A     		ldr	r2, .L17+28
+ 203 00e8 5068     		ldr	r0, [r2, #4]
+ 204 00ea B2F90050 		ldrsh	r5, [r2]
+ 205 00ee 9268     		ldr	r2, [r2, #8]
+ 206 00f0 0193     		str	r3, [sp, #4]
+ 207 00f2 00B2     		sxth	r0, r0
+ 208 00f4 0090     		str	r0, [sp]
+ 209 00f6 2B46     		mov	r3, r5
+ 210              	.LVL25:
+ 211 00f8 09B2     		sxth	r1, r1
+ 212 00fa 20B2     		sxth	r0, r4
+ 213 00fc FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 214              	.LVL26:
+  34:Src/drawing.c ****   case '8':
+ 215              		.loc 1 34 0
+ 216 0100 9BE7     		b	.L1
+ 217              	.LVL27:
+ 218              	.L13:
+  36:Src/drawing.c ****     break;
+ 219              		.loc 1 36 0
+ 220 0102 214A     		ldr	r2, .L17+32
+ 221 0104 5068     		ldr	r0, [r2, #4]
+ 222 0106 B2F90050 		ldrsh	r5, [r2]
+ 223 010a 9268     		ldr	r2, [r2, #8]
+ 224 010c 0193     		str	r3, [sp, #4]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 6
+
+
+ 225 010e 00B2     		sxth	r0, r0
+ 226 0110 0090     		str	r0, [sp]
+ 227 0112 2B46     		mov	r3, r5
+ 228              	.LVL28:
+ 229 0114 09B2     		sxth	r1, r1
+ 230 0116 20B2     		sxth	r0, r4
+ 231 0118 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 232              	.LVL29:
+  37:Src/drawing.c ****   case '9':
+ 233              		.loc 1 37 0
+ 234 011c 8DE7     		b	.L1
+ 235              	.LVL30:
+ 236              	.L14:
+  39:Src/drawing.c ****     break;
+ 237              		.loc 1 39 0
+ 238 011e 1B4A     		ldr	r2, .L17+36
+ 239 0120 5068     		ldr	r0, [r2, #4]
+ 240 0122 B2F90050 		ldrsh	r5, [r2]
+ 241 0126 9268     		ldr	r2, [r2, #8]
+ 242 0128 0193     		str	r3, [sp, #4]
+ 243 012a 00B2     		sxth	r0, r0
+ 244 012c 0090     		str	r0, [sp]
+ 245 012e 2B46     		mov	r3, r5
+ 246              	.LVL31:
+ 247 0130 09B2     		sxth	r1, r1
+ 248 0132 20B2     		sxth	r0, r4
+ 249 0134 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 250              	.LVL32:
+  40:Src/drawing.c ****   case '0':
+ 251              		.loc 1 40 0
+ 252 0138 7FE7     		b	.L1
+ 253              	.LVL33:
+ 254              	.L5:
+  42:Src/drawing.c ****     break;
+ 255              		.loc 1 42 0
+ 256 013a 154A     		ldr	r2, .L17+40
+ 257 013c 5068     		ldr	r0, [r2, #4]
+ 258 013e B2F90050 		ldrsh	r5, [r2]
+ 259 0142 9268     		ldr	r2, [r2, #8]
+ 260 0144 0193     		str	r3, [sp, #4]
+ 261 0146 00B2     		sxth	r0, r0
+ 262 0148 0090     		str	r0, [sp]
+ 263 014a 2B46     		mov	r3, r5
+ 264              	.LVL34:
+ 265 014c 09B2     		sxth	r1, r1
+ 266 014e 20B2     		sxth	r0, r4
+ 267 0150 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 268              	.LVL35:
+  43:Src/drawing.c ****   default:
+ 269              		.loc 1 43 0
+ 270 0154 71E7     		b	.L1
+ 271              	.LVL36:
+ 272              	.L2:
+  45:Src/drawing.c ****   }
+ 273              		.loc 1 45 0
+ 274 0156 0023     		movs	r3, #0
+ 275              	.LVL37:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 7
+
+
+ 276 0158 0093     		str	r3, [sp]
+ 277 015a 1323     		movs	r3, #19
+ 278 015c 0F22     		movs	r2, #15
+ 279 015e 09B2     		sxth	r1, r1
+ 280 0160 20B2     		sxth	r0, r4
+ 281 0162 FFF7FEFF 		bl	Adafruit_GFX_fillRect
+ 282              	.LVL38:
+ 283              		.loc 1 47 0
+ 284 0166 68E7     		b	.L1
+ 285              	.L18:
+ 286              		.align	2
+ 287              	.L17:
+ 288 0168 00000000 		.word	imagePeriod
+ 289 016c 00000000 		.word	imageOne
+ 290 0170 00000000 		.word	imageTwo
+ 291 0174 00000000 		.word	imageThree
+ 292 0178 00000000 		.word	imageFour
+ 293 017c 00000000 		.word	imageFive
+ 294 0180 00000000 		.word	imageSix
+ 295 0184 00000000 		.word	imageSeven
+ 296 0188 00000000 		.word	imageEight
+ 297 018c 00000000 		.word	imageNine
+ 298 0190 00000000 		.word	imageZero
+ 299              		.cfi_endproc
+ 300              	.LFE138:
+ 302              		.section	.text.drawNumberSmall,"ax",%progbits
+ 303              		.align	1
+ 304              		.global	drawNumberSmall
+ 305              		.syntax unified
+ 306              		.thumb
+ 307              		.thumb_func
+ 308              		.fpu fpv5-sp-d16
+ 310              	drawNumberSmall:
+ 311              	.LFB139:
+  48:Src/drawing.c **** 
+  49:Src/drawing.c **** void drawNumberSmall(char c, uint16_t x, uint16_t y, uint16_t tintMask)
+  50:Src/drawing.c **** {
+ 312              		.loc 1 50 0
+ 313              		.cfi_startproc
+ 314              		@ args = 0, pretend = 0, frame = 0
+ 315              		@ frame_needed = 0, uses_anonymous_args = 0
+ 316              	.LVL39:
+ 317 0000 30B5     		push	{r4, r5, lr}
+ 318              	.LCFI4:
+ 319              		.cfi_def_cfa_offset 12
+ 320              		.cfi_offset 4, -12
+ 321              		.cfi_offset 5, -8
+ 322              		.cfi_offset 14, -4
+ 323 0002 83B0     		sub	sp, sp, #12
+ 324              	.LCFI5:
+ 325              		.cfi_def_cfa_offset 24
+ 326 0004 0C46     		mov	r4, r1
+ 327 0006 1146     		mov	r1, r2
+ 328              	.LVL40:
+  51:Src/drawing.c ****   switch(c)
+ 329              		.loc 1 51 0
+ 330 0008 2D38     		subs	r0, r0, #45
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 8
+
+
+ 331              	.LVL41:
+ 332 000a 5128     		cmp	r0, #81
+ 333 000c 00F2FD80 		bhi	.L20
+ 334 0010 DFE810F0 		tbh	[pc, r0, lsl #1]
+ 335              	.LVL42:
+ 336              	.L22:
+ 337 0014 DF00     		.2byte	(.L21-.L22)/2
+ 338 0016 FB00     		.2byte	(.L20-.L22)/2
+ 339 0018 FB00     		.2byte	(.L20-.L22)/2
+ 340 001a D100     		.2byte	(.L23-.L22)/2
+ 341 001c 5200     		.2byte	(.L24-.L22)/2
+ 342 001e 6100     		.2byte	(.L25-.L22)/2
+ 343 0020 6F00     		.2byte	(.L26-.L22)/2
+ 344 0022 7D00     		.2byte	(.L27-.L22)/2
+ 345 0024 8B00     		.2byte	(.L28-.L22)/2
+ 346 0026 9900     		.2byte	(.L29-.L22)/2
+ 347 0028 A700     		.2byte	(.L30-.L22)/2
+ 348 002a B500     		.2byte	(.L31-.L22)/2
+ 349 002c C300     		.2byte	(.L32-.L22)/2
+ 350 002e FB00     		.2byte	(.L20-.L22)/2
+ 351 0030 FB00     		.2byte	(.L20-.L22)/2
+ 352 0032 FB00     		.2byte	(.L20-.L22)/2
+ 353 0034 FB00     		.2byte	(.L20-.L22)/2
+ 354 0036 FB00     		.2byte	(.L20-.L22)/2
+ 355 0038 FB00     		.2byte	(.L20-.L22)/2
+ 356 003a FB00     		.2byte	(.L20-.L22)/2
+ 357 003c FB00     		.2byte	(.L20-.L22)/2
+ 358 003e FB00     		.2byte	(.L20-.L22)/2
+ 359 0040 FB00     		.2byte	(.L20-.L22)/2
+ 360 0042 FB00     		.2byte	(.L20-.L22)/2
+ 361 0044 FB00     		.2byte	(.L20-.L22)/2
+ 362 0046 FB00     		.2byte	(.L20-.L22)/2
+ 363 0048 FB00     		.2byte	(.L20-.L22)/2
+ 364 004a FB00     		.2byte	(.L20-.L22)/2
+ 365 004c FB00     		.2byte	(.L20-.L22)/2
+ 366 004e FB00     		.2byte	(.L20-.L22)/2
+ 367 0050 FB00     		.2byte	(.L20-.L22)/2
+ 368 0052 FB00     		.2byte	(.L20-.L22)/2
+ 369 0054 FB00     		.2byte	(.L20-.L22)/2
+ 370 0056 FB00     		.2byte	(.L20-.L22)/2
+ 371 0058 FB00     		.2byte	(.L20-.L22)/2
+ 372 005a FB00     		.2byte	(.L20-.L22)/2
+ 373 005c FB00     		.2byte	(.L20-.L22)/2
+ 374 005e FB00     		.2byte	(.L20-.L22)/2
+ 375 0060 FB00     		.2byte	(.L20-.L22)/2
+ 376 0062 FB00     		.2byte	(.L20-.L22)/2
+ 377 0064 FB00     		.2byte	(.L20-.L22)/2
+ 378 0066 FB00     		.2byte	(.L20-.L22)/2
+ 379 0068 FB00     		.2byte	(.L20-.L22)/2
+ 380 006a FB00     		.2byte	(.L20-.L22)/2
+ 381 006c FB00     		.2byte	(.L20-.L22)/2
+ 382 006e FB00     		.2byte	(.L20-.L22)/2
+ 383 0070 FB00     		.2byte	(.L20-.L22)/2
+ 384 0072 FB00     		.2byte	(.L20-.L22)/2
+ 385 0074 FB00     		.2byte	(.L20-.L22)/2
+ 386 0076 FB00     		.2byte	(.L20-.L22)/2
+ 387 0078 FB00     		.2byte	(.L20-.L22)/2
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 9
+
+
+ 388 007a FB00     		.2byte	(.L20-.L22)/2
+ 389 007c FB00     		.2byte	(.L20-.L22)/2
+ 390 007e FB00     		.2byte	(.L20-.L22)/2
+ 391 0080 FB00     		.2byte	(.L20-.L22)/2
+ 392 0082 FB00     		.2byte	(.L20-.L22)/2
+ 393 0084 FB00     		.2byte	(.L20-.L22)/2
+ 394 0086 FB00     		.2byte	(.L20-.L22)/2
+ 395 0088 FB00     		.2byte	(.L20-.L22)/2
+ 396 008a FB00     		.2byte	(.L20-.L22)/2
+ 397 008c FB00     		.2byte	(.L20-.L22)/2
+ 398 008e FB00     		.2byte	(.L20-.L22)/2
+ 399 0090 FB00     		.2byte	(.L20-.L22)/2
+ 400 0092 FB00     		.2byte	(.L20-.L22)/2
+ 401 0094 FB00     		.2byte	(.L20-.L22)/2
+ 402 0096 FB00     		.2byte	(.L20-.L22)/2
+ 403 0098 FB00     		.2byte	(.L20-.L22)/2
+ 404 009a FB00     		.2byte	(.L20-.L22)/2
+ 405 009c FB00     		.2byte	(.L20-.L22)/2
+ 406 009e FB00     		.2byte	(.L20-.L22)/2
+ 407 00a0 FB00     		.2byte	(.L20-.L22)/2
+ 408 00a2 FB00     		.2byte	(.L20-.L22)/2
+ 409 00a4 FB00     		.2byte	(.L20-.L22)/2
+ 410 00a6 FB00     		.2byte	(.L20-.L22)/2
+ 411 00a8 FB00     		.2byte	(.L20-.L22)/2
+ 412 00aa FB00     		.2byte	(.L20-.L22)/2
+ 413 00ac FB00     		.2byte	(.L20-.L22)/2
+ 414 00ae FB00     		.2byte	(.L20-.L22)/2
+ 415 00b0 FB00     		.2byte	(.L20-.L22)/2
+ 416 00b2 FB00     		.2byte	(.L20-.L22)/2
+ 417 00b4 FB00     		.2byte	(.L20-.L22)/2
+ 418 00b6 ED00     		.2byte	(.L33-.L22)/2
+ 419              		.p2align 1
+ 420              	.L24:
+  52:Src/drawing.c ****   {
+  53:Src/drawing.c ****   case '1':
+  54:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageOneSmall.imageData, imageOneSmall.width, imageOneSmall.
+ 421              		.loc 1 54 0
+ 422 00b8 584A     		ldr	r2, .L36
+ 423 00ba 5068     		ldr	r0, [r2, #4]
+ 424 00bc B2F90050 		ldrsh	r5, [r2]
+ 425 00c0 9268     		ldr	r2, [r2, #8]
+ 426 00c2 0193     		str	r3, [sp, #4]
+ 427 00c4 00B2     		sxth	r0, r0
+ 428 00c6 0090     		str	r0, [sp]
+ 429 00c8 2B46     		mov	r3, r5
+ 430              	.LVL43:
+ 431 00ca 09B2     		sxth	r1, r1
+ 432 00cc 20B2     		sxth	r0, r4
+ 433 00ce FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 434              	.LVL44:
+ 435              	.L19:
+  55:Src/drawing.c ****     break;
+  56:Src/drawing.c ****   case '2':
+  57:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageTwoSmall.imageData, imageTwoSmall.width, imageTwoSmall.
+  58:Src/drawing.c ****     break;
+  59:Src/drawing.c ****   case '3':
+  60:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageThreeSmall.imageData, imageThreeSmall.width, imageThree
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 10
+
+
+  61:Src/drawing.c ****     break;
+  62:Src/drawing.c ****   case '4':
+  63:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageFourSmall.imageData, imageFourSmall.width, imageFourSma
+  64:Src/drawing.c ****     break;
+  65:Src/drawing.c ****   case '5':
+  66:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageFiveSmall.imageData , imageFiveSmall.width, imageFiveSm
+  67:Src/drawing.c ****     break;
+  68:Src/drawing.c ****   case '6':
+  69:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageSixSmall.imageData, imageSixSmall.width, imageSixSmall.
+  70:Src/drawing.c ****     break;
+  71:Src/drawing.c ****   case '7':
+  72:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageSevenSmall.imageData, imageSevenSmall.width, imageSeven
+  73:Src/drawing.c ****     break;
+  74:Src/drawing.c ****   case '8':
+  75:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageEightSmall.imageData, imageEightSmall.width , imageEigh
+  76:Src/drawing.c ****     break;
+  77:Src/drawing.c ****   case '9':
+  78:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageNineSmall.imageData, imageNineSmall.width, imageNineSma
+  79:Src/drawing.c ****     break;
+  80:Src/drawing.c ****   case '0':
+  81:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageZeroSmall.imageData, imageZeroSmall.width, imageZeroSma
+  82:Src/drawing.c ****     break;
+  83:Src/drawing.c ****   case '-':
+  84:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageHyphenSmall.imageData, imageHyphenSmall.width, imageHyp
+  85:Src/drawing.c ****     break;
+  86:Src/drawing.c ****   case '~':
+  87:Src/drawing.c ****     Adafruit_GFX_drawColorBitmap(x, y, imageTildeSmall.imageData, imageTildeSmall.width, imageTilde
+  88:Src/drawing.c ****     break;
+  89:Src/drawing.c ****   default:
+  90:Src/drawing.c ****     Adafruit_GFX_fillRect(x, y, 8, 9, ILI9340_BLACK);
+  91:Src/drawing.c ****   }
+  92:Src/drawing.c **** }
+ 436              		.loc 1 92 0
+ 437 00d2 03B0     		add	sp, sp, #12
+ 438              	.LCFI6:
+ 439              		.cfi_remember_state
+ 440              		.cfi_def_cfa_offset 12
+ 441              		@ sp needed
+ 442 00d4 30BD     		pop	{r4, r5, pc}
+ 443              	.LVL45:
+ 444              	.L25:
+ 445              	.LCFI7:
+ 446              		.cfi_restore_state
+  57:Src/drawing.c ****     break;
+ 447              		.loc 1 57 0
+ 448 00d6 524A     		ldr	r2, .L36+4
+ 449 00d8 5068     		ldr	r0, [r2, #4]
+ 450 00da B2F90050 		ldrsh	r5, [r2]
+ 451 00de 9268     		ldr	r2, [r2, #8]
+ 452 00e0 0193     		str	r3, [sp, #4]
+ 453 00e2 00B2     		sxth	r0, r0
+ 454 00e4 0090     		str	r0, [sp]
+ 455 00e6 2B46     		mov	r3, r5
+ 456              	.LVL46:
+ 457 00e8 09B2     		sxth	r1, r1
+ 458 00ea 20B2     		sxth	r0, r4
+ 459 00ec FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 11
+
+
+ 460              	.LVL47:
+  58:Src/drawing.c ****   case '3':
+ 461              		.loc 1 58 0
+ 462 00f0 EFE7     		b	.L19
+ 463              	.LVL48:
+ 464              	.L26:
+  60:Src/drawing.c ****     break;
+ 465              		.loc 1 60 0
+ 466 00f2 4C4A     		ldr	r2, .L36+8
+ 467 00f4 5068     		ldr	r0, [r2, #4]
+ 468 00f6 B2F90050 		ldrsh	r5, [r2]
+ 469 00fa 9268     		ldr	r2, [r2, #8]
+ 470 00fc 0193     		str	r3, [sp, #4]
+ 471 00fe 00B2     		sxth	r0, r0
+ 472 0100 0090     		str	r0, [sp]
+ 473 0102 2B46     		mov	r3, r5
+ 474              	.LVL49:
+ 475 0104 09B2     		sxth	r1, r1
+ 476 0106 20B2     		sxth	r0, r4
+ 477 0108 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 478              	.LVL50:
+  61:Src/drawing.c ****   case '4':
+ 479              		.loc 1 61 0
+ 480 010c E1E7     		b	.L19
+ 481              	.LVL51:
+ 482              	.L27:
+  63:Src/drawing.c ****     break;
+ 483              		.loc 1 63 0
+ 484 010e 464A     		ldr	r2, .L36+12
+ 485 0110 5068     		ldr	r0, [r2, #4]
+ 486 0112 B2F90050 		ldrsh	r5, [r2]
+ 487 0116 9268     		ldr	r2, [r2, #8]
+ 488 0118 0193     		str	r3, [sp, #4]
+ 489 011a 00B2     		sxth	r0, r0
+ 490 011c 0090     		str	r0, [sp]
+ 491 011e 2B46     		mov	r3, r5
+ 492              	.LVL52:
+ 493 0120 09B2     		sxth	r1, r1
+ 494 0122 20B2     		sxth	r0, r4
+ 495 0124 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 496              	.LVL53:
+  64:Src/drawing.c ****   case '5':
+ 497              		.loc 1 64 0
+ 498 0128 D3E7     		b	.L19
+ 499              	.LVL54:
+ 500              	.L28:
+  66:Src/drawing.c ****     break;
+ 501              		.loc 1 66 0
+ 502 012a 404A     		ldr	r2, .L36+16
+ 503 012c 5068     		ldr	r0, [r2, #4]
+ 504 012e B2F90050 		ldrsh	r5, [r2]
+ 505 0132 9268     		ldr	r2, [r2, #8]
+ 506 0134 0193     		str	r3, [sp, #4]
+ 507 0136 00B2     		sxth	r0, r0
+ 508 0138 0090     		str	r0, [sp]
+ 509 013a 2B46     		mov	r3, r5
+ 510              	.LVL55:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 12
+
+
+ 511 013c 09B2     		sxth	r1, r1
+ 512 013e 20B2     		sxth	r0, r4
+ 513 0140 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 514              	.LVL56:
+  67:Src/drawing.c ****   case '6':
+ 515              		.loc 1 67 0
+ 516 0144 C5E7     		b	.L19
+ 517              	.LVL57:
+ 518              	.L29:
+  69:Src/drawing.c ****     break;
+ 519              		.loc 1 69 0
+ 520 0146 3A4A     		ldr	r2, .L36+20
+ 521 0148 5068     		ldr	r0, [r2, #4]
+ 522 014a B2F90050 		ldrsh	r5, [r2]
+ 523 014e 9268     		ldr	r2, [r2, #8]
+ 524 0150 0193     		str	r3, [sp, #4]
+ 525 0152 00B2     		sxth	r0, r0
+ 526 0154 0090     		str	r0, [sp]
+ 527 0156 2B46     		mov	r3, r5
+ 528              	.LVL58:
+ 529 0158 09B2     		sxth	r1, r1
+ 530 015a 20B2     		sxth	r0, r4
+ 531 015c FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 532              	.LVL59:
+  70:Src/drawing.c ****   case '7':
+ 533              		.loc 1 70 0
+ 534 0160 B7E7     		b	.L19
+ 535              	.LVL60:
+ 536              	.L30:
+  72:Src/drawing.c ****     break;
+ 537              		.loc 1 72 0
+ 538 0162 344A     		ldr	r2, .L36+24
+ 539 0164 5068     		ldr	r0, [r2, #4]
+ 540 0166 B2F90050 		ldrsh	r5, [r2]
+ 541 016a 9268     		ldr	r2, [r2, #8]
+ 542 016c 0193     		str	r3, [sp, #4]
+ 543 016e 00B2     		sxth	r0, r0
+ 544 0170 0090     		str	r0, [sp]
+ 545 0172 2B46     		mov	r3, r5
+ 546              	.LVL61:
+ 547 0174 09B2     		sxth	r1, r1
+ 548 0176 20B2     		sxth	r0, r4
+ 549 0178 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 550              	.LVL62:
+  73:Src/drawing.c ****   case '8':
+ 551              		.loc 1 73 0
+ 552 017c A9E7     		b	.L19
+ 553              	.LVL63:
+ 554              	.L31:
+  75:Src/drawing.c ****     break;
+ 555              		.loc 1 75 0
+ 556 017e 2E4A     		ldr	r2, .L36+28
+ 557 0180 5068     		ldr	r0, [r2, #4]
+ 558 0182 B2F90050 		ldrsh	r5, [r2]
+ 559 0186 9268     		ldr	r2, [r2, #8]
+ 560 0188 0193     		str	r3, [sp, #4]
+ 561 018a 00B2     		sxth	r0, r0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 13
+
+
+ 562 018c 0090     		str	r0, [sp]
+ 563 018e 2B46     		mov	r3, r5
+ 564              	.LVL64:
+ 565 0190 09B2     		sxth	r1, r1
+ 566 0192 20B2     		sxth	r0, r4
+ 567 0194 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 568              	.LVL65:
+  76:Src/drawing.c ****   case '9':
+ 569              		.loc 1 76 0
+ 570 0198 9BE7     		b	.L19
+ 571              	.LVL66:
+ 572              	.L32:
+  78:Src/drawing.c ****     break;
+ 573              		.loc 1 78 0
+ 574 019a 284A     		ldr	r2, .L36+32
+ 575 019c 5068     		ldr	r0, [r2, #4]
+ 576 019e B2F90050 		ldrsh	r5, [r2]
+ 577 01a2 9268     		ldr	r2, [r2, #8]
+ 578 01a4 0193     		str	r3, [sp, #4]
+ 579 01a6 00B2     		sxth	r0, r0
+ 580 01a8 0090     		str	r0, [sp]
+ 581 01aa 2B46     		mov	r3, r5
+ 582              	.LVL67:
+ 583 01ac 09B2     		sxth	r1, r1
+ 584 01ae 20B2     		sxth	r0, r4
+ 585 01b0 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 586              	.LVL68:
+  79:Src/drawing.c ****   case '0':
+ 587              		.loc 1 79 0
+ 588 01b4 8DE7     		b	.L19
+ 589              	.LVL69:
+ 590              	.L23:
+  81:Src/drawing.c ****     break;
+ 591              		.loc 1 81 0
+ 592 01b6 224A     		ldr	r2, .L36+36
+ 593 01b8 5068     		ldr	r0, [r2, #4]
+ 594 01ba B2F90050 		ldrsh	r5, [r2]
+ 595 01be 9268     		ldr	r2, [r2, #8]
+ 596 01c0 0193     		str	r3, [sp, #4]
+ 597 01c2 00B2     		sxth	r0, r0
+ 598 01c4 0090     		str	r0, [sp]
+ 599 01c6 2B46     		mov	r3, r5
+ 600              	.LVL70:
+ 601 01c8 09B2     		sxth	r1, r1
+ 602 01ca 20B2     		sxth	r0, r4
+ 603 01cc FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 604              	.LVL71:
+  82:Src/drawing.c ****   case '-':
+ 605              		.loc 1 82 0
+ 606 01d0 7FE7     		b	.L19
+ 607              	.LVL72:
+ 608              	.L21:
+  84:Src/drawing.c ****     break;
+ 609              		.loc 1 84 0
+ 610 01d2 1C4A     		ldr	r2, .L36+40
+ 611 01d4 5068     		ldr	r0, [r2, #4]
+ 612 01d6 B2F90050 		ldrsh	r5, [r2]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 14
+
+
+ 613 01da 9268     		ldr	r2, [r2, #8]
+ 614 01dc 0193     		str	r3, [sp, #4]
+ 615 01de 00B2     		sxth	r0, r0
+ 616 01e0 0090     		str	r0, [sp]
+ 617 01e2 2B46     		mov	r3, r5
+ 618              	.LVL73:
+ 619 01e4 09B2     		sxth	r1, r1
+ 620 01e6 20B2     		sxth	r0, r4
+ 621 01e8 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 622              	.LVL74:
+  85:Src/drawing.c ****   case '~':
+ 623              		.loc 1 85 0
+ 624 01ec 71E7     		b	.L19
+ 625              	.LVL75:
+ 626              	.L33:
+  87:Src/drawing.c ****     break;
+ 627              		.loc 1 87 0
+ 628 01ee 164A     		ldr	r2, .L36+44
+ 629 01f0 5068     		ldr	r0, [r2, #4]
+ 630 01f2 B2F90050 		ldrsh	r5, [r2]
+ 631 01f6 9268     		ldr	r2, [r2, #8]
+ 632 01f8 0193     		str	r3, [sp, #4]
+ 633 01fa 00B2     		sxth	r0, r0
+ 634 01fc 0090     		str	r0, [sp]
+ 635 01fe 2B46     		mov	r3, r5
+ 636              	.LVL76:
+ 637 0200 09B2     		sxth	r1, r1
+ 638 0202 20B2     		sxth	r0, r4
+ 639 0204 FFF7FEFF 		bl	Adafruit_GFX_drawColorBitmap
+ 640              	.LVL77:
+  88:Src/drawing.c ****   default:
+ 641              		.loc 1 88 0
+ 642 0208 63E7     		b	.L19
+ 643              	.LVL78:
+ 644              	.L20:
+  90:Src/drawing.c ****   }
+ 645              		.loc 1 90 0
+ 646 020a 0023     		movs	r3, #0
+ 647              	.LVL79:
+ 648 020c 0093     		str	r3, [sp]
+ 649 020e 0923     		movs	r3, #9
+ 650 0210 0822     		movs	r2, #8
+ 651 0212 09B2     		sxth	r1, r1
+ 652 0214 20B2     		sxth	r0, r4
+ 653 0216 FFF7FEFF 		bl	Adafruit_GFX_fillRect
+ 654              	.LVL80:
+ 655              		.loc 1 92 0
+ 656 021a 5AE7     		b	.L19
+ 657              	.L37:
+ 658              		.align	2
+ 659              	.L36:
+ 660 021c 00000000 		.word	imageOneSmall
+ 661 0220 00000000 		.word	imageTwoSmall
+ 662 0224 00000000 		.word	imageThreeSmall
+ 663 0228 00000000 		.word	imageFourSmall
+ 664 022c 00000000 		.word	imageFiveSmall
+ 665 0230 00000000 		.word	imageSixSmall
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 15
+
+
+ 666 0234 00000000 		.word	imageSevenSmall
+ 667 0238 00000000 		.word	imageEightSmall
+ 668 023c 00000000 		.word	imageNineSmall
+ 669 0240 00000000 		.word	imageZeroSmall
+ 670 0244 00000000 		.word	imageHyphenSmall
+ 671 0248 00000000 		.word	imageTildeSmall
+ 672              		.cfi_endproc
+ 673              	.LFE139:
+ 675              		.global	__aeabi_f2d
+ 676              		.global	__aeabi_dmul
+ 677              		.global	__aeabi_d2iz
+ 678              		.section	.text.drawSMeter,"ax",%progbits
+ 679              		.align	1
+ 680              		.global	drawSMeter
+ 681              		.syntax unified
+ 682              		.thumb
+ 683              		.thumb_func
+ 684              		.fpu fpv5-sp-d16
+ 686              	drawSMeter:
+ 687              	.LFB140:
+  93:Src/drawing.c **** 
+  94:Src/drawing.c **** float passBandRms = 0;
+  95:Src/drawing.c **** int lastSMeterBarWidth = 0;
+  96:Src/drawing.c **** void drawSMeter(void)
+  97:Src/drawing.c **** {
+ 688              		.loc 1 97 0
+ 689              		.cfi_startproc
+ 690              		@ args = 0, pretend = 0, frame = 0
+ 691              		@ frame_needed = 0, uses_anonymous_args = 0
+ 692 0000 10B5     		push	{r4, lr}
+ 693              	.LCFI8:
+ 694              		.cfi_def_cfa_offset 8
+ 695              		.cfi_offset 4, -8
+ 696              		.cfi_offset 14, -4
+ 697 0002 82B0     		sub	sp, sp, #8
+ 698              	.LCFI9:
+ 699              		.cfi_def_cfa_offset 16
+  98:Src/drawing.c **** 
+  99:Src/drawing.c ****   //Adafruit_GFX_fillRect(150, 160, 170, 3, ILI9340_BLACK);
+ 100:Src/drawing.c ****   int width = 10*log((passBandRms * 1000000) + 1);
+ 700              		.loc 1 100 0
+ 701 0004 1E4B     		ldr	r3, .L43
+ 702 0006 D3ED007A 		vldr.32	s15, [r3]
+ 703 000a 9FED1E7A 		vldr.32	s14, .L43+4
+ 704 000e 67EE877A 		vmul.f32	s15, s15, s14
+ 705 0012 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 706 0016 77EE877A 		vadd.f32	s15, s15, s14
+ 707 001a 17EE900A 		vmov	r0, s15
+ 708 001e FFF7FEFF 		bl	__aeabi_f2d
+ 709              	.LVL81:
+ 710 0022 41EC100B 		vmov	d0, r0, r1
+ 711 0026 FFF7FEFF 		bl	log
+ 712              	.LVL82:
+ 713 002a 0022     		movs	r2, #0
+ 714 002c 164B     		ldr	r3, .L43+8
+ 715 002e 51EC100B 		vmov	r0, r1, d0
+ 716 0032 FFF7FEFF 		bl	__aeabi_dmul
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 16
+
+
+ 717              	.LVL83:
+ 718 0036 FFF7FEFF 		bl	__aeabi_d2iz
+ 719              	.LVL84:
+ 720 003a 0446     		mov	r4, r0
+ 721              	.LVL85:
+ 101:Src/drawing.c ****   if(width > lastSMeterBarWidth)
+ 722              		.loc 1 101 0
+ 723 003c 134B     		ldr	r3, .L43+12
+ 724 003e 1A68     		ldr	r2, [r3]
+ 725 0040 8242     		cmp	r2, r0
+ 726 0042 0FDB     		blt	.L42
+ 102:Src/drawing.c ****     Adafruit_GFX_fillRect(150 + lastSMeterBarWidth, 156, width - lastSMeterBarWidth, 3, ILI9340_RED
+ 103:Src/drawing.c ****   else
+ 104:Src/drawing.c ****     Adafruit_GFX_fillRect(150 + width, 156, lastSMeterBarWidth - width, 3, ILI9340_BLACK);
+ 727              		.loc 1 104 0
+ 728 0044 83B2     		uxth	r3, r0
+ 729 0046 03F19600 		add	r0, r3, #150
+ 730              	.LVL86:
+ 731 004a D21A     		subs	r2, r2, r3
+ 732 004c 0023     		movs	r3, #0
+ 733 004e 0093     		str	r3, [sp]
+ 734 0050 0323     		movs	r3, #3
+ 735 0052 12B2     		sxth	r2, r2
+ 736 0054 9C21     		movs	r1, #156
+ 737 0056 00B2     		sxth	r0, r0
+ 738 0058 FFF7FEFF 		bl	Adafruit_GFX_fillRect
+ 739              	.LVL87:
+ 740              	.L40:
+ 105:Src/drawing.c **** 
+ 106:Src/drawing.c ****   lastSMeterBarWidth = width;
+ 741              		.loc 1 106 0
+ 742 005c 0B4B     		ldr	r3, .L43+12
+ 743 005e 1C60     		str	r4, [r3]
+ 107:Src/drawing.c **** }
+ 744              		.loc 1 107 0
+ 745 0060 02B0     		add	sp, sp, #8
+ 746              	.LCFI10:
+ 747              		.cfi_remember_state
+ 748              		.cfi_def_cfa_offset 8
+ 749              		@ sp needed
+ 750 0062 10BD     		pop	{r4, pc}
+ 751              	.LVL88:
+ 752              	.L42:
+ 753              	.LCFI11:
+ 754              		.cfi_restore_state
+ 102:Src/drawing.c ****     Adafruit_GFX_fillRect(150 + lastSMeterBarWidth, 156, width - lastSMeterBarWidth, 3, ILI9340_RED
+ 755              		.loc 1 102 0
+ 756 0064 92B2     		uxth	r2, r2
+ 757 0066 02F19600 		add	r0, r2, #150
+ 758              	.LVL89:
+ 759 006a A21A     		subs	r2, r4, r2
+ 760 006c 4FF47843 		mov	r3, #63488
+ 761 0070 0093     		str	r3, [sp]
+ 762 0072 0323     		movs	r3, #3
+ 763 0074 12B2     		sxth	r2, r2
+ 764 0076 9C21     		movs	r1, #156
+ 765 0078 00B2     		sxth	r0, r0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 17
+
+
+ 766 007a FFF7FEFF 		bl	Adafruit_GFX_fillRect
+ 767              	.LVL90:
+ 768 007e EDE7     		b	.L40
+ 769              	.L44:
+ 770              		.align	2
+ 771              	.L43:
+ 772 0080 00000000 		.word	.LANCHOR0
+ 773 0084 00247449 		.word	1232348160
+ 774 0088 00002440 		.word	1076101120
+ 775 008c 00000000 		.word	.LANCHOR1
+ 776              		.cfi_endproc
+ 777              	.LFE140:
+ 779              		.global	newWaterFallData
+ 780              		.global	lastSMeterBarWidth
+ 781              		.global	passBandRms
+ 782              		.comm	wrap,1,1
+ 783              		.comm	rotation,1,1
+ 784              		.comm	textsize,1,1
+ 785              		.comm	textbgcolor,2,2
+ 786              		.comm	textcolor,2,2
+ 787              		.comm	cursor_y,2,2
+ 788              		.comm	cursor_x,2,2
+ 789              		.comm	_height,2,2
+ 790              		.comm	_width,2,2
+ 791              		.comm	HEIGHT,2,2
+ 792              		.comm	WIDTH,2,2
+ 793              		.comm	hwSPI,1,1
+ 794              		.section	.bss.lastSMeterBarWidth,"aw",%nobits
+ 795              		.align	2
+ 796              		.set	.LANCHOR1,. + 0
+ 799              	lastSMeterBarWidth:
+ 800 0000 00000000 		.space	4
+ 801              		.section	.bss.newWaterFallData,"aw",%nobits
+ 802              		.align	2
+ 805              	newWaterFallData:
+ 806 0000 00000000 		.space	4
+ 807              		.section	.bss.passBandRms,"aw",%nobits
+ 808              		.align	2
+ 809              		.set	.LANCHOR0,. + 0
+ 812              	passBandRms:
+ 813 0000 00000000 		.space	4
+ 814              		.text
+ 815              	.Letext0:
+ 816              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 817              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 818              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ 819              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 820              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 821              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 822              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 823              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 824              		.file 10 "Inc/Adafruit_ILI9340.h"
+ 825              		.file 11 "Inc/Adafruit_GFX.h"
+ 826              		.file 12 "Inc/images.h"
+ 827              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 18
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 drawing.c
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:18     .text.drawNumber:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:25     .text.drawNumber:00000000 drawNumber
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:53     .text.drawNumber:00000014 $d
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:65     .text.drawNumber:00000020 $t
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:288    .text.drawNumber:00000168 $d
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:303    .text.drawNumberSmall:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:310    .text.drawNumberSmall:00000000 drawNumberSmall
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:337    .text.drawNumberSmall:00000014 $d
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:419    .text.drawNumberSmall:000000b8 $t
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:660    .text.drawNumberSmall:0000021c $d
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:679    .text.drawSMeter:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:686    .text.drawSMeter:00000000 drawSMeter
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:772    .text.drawSMeter:00000080 $d
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:805    .bss.newWaterFallData:00000000 newWaterFallData
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:799    .bss.lastSMeterBarWidth:00000000 lastSMeterBarWidth
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:812    .bss.passBandRms:00000000 passBandRms
+                            *COM*:00000001 wrap
+                            *COM*:00000001 rotation
+                            *COM*:00000001 textsize
+                            *COM*:00000002 textbgcolor
+                            *COM*:00000002 textcolor
+                            *COM*:00000002 cursor_y
+                            *COM*:00000002 cursor_x
+                            *COM*:00000002 _height
+                            *COM*:00000002 _width
+                            *COM*:00000002 HEIGHT
+                            *COM*:00000002 WIDTH
+                            *COM*:00000001 hwSPI
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:795    .bss.lastSMeterBarWidth:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:802    .bss.newWaterFallData:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s:808    .bss.passBandRms:00000000 $d
+
+UNDEFINED SYMBOLS
+Adafruit_GFX_drawColorBitmap
+Adafruit_GFX_fillRect
+imagePeriod
+imageOne
+imageTwo
+imageThree
+imageFour
+imageFive
+imageSix
+imageSeven
+imageEight
+imageNine
+imageZero
+imageOneSmall
+imageTwoSmall
+imageThreeSmall
+imageFourSmall
+imageFiveSmall
+imageSixSmall
+imageSevenSmall
+imageEightSmall
+imageNineSmall
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc0Oc4S3.s 			page 19
+
+
+imageZeroSmall
+imageHyphenSmall
+imageTildeSmall
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_d2iz
+log

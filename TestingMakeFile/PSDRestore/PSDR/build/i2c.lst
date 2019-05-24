@@ -1,0 +1,460 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccun1RxT.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"i2c.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MX_I2C2_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	MX_I2C2_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	MX_I2C2_Init:
+  26              	.LFB138:
+  27              		.file 1 "Src/i2c.c"
+   1:Src/i2c.c     **** /**
+   2:Src/i2c.c     ****   ******************************************************************************
+   3:Src/i2c.c     ****   * File Name          : I2C.c
+   4:Src/i2c.c     ****   * Description        : This file provides code for the configuration
+   5:Src/i2c.c     ****   *                      of the I2C instances.
+   6:Src/i2c.c     ****   ******************************************************************************
+   7:Src/i2c.c     ****   * This notice applies to any and all portions of this file
+   8:Src/i2c.c     ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/i2c.c     ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/i2c.c     ****   * inserted by the user or by software development tools
+  11:Src/i2c.c     ****   * are owned by their respective copyright owners.
+  12:Src/i2c.c     ****   *
+  13:Src/i2c.c     ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/i2c.c     ****   * All rights reserved.
+  15:Src/i2c.c     ****   *
+  16:Src/i2c.c     ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/i2c.c     ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/i2c.c     ****   *
+  19:Src/i2c.c     ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/i2c.c     ****   *    this list of conditions and the following disclaimer.
+  21:Src/i2c.c     ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/i2c.c     ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/i2c.c     ****   *    and/or other materials provided with the distribution.
+  24:Src/i2c.c     ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/i2c.c     ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/i2c.c     ****   *    derived from this software without specific written permission.
+  27:Src/i2c.c     ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/i2c.c     ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/i2c.c     ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/i2c.c     ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/i2c.c     ****   *    this license is void and will automatically terminate your rights under 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccun1RxT.s 			page 2
+
+
+  32:Src/i2c.c     ****   *    this license. 
+  33:Src/i2c.c     ****   *
+  34:Src/i2c.c     ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/i2c.c     ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/i2c.c     ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/i2c.c     ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/i2c.c     ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/i2c.c     ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/i2c.c     ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/i2c.c     ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/i2c.c     ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/i2c.c     ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/i2c.c     ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/i2c.c     ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/i2c.c     ****   *
+  47:Src/i2c.c     ****   ******************************************************************************
+  48:Src/i2c.c     ****   */
+  49:Src/i2c.c     **** 
+  50:Src/i2c.c     **** /* Includes ------------------------------------------------------------------*/
+  51:Src/i2c.c     **** #include "i2c.h"
+  52:Src/i2c.c     **** 
+  53:Src/i2c.c     **** #include "gpio.h"
+  54:Src/i2c.c     **** 
+  55:Src/i2c.c     **** /* USER CODE BEGIN 0 */
+  56:Src/i2c.c     **** 
+  57:Src/i2c.c     **** /* USER CODE END 0 */
+  58:Src/i2c.c     **** 
+  59:Src/i2c.c     **** I2C_HandleTypeDef hi2c2;
+  60:Src/i2c.c     **** 
+  61:Src/i2c.c     **** /* I2C2 init function */
+  62:Src/i2c.c     **** void MX_I2C2_Init(void)
+  63:Src/i2c.c     **** {
+  28              		.loc 1 63 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  64:Src/i2c.c     **** 
+  65:Src/i2c.c     ****   hi2c2.Instance = I2C2;
+  37              		.loc 1 65 0
+  38 0002 1548     		ldr	r0, .L9
+  39 0004 154B     		ldr	r3, .L9+4
+  40 0006 0360     		str	r3, [r0]
+  66:Src/i2c.c     ****   hi2c2.Init.Timing = 0x20404768;
+  41              		.loc 1 66 0
+  42 0008 154B     		ldr	r3, .L9+8
+  43 000a 4360     		str	r3, [r0, #4]
+  67:Src/i2c.c     ****   hi2c2.Init.OwnAddress1 = 0;
+  44              		.loc 1 67 0
+  45 000c 0023     		movs	r3, #0
+  46 000e 8360     		str	r3, [r0, #8]
+  68:Src/i2c.c     ****   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  47              		.loc 1 68 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccun1RxT.s 			page 3
+
+
+  48 0010 0122     		movs	r2, #1
+  49 0012 C260     		str	r2, [r0, #12]
+  69:Src/i2c.c     ****   hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  50              		.loc 1 69 0
+  51 0014 0361     		str	r3, [r0, #16]
+  70:Src/i2c.c     ****   hi2c2.Init.OwnAddress2 = 0;
+  52              		.loc 1 70 0
+  53 0016 4361     		str	r3, [r0, #20]
+  71:Src/i2c.c     ****   hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  54              		.loc 1 71 0
+  55 0018 8361     		str	r3, [r0, #24]
+  72:Src/i2c.c     ****   hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  56              		.loc 1 72 0
+  57 001a C361     		str	r3, [r0, #28]
+  73:Src/i2c.c     ****   hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  58              		.loc 1 73 0
+  59 001c 0362     		str	r3, [r0, #32]
+  74:Src/i2c.c     ****   if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  60              		.loc 1 74 0
+  61 001e FFF7FEFF 		bl	HAL_I2C_Init
+  62              	.LVL0:
+  63 0022 50B9     		cbnz	r0, .L6
+  64              	.L2:
+  75:Src/i2c.c     ****   {
+  76:Src/i2c.c     ****     _Error_Handler(__FILE__, __LINE__);
+  77:Src/i2c.c     ****   }
+  78:Src/i2c.c     **** 
+  79:Src/i2c.c     ****     /**Configure Analogue filter 
+  80:Src/i2c.c     ****     */
+  81:Src/i2c.c     ****   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  65              		.loc 1 81 0
+  66 0024 0021     		movs	r1, #0
+  67 0026 0C48     		ldr	r0, .L9
+  68 0028 FFF7FEFF 		bl	HAL_I2CEx_ConfigAnalogFilter
+  69              	.LVL1:
+  70 002c 50B9     		cbnz	r0, .L7
+  71              	.L3:
+  82:Src/i2c.c     ****   {
+  83:Src/i2c.c     ****     _Error_Handler(__FILE__, __LINE__);
+  84:Src/i2c.c     ****   }
+  85:Src/i2c.c     **** 
+  86:Src/i2c.c     ****     /**Configure Digital filter 
+  87:Src/i2c.c     ****     */
+  88:Src/i2c.c     ****   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  72              		.loc 1 88 0
+  73 002e 0021     		movs	r1, #0
+  74 0030 0948     		ldr	r0, .L9
+  75 0032 FFF7FEFF 		bl	HAL_I2CEx_ConfigDigitalFilter
+  76              	.LVL2:
+  77 0036 50B9     		cbnz	r0, .L8
+  78              	.L1:
+  89:Src/i2c.c     ****   {
+  90:Src/i2c.c     ****     _Error_Handler(__FILE__, __LINE__);
+  91:Src/i2c.c     ****   }
+  92:Src/i2c.c     **** 
+  93:Src/i2c.c     **** }
+  79              		.loc 1 93 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccun1RxT.s 			page 4
+
+
+  80 0038 08BD     		pop	{r3, pc}
+  81              	.L6:
+  76:Src/i2c.c     ****   }
+  82              		.loc 1 76 0
+  83 003a 4C21     		movs	r1, #76
+  84 003c 0948     		ldr	r0, .L9+12
+  85 003e FFF7FEFF 		bl	_Error_Handler
+  86              	.LVL3:
+  87 0042 EFE7     		b	.L2
+  88              	.L7:
+  83:Src/i2c.c     ****   }
+  89              		.loc 1 83 0
+  90 0044 5321     		movs	r1, #83
+  91 0046 0748     		ldr	r0, .L9+12
+  92 0048 FFF7FEFF 		bl	_Error_Handler
+  93              	.LVL4:
+  94 004c EFE7     		b	.L3
+  95              	.L8:
+  90:Src/i2c.c     ****   }
+  96              		.loc 1 90 0
+  97 004e 5A21     		movs	r1, #90
+  98 0050 0448     		ldr	r0, .L9+12
+  99 0052 FFF7FEFF 		bl	_Error_Handler
+ 100              	.LVL5:
+ 101              		.loc 1 93 0
+ 102 0056 EFE7     		b	.L1
+ 103              	.L10:
+ 104              		.align	2
+ 105              	.L9:
+ 106 0058 00000000 		.word	hi2c2
+ 107 005c 00580040 		.word	1073764352
+ 108 0060 68474020 		.word	541083496
+ 109 0064 00000000 		.word	.LC0
+ 110              		.cfi_endproc
+ 111              	.LFE138:
+ 113              		.section	.text.HAL_I2C_MspInit,"ax",%progbits
+ 114              		.align	1
+ 115              		.global	HAL_I2C_MspInit
+ 116              		.syntax unified
+ 117              		.thumb
+ 118              		.thumb_func
+ 119              		.fpu fpv5-sp-d16
+ 121              	HAL_I2C_MspInit:
+ 122              	.LFB139:
+  94:Src/i2c.c     **** 
+  95:Src/i2c.c     **** void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
+  96:Src/i2c.c     **** {
+ 123              		.loc 1 96 0
+ 124              		.cfi_startproc
+ 125              		@ args = 0, pretend = 0, frame = 24
+ 126              		@ frame_needed = 0, uses_anonymous_args = 0
+ 127              	.LVL6:
+  97:Src/i2c.c     **** 
+  98:Src/i2c.c     ****   GPIO_InitTypeDef GPIO_InitStruct;
+  99:Src/i2c.c     ****   if(i2cHandle->Instance==I2C2)
+ 128              		.loc 1 99 0
+ 129 0000 0268     		ldr	r2, [r0]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccun1RxT.s 			page 5
+
+
+ 130 0002 114B     		ldr	r3, .L18
+ 131 0004 9A42     		cmp	r2, r3
+ 132 0006 00D0     		beq	.L17
+ 133 0008 7047     		bx	lr
+ 134              	.L17:
+  96:Src/i2c.c     **** 
+ 135              		.loc 1 96 0
+ 136 000a 00B5     		push	{lr}
+ 137              	.LCFI1:
+ 138              		.cfi_def_cfa_offset 4
+ 139              		.cfi_offset 14, -4
+ 140 000c 87B0     		sub	sp, sp, #28
+ 141              	.LCFI2:
+ 142              		.cfi_def_cfa_offset 32
+ 100:Src/i2c.c     ****   {
+ 101:Src/i2c.c     ****   /* USER CODE BEGIN I2C2_MspInit 0 */
+ 102:Src/i2c.c     **** 
+ 103:Src/i2c.c     ****   /* USER CODE END I2C2_MspInit 0 */
+ 104:Src/i2c.c     ****   
+ 105:Src/i2c.c     ****     /**I2C2 GPIO Configuration    
+ 106:Src/i2c.c     ****     PB10     ------> I2C2_SCL
+ 107:Src/i2c.c     ****     PB11     ------> I2C2_SDA 
+ 108:Src/i2c.c     ****     */
+ 109:Src/i2c.c     ****     GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11;
+ 143              		.loc 1 109 0
+ 144 000e 4FF44063 		mov	r3, #3072
+ 145 0012 0193     		str	r3, [sp, #4]
+ 110:Src/i2c.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+ 146              		.loc 1 110 0
+ 147 0014 1223     		movs	r3, #18
+ 148 0016 0293     		str	r3, [sp, #8]
+ 111:Src/i2c.c     ****     GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 149              		.loc 1 111 0
+ 150 0018 0123     		movs	r3, #1
+ 151 001a 0393     		str	r3, [sp, #12]
+ 112:Src/i2c.c     ****     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+ 152              		.loc 1 112 0
+ 153 001c 0323     		movs	r3, #3
+ 154 001e 0493     		str	r3, [sp, #16]
+ 113:Src/i2c.c     ****     GPIO_InitStruct.Alternate = GPIO_AF4_I2C2;
+ 155              		.loc 1 113 0
+ 156 0020 0423     		movs	r3, #4
+ 157 0022 0593     		str	r3, [sp, #20]
+ 114:Src/i2c.c     ****     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+ 158              		.loc 1 114 0
+ 159 0024 0DEB0301 		add	r1, sp, r3
+ 160 0028 0848     		ldr	r0, .L18+4
+ 161              	.LVL7:
+ 162 002a FFF7FEFF 		bl	HAL_GPIO_Init
+ 163              	.LVL8:
+ 164              	.LBB2:
+ 115:Src/i2c.c     **** 
+ 116:Src/i2c.c     ****     /* I2C2 clock enable */
+ 117:Src/i2c.c     ****     __HAL_RCC_I2C2_CLK_ENABLE();
+ 165              		.loc 1 117 0
+ 166 002e 084B     		ldr	r3, .L18+8
+ 167 0030 1A6C     		ldr	r2, [r3, #64]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccun1RxT.s 			page 6
+
+
+ 168 0032 42F48002 		orr	r2, r2, #4194304
+ 169 0036 1A64     		str	r2, [r3, #64]
+ 170 0038 1B6C     		ldr	r3, [r3, #64]
+ 171 003a 03F48003 		and	r3, r3, #4194304
+ 172 003e 0093     		str	r3, [sp]
+ 173 0040 009B     		ldr	r3, [sp]
+ 174              	.LBE2:
+ 118:Src/i2c.c     ****   /* USER CODE BEGIN I2C2_MspInit 1 */
+ 119:Src/i2c.c     **** 
+ 120:Src/i2c.c     ****   /* USER CODE END I2C2_MspInit 1 */
+ 121:Src/i2c.c     ****   }
+ 122:Src/i2c.c     **** }
+ 175              		.loc 1 122 0
+ 176 0042 07B0     		add	sp, sp, #28
+ 177              	.LCFI3:
+ 178              		.cfi_def_cfa_offset 4
+ 179              		@ sp needed
+ 180 0044 5DF804FB 		ldr	pc, [sp], #4
+ 181              	.L19:
+ 182              		.align	2
+ 183              	.L18:
+ 184 0048 00580040 		.word	1073764352
+ 185 004c 00040240 		.word	1073873920
+ 186 0050 00380240 		.word	1073887232
+ 187              		.cfi_endproc
+ 188              	.LFE139:
+ 190              		.section	.text.HAL_I2C_MspDeInit,"ax",%progbits
+ 191              		.align	1
+ 192              		.global	HAL_I2C_MspDeInit
+ 193              		.syntax unified
+ 194              		.thumb
+ 195              		.thumb_func
+ 196              		.fpu fpv5-sp-d16
+ 198              	HAL_I2C_MspDeInit:
+ 199              	.LFB140:
+ 123:Src/i2c.c     **** 
+ 124:Src/i2c.c     **** void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
+ 125:Src/i2c.c     **** {
+ 200              		.loc 1 125 0
+ 201              		.cfi_startproc
+ 202              		@ args = 0, pretend = 0, frame = 0
+ 203              		@ frame_needed = 0, uses_anonymous_args = 0
+ 204              	.LVL9:
+ 205 0000 08B5     		push	{r3, lr}
+ 206              	.LCFI4:
+ 207              		.cfi_def_cfa_offset 8
+ 208              		.cfi_offset 3, -8
+ 209              		.cfi_offset 14, -4
+ 126:Src/i2c.c     **** 
+ 127:Src/i2c.c     ****   if(i2cHandle->Instance==I2C2)
+ 210              		.loc 1 127 0
+ 211 0002 0268     		ldr	r2, [r0]
+ 212 0004 074B     		ldr	r3, .L24
+ 213 0006 9A42     		cmp	r2, r3
+ 214 0008 00D0     		beq	.L23
+ 215              	.LVL10:
+ 216              	.L20:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccun1RxT.s 			page 7
+
+
+ 128:Src/i2c.c     ****   {
+ 129:Src/i2c.c     ****   /* USER CODE BEGIN I2C2_MspDeInit 0 */
+ 130:Src/i2c.c     **** 
+ 131:Src/i2c.c     ****   /* USER CODE END I2C2_MspDeInit 0 */
+ 132:Src/i2c.c     ****     /* Peripheral clock disable */
+ 133:Src/i2c.c     ****     __HAL_RCC_I2C2_CLK_DISABLE();
+ 134:Src/i2c.c     ****   
+ 135:Src/i2c.c     ****     /**I2C2 GPIO Configuration    
+ 136:Src/i2c.c     ****     PB10     ------> I2C2_SCL
+ 137:Src/i2c.c     ****     PB11     ------> I2C2_SDA 
+ 138:Src/i2c.c     ****     */
+ 139:Src/i2c.c     ****     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_10|GPIO_PIN_11);
+ 140:Src/i2c.c     **** 
+ 141:Src/i2c.c     ****   /* USER CODE BEGIN I2C2_MspDeInit 1 */
+ 142:Src/i2c.c     **** 
+ 143:Src/i2c.c     ****   /* USER CODE END I2C2_MspDeInit 1 */
+ 144:Src/i2c.c     ****   }
+ 145:Src/i2c.c     **** } 
+ 217              		.loc 1 145 0
+ 218 000a 08BD     		pop	{r3, pc}
+ 219              	.LVL11:
+ 220              	.L23:
+ 133:Src/i2c.c     ****   
+ 221              		.loc 1 133 0
+ 222 000c 064A     		ldr	r2, .L24+4
+ 223 000e 136C     		ldr	r3, [r2, #64]
+ 224 0010 23F48003 		bic	r3, r3, #4194304
+ 225 0014 1364     		str	r3, [r2, #64]
+ 139:Src/i2c.c     **** 
+ 226              		.loc 1 139 0
+ 227 0016 4FF44061 		mov	r1, #3072
+ 228 001a 0448     		ldr	r0, .L24+8
+ 229              	.LVL12:
+ 230 001c FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 231              	.LVL13:
+ 232              		.loc 1 145 0
+ 233 0020 F3E7     		b	.L20
+ 234              	.L25:
+ 235 0022 00BF     		.align	2
+ 236              	.L24:
+ 237 0024 00580040 		.word	1073764352
+ 238 0028 00380240 		.word	1073887232
+ 239 002c 00040240 		.word	1073873920
+ 240              		.cfi_endproc
+ 241              	.LFE140:
+ 243              		.comm	hi2c2,76,4
+ 244              		.section	.rodata.MX_I2C2_Init.str1.4,"aMS",%progbits,1
+ 245              		.align	2
+ 246              	.LC0:
+ 247 0000 5372632F 		.ascii	"Src/i2c.c\000"
+ 247      6932632E 
+ 247      6300
+ 248              		.text
+ 249              	.Letext0:
+ 250              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 251              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 252              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccun1RxT.s 			page 8
+
+
+ 253              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 254              		.file 6 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f756xx.h"
+ 255              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 256              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 257              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 258              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+ 259              		.file 11 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_def.h"
+ 260              		.file 12 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio.h"
+ 261              		.file 13 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma.h"
+ 262              		.file 14 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c.h"
+ 263              		.file 15 "Inc/i2c.h"
+ 264              		.file 16 "Inc/gpio.h"
+ 265              		.file 17 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c_ex.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccun1RxT.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 i2c.c
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:18     .text.MX_I2C2_Init:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:25     .text.MX_I2C2_Init:00000000 MX_I2C2_Init
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:106    .text.MX_I2C2_Init:00000058 $d
+                            *COM*:0000004c hi2c2
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:114    .text.HAL_I2C_MspInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:121    .text.HAL_I2C_MspInit:00000000 HAL_I2C_MspInit
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:184    .text.HAL_I2C_MspInit:00000048 $d
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:191    .text.HAL_I2C_MspDeInit:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:198    .text.HAL_I2C_MspDeInit:00000000 HAL_I2C_MspDeInit
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:237    .text.HAL_I2C_MspDeInit:00000024 $d
+C:\Users\micha\AppData\Local\Temp\ccun1RxT.s:245    .rodata.MX_I2C2_Init.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_I2C_Init
+HAL_I2CEx_ConfigAnalogFilter
+HAL_I2CEx_ConfigDigitalFilter
+_Error_Handler
+HAL_GPIO_Init
+HAL_GPIO_DeInit

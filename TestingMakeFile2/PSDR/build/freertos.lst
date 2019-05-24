@@ -1,0 +1,398 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"freertos.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.StartDefaultTask,"ax",%progbits
+  18              		.align	1
+  19              		.global	StartDefaultTask
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	StartDefaultTask:
+  26              	.LFB144:
+  27              		.file 1 "Src/freertos.c"
+   1:Src/freertos.c **** /* USER CODE BEGIN Header */
+   2:Src/freertos.c **** /**
+   3:Src/freertos.c ****   ******************************************************************************
+   4:Src/freertos.c ****   * File Name          : freertos.c
+   5:Src/freertos.c ****   * Description        : Code for freertos applications
+   6:Src/freertos.c ****   ******************************************************************************
+   7:Src/freertos.c ****   * This notice applies to any and all portions of this file
+   8:Src/freertos.c ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/freertos.c ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/freertos.c ****   * inserted by the user or by software development tools
+  11:Src/freertos.c ****   * are owned by their respective copyright owners.
+  12:Src/freertos.c ****   *
+  13:Src/freertos.c ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/freertos.c ****   * All rights reserved.
+  15:Src/freertos.c ****   *
+  16:Src/freertos.c ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/freertos.c ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/freertos.c ****   *
+  19:Src/freertos.c ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/freertos.c ****   *    this list of conditions and the following disclaimer.
+  21:Src/freertos.c ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/freertos.c ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/freertos.c ****   *    and/or other materials provided with the distribution.
+  24:Src/freertos.c ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/freertos.c ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/freertos.c ****   *    derived from this software without specific written permission.
+  27:Src/freertos.c ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/freertos.c ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/freertos.c ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/freertos.c ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/freertos.c ****   *    this license is void and will automatically terminate your rights under 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s 			page 2
+
+
+  32:Src/freertos.c ****   *    this license. 
+  33:Src/freertos.c ****   *
+  34:Src/freertos.c ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/freertos.c ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/freertos.c ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/freertos.c ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/freertos.c ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/freertos.c ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/freertos.c ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/freertos.c ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/freertos.c ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/freertos.c ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/freertos.c ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/freertos.c ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/freertos.c ****   *
+  47:Src/freertos.c ****   ******************************************************************************
+  48:Src/freertos.c ****   */
+  49:Src/freertos.c **** /* USER CODE END Header */
+  50:Src/freertos.c **** 
+  51:Src/freertos.c **** /* Includes ------------------------------------------------------------------*/
+  52:Src/freertos.c **** #include "FreeRTOS.h"
+  53:Src/freertos.c **** #include "task.h"
+  54:Src/freertos.c **** #include "main.h"
+  55:Src/freertos.c **** #include "cmsis_os.h"
+  56:Src/freertos.c **** 
+  57:Src/freertos.c **** /* Private includes ----------------------------------------------------------*/
+  58:Src/freertos.c **** /* USER CODE BEGIN Includes */     
+  59:Src/freertos.c **** 
+  60:Src/freertos.c **** /* USER CODE END Includes */
+  61:Src/freertos.c **** 
+  62:Src/freertos.c **** /* Private typedef -----------------------------------------------------------*/
+  63:Src/freertos.c **** /* USER CODE BEGIN PTD */
+  64:Src/freertos.c **** 
+  65:Src/freertos.c **** /* USER CODE END PTD */
+  66:Src/freertos.c **** 
+  67:Src/freertos.c **** /* Private define ------------------------------------------------------------*/
+  68:Src/freertos.c **** /* USER CODE BEGIN PD */
+  69:Src/freertos.c **** 
+  70:Src/freertos.c **** /* USER CODE END PD */
+  71:Src/freertos.c **** 
+  72:Src/freertos.c **** /* Private macro -------------------------------------------------------------*/
+  73:Src/freertos.c **** /* USER CODE BEGIN PM */
+  74:Src/freertos.c **** 
+  75:Src/freertos.c **** /* USER CODE END PM */
+  76:Src/freertos.c **** 
+  77:Src/freertos.c **** /* Private variables ---------------------------------------------------------*/
+  78:Src/freertos.c **** /* USER CODE BEGIN Variables */
+  79:Src/freertos.c **** 
+  80:Src/freertos.c **** /* USER CODE END Variables */
+  81:Src/freertos.c **** osThreadId defaultTaskHandle;
+  82:Src/freertos.c **** osThreadId displayManagerHandle;
+  83:Src/freertos.c **** 
+  84:Src/freertos.c **** /* Private function prototypes -----------------------------------------------*/
+  85:Src/freertos.c **** /* USER CODE BEGIN FunctionPrototypes */
+  86:Src/freertos.c ****    
+  87:Src/freertos.c **** /* USER CODE END FunctionPrototypes */
+  88:Src/freertos.c **** 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s 			page 3
+
+
+  89:Src/freertos.c **** void StartDefaultTask(void const * argument);
+  90:Src/freertos.c **** void StartDisplayManager(void const * argument);
+  91:Src/freertos.c **** 
+  92:Src/freertos.c **** void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+  93:Src/freertos.c **** 
+  94:Src/freertos.c **** /**
+  95:Src/freertos.c ****   * @brief  FreeRTOS initialization
+  96:Src/freertos.c ****   * @param  None
+  97:Src/freertos.c ****   * @retval None
+  98:Src/freertos.c ****   */
+  99:Src/freertos.c **** void MX_FREERTOS_Init(void) {
+ 100:Src/freertos.c ****   /* USER CODE BEGIN Init */
+ 101:Src/freertos.c ****        
+ 102:Src/freertos.c ****   /* USER CODE END Init */
+ 103:Src/freertos.c **** 
+ 104:Src/freertos.c ****   /* USER CODE BEGIN RTOS_MUTEX */
+ 105:Src/freertos.c ****   /* add mutexes, ... */
+ 106:Src/freertos.c ****   /* USER CODE END RTOS_MUTEX */
+ 107:Src/freertos.c **** 
+ 108:Src/freertos.c ****   /* USER CODE BEGIN RTOS_SEMAPHORES */
+ 109:Src/freertos.c ****   /* add semaphores, ... */
+ 110:Src/freertos.c ****   /* USER CODE END RTOS_SEMAPHORES */
+ 111:Src/freertos.c **** 
+ 112:Src/freertos.c ****   /* USER CODE BEGIN RTOS_TIMERS */
+ 113:Src/freertos.c ****   /* start timers, add new ones, ... */
+ 114:Src/freertos.c ****   /* USER CODE END RTOS_TIMERS */
+ 115:Src/freertos.c **** 
+ 116:Src/freertos.c ****   /* Create the thread(s) */
+ 117:Src/freertos.c ****   /* definition and creation of defaultTask */
+ 118:Src/freertos.c ****   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+ 119:Src/freertos.c ****   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+ 120:Src/freertos.c **** 
+ 121:Src/freertos.c ****   /* definition and creation of displayManager */
+ 122:Src/freertos.c ****   osThreadDef(displayManager, StartDisplayManager, osPriorityNormal, 0, 128);
+ 123:Src/freertos.c ****   displayManagerHandle = osThreadCreate(osThread(displayManager), NULL);
+ 124:Src/freertos.c **** 
+ 125:Src/freertos.c ****   /* USER CODE BEGIN RTOS_THREADS */
+ 126:Src/freertos.c ****   /* add threads, ... */
+ 127:Src/freertos.c ****   /* USER CODE END RTOS_THREADS */
+ 128:Src/freertos.c **** 
+ 129:Src/freertos.c ****   /* USER CODE BEGIN RTOS_QUEUES */
+ 130:Src/freertos.c ****   /* add queues, ... */
+ 131:Src/freertos.c ****   /* USER CODE END RTOS_QUEUES */
+ 132:Src/freertos.c **** }
+ 133:Src/freertos.c **** 
+ 134:Src/freertos.c **** /* USER CODE BEGIN Header_StartDefaultTask */
+ 135:Src/freertos.c **** /**
+ 136:Src/freertos.c ****   * @brief  Function implementing the defaultTask thread.
+ 137:Src/freertos.c ****   * @param  argument: Not used 
+ 138:Src/freertos.c ****   * @retval None
+ 139:Src/freertos.c ****   */
+ 140:Src/freertos.c **** /* USER CODE END Header_StartDefaultTask */
+ 141:Src/freertos.c **** void StartDefaultTask(void const * argument)
+ 142:Src/freertos.c **** {
+  28              		.loc 1 142 0
+  29              		.cfi_startproc
+  30              		@ Volatile: function does not return.
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s 			page 4
+
+
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              	.LVL0:
+  34 0000 08B5     		push	{r3, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 3, -8
+  38              		.cfi_offset 14, -4
+  39              	.LVL1:
+  40              	.L2:
+ 143:Src/freertos.c **** 
+ 144:Src/freertos.c ****   /* USER CODE BEGIN StartDefaultTask */
+ 145:Src/freertos.c ****   /* Infinite loop */
+ 146:Src/freertos.c ****   for(;;)
+ 147:Src/freertos.c ****   {
+ 148:Src/freertos.c ****     osDelay(1);
+  41              		.loc 1 148 0 discriminator 1
+  42 0002 0120     		movs	r0, #1
+  43 0004 FFF7FEFF 		bl	osDelay
+  44              	.LVL2:
+  45 0008 FBE7     		b	.L2
+  46              		.cfi_endproc
+  47              	.LFE144:
+  49              		.section	.text.StartDisplayManager,"ax",%progbits
+  50              		.align	1
+  51              		.global	StartDisplayManager
+  52              		.syntax unified
+  53              		.thumb
+  54              		.thumb_func
+  55              		.fpu fpv5-sp-d16
+  57              	StartDisplayManager:
+  58              	.LFB145:
+ 149:Src/freertos.c ****   }
+ 150:Src/freertos.c ****   /* USER CODE END StartDefaultTask */
+ 151:Src/freertos.c **** }
+ 152:Src/freertos.c **** 
+ 153:Src/freertos.c **** /* USER CODE BEGIN Header_StartDisplayManager */
+ 154:Src/freertos.c **** /**
+ 155:Src/freertos.c **** * @brief Function implementing the displayManager thread.
+ 156:Src/freertos.c **** * @param argument: Not used
+ 157:Src/freertos.c **** * @retval None
+ 158:Src/freertos.c **** */
+ 159:Src/freertos.c **** /* USER CODE END Header_StartDisplayManager */
+ 160:Src/freertos.c **** void StartDisplayManager(void const * argument)
+ 161:Src/freertos.c **** {
+  59              		.loc 1 161 0
+  60              		.cfi_startproc
+  61              		@ Volatile: function does not return.
+  62              		@ args = 0, pretend = 0, frame = 0
+  63              		@ frame_needed = 0, uses_anonymous_args = 0
+  64              	.LVL3:
+  65 0000 08B5     		push	{r3, lr}
+  66              	.LCFI1:
+  67              		.cfi_def_cfa_offset 8
+  68              		.cfi_offset 3, -8
+  69              		.cfi_offset 14, -4
+  70              	.LVL4:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s 			page 5
+
+
+  71              	.L5:
+ 162:Src/freertos.c ****   /* USER CODE BEGIN StartDisplayManager */
+ 163:Src/freertos.c ****   /* Infinite loop */
+ 164:Src/freertos.c ****   for(;;)
+ 165:Src/freertos.c ****   {
+ 166:Src/freertos.c ****     osDelay(1);
+  72              		.loc 1 166 0 discriminator 1
+  73 0002 0120     		movs	r0, #1
+  74 0004 FFF7FEFF 		bl	osDelay
+  75              	.LVL5:
+  76 0008 FBE7     		b	.L5
+  77              		.cfi_endproc
+  78              	.LFE145:
+  80              		.section	.text.MX_FREERTOS_Init,"ax",%progbits
+  81              		.align	1
+  82              		.global	MX_FREERTOS_Init
+  83              		.syntax unified
+  84              		.thumb
+  85              		.thumb_func
+  86              		.fpu fpv5-sp-d16
+  88              	MX_FREERTOS_Init:
+  89              	.LFB143:
+  99:Src/freertos.c ****   /* USER CODE BEGIN Init */
+  90              		.loc 1 99 0
+  91              		.cfi_startproc
+  92              		@ args = 0, pretend = 0, frame = 40
+  93              		@ frame_needed = 0, uses_anonymous_args = 0
+  94 0000 70B5     		push	{r4, r5, r6, lr}
+  95              	.LCFI2:
+  96              		.cfi_def_cfa_offset 16
+  97              		.cfi_offset 4, -16
+  98              		.cfi_offset 5, -12
+  99              		.cfi_offset 6, -8
+ 100              		.cfi_offset 14, -4
+ 101 0002 8AB0     		sub	sp, sp, #40
+ 102              	.LCFI3:
+ 103              		.cfi_def_cfa_offset 56
+ 118:Src/freertos.c ****   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+ 104              		.loc 1 118 0
+ 105 0004 0D4C     		ldr	r4, .L9
+ 106 0006 05AD     		add	r5, sp, #20
+ 107 0008 2646     		mov	r6, r4
+ 108 000a 0FCE     		ldmia	r6!, {r0, r1, r2, r3}
+ 109 000c 0FC5     		stmia	r5!, {r0, r1, r2, r3}
+ 110 000e 3368     		ldr	r3, [r6]
+ 111 0010 2B60     		str	r3, [r5]
+ 119:Src/freertos.c **** 
+ 112              		.loc 1 119 0
+ 113 0012 0021     		movs	r1, #0
+ 114 0014 05A8     		add	r0, sp, #20
+ 115 0016 FFF7FEFF 		bl	osThreadCreate
+ 116              	.LVL6:
+ 117 001a 094B     		ldr	r3, .L9+4
+ 118 001c 1860     		str	r0, [r3]
+ 122:Src/freertos.c ****   displayManagerHandle = osThreadCreate(osThread(displayManager), NULL);
+ 119              		.loc 1 122 0
+ 120 001e 6D46     		mov	r5, sp
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s 			page 6
+
+
+ 121 0020 1434     		adds	r4, r4, #20
+ 122 0022 0FCC     		ldmia	r4!, {r0, r1, r2, r3}
+ 123 0024 0FC5     		stmia	r5!, {r0, r1, r2, r3}
+ 124 0026 2368     		ldr	r3, [r4]
+ 125 0028 2B60     		str	r3, [r5]
+ 123:Src/freertos.c **** 
+ 126              		.loc 1 123 0
+ 127 002a 0021     		movs	r1, #0
+ 128 002c 6846     		mov	r0, sp
+ 129 002e FFF7FEFF 		bl	osThreadCreate
+ 130              	.LVL7:
+ 131 0032 044B     		ldr	r3, .L9+8
+ 132 0034 1860     		str	r0, [r3]
+ 132:Src/freertos.c **** 
+ 133              		.loc 1 132 0
+ 134 0036 0AB0     		add	sp, sp, #40
+ 135              	.LCFI4:
+ 136              		.cfi_def_cfa_offset 16
+ 137              		@ sp needed
+ 138 0038 70BD     		pop	{r4, r5, r6, pc}
+ 139              	.L10:
+ 140 003a 00BF     		.align	2
+ 141              	.L9:
+ 142 003c 00000000 		.word	.LANCHOR0
+ 143 0040 00000000 		.word	defaultTaskHandle
+ 144 0044 00000000 		.word	displayManagerHandle
+ 145              		.cfi_endproc
+ 146              	.LFE143:
+ 148              		.comm	displayManagerHandle,4,4
+ 149              		.comm	defaultTaskHandle,4,4
+ 150              		.section	.rodata
+ 151              		.align	2
+ 152              		.set	.LANCHOR0,. + 0
+ 153              	.LC4:
+ 154 0000 10000000 		.word	.LC0
+ 155 0004 00000000 		.word	StartDefaultTask
+ 156 0008 0000     		.short	0
+ 157 000a 0000     		.space	2
+ 158 000c 00000000 		.word	0
+ 159 0010 80000000 		.word	128
+ 160              	.LC5:
+ 161 0014 00000000 		.word	.LC2
+ 162 0018 00000000 		.word	StartDisplayManager
+ 163 001c 0000     		.short	0
+ 164 001e 0000     		.space	2
+ 165 0020 00000000 		.word	0
+ 166 0024 80000000 		.word	128
+ 167              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 168              		.align	2
+ 169              	.LC2:
+ 170 0000 64697370 		.ascii	"displayManager\000"
+ 170      6C61794D 
+ 170      616E6167 
+ 170      657200
+ 171 000f 00       		.space	1
+ 172              	.LC0:
+ 173 0010 64656661 		.ascii	"defaultTask\000"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s 			page 7
+
+
+ 173      756C7454 
+ 173      61736B00 
+ 174              		.text
+ 175              	.Letext0:
+ 176              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 177              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 178              		.file 4 "Middlewares/Third_Party/FreeRTOS/Source/include/task.h"
+ 179              		.file 5 "Inc/FreeRTOSConfig.h"
+ 180              		.file 6 "Drivers/CMSIS/Include/core_cm7.h"
+ 181              		.file 7 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 182              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 183              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 184              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-ea
+ 185              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+ 186              		.file 12 "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 freertos.c
+C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s:18     .text.StartDefaultTask:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s:25     .text.StartDefaultTask:00000000 StartDefaultTask
+C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s:50     .text.StartDisplayManager:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s:57     .text.StartDisplayManager:00000000 StartDisplayManager
+C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s:81     .text.MX_FREERTOS_Init:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s:88     .text.MX_FREERTOS_Init:00000000 MX_FREERTOS_Init
+C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s:142    .text.MX_FREERTOS_Init:0000003c $d
+                            *COM*:00000004 defaultTaskHandle
+                            *COM*:00000004 displayManagerHandle
+C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s:151    .rodata:00000000 $d
+C:\Users\micha\AppData\Local\Temp\ccUDr1KX.s:168    .rodata.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+osDelay
+osThreadCreate

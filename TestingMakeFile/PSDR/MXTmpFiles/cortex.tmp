@@ -1,0 +1,9 @@
+#n
+#nvoid MPU_Config(void)
+{
+#n
+#t/* Disables the MPU */
+#tHAL_MPU_Disable();
+#t/* Enables the MPU */
+#tHAL_MPU_Enable(__NULL);
+#n}

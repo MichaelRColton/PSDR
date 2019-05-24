@@ -1,0 +1,180 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccisHy2F.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"dma.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MX_DMA_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	MX_DMA_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	MX_DMA_Init:
+  26              	.LFB138:
+  27              		.file 1 "Src/dma.c"
+   1:Src/dma.c     **** /**
+   2:Src/dma.c     ****   ******************************************************************************
+   3:Src/dma.c     ****   * File Name          : dma.c
+   4:Src/dma.c     ****   * Description        : This file provides code for the configuration
+   5:Src/dma.c     ****   *                      of all the requested memory to memory DMA transfers.
+   6:Src/dma.c     ****   ******************************************************************************
+   7:Src/dma.c     ****   * This notice applies to any and all portions of this file
+   8:Src/dma.c     ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/dma.c     ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/dma.c     ****   * inserted by the user or by software development tools
+  11:Src/dma.c     ****   * are owned by their respective copyright owners.
+  12:Src/dma.c     ****   *
+  13:Src/dma.c     ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/dma.c     ****   * All rights reserved.
+  15:Src/dma.c     ****   *
+  16:Src/dma.c     ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/dma.c     ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/dma.c     ****   *
+  19:Src/dma.c     ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/dma.c     ****   *    this list of conditions and the following disclaimer.
+  21:Src/dma.c     ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/dma.c     ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/dma.c     ****   *    and/or other materials provided with the distribution.
+  24:Src/dma.c     ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/dma.c     ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/dma.c     ****   *    derived from this software without specific written permission.
+  27:Src/dma.c     ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/dma.c     ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/dma.c     ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/dma.c     ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/dma.c     ****   *    this license is void and will automatically terminate your rights under 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccisHy2F.s 			page 2
+
+
+  32:Src/dma.c     ****   *    this license. 
+  33:Src/dma.c     ****   *
+  34:Src/dma.c     ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/dma.c     ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/dma.c     ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/dma.c     ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/dma.c     ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/dma.c     ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/dma.c     ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/dma.c     ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/dma.c     ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/dma.c     ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/dma.c     ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/dma.c     ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/dma.c     ****   *
+  47:Src/dma.c     ****   ******************************************************************************
+  48:Src/dma.c     ****   */
+  49:Src/dma.c     **** /* Includes ------------------------------------------------------------------*/
+  50:Src/dma.c     **** #include "dma.h"
+  51:Src/dma.c     **** 
+  52:Src/dma.c     **** /* USER CODE BEGIN 0 */
+  53:Src/dma.c     **** 
+  54:Src/dma.c     **** /* USER CODE END 0 */
+  55:Src/dma.c     **** 
+  56:Src/dma.c     **** /*----------------------------------------------------------------------------*/
+  57:Src/dma.c     **** /* Configure DMA                                                              */
+  58:Src/dma.c     **** /*----------------------------------------------------------------------------*/
+  59:Src/dma.c     **** 
+  60:Src/dma.c     **** /* USER CODE BEGIN 1 */
+  61:Src/dma.c     **** 
+  62:Src/dma.c     **** /* USER CODE END 1 */
+  63:Src/dma.c     **** 
+  64:Src/dma.c     **** /** 
+  65:Src/dma.c     ****   * Enable DMA controller clock
+  66:Src/dma.c     ****   */
+  67:Src/dma.c     **** void MX_DMA_Init(void) 
+  68:Src/dma.c     **** {
+  28              		.loc 1 68 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 00B5     		push	{lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 4
+  35              		.cfi_offset 14, -4
+  36 0002 83B0     		sub	sp, sp, #12
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 16
+  39              	.LBB2:
+  69:Src/dma.c     ****   /* DMA controller clock enable */
+  70:Src/dma.c     ****   __HAL_RCC_DMA2_CLK_ENABLE();
+  40              		.loc 1 70 0
+  41 0004 0A4B     		ldr	r3, .L3
+  42 0006 1A6B     		ldr	r2, [r3, #48]
+  43 0008 42F48002 		orr	r2, r2, #4194304
+  44 000c 1A63     		str	r2, [r3, #48]
+  45 000e 1B6B     		ldr	r3, [r3, #48]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccisHy2F.s 			page 3
+
+
+  46 0010 03F48003 		and	r3, r3, #4194304
+  47 0014 0193     		str	r3, [sp, #4]
+  48 0016 019B     		ldr	r3, [sp, #4]
+  49              	.LBE2:
+  71:Src/dma.c     **** 
+  72:Src/dma.c     ****   /* DMA interrupt init */
+  73:Src/dma.c     ****   /* DMA2_Stream3_IRQn interrupt configuration */
+  74:Src/dma.c     ****   HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 5, 0);
+  50              		.loc 1 74 0
+  51 0018 0022     		movs	r2, #0
+  52 001a 0521     		movs	r1, #5
+  53 001c 3B20     		movs	r0, #59
+  54 001e FFF7FEFF 		bl	HAL_NVIC_SetPriority
+  55              	.LVL0:
+  75:Src/dma.c     ****   HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
+  56              		.loc 1 75 0
+  57 0022 3B20     		movs	r0, #59
+  58 0024 FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+  59              	.LVL1:
+  76:Src/dma.c     **** 
+  77:Src/dma.c     **** }
+  60              		.loc 1 77 0
+  61 0028 03B0     		add	sp, sp, #12
+  62              	.LCFI2:
+  63              		.cfi_def_cfa_offset 4
+  64              		@ sp needed
+  65 002a 5DF804FB 		ldr	pc, [sp], #4
+  66              	.L4:
+  67 002e 00BF     		.align	2
+  68              	.L3:
+  69 0030 00380240 		.word	1073887232
+  70              		.cfi_endproc
+  71              	.LFE138:
+  73              		.text
+  74              	.Letext0:
+  75              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+  76              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+  77              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+  78              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+  79              		.file 6 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f756xx.h"
+  80              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+  81              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+  82              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+  83              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+  84              		.file 11 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_cortex.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccisHy2F.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 dma.c
+C:\Users\micha\AppData\Local\Temp\ccisHy2F.s:18     .text.MX_DMA_Init:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccisHy2F.s:25     .text.MX_DMA_Init:00000000 MX_DMA_Init
+C:\Users\micha\AppData\Local\Temp\ccisHy2F.s:69     .text.MX_DMA_Init:00000030 $d
+
+UNDEFINED SYMBOLS
+HAL_NVIC_SetPriority
+HAL_NVIC_EnableIRQ

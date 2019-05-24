@@ -1,0 +1,2600 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"Adafruit_ILI9340.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Adafruit_ILI9340_spiwrite,"ax",%progbits
+  18              		.align	1
+  19              		.global	Adafruit_ILI9340_spiwrite
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	Adafruit_ILI9340_spiwrite:
+  26              	.LFB138:
+  27              		.file 1 "Src/Adafruit_ILI9340.c"
+   1:Src/Adafruit_ILI9340.c **** /***************************************************
+   2:Src/Adafruit_ILI9340.c ****  This is an Arduino Library for the Adafruit 2.2" SPI display.
+   3:Src/Adafruit_ILI9340.c ****  This library works with the Adafruit 2.2" TFT Breakout w/SD card
+   4:Src/Adafruit_ILI9340.c ****  ----> http://www.adafruit.com/products/1480
+   5:Src/Adafruit_ILI9340.c **** 
+   6:Src/Adafruit_ILI9340.c ****  Check out the links above for our tutorials and wiring diagrams
+   7:Src/Adafruit_ILI9340.c ****  These displays use SPI to communicate, 4 or 5 pins are required to
+   8:Src/Adafruit_ILI9340.c ****  interface (RST is optional)
+   9:Src/Adafruit_ILI9340.c ****  Adafruit invests time and resources providing this open source code,
+  10:Src/Adafruit_ILI9340.c ****  please support Adafruit and open-source hardware by purchasing
+  11:Src/Adafruit_ILI9340.c ****  products from Adafruit!
+  12:Src/Adafruit_ILI9340.c **** 
+  13:Src/Adafruit_ILI9340.c ****  Written by Limor Fried/Ladyada for Adafruit Industries.
+  14:Src/Adafruit_ILI9340.c ****  MIT license, all text above must be included in any redistribution
+  15:Src/Adafruit_ILI9340.c ****  ****************************************************/
+  16:Src/Adafruit_ILI9340.c **** 
+  17:Src/Adafruit_ILI9340.c **** /****************************************************
+  18:Src/Adafruit_ILI9340.c ****  * Changed pretty drastically by me, Michael Colton, to suit the STM32
+  19:Src/Adafruit_ILI9340.c ****  * and the way I want to use it, most notably by using DMA
+  20:Src/Adafruit_ILI9340.c ****  *
+  21:Src/Adafruit_ILI9340.c ****  * Thanks Ladyada for giving me a working base to build from!
+  22:Src/Adafruit_ILI9340.c ****  ****************************************************/
+  23:Src/Adafruit_ILI9340.c **** 
+  24:Src/Adafruit_ILI9340.c **** #include "Adafruit_ILI9340.h"
+  25:Src/Adafruit_ILI9340.c **** 
+  26:Src/Adafruit_ILI9340.c **** #include <spi.h>
+  27:Src/Adafruit_ILI9340.c **** 
+  28:Src/Adafruit_ILI9340.c **** #include <stdbool.h>
+  29:Src/Adafruit_ILI9340.c **** #include "gpio.h"
+  30:Src/Adafruit_ILI9340.c **** 
+  31:Src/Adafruit_ILI9340.c **** int _width = ILI9340_TFTWIDTH; //240;
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 2
+
+
+  32:Src/Adafruit_ILI9340.c **** int _height = ILI9340_TFTHEIGHT; //320
+  33:Src/Adafruit_ILI9340.c **** uint8_t rxBuf[10];
+  34:Src/Adafruit_ILI9340.c **** uint16_t txBuf[2];
+  35:Src/Adafruit_ILI9340.c **** //uint8_t txBuf2[320 * 240 * 2];
+  36:Src/Adafruit_ILI9340.c **** 
+  37:Src/Adafruit_ILI9340.c **** void
+  38:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_spiwrite (uint8_t c)
+  39:Src/Adafruit_ILI9340.c **** {
+  28              		.loc 1 39 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 24
+  36              		.cfi_offset 3, -24
+  37              		.cfi_offset 4, -20
+  38              		.cfi_offset 5, -16
+  39              		.cfi_offset 6, -12
+  40              		.cfi_offset 7, -8
+  41              		.cfi_offset 14, -4
+  40:Src/Adafruit_ILI9340.c **** 
+  41:Src/Adafruit_ILI9340.c ****   //Serial.print("0x"); Serial.print(c, HEX); Serial.print(", ");
+  42:Src/Adafruit_ILI9340.c **** 
+  43:Src/Adafruit_ILI9340.c ****   if (hwSPI)
+  42              		.loc 1 43 0
+  43 0002 124B     		ldr	r3, .L8
+  44 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  45 0006 03BB     		cbnz	r3, .L1
+  46 0008 0746     		mov	r7, r0
+  47              	.LBB2:
+  44:Src/Adafruit_ILI9340.c ****     {
+  45:Src/Adafruit_ILI9340.c **** #ifdef __AVR__
+  46:Src/Adafruit_ILI9340.c ****       SPDR = c;
+  47:Src/Adafruit_ILI9340.c ****       while(!(SPSR & _BV(SPIF)));
+  48:Src/Adafruit_ILI9340.c **** #endif
+  49:Src/Adafruit_ILI9340.c **** #if defined(USE_SPI_LIBRARY)
+  50:Src/Adafruit_ILI9340.c ****       SPI.transfer(c);
+  51:Src/Adafruit_ILI9340.c **** #endif
+  52:Src/Adafruit_ILI9340.c ****     }
+  53:Src/Adafruit_ILI9340.c ****   else
+  54:Src/Adafruit_ILI9340.c ****     {
+  55:Src/Adafruit_ILI9340.c ****       // Fast SPI bitbang swiped from LPD8806 library
+  56:Src/Adafruit_ILI9340.c ****       uint8_t bit;
+  57:Src/Adafruit_ILI9340.c ****       for (bit = 0x80; bit; bit >>= 1)
+  48              		.loc 1 57 0
+  49 000a 8024     		movs	r4, #128
+  50 000c 13E0     		b	.L3
+  51              	.LVL1:
+  52              	.L4:
+  58:Src/Adafruit_ILI9340.c ****         {
+  59:Src/Adafruit_ILI9340.c ****           if (c & bit)
+  60:Src/Adafruit_ILI9340.c ****             {
+  61:Src/Adafruit_ILI9340.c **** 
+  62:Src/Adafruit_ILI9340.c ****               HAL_GPIO_WritePin (LCD_MOSI.port, LCD_MOSI.pin, 1);
+  63:Src/Adafruit_ILI9340.c ****             }
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 3
+
+
+  64:Src/Adafruit_ILI9340.c ****           else
+  65:Src/Adafruit_ILI9340.c ****             {
+  66:Src/Adafruit_ILI9340.c **** 
+  67:Src/Adafruit_ILI9340.c ****               HAL_GPIO_WritePin (LCD_MOSI.port, LCD_MOSI.pin, 0);
+  53              		.loc 1 67 0
+  54 000e 104B     		ldr	r3, .L8+4
+  55 0010 0022     		movs	r2, #0
+  56 0012 9988     		ldrh	r1, [r3, #4]
+  57 0014 1868     		ldr	r0, [r3]
+  58 0016 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  59              	.LVL2:
+  60              	.L5:
+  68:Src/Adafruit_ILI9340.c ****             }
+  69:Src/Adafruit_ILI9340.c **** 
+  70:Src/Adafruit_ILI9340.c ****           HAL_GPIO_WritePin (LCD_SCK.port, LCD_SCK.pin, 1);
+  61              		.loc 1 70 0 discriminator 2
+  62 001a 0E4B     		ldr	r3, .L8+8
+  63 001c 1D68     		ldr	r5, [r3]
+  64 001e 9E88     		ldrh	r6, [r3, #4]
+  65 0020 0122     		movs	r2, #1
+  66 0022 3146     		mov	r1, r6
+  67 0024 2846     		mov	r0, r5
+  68 0026 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  69              	.LVL3:
+  71:Src/Adafruit_ILI9340.c **** 
+  72:Src/Adafruit_ILI9340.c ****           HAL_GPIO_WritePin (LCD_SCK.port, LCD_SCK.pin, 0);
+  70              		.loc 1 72 0 discriminator 2
+  71 002a 0022     		movs	r2, #0
+  72 002c 3146     		mov	r1, r6
+  73 002e 2846     		mov	r0, r5
+  74 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  75              	.LVL4:
+  57:Src/Adafruit_ILI9340.c ****         {
+  76              		.loc 1 57 0 discriminator 2
+  77 0034 6408     		lsrs	r4, r4, #1
+  78              	.LVL5:
+  79              	.L3:
+  57:Src/Adafruit_ILI9340.c ****         {
+  80              		.loc 1 57 0 is_stmt 0 discriminator 1
+  81 0036 44B1     		cbz	r4, .L1
+  59:Src/Adafruit_ILI9340.c ****             {
+  82              		.loc 1 59 0 is_stmt 1
+  83 0038 3C42     		tst	r4, r7
+  84 003a E8D0     		beq	.L4
+  62:Src/Adafruit_ILI9340.c ****             }
+  85              		.loc 1 62 0
+  86 003c 044B     		ldr	r3, .L8+4
+  87 003e 0122     		movs	r2, #1
+  88 0040 9988     		ldrh	r1, [r3, #4]
+  89 0042 1868     		ldr	r0, [r3]
+  90 0044 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  91              	.LVL6:
+  92 0048 E7E7     		b	.L5
+  93              	.LVL7:
+  94              	.L1:
+  95              	.LBE2:
+  73:Src/Adafruit_ILI9340.c ****         }
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 4
+
+
+  74:Src/Adafruit_ILI9340.c ****     }
+  75:Src/Adafruit_ILI9340.c **** }
+  96              		.loc 1 75 0
+  97 004a F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+  98              	.L9:
+  99              		.align	2
+ 100              	.L8:
+ 101 004c 00000000 		.word	hwSPI
+ 102 0050 00000000 		.word	LCD_MOSI
+ 103 0054 00000000 		.word	LCD_SCK
+ 104              		.cfi_endproc
+ 105              	.LFE138:
+ 107              		.section	.text.Adafruit_ILI9340_writecommand,"ax",%progbits
+ 108              		.align	1
+ 109              		.global	Adafruit_ILI9340_writecommand
+ 110              		.syntax unified
+ 111              		.thumb
+ 112              		.thumb_func
+ 113              		.fpu fpv5-sp-d16
+ 115              	Adafruit_ILI9340_writecommand:
+ 116              	.LFB139:
+  76:Src/Adafruit_ILI9340.c **** 
+  77:Src/Adafruit_ILI9340.c **** void
+  78:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_writecommand (uint16_t c)
+  79:Src/Adafruit_ILI9340.c **** {
+ 117              		.loc 1 79 0
+ 118              		.cfi_startproc
+ 119              		@ args = 0, pretend = 0, frame = 0
+ 120              		@ frame_needed = 0, uses_anonymous_args = 0
+ 121              	.LVL8:
+ 122 0000 70B5     		push	{r4, r5, r6, lr}
+ 123              	.LCFI1:
+ 124              		.cfi_def_cfa_offset 16
+ 125              		.cfi_offset 4, -16
+ 126              		.cfi_offset 5, -12
+ 127              		.cfi_offset 6, -8
+ 128              		.cfi_offset 14, -4
+ 129 0002 0646     		mov	r6, r0
+  80:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_DC.port, LCD_DC.pin, 0);
+ 130              		.loc 1 80 0
+ 131 0004 104B     		ldr	r3, .L12
+ 132 0006 0022     		movs	r2, #0
+ 133 0008 9988     		ldrh	r1, [r3, #4]
+ 134 000a 1868     		ldr	r0, [r3]
+ 135              	.LVL9:
+ 136 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 137              	.LVL10:
+  81:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_SCK.port, LCD_SCK.pin, 0);
+ 138              		.loc 1 81 0
+ 139 0010 0E4B     		ldr	r3, .L12+4
+ 140 0012 0022     		movs	r2, #0
+ 141 0014 9988     		ldrh	r1, [r3, #4]
+ 142 0016 1868     		ldr	r0, [r3]
+ 143 0018 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 144              	.LVL11:
+  82:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0);
+ 145              		.loc 1 82 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 5
+
+
+ 146 001c 0C4B     		ldr	r3, .L12+8
+ 147 001e 1C68     		ldr	r4, [r3]
+ 148 0020 9D88     		ldrh	r5, [r3, #4]
+ 149 0022 0022     		movs	r2, #0
+ 150 0024 2946     		mov	r1, r5
+ 151 0026 2046     		mov	r0, r4
+ 152 0028 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 153              	.LVL12:
+  83:Src/Adafruit_ILI9340.c **** 
+  84:Src/Adafruit_ILI9340.c ****   txBuf[0] = c; // & 0xFF;
+ 154              		.loc 1 84 0
+ 155 002c 0949     		ldr	r1, .L12+12
+ 156 002e 0E80     		strh	r6, [r1]	@ movhi
+  85:Src/Adafruit_ILI9340.c **** 
+  86:Src/Adafruit_ILI9340.c ****   HAL_SPI_Transmit (&hspi1, (uint8_t*) txBuf, 1 /*cnt * 2*/, 1);
+ 157              		.loc 1 86 0
+ 158 0030 0123     		movs	r3, #1
+ 159 0032 1A46     		mov	r2, r3
+ 160 0034 0848     		ldr	r0, .L12+16
+ 161 0036 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 162              	.LVL13:
+  87:Src/Adafruit_ILI9340.c ****   //HAL_SPI_Transmit_DMA(&SpiHandle, txBuf, 1);
+  88:Src/Adafruit_ILI9340.c ****   //while(SpiHandle.State ==  HAL_SPI_STATE_BUSY_TX);
+  89:Src/Adafruit_ILI9340.c **** 
+  90:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 1);
+ 163              		.loc 1 90 0
+ 164 003a 0122     		movs	r2, #1
+ 165 003c 2946     		mov	r1, r5
+ 166 003e 2046     		mov	r0, r4
+ 167 0040 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 168              	.LVL14:
+  91:Src/Adafruit_ILI9340.c **** 
+  92:Src/Adafruit_ILI9340.c **** }
+ 169              		.loc 1 92 0
+ 170 0044 70BD     		pop	{r4, r5, r6, pc}
+ 171              	.L13:
+ 172 0046 00BF     		.align	2
+ 173              	.L12:
+ 174 0048 00000000 		.word	LCD_DC
+ 175 004c 00000000 		.word	LCD_SCK
+ 176 0050 00000000 		.word	LCD_NSS
+ 177 0054 00000000 		.word	txBuf
+ 178 0058 00000000 		.word	hspi1
+ 179              		.cfi_endproc
+ 180              	.LFE139:
+ 182              		.section	.text.Adafruit_ILI9340_writedata,"ax",%progbits
+ 183              		.align	1
+ 184              		.global	Adafruit_ILI9340_writedata
+ 185              		.syntax unified
+ 186              		.thumb
+ 187              		.thumb_func
+ 188              		.fpu fpv5-sp-d16
+ 190              	Adafruit_ILI9340_writedata:
+ 191              	.LFB140:
+  93:Src/Adafruit_ILI9340.c **** 
+  94:Src/Adafruit_ILI9340.c **** void
+  95:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_writedata (uint16_t c)
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 6
+
+
+  96:Src/Adafruit_ILI9340.c **** {
+ 192              		.loc 1 96 0
+ 193              		.cfi_startproc
+ 194              		@ args = 0, pretend = 0, frame = 0
+ 195              		@ frame_needed = 0, uses_anonymous_args = 0
+ 196              	.LVL15:
+ 197 0000 70B5     		push	{r4, r5, r6, lr}
+ 198              	.LCFI2:
+ 199              		.cfi_def_cfa_offset 16
+ 200              		.cfi_offset 4, -16
+ 201              		.cfi_offset 5, -12
+ 202              		.cfi_offset 6, -8
+ 203              		.cfi_offset 14, -4
+ 204 0002 0646     		mov	r6, r0
+  97:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_DC.port, LCD_DC.pin, 1);
+ 205              		.loc 1 97 0
+ 206 0004 104B     		ldr	r3, .L16
+ 207 0006 0122     		movs	r2, #1
+ 208 0008 9988     		ldrh	r1, [r3, #4]
+ 209 000a 1868     		ldr	r0, [r3]
+ 210              	.LVL16:
+ 211 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 212              	.LVL17:
+  98:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_SCK.port, LCD_SCK.pin, 0);
+ 213              		.loc 1 98 0
+ 214 0010 0E4B     		ldr	r3, .L16+4
+ 215 0012 0022     		movs	r2, #0
+ 216 0014 9988     		ldrh	r1, [r3, #4]
+ 217 0016 1868     		ldr	r0, [r3]
+ 218 0018 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 219              	.LVL18:
+  99:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0);
+ 220              		.loc 1 99 0
+ 221 001c 0C4B     		ldr	r3, .L16+8
+ 222 001e 1C68     		ldr	r4, [r3]
+ 223 0020 9D88     		ldrh	r5, [r3, #4]
+ 224 0022 0022     		movs	r2, #0
+ 225 0024 2946     		mov	r1, r5
+ 226 0026 2046     		mov	r0, r4
+ 227 0028 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 228              	.LVL19:
+ 100:Src/Adafruit_ILI9340.c **** 
+ 101:Src/Adafruit_ILI9340.c ****   txBuf[0] = c; // & 0xFF;
+ 229              		.loc 1 101 0
+ 230 002c 0949     		ldr	r1, .L16+12
+ 231 002e 0E80     		strh	r6, [r1]	@ movhi
+ 102:Src/Adafruit_ILI9340.c **** 
+ 103:Src/Adafruit_ILI9340.c ****   HAL_SPI_Transmit (&hspi1, (uint8_t*) txBuf, 1 /*cnt * 2*/, 1);
+ 232              		.loc 1 103 0
+ 233 0030 0123     		movs	r3, #1
+ 234 0032 1A46     		mov	r2, r3
+ 235 0034 0848     		ldr	r0, .L16+16
+ 236 0036 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 237              	.LVL20:
+ 104:Src/Adafruit_ILI9340.c ****   //HAL_SPI_Transmit_DMA(&SpiHandle, txBuf, 1);
+ 105:Src/Adafruit_ILI9340.c ****   //while(SpiHandle.State ==  HAL_SPI_STATE_BUSY_TX);
+ 106:Src/Adafruit_ILI9340.c **** 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 7
+
+
+ 107:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 1);
+ 238              		.loc 1 107 0
+ 239 003a 0122     		movs	r2, #1
+ 240 003c 2946     		mov	r1, r5
+ 241 003e 2046     		mov	r0, r4
+ 242 0040 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 243              	.LVL21:
+ 108:Src/Adafruit_ILI9340.c **** }
+ 244              		.loc 1 108 0
+ 245 0044 70BD     		pop	{r4, r5, r6, pc}
+ 246              	.L17:
+ 247 0046 00BF     		.align	2
+ 248              	.L16:
+ 249 0048 00000000 		.word	LCD_DC
+ 250 004c 00000000 		.word	LCD_SCK
+ 251 0050 00000000 		.word	LCD_NSS
+ 252 0054 00000000 		.word	txBuf
+ 253 0058 00000000 		.word	hspi1
+ 254              		.cfi_endproc
+ 255              	.LFE140:
+ 257              		.section	.text.Adafruit_ILI9340_begin,"ax",%progbits
+ 258              		.align	1
+ 259              		.global	Adafruit_ILI9340_begin
+ 260              		.syntax unified
+ 261              		.thumb
+ 262              		.thumb_func
+ 263              		.fpu fpv5-sp-d16
+ 265              	Adafruit_ILI9340_begin:
+ 266              	.LFB141:
+ 109:Src/Adafruit_ILI9340.c **** 
+ 110:Src/Adafruit_ILI9340.c **** // Rather than a bazillion writecommand() and writedata() calls, screen
+ 111:Src/Adafruit_ILI9340.c **** // initialization commands and arguments are organized in these tables
+ 112:Src/Adafruit_ILI9340.c **** // stored in PROGMEM.  The table may look bulky, but that's mostly the
+ 113:Src/Adafruit_ILI9340.c **** // formatting -- storage-wise this is hundreds of bytes more compact
+ 114:Src/Adafruit_ILI9340.c **** // than the equivalent code.  Companion function follows.
+ 115:Src/Adafruit_ILI9340.c **** #define DELAY 0x80
+ 116:Src/Adafruit_ILI9340.c **** 
+ 117:Src/Adafruit_ILI9340.c **** // Companion code to the above tables.  Reads and issues
+ 118:Src/Adafruit_ILI9340.c **** // a series of LCD commands stored in PROGMEM byte array.
+ 119:Src/Adafruit_ILI9340.c **** //void Adafruit_ILI9340_commandList(uint8_t *addr) {
+ 120:Src/Adafruit_ILI9340.c **** //
+ 121:Src/Adafruit_ILI9340.c **** //  uint8_t  numCommands, numArgs;
+ 122:Src/Adafruit_ILI9340.c **** //  uint16_t ms;
+ 123:Src/Adafruit_ILI9340.c **** //
+ 124:Src/Adafruit_ILI9340.c **** //  numCommands = pgm_read_byte(addr++);   // Number of commands to follow
+ 125:Src/Adafruit_ILI9340.c **** //  while(numCommands--) {                 // For each command...
+ 126:Src/Adafruit_ILI9340.c **** //    writecommand(pgm_read_byte(addr++)); //   Read, issue command
+ 127:Src/Adafruit_ILI9340.c **** //    numArgs  = pgm_read_byte(addr++);    //   Number of args to follow
+ 128:Src/Adafruit_ILI9340.c **** //    ms       = numArgs & DELAY;          //   If hibit set, delay follows args
+ 129:Src/Adafruit_ILI9340.c **** //    numArgs &= ~DELAY;                   //   Mask out delay bit
+ 130:Src/Adafruit_ILI9340.c **** //    while(numArgs--) {                   //   For each argument...
+ 131:Src/Adafruit_ILI9340.c **** //      writedata(pgm_read_byte(addr++));  //     Read, issue argument
+ 132:Src/Adafruit_ILI9340.c **** //    }
+ 133:Src/Adafruit_ILI9340.c **** //
+ 134:Src/Adafruit_ILI9340.c **** //    if(ms) {
+ 135:Src/Adafruit_ILI9340.c **** //      ms = pgm_read_byte(addr++); // Read post-command delay time (ms)
+ 136:Src/Adafruit_ILI9340.c **** //      if(ms == 255) ms = 500;     // If 255, delay for 500 ms
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 8
+
+
+ 137:Src/Adafruit_ILI9340.c **** //      hal_delay_ms(ms);
+ 138:Src/Adafruit_ILI9340.c **** //    }
+ 139:Src/Adafruit_ILI9340.c **** //  }
+ 140:Src/Adafruit_ILI9340.c **** //}
+ 141:Src/Adafruit_ILI9340.c **** 
+ 142:Src/Adafruit_ILI9340.c **** void
+ 143:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_begin (void)
+ 144:Src/Adafruit_ILI9340.c **** {
+ 267              		.loc 1 144 0
+ 268              		.cfi_startproc
+ 269              		@ args = 0, pretend = 0, frame = 0
+ 270              		@ frame_needed = 0, uses_anonymous_args = 0
+ 271 0000 38B5     		push	{r3, r4, r5, lr}
+ 272              	.LCFI3:
+ 273              		.cfi_def_cfa_offset 16
+ 274              		.cfi_offset 3, -16
+ 275              		.cfi_offset 4, -12
+ 276              		.cfi_offset 5, -8
+ 277              		.cfi_offset 14, -4
+ 145:Src/Adafruit_ILI9340.c ****   //pinMode(_rst, OUTPUT);
+ 146:Src/Adafruit_ILI9340.c ****   //digitalWrite(_rst, LOW);
+ 147:Src/Adafruit_ILI9340.c ****   //pinMode(_dc, OUTPUT);
+ 148:Src/Adafruit_ILI9340.c ****   //pinMode(_cs, OUTPUT);
+ 149:Src/Adafruit_ILI9340.c **** //#ifdef __AVR__
+ 150:Src/Adafruit_ILI9340.c **** //  csport    = portOutputRegister(digitalPinToPort(_cs));
+ 151:Src/Adafruit_ILI9340.c **** //  dcport    = portOutputRegister(digitalPinToPort(_dc));
+ 152:Src/Adafruit_ILI9340.c **** //#endif
+ 153:Src/Adafruit_ILI9340.c **** //#if defined(__SAM3X8E__)
+ 154:Src/Adafruit_ILI9340.c **** //  csport    = digitalPinToPort(_cs);
+ 155:Src/Adafruit_ILI9340.c **** //  dcport    = digitalPinToPort(_dc);
+ 156:Src/Adafruit_ILI9340.c **** //#endif
+ 157:Src/Adafruit_ILI9340.c **** //#if defined(__arm__) && defined(CORE_TEENSY)
+ 158:Src/Adafruit_ILI9340.c **** //  mosiport = &_mosi;
+ 159:Src/Adafruit_ILI9340.c **** //  clkport = &_sclk;
+ 160:Src/Adafruit_ILI9340.c **** //  rsport = &_rst;
+ 161:Src/Adafruit_ILI9340.c **** //  csport    = &_cs;
+ 162:Src/Adafruit_ILI9340.c **** //  dcport    = &_dc;
+ 163:Src/Adafruit_ILI9340.c **** //#endif
+ 164:Src/Adafruit_ILI9340.c ****   //cspinmask = digitalPinToBitMask(_cs);
+ 165:Src/Adafruit_ILI9340.c ****   //dcpinmask = digitalPinToBitMask(_dc);
+ 166:Src/Adafruit_ILI9340.c **** 
+ 167:Src/Adafruit_ILI9340.c **** //  if(hwSPI) { // Using hardware SPI
+ 168:Src/Adafruit_ILI9340.c **** //    SPI.begin();
+ 169:Src/Adafruit_ILI9340.c **** //#ifdef __AVR__
+ 170:Src/Adafruit_ILI9340.c **** //    SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
+ 171:Src/Adafruit_ILI9340.c **** //#endif
+ 172:Src/Adafruit_ILI9340.c **** //#if defined(__SAM3X8E__)
+ 173:Src/Adafruit_ILI9340.c **** //    SPI.setClockDivider(11); // 85MHz / 11 = 7.6 MHz (full! speed!)
+ 174:Src/Adafruit_ILI9340.c **** //#endif    SPI.setBitOrder(MSBFIRST);
+ 175:Src/Adafruit_ILI9340.c **** //    SPI.setBitOrder(MSBFIRST);
+ 176:Src/Adafruit_ILI9340.c **** //    SPI.setDataMode(SPI_MODE0);
+ 177:Src/Adafruit_ILI9340.c **** //  } else {
+ 178:Src/Adafruit_ILI9340.c **** //    pinMode(_sclk, OUTPUT);
+ 179:Src/Adafruit_ILI9340.c **** //    pinMode(_mosi, OUTPUT);
+ 180:Src/Adafruit_ILI9340.c **** //    pinMode(_miso, INPUT);
+ 181:Src/Adafruit_ILI9340.c **** //#ifdef __AVR__
+ 182:Src/Adafruit_ILI9340.c **** //    clkport     = portOutputRegister(digitalPinToPort(_sclk));
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 9
+
+
+ 183:Src/Adafruit_ILI9340.c **** //    mosiport    = portOutputRegister(digitalPinToPort(_mosi));
+ 184:Src/Adafruit_ILI9340.c **** //#endif
+ 185:Src/Adafruit_ILI9340.c **** //#if defined(__SAM3X8E__)
+ 186:Src/Adafruit_ILI9340.c **** //    clkport     = digitalPinToPort(_sclk);
+ 187:Src/Adafruit_ILI9340.c **** //    mosiport    = digitalPinToPort(_mosi);
+ 188:Src/Adafruit_ILI9340.c **** //#endif
+ 189:Src/Adafruit_ILI9340.c **** //    clkpinmask  = digitalPinToBitMask(_sclk);
+ 190:Src/Adafruit_ILI9340.c **** //    mosipinmask = digitalPinToBitMask(_mosi);
+ 191:Src/Adafruit_ILI9340.c **** //    CLEAR_BIT(clkport, clkpinmask);
+ 192:Src/Adafruit_ILI9340.c **** //    CLEAR_BIT(mosiport, mosipinmask);
+ 193:Src/Adafruit_ILI9340.c ****   //}
+ 194:Src/Adafruit_ILI9340.c **** 
+ 195:Src/Adafruit_ILI9340.c ****   // toggle RST low to reset
+ 196:Src/Adafruit_ILI9340.c **** 
+ 197:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_RESET.port, LCD_RESET.pin, 1);
+ 278              		.loc 1 197 0
+ 279 0002 934B     		ldr	r3, .L20
+ 280 0004 1C68     		ldr	r4, [r3]
+ 281 0006 9D88     		ldrh	r5, [r3, #4]
+ 282 0008 0122     		movs	r2, #1
+ 283 000a 2946     		mov	r1, r5
+ 284 000c 2046     		mov	r0, r4
+ 285 000e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 286              	.LVL22:
+ 198:Src/Adafruit_ILI9340.c **** 
+ 199:Src/Adafruit_ILI9340.c ****   //osDelay(5);
+ 200:Src/Adafruit_ILI9340.c ****   HAL_Delay (5);
+ 287              		.loc 1 200 0
+ 288 0012 0520     		movs	r0, #5
+ 289 0014 FFF7FEFF 		bl	HAL_Delay
+ 290              	.LVL23:
+ 201:Src/Adafruit_ILI9340.c **** 
+ 202:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_RESET.port, LCD_RESET.pin, 0);
+ 291              		.loc 1 202 0
+ 292 0018 0022     		movs	r2, #0
+ 293 001a 2946     		mov	r1, r5
+ 294 001c 2046     		mov	r0, r4
+ 295 001e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 296              	.LVL24:
+ 203:Src/Adafruit_ILI9340.c **** 
+ 204:Src/Adafruit_ILI9340.c ****   //osDelay(20);
+ 205:Src/Adafruit_ILI9340.c ****   HAL_Delay (20);
+ 297              		.loc 1 205 0
+ 298 0022 1420     		movs	r0, #20
+ 299 0024 FFF7FEFF 		bl	HAL_Delay
+ 300              	.LVL25:
+ 206:Src/Adafruit_ILI9340.c **** 
+ 207:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_RESET.port, LCD_RESET.pin, 1);
+ 301              		.loc 1 207 0
+ 302 0028 0122     		movs	r2, #1
+ 303 002a 2946     		mov	r1, r5
+ 304 002c 2046     		mov	r0, r4
+ 305 002e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 306              	.LVL26:
+ 208:Src/Adafruit_ILI9340.c ****   //osDelay(150);
+ 209:Src/Adafruit_ILI9340.c ****   HAL_Delay (150);
+ 307              		.loc 1 209 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 10
+
+
+ 308 0032 9620     		movs	r0, #150
+ 309 0034 FFF7FEFF 		bl	HAL_Delay
+ 310              	.LVL27:
+ 210:Src/Adafruit_ILI9340.c **** 
+ 211:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0); //I'm going to try leaving this low the WHOLE T
+ 311              		.loc 1 211 0
+ 312 0038 864B     		ldr	r3, .L20+4
+ 313 003a 0022     		movs	r2, #0
+ 314 003c 9988     		ldrh	r1, [r3, #4]
+ 315 003e 1868     		ldr	r0, [r3]
+ 316 0040 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 317              	.LVL28:
+ 212:Src/Adafruit_ILI9340.c **** 
+ 213:Src/Adafruit_ILI9340.c ****   /*
+ 214:Src/Adafruit_ILI9340.c ****    uint8_t x = readcommand8(ILI9340_RDMODE);
+ 215:Src/Adafruit_ILI9340.c ****    Serial.print("\nDisplay Power Mode: 0x"); Serial.println(x, HEX);
+ 216:Src/Adafruit_ILI9340.c ****    x = readcommand8(ILI9340_RDMADCTL);
+ 217:Src/Adafruit_ILI9340.c ****    Serial.print("\nMADCTL Mode: 0x"); Serial.println(x, HEX);
+ 218:Src/Adafruit_ILI9340.c ****    x = readcommand8(ILI9340_RDPIXFMT);
+ 219:Src/Adafruit_ILI9340.c ****    Serial.print("\nPixel Format: 0x"); Serial.println(x, HEX);
+ 220:Src/Adafruit_ILI9340.c ****    x = readcommand8(ILI9340_RDIMGFMT);
+ 221:Src/Adafruit_ILI9340.c ****    Serial.print("\nImage Format: 0x"); Serial.println(x, HEX);
+ 222:Src/Adafruit_ILI9340.c ****    x = readcommand8(ILI9340_RDSELFDIAG);
+ 223:Src/Adafruit_ILI9340.c ****    Serial.print("\nSelf Diagnostic: 0x"); Serial.println(x, HEX);
+ 224:Src/Adafruit_ILI9340.c ****    */
+ 225:Src/Adafruit_ILI9340.c **** 
+ 226:Src/Adafruit_ILI9340.c ****   //if(cmdList) commandList(cmdList);
+ 227:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (0xEF);
+ 318              		.loc 1 227 0
+ 319 0044 EF20     		movs	r0, #239
+ 320 0046 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 321              	.LVL29:
+ 228:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x03);
+ 322              		.loc 1 228 0
+ 323 004a 0320     		movs	r0, #3
+ 324 004c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 325              	.LVL30:
+ 229:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x80);
+ 326              		.loc 1 229 0
+ 327 0050 8020     		movs	r0, #128
+ 328 0052 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 329              	.LVL31:
+ 230:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x02);
+ 330              		.loc 1 230 0
+ 331 0056 0220     		movs	r0, #2
+ 332 0058 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 333              	.LVL32:
+ 231:Src/Adafruit_ILI9340.c **** 
+ 232:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (0xCF);
+ 334              		.loc 1 232 0
+ 335 005c CF20     		movs	r0, #207
+ 336 005e FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 337              	.LVL33:
+ 233:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x00);
+ 338              		.loc 1 233 0
+ 339 0062 0020     		movs	r0, #0
+ 340 0064 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 11
+
+
+ 341              	.LVL34:
+ 234:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0XC1);
+ 342              		.loc 1 234 0
+ 343 0068 C120     		movs	r0, #193
+ 344 006a FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 345              	.LVL35:
+ 235:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0X30);
+ 346              		.loc 1 235 0
+ 347 006e 3020     		movs	r0, #48
+ 348 0070 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 349              	.LVL36:
+ 236:Src/Adafruit_ILI9340.c **** 
+ 237:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (0xED);
+ 350              		.loc 1 237 0
+ 351 0074 ED20     		movs	r0, #237
+ 352 0076 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 353              	.LVL37:
+ 238:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x64);
+ 354              		.loc 1 238 0
+ 355 007a 6420     		movs	r0, #100
+ 356 007c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 357              	.LVL38:
+ 239:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x03);
+ 358              		.loc 1 239 0
+ 359 0080 0320     		movs	r0, #3
+ 360 0082 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 361              	.LVL39:
+ 240:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0X12);
+ 362              		.loc 1 240 0
+ 363 0086 1220     		movs	r0, #18
+ 364 0088 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 365              	.LVL40:
+ 241:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0X81);
+ 366              		.loc 1 241 0
+ 367 008c 8120     		movs	r0, #129
+ 368 008e FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 369              	.LVL41:
+ 242:Src/Adafruit_ILI9340.c **** 
+ 243:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (0xE8);
+ 370              		.loc 1 243 0
+ 371 0092 E820     		movs	r0, #232
+ 372 0094 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 373              	.LVL42:
+ 244:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x85);
+ 374              		.loc 1 244 0
+ 375 0098 8520     		movs	r0, #133
+ 376 009a FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 377              	.LVL43:
+ 245:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x00);
+ 378              		.loc 1 245 0
+ 379 009e 0020     		movs	r0, #0
+ 380 00a0 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 381              	.LVL44:
+ 246:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x78);
+ 382              		.loc 1 246 0
+ 383 00a4 7820     		movs	r0, #120
+ 384 00a6 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 12
+
+
+ 385              	.LVL45:
+ 247:Src/Adafruit_ILI9340.c **** 
+ 248:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (0xCB);
+ 386              		.loc 1 248 0
+ 387 00aa CB20     		movs	r0, #203
+ 388 00ac FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 389              	.LVL46:
+ 249:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x39);
+ 390              		.loc 1 249 0
+ 391 00b0 3920     		movs	r0, #57
+ 392 00b2 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 393              	.LVL47:
+ 250:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x2C);
+ 394              		.loc 1 250 0
+ 395 00b6 2C20     		movs	r0, #44
+ 396 00b8 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 397              	.LVL48:
+ 251:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x00);
+ 398              		.loc 1 251 0
+ 399 00bc 0020     		movs	r0, #0
+ 400 00be FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 401              	.LVL49:
+ 252:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x34);
+ 402              		.loc 1 252 0
+ 403 00c2 3420     		movs	r0, #52
+ 404 00c4 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 405              	.LVL50:
+ 253:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x02);
+ 406              		.loc 1 253 0
+ 407 00c8 0220     		movs	r0, #2
+ 408 00ca FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 409              	.LVL51:
+ 254:Src/Adafruit_ILI9340.c **** 
+ 255:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (0xF7);
+ 410              		.loc 1 255 0
+ 411 00ce F720     		movs	r0, #247
+ 412 00d0 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 413              	.LVL52:
+ 256:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x20);
+ 414              		.loc 1 256 0
+ 415 00d4 2020     		movs	r0, #32
+ 416 00d6 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 417              	.LVL53:
+ 257:Src/Adafruit_ILI9340.c **** 
+ 258:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (0xEA);
+ 418              		.loc 1 258 0
+ 419 00da EA20     		movs	r0, #234
+ 420 00dc FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 421              	.LVL54:
+ 259:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x00);
+ 422              		.loc 1 259 0
+ 423 00e0 0020     		movs	r0, #0
+ 424 00e2 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 425              	.LVL55:
+ 260:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x00);
+ 426              		.loc 1 260 0
+ 427 00e6 0020     		movs	r0, #0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 13
+
+
+ 428 00e8 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 429              	.LVL56:
+ 261:Src/Adafruit_ILI9340.c **** 
+ 262:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_PWCTR1);    //Power control
+ 430              		.loc 1 262 0
+ 431 00ec C020     		movs	r0, #192
+ 432 00ee FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 433              	.LVL57:
+ 263:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x23);   //VRH[5:0]
+ 434              		.loc 1 263 0
+ 435 00f2 2320     		movs	r0, #35
+ 436 00f4 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 437              	.LVL58:
+ 264:Src/Adafruit_ILI9340.c **** 
+ 265:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_PWCTR2);    //Power control
+ 438              		.loc 1 265 0
+ 439 00f8 C120     		movs	r0, #193
+ 440 00fa FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 441              	.LVL59:
+ 266:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x10);   //SAP[2:0];BT[3:0]
+ 442              		.loc 1 266 0
+ 443 00fe 1020     		movs	r0, #16
+ 444 0100 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 445              	.LVL60:
+ 267:Src/Adafruit_ILI9340.c **** 
+ 268:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_VMCTR1);    //VCM control
+ 446              		.loc 1 268 0
+ 447 0104 C520     		movs	r0, #197
+ 448 0106 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 449              	.LVL61:
+ 269:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x3e); //�Աȶȵ���
+ 450              		.loc 1 269 0
+ 451 010a 3E20     		movs	r0, #62
+ 452 010c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 453              	.LVL62:
+ 270:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x28);
+ 454              		.loc 1 270 0
+ 455 0110 2820     		movs	r0, #40
+ 456 0112 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 457              	.LVL63:
+ 271:Src/Adafruit_ILI9340.c **** 
+ 272:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_VMCTR2);    //VCM control2
+ 458              		.loc 1 272 0
+ 459 0116 C720     		movs	r0, #199
+ 460 0118 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 461              	.LVL64:
+ 273:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x86);  //--
+ 462              		.loc 1 273 0
+ 463 011c 8620     		movs	r0, #134
+ 464 011e FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 465              	.LVL65:
+ 274:Src/Adafruit_ILI9340.c **** 
+ 275:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_MADCTL);    // Memory Access Control
+ 466              		.loc 1 275 0
+ 467 0122 3620     		movs	r0, #54
+ 468 0124 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 469              	.LVL66:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 14
+
+
+ 276:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (ILI9340_MADCTL_MX | ILI9340_MADCTL_BGR);
+ 470              		.loc 1 276 0
+ 471 0128 4820     		movs	r0, #72
+ 472 012a FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 473              	.LVL67:
+ 277:Src/Adafruit_ILI9340.c **** 
+ 278:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_PIXFMT);
+ 474              		.loc 1 278 0
+ 475 012e 3A20     		movs	r0, #58
+ 476 0130 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 477              	.LVL68:
+ 279:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x55);
+ 478              		.loc 1 279 0
+ 479 0134 5520     		movs	r0, #85
+ 480 0136 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 481              	.LVL69:
+ 280:Src/Adafruit_ILI9340.c **** 
+ 281:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_FRMCTR1);
+ 482              		.loc 1 281 0
+ 483 013a B120     		movs	r0, #177
+ 484 013c FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 485              	.LVL70:
+ 282:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x00);
+ 486              		.loc 1 282 0
+ 487 0140 0020     		movs	r0, #0
+ 488 0142 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 489              	.LVL71:
+ 283:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x18);
+ 490              		.loc 1 283 0
+ 491 0146 1820     		movs	r0, #24
+ 492 0148 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 493              	.LVL72:
+ 284:Src/Adafruit_ILI9340.c **** 
+ 285:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_DFUNCTR);   // Display Function Control
+ 494              		.loc 1 285 0
+ 495 014c B620     		movs	r0, #182
+ 496 014e FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 497              	.LVL73:
+ 286:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x08);
+ 498              		.loc 1 286 0
+ 499 0152 0820     		movs	r0, #8
+ 500 0154 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 501              	.LVL74:
+ 287:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x82);
+ 502              		.loc 1 287 0
+ 503 0158 8220     		movs	r0, #130
+ 504 015a FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 505              	.LVL75:
+ 288:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x27);
+ 506              		.loc 1 288 0
+ 507 015e 2720     		movs	r0, #39
+ 508 0160 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 509              	.LVL76:
+ 289:Src/Adafruit_ILI9340.c **** 
+ 290:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (0xF2);    // 3Gamma Function Disable
+ 510              		.loc 1 290 0
+ 511 0164 F220     		movs	r0, #242
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 15
+
+
+ 512 0166 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 513              	.LVL77:
+ 291:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x00);
+ 514              		.loc 1 291 0
+ 515 016a 0020     		movs	r0, #0
+ 516 016c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 517              	.LVL78:
+ 292:Src/Adafruit_ILI9340.c **** 
+ 293:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_GAMMASET);    //Gamma curve selected
+ 518              		.loc 1 293 0
+ 519 0170 2620     		movs	r0, #38
+ 520 0172 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 521              	.LVL79:
+ 294:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x01);
+ 522              		.loc 1 294 0
+ 523 0176 0120     		movs	r0, #1
+ 524 0178 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 525              	.LVL80:
+ 295:Src/Adafruit_ILI9340.c **** 
+ 296:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_GMCTRP1);    //Set Gamma
+ 526              		.loc 1 296 0
+ 527 017c E020     		movs	r0, #224
+ 528 017e FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 529              	.LVL81:
+ 297:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x0F);
+ 530              		.loc 1 297 0
+ 531 0182 0F20     		movs	r0, #15
+ 532 0184 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 533              	.LVL82:
+ 298:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x31);
+ 534              		.loc 1 298 0
+ 535 0188 3120     		movs	r0, #49
+ 536 018a FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 537              	.LVL83:
+ 299:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x2B);
+ 538              		.loc 1 299 0
+ 539 018e 2B20     		movs	r0, #43
+ 540 0190 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 541              	.LVL84:
+ 300:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x0C);
+ 542              		.loc 1 300 0
+ 543 0194 0C20     		movs	r0, #12
+ 544 0196 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 545              	.LVL85:
+ 301:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x0E);
+ 546              		.loc 1 301 0
+ 547 019a 0E20     		movs	r0, #14
+ 548 019c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 549              	.LVL86:
+ 302:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x08);
+ 550              		.loc 1 302 0
+ 551 01a0 0820     		movs	r0, #8
+ 552 01a2 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 553              	.LVL87:
+ 303:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x4E);
+ 554              		.loc 1 303 0
+ 555 01a6 4E20     		movs	r0, #78
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 16
+
+
+ 556 01a8 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 557              	.LVL88:
+ 304:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0xF1);
+ 558              		.loc 1 304 0
+ 559 01ac F120     		movs	r0, #241
+ 560 01ae FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 561              	.LVL89:
+ 305:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x37);
+ 562              		.loc 1 305 0
+ 563 01b2 3720     		movs	r0, #55
+ 564 01b4 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 565              	.LVL90:
+ 306:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x07);
+ 566              		.loc 1 306 0
+ 567 01b8 0720     		movs	r0, #7
+ 568 01ba FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 569              	.LVL91:
+ 307:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x10);
+ 570              		.loc 1 307 0
+ 571 01be 1020     		movs	r0, #16
+ 572 01c0 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 573              	.LVL92:
+ 308:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x03);
+ 574              		.loc 1 308 0
+ 575 01c4 0320     		movs	r0, #3
+ 576 01c6 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 577              	.LVL93:
+ 309:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x0E);
+ 578              		.loc 1 309 0
+ 579 01ca 0E20     		movs	r0, #14
+ 580 01cc FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 581              	.LVL94:
+ 310:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x09);
+ 582              		.loc 1 310 0
+ 583 01d0 0920     		movs	r0, #9
+ 584 01d2 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 585              	.LVL95:
+ 311:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x00);
+ 586              		.loc 1 311 0
+ 587 01d6 0020     		movs	r0, #0
+ 588 01d8 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 589              	.LVL96:
+ 312:Src/Adafruit_ILI9340.c **** 
+ 313:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_GMCTRN1);    //Set Gamma
+ 590              		.loc 1 313 0
+ 591 01dc E120     		movs	r0, #225
+ 592 01de FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 593              	.LVL97:
+ 314:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x00);
+ 594              		.loc 1 314 0
+ 595 01e2 0020     		movs	r0, #0
+ 596 01e4 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 597              	.LVL98:
+ 315:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x0E);
+ 598              		.loc 1 315 0
+ 599 01e8 0E20     		movs	r0, #14
+ 600 01ea FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 17
+
+
+ 601              	.LVL99:
+ 316:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x14);
+ 602              		.loc 1 316 0
+ 603 01ee 1420     		movs	r0, #20
+ 604 01f0 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 605              	.LVL100:
+ 317:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x03);
+ 606              		.loc 1 317 0
+ 607 01f4 0320     		movs	r0, #3
+ 608 01f6 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 609              	.LVL101:
+ 318:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x11);
+ 610              		.loc 1 318 0
+ 611 01fa 1120     		movs	r0, #17
+ 612 01fc FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 613              	.LVL102:
+ 319:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x07);
+ 614              		.loc 1 319 0
+ 615 0200 0720     		movs	r0, #7
+ 616 0202 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 617              	.LVL103:
+ 320:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x31);
+ 618              		.loc 1 320 0
+ 619 0206 3120     		movs	r0, #49
+ 620 0208 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 621              	.LVL104:
+ 321:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0xC1);
+ 622              		.loc 1 321 0
+ 623 020c C120     		movs	r0, #193
+ 624 020e FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 625              	.LVL105:
+ 322:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x48);
+ 626              		.loc 1 322 0
+ 627 0212 4820     		movs	r0, #72
+ 628 0214 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 629              	.LVL106:
+ 323:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x08);
+ 630              		.loc 1 323 0
+ 631 0218 0820     		movs	r0, #8
+ 632 021a FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 633              	.LVL107:
+ 324:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x0F);
+ 634              		.loc 1 324 0
+ 635 021e 0F20     		movs	r0, #15
+ 636 0220 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 637              	.LVL108:
+ 325:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x0C);
+ 638              		.loc 1 325 0
+ 639 0224 0C20     		movs	r0, #12
+ 640 0226 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 641              	.LVL109:
+ 326:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x31);
+ 642              		.loc 1 326 0
+ 643 022a 3120     		movs	r0, #49
+ 644 022c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 645              	.LVL110:
+ 327:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x36);
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 18
+
+
+ 646              		.loc 1 327 0
+ 647 0230 3620     		movs	r0, #54
+ 648 0232 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 649              	.LVL111:
+ 328:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (0x0F);
+ 650              		.loc 1 328 0
+ 651 0236 0F20     		movs	r0, #15
+ 652 0238 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 653              	.LVL112:
+ 329:Src/Adafruit_ILI9340.c **** 
+ 330:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_SLPOUT);    //Exit Sleep
+ 654              		.loc 1 330 0
+ 655 023c 1120     		movs	r0, #17
+ 656 023e FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 657              	.LVL113:
+ 331:Src/Adafruit_ILI9340.c ****   //osDelay(120);
+ 332:Src/Adafruit_ILI9340.c ****   HAL_Delay (120);
+ 658              		.loc 1 332 0
+ 659 0242 7820     		movs	r0, #120
+ 660 0244 FFF7FEFF 		bl	HAL_Delay
+ 661              	.LVL114:
+ 333:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_DISPON);    //Display on
+ 662              		.loc 1 333 0
+ 663 0248 2920     		movs	r0, #41
+ 664 024a FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 665              	.LVL115:
+ 334:Src/Adafruit_ILI9340.c **** }
+ 666              		.loc 1 334 0
+ 667 024e 38BD     		pop	{r3, r4, r5, pc}
+ 668              	.L21:
+ 669              		.align	2
+ 670              	.L20:
+ 671 0250 00000000 		.word	LCD_RESET
+ 672 0254 00000000 		.word	LCD_NSS
+ 673              		.cfi_endproc
+ 674              	.LFE141:
+ 676              		.section	.text.Adafruit_ILI9340_setAddrWindow,"ax",%progbits
+ 677              		.align	1
+ 678              		.global	Adafruit_ILI9340_setAddrWindow
+ 679              		.syntax unified
+ 680              		.thumb
+ 681              		.thumb_func
+ 682              		.fpu fpv5-sp-d16
+ 684              	Adafruit_ILI9340_setAddrWindow:
+ 685              	.LFB142:
+ 335:Src/Adafruit_ILI9340.c **** 
+ 336:Src/Adafruit_ILI9340.c **** void
+ 337:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_setAddrWindow (uint16_t x0, uint16_t y0, uint16_t x1,
+ 338:Src/Adafruit_ILI9340.c ****                                 uint16_t y1)
+ 339:Src/Adafruit_ILI9340.c **** {
+ 686              		.loc 1 339 0
+ 687              		.cfi_startproc
+ 688              		@ args = 0, pretend = 0, frame = 0
+ 689              		@ frame_needed = 0, uses_anonymous_args = 0
+ 690              	.LVL116:
+ 691 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 692              	.LCFI4:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 19
+
+
+ 693              		.cfi_def_cfa_offset 24
+ 694              		.cfi_offset 3, -24
+ 695              		.cfi_offset 4, -20
+ 696              		.cfi_offset 5, -16
+ 697              		.cfi_offset 6, -12
+ 698              		.cfi_offset 7, -8
+ 699              		.cfi_offset 14, -4
+ 700 0002 0746     		mov	r7, r0
+ 701 0004 0D46     		mov	r5, r1
+ 702 0006 1646     		mov	r6, r2
+ 703 0008 1C46     		mov	r4, r3
+ 340:Src/Adafruit_ILI9340.c **** 
+ 341:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_CASET); // Column addr set
+ 704              		.loc 1 341 0
+ 705 000a 2A20     		movs	r0, #42
+ 706              	.LVL117:
+ 707 000c FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 708              	.LVL118:
+ 342:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (x0 >> 8);
+ 709              		.loc 1 342 0
+ 710 0010 380A     		lsrs	r0, r7, #8
+ 711 0012 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 712              	.LVL119:
+ 343:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (x0 & 0xFF);     // XSTART
+ 713              		.loc 1 343 0
+ 714 0016 F8B2     		uxtb	r0, r7
+ 715 0018 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 716              	.LVL120:
+ 344:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (x1 >> 8);
+ 717              		.loc 1 344 0
+ 718 001c 300A     		lsrs	r0, r6, #8
+ 719 001e FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 720              	.LVL121:
+ 345:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (x1 & 0xFF);     // XEND
+ 721              		.loc 1 345 0
+ 722 0022 F0B2     		uxtb	r0, r6
+ 723 0024 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 724              	.LVL122:
+ 346:Src/Adafruit_ILI9340.c **** 
+ 347:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_PASET); // Row addr set
+ 725              		.loc 1 347 0
+ 726 0028 2B20     		movs	r0, #43
+ 727 002a FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 728              	.LVL123:
+ 348:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (y0 >> 8);
+ 729              		.loc 1 348 0
+ 730 002e 280A     		lsrs	r0, r5, #8
+ 731 0030 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 732              	.LVL124:
+ 349:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (y0);     // YSTART
+ 733              		.loc 1 349 0
+ 734 0034 2846     		mov	r0, r5
+ 735 0036 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 736              	.LVL125:
+ 350:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (y1 >> 8);
+ 737              		.loc 1 350 0
+ 738 003a 200A     		lsrs	r0, r4, #8
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 20
+
+
+ 739 003c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 740              	.LVL126:
+ 351:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (y1);     // YEND
+ 741              		.loc 1 351 0
+ 742 0040 2046     		mov	r0, r4
+ 743 0042 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 744              	.LVL127:
+ 352:Src/Adafruit_ILI9340.c **** 
+ 353:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_RAMWR); // write to RAM
+ 745              		.loc 1 353 0
+ 746 0046 2C20     		movs	r0, #44
+ 747 0048 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 748              	.LVL128:
+ 354:Src/Adafruit_ILI9340.c **** }
+ 749              		.loc 1 354 0
+ 750 004c F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 751              		.cfi_endproc
+ 752              	.LFE142:
+ 754              		.section	.text.Adafruit_ILI9340_pushColor,"ax",%progbits
+ 755              		.align	1
+ 756              		.global	Adafruit_ILI9340_pushColor
+ 757              		.syntax unified
+ 758              		.thumb
+ 759              		.thumb_func
+ 760              		.fpu fpv5-sp-d16
+ 762              	Adafruit_ILI9340_pushColor:
+ 763              	.LFB143:
+ 355:Src/Adafruit_ILI9340.c **** 
+ 356:Src/Adafruit_ILI9340.c **** void
+ 357:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_pushColor (uint16_t color)
+ 358:Src/Adafruit_ILI9340.c **** {
+ 764              		.loc 1 358 0
+ 765              		.cfi_startproc
+ 766              		@ args = 0, pretend = 0, frame = 8
+ 767              		@ frame_needed = 0, uses_anonymous_args = 0
+ 768              	.LVL129:
+ 769 0000 70B5     		push	{r4, r5, r6, lr}
+ 770              	.LCFI5:
+ 771              		.cfi_def_cfa_offset 16
+ 772              		.cfi_offset 4, -16
+ 773              		.cfi_offset 5, -12
+ 774              		.cfi_offset 6, -8
+ 775              		.cfi_offset 14, -4
+ 776 0002 82B0     		sub	sp, sp, #8
+ 777              	.LCFI6:
+ 778              		.cfi_def_cfa_offset 24
+ 779 0004 0446     		mov	r4, r0
+ 359:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_DC.port, LCD_DC.pin, 1);
+ 780              		.loc 1 359 0
+ 781 0006 114B     		ldr	r3, .L26
+ 782 0008 0122     		movs	r2, #1
+ 783 000a 9988     		ldrh	r1, [r3, #4]
+ 784 000c 1868     		ldr	r0, [r3]
+ 785              	.LVL130:
+ 786 000e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 787              	.LVL131:
+ 360:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0);
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 21
+
+
+ 788              		.loc 1 360 0
+ 789 0012 0F4B     		ldr	r3, .L26+4
+ 790 0014 1D68     		ldr	r5, [r3]
+ 791 0016 9E88     		ldrh	r6, [r3, #4]
+ 792 0018 0022     		movs	r2, #0
+ 793 001a 3146     		mov	r1, r6
+ 794 001c 2846     		mov	r0, r5
+ 795 001e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 796              	.LVL132:
+ 361:Src/Adafruit_ILI9340.c **** 
+ 362:Src/Adafruit_ILI9340.c ****   txBuf[0] = color;
+ 797              		.loc 1 362 0
+ 798 0022 0C4B     		ldr	r3, .L26+8
+ 799 0024 1C80     		strh	r4, [r3]	@ movhi
+ 363:Src/Adafruit_ILI9340.c ****   uint8_t txBuf3[2];
+ 364:Src/Adafruit_ILI9340.c ****   txBuf3[1] = color & 0xFF;
+ 800              		.loc 1 364 0
+ 801 0026 8DF80540 		strb	r4, [sp, #5]
+ 365:Src/Adafruit_ILI9340.c ****   txBuf3[0] = color >> 8;
+ 802              		.loc 1 365 0
+ 803 002a 240A     		lsrs	r4, r4, #8
+ 804 002c 02A9     		add	r1, sp, #8
+ 805 002e 01F8044D 		strb	r4, [r1, #-4]!
+ 366:Src/Adafruit_ILI9340.c **** 
+ 367:Src/Adafruit_ILI9340.c ****   HAL_SPI_Transmit (&hspi1, (uint8_t*) txBuf3, 2 /*cnt * 2*/, 1);
+ 806              		.loc 1 367 0
+ 807 0032 0123     		movs	r3, #1
+ 808 0034 0222     		movs	r2, #2
+ 809 0036 0848     		ldr	r0, .L26+12
+ 810 0038 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 811              	.LVL133:
+ 368:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 1);
+ 812              		.loc 1 368 0
+ 813 003c 0122     		movs	r2, #1
+ 814 003e 3146     		mov	r1, r6
+ 815 0040 2846     		mov	r0, r5
+ 816 0042 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 817              	.LVL134:
+ 369:Src/Adafruit_ILI9340.c **** 
+ 370:Src/Adafruit_ILI9340.c **** }
+ 818              		.loc 1 370 0
+ 819 0046 02B0     		add	sp, sp, #8
+ 820              	.LCFI7:
+ 821              		.cfi_def_cfa_offset 16
+ 822              		@ sp needed
+ 823 0048 70BD     		pop	{r4, r5, r6, pc}
+ 824              	.L27:
+ 825 004a 00BF     		.align	2
+ 826              	.L26:
+ 827 004c 00000000 		.word	LCD_DC
+ 828 0050 00000000 		.word	LCD_NSS
+ 829 0054 00000000 		.word	txBuf
+ 830 0058 00000000 		.word	hspi1
+ 831              		.cfi_endproc
+ 832              	.LFE143:
+ 834              		.section	.text.Adafruit_ILI9340_drawPixel,"ax",%progbits
+ 835              		.align	1
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 22
+
+
+ 836              		.global	Adafruit_ILI9340_drawPixel
+ 837              		.syntax unified
+ 838              		.thumb
+ 839              		.thumb_func
+ 840              		.fpu fpv5-sp-d16
+ 842              	Adafruit_ILI9340_drawPixel:
+ 843              	.LFB144:
+ 371:Src/Adafruit_ILI9340.c **** 
+ 372:Src/Adafruit_ILI9340.c **** void
+ 373:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_drawPixel (int16_t x, int16_t y, uint16_t color)
+ 374:Src/Adafruit_ILI9340.c **** {
+ 844              		.loc 1 374 0
+ 845              		.cfi_startproc
+ 846              		@ args = 0, pretend = 0, frame = 0
+ 847              		@ frame_needed = 0, uses_anonymous_args = 0
+ 848              	.LVL135:
+ 375:Src/Adafruit_ILI9340.c ****   if ((x < 0) || (x >= _width) || (y < 0) || (y >= _height))
+ 849              		.loc 1 375 0
+ 850 0000 0028     		cmp	r0, #0
+ 851              	.LVL136:
+ 852 0002 09DB     		blt	.L31
+ 853              		.loc 1 375 0 is_stmt 0 discriminator 1
+ 854 0004 174B     		ldr	r3, .L35
+ 855 0006 1B68     		ldr	r3, [r3]
+ 856 0008 9842     		cmp	r0, r3
+ 857 000a 05DA     		bge	.L31
+ 858              		.loc 1 375 0 discriminator 2
+ 859 000c 0029     		cmp	r1, #0
+ 860 000e 03DB     		blt	.L31
+ 861              		.loc 1 375 0 discriminator 3
+ 862 0010 154B     		ldr	r3, .L35+4
+ 863 0012 1B68     		ldr	r3, [r3]
+ 864 0014 9942     		cmp	r1, r3
+ 865 0016 00DB     		blt	.L34
+ 866              	.L31:
+ 867 0018 7047     		bx	lr
+ 868              	.L34:
+ 374:Src/Adafruit_ILI9340.c ****   if ((x < 0) || (x >= _width) || (y < 0) || (y >= _height))
+ 869              		.loc 1 374 0 is_stmt 1
+ 870 001a 70B5     		push	{r4, r5, r6, lr}
+ 871              	.LCFI8:
+ 872              		.cfi_def_cfa_offset 16
+ 873              		.cfi_offset 4, -16
+ 874              		.cfi_offset 5, -12
+ 875              		.cfi_offset 6, -8
+ 876              		.cfi_offset 14, -4
+ 877 001c 1446     		mov	r4, r2
+ 376:Src/Adafruit_ILI9340.c ****     return;
+ 377:Src/Adafruit_ILI9340.c **** 
+ 378:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_setAddrWindow (x, y, x + 1, y + 1);
+ 878              		.loc 1 378 0
+ 879 001e 80B2     		uxth	r0, r0
+ 880 0020 89B2     		uxth	r1, r1
+ 881 0022 4B1C     		adds	r3, r1, #1
+ 882 0024 421C     		adds	r2, r0, #1
+ 883              	.LVL137:
+ 884 0026 9BB2     		uxth	r3, r3
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 23
+
+
+ 885 0028 92B2     		uxth	r2, r2
+ 886 002a FFF7FEFF 		bl	Adafruit_ILI9340_setAddrWindow
+ 887              	.LVL138:
+ 379:Src/Adafruit_ILI9340.c **** 
+ 380:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_DC.port, LCD_DC.pin, 1);
+ 888              		.loc 1 380 0
+ 889 002e 0F4B     		ldr	r3, .L35+8
+ 890 0030 0122     		movs	r2, #1
+ 891 0032 9988     		ldrh	r1, [r3, #4]
+ 892 0034 1868     		ldr	r0, [r3]
+ 893 0036 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 894              	.LVL139:
+ 381:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0);
+ 895              		.loc 1 381 0
+ 896 003a 0D4B     		ldr	r3, .L35+12
+ 897 003c 1D68     		ldr	r5, [r3]
+ 898 003e 9E88     		ldrh	r6, [r3, #4]
+ 899 0040 0022     		movs	r2, #0
+ 900 0042 3146     		mov	r1, r6
+ 901 0044 2846     		mov	r0, r5
+ 902 0046 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 903              	.LVL140:
+ 382:Src/Adafruit_ILI9340.c **** 
+ 383:Src/Adafruit_ILI9340.c ****   txBuf[0] = color;
+ 904              		.loc 1 383 0
+ 905 004a 0A49     		ldr	r1, .L35+16
+ 906 004c 0C80     		strh	r4, [r1]	@ movhi
+ 384:Src/Adafruit_ILI9340.c **** 
+ 385:Src/Adafruit_ILI9340.c ****   HAL_SPI_Transmit (&hspi1, (uint8_t*) txBuf, 1 /*cnt * 2*/, 1);
+ 907              		.loc 1 385 0
+ 908 004e 0123     		movs	r3, #1
+ 909 0050 1A46     		mov	r2, r3
+ 910 0052 0948     		ldr	r0, .L35+20
+ 911 0054 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 912              	.LVL141:
+ 386:Src/Adafruit_ILI9340.c **** 
+ 387:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 1);
+ 913              		.loc 1 387 0
+ 914 0058 0122     		movs	r2, #1
+ 915 005a 3146     		mov	r1, r6
+ 916 005c 2846     		mov	r0, r5
+ 917 005e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 918              	.LVL142:
+ 388:Src/Adafruit_ILI9340.c **** 
+ 389:Src/Adafruit_ILI9340.c **** }
+ 919              		.loc 1 389 0
+ 920 0062 70BD     		pop	{r4, r5, r6, pc}
+ 921              	.L36:
+ 922              		.align	2
+ 923              	.L35:
+ 924 0064 00000000 		.word	.LANCHOR0
+ 925 0068 00000000 		.word	.LANCHOR1
+ 926 006c 00000000 		.word	LCD_DC
+ 927 0070 00000000 		.word	LCD_NSS
+ 928 0074 00000000 		.word	txBuf
+ 929 0078 00000000 		.word	hspi1
+ 930              		.cfi_endproc
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 24
+
+
+ 931              	.LFE144:
+ 933              		.section	.text.Adafruit_ILI9340_drawNextPixel,"ax",%progbits
+ 934              		.align	1
+ 935              		.global	Adafruit_ILI9340_drawNextPixel
+ 936              		.syntax unified
+ 937              		.thumb
+ 938              		.thumb_func
+ 939              		.fpu fpv5-sp-d16
+ 941              	Adafruit_ILI9340_drawNextPixel:
+ 942              	.LFB145:
+ 390:Src/Adafruit_ILI9340.c **** 
+ 391:Src/Adafruit_ILI9340.c **** void
+ 392:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_drawNextPixel (uint16_t color)
+ 393:Src/Adafruit_ILI9340.c **** {
+ 943              		.loc 1 393 0
+ 944              		.cfi_startproc
+ 945              		@ args = 0, pretend = 0, frame = 0
+ 946              		@ frame_needed = 0, uses_anonymous_args = 0
+ 947              	.LVL143:
+ 948 0000 70B5     		push	{r4, r5, r6, lr}
+ 949              	.LCFI9:
+ 950              		.cfi_def_cfa_offset 16
+ 951              		.cfi_offset 4, -16
+ 952              		.cfi_offset 5, -12
+ 953              		.cfi_offset 6, -8
+ 954              		.cfi_offset 14, -4
+ 955 0002 0646     		mov	r6, r0
+ 394:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_RAMWRCNT);
+ 956              		.loc 1 394 0
+ 957 0004 3C20     		movs	r0, #60
+ 958              	.LVL144:
+ 959 0006 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 960              	.LVL145:
+ 395:Src/Adafruit_ILI9340.c **** 
+ 396:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_DC.port, LCD_DC.pin, 1);
+ 961              		.loc 1 396 0
+ 962 000a 0D4B     		ldr	r3, .L39
+ 963 000c 0122     		movs	r2, #1
+ 964 000e 9988     		ldrh	r1, [r3, #4]
+ 965 0010 1868     		ldr	r0, [r3]
+ 966 0012 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 967              	.LVL146:
+ 397:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0);
+ 968              		.loc 1 397 0
+ 969 0016 0B4B     		ldr	r3, .L39+4
+ 970 0018 1C68     		ldr	r4, [r3]
+ 971 001a 9D88     		ldrh	r5, [r3, #4]
+ 972 001c 0022     		movs	r2, #0
+ 973 001e 2946     		mov	r1, r5
+ 974 0020 2046     		mov	r0, r4
+ 975 0022 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 976              	.LVL147:
+ 398:Src/Adafruit_ILI9340.c **** 
+ 399:Src/Adafruit_ILI9340.c ****   txBuf[0] = color;
+ 977              		.loc 1 399 0
+ 978 0026 0849     		ldr	r1, .L39+8
+ 979 0028 0E80     		strh	r6, [r1]	@ movhi
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 25
+
+
+ 400:Src/Adafruit_ILI9340.c **** 
+ 401:Src/Adafruit_ILI9340.c ****   HAL_SPI_Transmit (&hspi1, (uint8_t*) txBuf, 1 /*cnt * 2*/, 1);
+ 980              		.loc 1 401 0
+ 981 002a 0123     		movs	r3, #1
+ 982 002c 1A46     		mov	r2, r3
+ 983 002e 0748     		ldr	r0, .L39+12
+ 984 0030 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 985              	.LVL148:
+ 402:Src/Adafruit_ILI9340.c **** 
+ 403:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 1);
+ 986              		.loc 1 403 0
+ 987 0034 0122     		movs	r2, #1
+ 988 0036 2946     		mov	r1, r5
+ 989 0038 2046     		mov	r0, r4
+ 990 003a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 991              	.LVL149:
+ 404:Src/Adafruit_ILI9340.c **** }
+ 992              		.loc 1 404 0
+ 993 003e 70BD     		pop	{r4, r5, r6, pc}
+ 994              	.L40:
+ 995              		.align	2
+ 996              	.L39:
+ 997 0040 00000000 		.word	LCD_DC
+ 998 0044 00000000 		.word	LCD_NSS
+ 999 0048 00000000 		.word	txBuf
+ 1000 004c 00000000 		.word	hspi1
+ 1001              		.cfi_endproc
+ 1002              	.LFE145:
+ 1004              		.section	.text.Adafruit_ILI9340_drawFastVLine,"ax",%progbits
+ 1005              		.align	1
+ 1006              		.global	Adafruit_ILI9340_drawFastVLine
+ 1007              		.syntax unified
+ 1008              		.thumb
+ 1009              		.thumb_func
+ 1010              		.fpu fpv5-sp-d16
+ 1012              	Adafruit_ILI9340_drawFastVLine:
+ 1013              	.LFB146:
+ 405:Src/Adafruit_ILI9340.c **** 
+ 406:Src/Adafruit_ILI9340.c **** void
+ 407:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_drawFastVLine (int16_t x, int16_t y, int16_t h, uint16_t color)
+ 408:Src/Adafruit_ILI9340.c **** {
+ 1014              		.loc 1 408 0
+ 1015              		.cfi_startproc
+ 1016              		@ args = 0, pretend = 0, frame = 0
+ 1017              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1018              	.LVL150:
+ 1019 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1020              	.LCFI10:
+ 1021              		.cfi_def_cfa_offset 24
+ 1022              		.cfi_offset 4, -24
+ 1023              		.cfi_offset 5, -20
+ 1024              		.cfi_offset 6, -16
+ 1025              		.cfi_offset 7, -12
+ 1026              		.cfi_offset 8, -8
+ 1027              		.cfi_offset 14, -4
+ 1028 0004 1E46     		mov	r6, r3
+ 409:Src/Adafruit_ILI9340.c ****   // Rudimentary clipping
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 26
+
+
+ 410:Src/Adafruit_ILI9340.c ****   if ((x >= _width) || (y >= _height))
+ 1029              		.loc 1 410 0
+ 1030 0006 1D4B     		ldr	r3, .L47
+ 1031              	.LVL151:
+ 1032 0008 1B68     		ldr	r3, [r3]
+ 1033 000a 9842     		cmp	r0, r3
+ 1034 000c 34DA     		bge	.L41
+ 1035 000e 1546     		mov	r5, r2
+ 1036              		.loc 1 410 0 is_stmt 0 discriminator 1
+ 1037 0010 1B4B     		ldr	r3, .L47+4
+ 1038 0012 1B68     		ldr	r3, [r3]
+ 1039 0014 9942     		cmp	r1, r3
+ 1040 0016 2FDA     		bge	.L41
+ 411:Src/Adafruit_ILI9340.c ****     return;
+ 412:Src/Adafruit_ILI9340.c **** 
+ 413:Src/Adafruit_ILI9340.c ****   if ((y + h - 1) >= _height)
+ 1041              		.loc 1 413 0 is_stmt 1
+ 1042 0018 0A44     		add	r2, r2, r1
+ 1043              	.LVL152:
+ 1044 001a 013A     		subs	r2, r2, #1
+ 1045 001c 9342     		cmp	r3, r2
+ 1046 001e 01DC     		bgt	.L43
+ 414:Src/Adafruit_ILI9340.c ****     h = _height - y;
+ 1047              		.loc 1 414 0
+ 1048 0020 5D1A     		subs	r5, r3, r1
+ 1049 0022 2DB2     		sxth	r5, r5
+ 1050              	.LVL153:
+ 1051              	.L43:
+ 415:Src/Adafruit_ILI9340.c **** 
+ 416:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_setAddrWindow (x, y, x, y + h - 1);
+ 1052              		.loc 1 416 0
+ 1053 0024 80B2     		uxth	r0, r0
+ 1054 0026 89B2     		uxth	r1, r1
+ 1055 0028 4B19     		adds	r3, r1, r5
+ 1056 002a 9BB2     		uxth	r3, r3
+ 1057 002c 013B     		subs	r3, r3, #1
+ 1058 002e 9BB2     		uxth	r3, r3
+ 1059 0030 0246     		mov	r2, r0
+ 1060 0032 FFF7FEFF 		bl	Adafruit_ILI9340_setAddrWindow
+ 1061              	.LVL154:
+ 417:Src/Adafruit_ILI9340.c **** 
+ 418:Src/Adafruit_ILI9340.c ****   //uint8_t hi = color >> 8, lo = color;
+ 419:Src/Adafruit_ILI9340.c **** 
+ 420:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_DC.port, LCD_DC.pin, 1);
+ 1062              		.loc 1 420 0
+ 1063 0036 134B     		ldr	r3, .L47+8
+ 1064 0038 0122     		movs	r2, #1
+ 1065 003a 9988     		ldrh	r1, [r3, #4]
+ 1066 003c 1868     		ldr	r0, [r3]
+ 1067 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1068              	.LVL155:
+ 421:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0);
+ 1069              		.loc 1 421 0
+ 1070 0042 114B     		ldr	r3, .L47+12
+ 1071 0044 1F68     		ldr	r7, [r3]
+ 1072 0046 B3F80480 		ldrh	r8, [r3, #4]
+ 1073 004a 0022     		movs	r2, #0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 27
+
+
+ 1074 004c 4146     		mov	r1, r8
+ 1075 004e 3846     		mov	r0, r7
+ 1076 0050 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1077              	.LVL156:
+ 422:Src/Adafruit_ILI9340.c **** 
+ 423:Src/Adafruit_ILI9340.c ****   while (h--)
+ 1078              		.loc 1 423 0
+ 1079 0054 07E0     		b	.L44
+ 1080              	.LVL157:
+ 1081              	.L45:
+ 424:Src/Adafruit_ILI9340.c ****     {
+ 425:Src/Adafruit_ILI9340.c ****       txBuf[0] = color;
+ 1082              		.loc 1 425 0
+ 1083 0056 0D49     		ldr	r1, .L47+16
+ 1084 0058 0E80     		strh	r6, [r1]	@ movhi
+ 426:Src/Adafruit_ILI9340.c **** 
+ 427:Src/Adafruit_ILI9340.c ****       HAL_SPI_Transmit (&hspi1, (uint8_t*) txBuf, 1 /*cnt * 2*/, 1);
+ 1085              		.loc 1 427 0
+ 1086 005a 0123     		movs	r3, #1
+ 1087 005c 1A46     		mov	r2, r3
+ 1088 005e 0C48     		ldr	r0, .L47+20
+ 1089 0060 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 1090              	.LVL158:
+ 423:Src/Adafruit_ILI9340.c ****     {
+ 1091              		.loc 1 423 0
+ 1092 0064 2546     		mov	r5, r4
+ 1093              	.LVL159:
+ 1094              	.L44:
+ 1095 0066 6B1E     		subs	r3, r5, #1
+ 1096 0068 1CB2     		sxth	r4, r3
+ 1097              	.LVL160:
+ 1098 006a 002D     		cmp	r5, #0
+ 1099 006c F3D1     		bne	.L45
+ 428:Src/Adafruit_ILI9340.c ****     }
+ 429:Src/Adafruit_ILI9340.c **** 
+ 430:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 1);
+ 1100              		.loc 1 430 0
+ 1101 006e 0122     		movs	r2, #1
+ 1102 0070 4146     		mov	r1, r8
+ 1103 0072 3846     		mov	r0, r7
+ 1104 0074 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1105              	.LVL161:
+ 1106              	.L41:
+ 431:Src/Adafruit_ILI9340.c **** }
+ 1107              		.loc 1 431 0
+ 1108 0078 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1109              	.L48:
+ 1110              		.align	2
+ 1111              	.L47:
+ 1112 007c 00000000 		.word	.LANCHOR0
+ 1113 0080 00000000 		.word	.LANCHOR1
+ 1114 0084 00000000 		.word	LCD_DC
+ 1115 0088 00000000 		.word	LCD_NSS
+ 1116 008c 00000000 		.word	txBuf
+ 1117 0090 00000000 		.word	hspi1
+ 1118              		.cfi_endproc
+ 1119              	.LFE146:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 28
+
+
+ 1121              		.section	.text.Adafruit_ILI9340_drawFastHLine,"ax",%progbits
+ 1122              		.align	1
+ 1123              		.global	Adafruit_ILI9340_drawFastHLine
+ 1124              		.syntax unified
+ 1125              		.thumb
+ 1126              		.thumb_func
+ 1127              		.fpu fpv5-sp-d16
+ 1129              	Adafruit_ILI9340_drawFastHLine:
+ 1130              	.LFB147:
+ 432:Src/Adafruit_ILI9340.c **** 
+ 433:Src/Adafruit_ILI9340.c **** void
+ 434:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_drawFastHLine (int16_t x, int16_t y, int16_t w, uint16_t color)
+ 435:Src/Adafruit_ILI9340.c **** {
+ 1131              		.loc 1 435 0
+ 1132              		.cfi_startproc
+ 1133              		@ args = 0, pretend = 0, frame = 0
+ 1134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1135              	.LVL162:
+ 1136 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1137              	.LCFI11:
+ 1138              		.cfi_def_cfa_offset 24
+ 1139              		.cfi_offset 4, -24
+ 1140              		.cfi_offset 5, -20
+ 1141              		.cfi_offset 6, -16
+ 1142              		.cfi_offset 7, -12
+ 1143              		.cfi_offset 8, -8
+ 1144              		.cfi_offset 14, -4
+ 1145 0004 1546     		mov	r5, r2
+ 1146 0006 1E46     		mov	r6, r3
+ 436:Src/Adafruit_ILI9340.c ****   // Rudimentary clipping
+ 437:Src/Adafruit_ILI9340.c ****   if ((x >= _width) || (y >= _height))
+ 1147              		.loc 1 437 0
+ 1148 0008 1C4B     		ldr	r3, .L55
+ 1149              	.LVL163:
+ 1150 000a 1A68     		ldr	r2, [r3]
+ 1151              	.LVL164:
+ 1152 000c 9042     		cmp	r0, r2
+ 1153 000e 33DA     		bge	.L49
+ 1154              		.loc 1 437 0 is_stmt 0 discriminator 1
+ 1155 0010 1B4B     		ldr	r3, .L55+4
+ 1156 0012 1B68     		ldr	r3, [r3]
+ 1157 0014 9942     		cmp	r1, r3
+ 1158 0016 2FDA     		bge	.L49
+ 438:Src/Adafruit_ILI9340.c ****     return;
+ 439:Src/Adafruit_ILI9340.c ****   if ((x + w - 1) >= _width)
+ 1159              		.loc 1 439 0 is_stmt 1
+ 1160 0018 2B18     		adds	r3, r5, r0
+ 1161 001a 013B     		subs	r3, r3, #1
+ 1162 001c 9A42     		cmp	r2, r3
+ 1163 001e 01DC     		bgt	.L51
+ 440:Src/Adafruit_ILI9340.c ****     w = _width - x;
+ 1164              		.loc 1 440 0
+ 1165 0020 151A     		subs	r5, r2, r0
+ 1166 0022 2DB2     		sxth	r5, r5
+ 1167              	.LVL165:
+ 1168              	.L51:
+ 441:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_setAddrWindow (x, y, x + w - 1, y);
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 29
+
+
+ 1169              		.loc 1 441 0
+ 1170 0024 80B2     		uxth	r0, r0
+ 1171 0026 89B2     		uxth	r1, r1
+ 1172 0028 4219     		adds	r2, r0, r5
+ 1173 002a 92B2     		uxth	r2, r2
+ 1174 002c 013A     		subs	r2, r2, #1
+ 1175 002e 0B46     		mov	r3, r1
+ 1176 0030 92B2     		uxth	r2, r2
+ 1177 0032 FFF7FEFF 		bl	Adafruit_ILI9340_setAddrWindow
+ 1178              	.LVL166:
+ 442:Src/Adafruit_ILI9340.c **** 
+ 443:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_DC.port, LCD_DC.pin, 1);
+ 1179              		.loc 1 443 0
+ 1180 0036 134B     		ldr	r3, .L55+8
+ 1181 0038 0122     		movs	r2, #1
+ 1182 003a 9988     		ldrh	r1, [r3, #4]
+ 1183 003c 1868     		ldr	r0, [r3]
+ 1184 003e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1185              	.LVL167:
+ 444:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0);
+ 1186              		.loc 1 444 0
+ 1187 0042 114B     		ldr	r3, .L55+12
+ 1188 0044 1F68     		ldr	r7, [r3]
+ 1189 0046 B3F80480 		ldrh	r8, [r3, #4]
+ 1190 004a 0022     		movs	r2, #0
+ 1191 004c 4146     		mov	r1, r8
+ 1192 004e 3846     		mov	r0, r7
+ 1193 0050 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1194              	.LVL168:
+ 445:Src/Adafruit_ILI9340.c **** 
+ 446:Src/Adafruit_ILI9340.c ****   while (w--)
+ 1195              		.loc 1 446 0
+ 1196 0054 07E0     		b	.L52
+ 1197              	.LVL169:
+ 1198              	.L53:
+ 447:Src/Adafruit_ILI9340.c ****     {
+ 448:Src/Adafruit_ILI9340.c ****       txBuf[0] = color;
+ 1199              		.loc 1 448 0
+ 1200 0056 0D49     		ldr	r1, .L55+16
+ 1201 0058 0E80     		strh	r6, [r1]	@ movhi
+ 449:Src/Adafruit_ILI9340.c ****       HAL_SPI_Transmit (&hspi1, (uint8_t*) txBuf, 1 /*cnt * 2*/, 1);
+ 1202              		.loc 1 449 0
+ 1203 005a 0123     		movs	r3, #1
+ 1204 005c 1A46     		mov	r2, r3
+ 1205 005e 0C48     		ldr	r0, .L55+20
+ 1206 0060 FFF7FEFF 		bl	HAL_SPI_Transmit
+ 1207              	.LVL170:
+ 446:Src/Adafruit_ILI9340.c ****     {
+ 1208              		.loc 1 446 0
+ 1209 0064 2546     		mov	r5, r4
+ 1210              	.LVL171:
+ 1211              	.L52:
+ 1212 0066 6B1E     		subs	r3, r5, #1
+ 1213 0068 1CB2     		sxth	r4, r3
+ 1214              	.LVL172:
+ 1215 006a 002D     		cmp	r5, #0
+ 1216 006c F3D1     		bne	.L53
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 30
+
+
+ 450:Src/Adafruit_ILI9340.c ****     }
+ 451:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 1);
+ 1217              		.loc 1 451 0
+ 1218 006e 0122     		movs	r2, #1
+ 1219 0070 4146     		mov	r1, r8
+ 1220 0072 3846     		mov	r0, r7
+ 1221 0074 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1222              	.LVL173:
+ 1223              	.L49:
+ 452:Src/Adafruit_ILI9340.c **** }
+ 1224              		.loc 1 452 0
+ 1225 0078 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1226              	.L56:
+ 1227              		.align	2
+ 1228              	.L55:
+ 1229 007c 00000000 		.word	.LANCHOR0
+ 1230 0080 00000000 		.word	.LANCHOR1
+ 1231 0084 00000000 		.word	LCD_DC
+ 1232 0088 00000000 		.word	LCD_NSS
+ 1233 008c 00000000 		.word	txBuf
+ 1234 0090 00000000 		.word	hspi1
+ 1235              		.cfi_endproc
+ 1236              	.LFE147:
+ 1238              		.section	.text.Adafruit_ILI9340_fillRect,"ax",%progbits
+ 1239              		.align	1
+ 1240              		.global	Adafruit_ILI9340_fillRect
+ 1241              		.syntax unified
+ 1242              		.thumb
+ 1243              		.thumb_func
+ 1244              		.fpu fpv5-sp-d16
+ 1246              	Adafruit_ILI9340_fillRect:
+ 1247              	.LFB149:
+ 453:Src/Adafruit_ILI9340.c **** 
+ 454:Src/Adafruit_ILI9340.c **** void
+ 455:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_fillScreen (uint16_t color)
+ 456:Src/Adafruit_ILI9340.c **** {
+ 457:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_fillRect (0, 0, _width, _height, color);
+ 458:Src/Adafruit_ILI9340.c **** }
+ 459:Src/Adafruit_ILI9340.c **** 
+ 460:Src/Adafruit_ILI9340.c **** // fill a rectangle
+ 461:Src/Adafruit_ILI9340.c **** void
+ 462:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_fillRect (int16_t x, int16_t y, int16_t w, int16_t h,
+ 463:Src/Adafruit_ILI9340.c ****                            uint16_t color)
+ 464:Src/Adafruit_ILI9340.c **** {
+ 1248              		.loc 1 464 0
+ 1249              		.cfi_startproc
+ 1250              		@ args = 4, pretend = 0, frame = 200
+ 1251              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1252              	.LVL174:
+ 1253 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 1254              	.LCFI12:
+ 1255              		.cfi_def_cfa_offset 24
+ 1256              		.cfi_offset 4, -24
+ 1257              		.cfi_offset 5, -20
+ 1258              		.cfi_offset 6, -16
+ 1259              		.cfi_offset 7, -12
+ 1260              		.cfi_offset 8, -8
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 31
+
+
+ 1261              		.cfi_offset 14, -4
+ 1262 0004 B2B0     		sub	sp, sp, #200
+ 1263              	.LCFI13:
+ 1264              		.cfi_def_cfa_offset 224
+ 1265 0006 9846     		mov	r8, r3
+ 1266 0008 BDF8E040 		ldrh	r4, [sp, #224]
+ 465:Src/Adafruit_ILI9340.c **** 
+ 466:Src/Adafruit_ILI9340.c ****   // rudimentary clipping (drawChar w/big text requires this)
+ 467:Src/Adafruit_ILI9340.c ****   if ((x >= _width) || (y >= _height))
+ 1267              		.loc 1 467 0
+ 1268 000c 3B4B     		ldr	r3, .L70
+ 1269              	.LVL175:
+ 1270 000e 1B68     		ldr	r3, [r3]
+ 1271 0010 9842     		cmp	r0, r3
+ 1272 0012 70DA     		bge	.L57
+ 1273 0014 1746     		mov	r7, r2
+ 1274              		.loc 1 467 0 is_stmt 0 discriminator 1
+ 1275 0016 3A4A     		ldr	r2, .L70+4
+ 1276              	.LVL176:
+ 1277 0018 1268     		ldr	r2, [r2]
+ 1278 001a 9142     		cmp	r1, r2
+ 1279 001c 6BDA     		bge	.L57
+ 468:Src/Adafruit_ILI9340.c ****     return;
+ 469:Src/Adafruit_ILI9340.c ****   if ((x + w - 1) >= _width)
+ 1280              		.loc 1 469 0 is_stmt 1
+ 1281 001e 3D18     		adds	r5, r7, r0
+ 1282 0020 013D     		subs	r5, r5, #1
+ 1283 0022 AB42     		cmp	r3, r5
+ 1284 0024 01DC     		bgt	.L59
+ 470:Src/Adafruit_ILI9340.c ****     w = _width - x;
+ 1285              		.loc 1 470 0
+ 1286 0026 1F1A     		subs	r7, r3, r0
+ 1287 0028 3FB2     		sxth	r7, r7
+ 1288              	.LVL177:
+ 1289              	.L59:
+ 471:Src/Adafruit_ILI9340.c ****   if ((y + h - 1) >= _height)
+ 1290              		.loc 1 471 0
+ 1291 002a 08EB0103 		add	r3, r8, r1
+ 1292 002e 013B     		subs	r3, r3, #1
+ 1293 0030 9A42     		cmp	r2, r3
+ 1294 0032 02DC     		bgt	.L60
+ 472:Src/Adafruit_ILI9340.c ****     h = _height - y;
+ 1295              		.loc 1 472 0
+ 1296 0034 521A     		subs	r2, r2, r1
+ 1297 0036 0FFA82F8 		sxth	r8, r2
+ 1298              	.LVL178:
+ 1299              	.L60:
+ 473:Src/Adafruit_ILI9340.c **** 
+ 474:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_setAddrWindow (x, y, x + w - 1, y + h - 1);
+ 1300              		.loc 1 474 0
+ 1301 003a 80B2     		uxth	r0, r0
+ 1302 003c 89B2     		uxth	r1, r1
+ 1303 003e C219     		adds	r2, r0, r7
+ 1304 0040 92B2     		uxth	r2, r2
+ 1305 0042 01EB0803 		add	r3, r1, r8
+ 1306 0046 9BB2     		uxth	r3, r3
+ 1307 0048 013B     		subs	r3, r3, #1
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 32
+
+
+ 1308 004a 013A     		subs	r2, r2, #1
+ 1309 004c 9BB2     		uxth	r3, r3
+ 1310 004e 92B2     		uxth	r2, r2
+ 1311 0050 FFF7FEFF 		bl	Adafruit_ILI9340_setAddrWindow
+ 1312              	.LVL179:
+ 475:Src/Adafruit_ILI9340.c **** 
+ 476:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_DC.port, LCD_DC.pin, 1);
+ 1313              		.loc 1 476 0
+ 1314 0054 2B4B     		ldr	r3, .L70+8
+ 1315 0056 0122     		movs	r2, #1
+ 1316 0058 9988     		ldrh	r1, [r3, #4]
+ 1317 005a 1868     		ldr	r0, [r3]
+ 1318 005c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1319              	.LVL180:
+ 477:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0);
+ 1320              		.loc 1 477 0
+ 1321 0060 294B     		ldr	r3, .L70+12
+ 1322 0062 1D68     		ldr	r5, [r3]
+ 1323 0064 9E88     		ldrh	r6, [r3, #4]
+ 1324 0066 0022     		movs	r2, #0
+ 1325 0068 3146     		mov	r1, r6
+ 1326 006a 2846     		mov	r0, r5
+ 1327 006c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1328              	.LVL181:
+ 478:Src/Adafruit_ILI9340.c **** 
+ 479:Src/Adafruit_ILI9340.c ****   uint32_t totalPixels = h * w;
+ 1329              		.loc 1 479 0
+ 1330 0070 07FB08F7 		mul	r7, r7, r8
+ 1331              	.LVL182:
+ 1332              	.LBB3:
+ 480:Src/Adafruit_ILI9340.c ****   uint8_t txBuf[200]; //bigger is probably a little faster, but needs to be small enough to fit in 
+ 481:Src/Adafruit_ILI9340.c **** 
+ 482:Src/Adafruit_ILI9340.c ****   for (uint32_t i = sizeof(txBuf); i > 0; i = i - 2)
+ 1333              		.loc 1 482 0
+ 1334 0074 C823     		movs	r3, #200
+ 1335 0076 0BE0     		b	.L61
+ 1336              	.LVL183:
+ 1337              	.L62:
+ 483:Src/Adafruit_ILI9340.c ****     {
+ 484:Src/Adafruit_ILI9340.c ****       txBuf[i - 2] = (color & 0xFF00) >> 8;
+ 1338              		.loc 1 484 0 discriminator 3
+ 1339 0078 220A     		lsrs	r2, r4, #8
+ 1340 007a 991E     		subs	r1, r3, #2
+ 1341 007c 32A8     		add	r0, sp, #200
+ 1342 007e 0844     		add	r0, r0, r1
+ 1343 0080 00F8C82C 		strb	r2, [r0, #-200]
+ 485:Src/Adafruit_ILI9340.c ****       txBuf[i - 2 + 1] = color & 0xFF;
+ 1344              		.loc 1 485 0 discriminator 3
+ 1345 0084 013B     		subs	r3, r3, #1
+ 1346              	.LVL184:
+ 1347 0086 32AA     		add	r2, sp, #200
+ 1348 0088 1344     		add	r3, r3, r2
+ 1349              	.LVL185:
+ 1350 008a 03F8C84C 		strb	r4, [r3, #-200]
+ 1351              	.LVL186:
+ 482:Src/Adafruit_ILI9340.c ****     {
+ 1352              		.loc 1 482 0 discriminator 3
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 33
+
+
+ 1353 008e 0B46     		mov	r3, r1
+ 1354              	.LVL187:
+ 1355              	.L61:
+ 482:Src/Adafruit_ILI9340.c ****     {
+ 1356              		.loc 1 482 0 is_stmt 0 discriminator 1
+ 1357 0090 002B     		cmp	r3, #0
+ 1358 0092 F1D1     		bne	.L62
+ 1359              	.LBE3:
+ 486:Src/Adafruit_ILI9340.c ****     }
+ 487:Src/Adafruit_ILI9340.c **** 
+ 488:Src/Adafruit_ILI9340.c ****   uint16_t fullPasses = (totalPixels * 2) / sizeof(txBuf);
+ 1360              		.loc 1 488 0 is_stmt 1
+ 1361 0094 7B00     		lsls	r3, r7, #1
+ 1362              	.LVL188:
+ 1363 0096 1D4A     		ldr	r2, .L70+16
+ 1364 0098 A2FB0312 		umull	r1, r2, r2, r3
+ 1365 009c 9209     		lsrs	r2, r2, #6
+ 1366 009e 94B2     		uxth	r4, r2
+ 1367              	.LVL189:
+ 489:Src/Adafruit_ILI9340.c ****   uint16_t partialPass = (totalPixels * 2) % sizeof(txBuf);
+ 1368              		.loc 1 489 0
+ 1369 00a0 C821     		movs	r1, #200
+ 1370 00a2 01FB1231 		mls	r1, r1, r2, r3
+ 1371 00a6 8FB2     		uxth	r7, r1
+ 1372              	.LVL190:
+ 490:Src/Adafruit_ILI9340.c ****   while (fullPasses > 0)
+ 1373              		.loc 1 490 0
+ 1374 00a8 0BE0     		b	.L63
+ 1375              	.L64:
+ 491:Src/Adafruit_ILI9340.c ****     {
+ 492:Src/Adafruit_ILI9340.c ****       while (HAL_SPI_GetState (&hspi1) != HAL_SPI_STATE_READY)
+ 1376              		.loc 1 492 0 discriminator 1
+ 1377 00aa 1948     		ldr	r0, .L70+20
+ 1378 00ac FFF7FEFF 		bl	HAL_SPI_GetState
+ 1379              	.LVL191:
+ 1380 00b0 0128     		cmp	r0, #1
+ 1381 00b2 FAD1     		bne	.L64
+ 493:Src/Adafruit_ILI9340.c ****         ;
+ 494:Src/Adafruit_ILI9340.c ****       HAL_SPI_Transmit_DMA (&hspi1, (uint8_t*) txBuf, sizeof(txBuf)); //txBuf2 or &txBuf2 doesn't s
+ 1382              		.loc 1 494 0
+ 1383 00b4 C822     		movs	r2, #200
+ 1384 00b6 6946     		mov	r1, sp
+ 1385 00b8 1548     		ldr	r0, .L70+20
+ 1386 00ba FFF7FEFF 		bl	HAL_SPI_Transmit_DMA
+ 1387              	.LVL192:
+ 495:Src/Adafruit_ILI9340.c ****       fullPasses--;
+ 1388              		.loc 1 495 0
+ 1389 00be 013C     		subs	r4, r4, #1
+ 1390              	.LVL193:
+ 1391 00c0 A4B2     		uxth	r4, r4
+ 1392              	.LVL194:
+ 1393              	.L63:
+ 490:Src/Adafruit_ILI9340.c ****     {
+ 1394              		.loc 1 490 0
+ 1395 00c2 002C     		cmp	r4, #0
+ 1396 00c4 F1D1     		bne	.L64
+ 496:Src/Adafruit_ILI9340.c ****     }
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 34
+
+
+ 497:Src/Adafruit_ILI9340.c **** 
+ 498:Src/Adafruit_ILI9340.c ****   if (partialPass > 0)
+ 1397              		.loc 1 498 0
+ 1398 00c6 77B1     		cbz	r7, .L65
+ 1399              	.L66:
+ 499:Src/Adafruit_ILI9340.c ****     {
+ 500:Src/Adafruit_ILI9340.c ****       while (HAL_SPI_GetState (&hspi1) != HAL_SPI_STATE_READY)
+ 1400              		.loc 1 500 0 discriminator 1
+ 1401 00c8 1148     		ldr	r0, .L70+20
+ 1402 00ca FFF7FEFF 		bl	HAL_SPI_GetState
+ 1403              	.LVL195:
+ 1404 00ce 0128     		cmp	r0, #1
+ 1405 00d0 FAD1     		bne	.L66
+ 501:Src/Adafruit_ILI9340.c ****         ;
+ 502:Src/Adafruit_ILI9340.c ****       HAL_SPI_Transmit_DMA (&hspi1, txBuf, partialPass); //txBuf2 or &txBuf2 doesn't seem to make a
+ 1406              		.loc 1 502 0
+ 1407 00d2 3A46     		mov	r2, r7
+ 1408 00d4 6946     		mov	r1, sp
+ 1409 00d6 0E48     		ldr	r0, .L70+20
+ 1410 00d8 FFF7FEFF 		bl	HAL_SPI_Transmit_DMA
+ 1411              	.LVL196:
+ 1412              	.L67:
+ 503:Src/Adafruit_ILI9340.c ****       while (HAL_SPI_GetState (&hspi1) != HAL_SPI_STATE_READY)
+ 1413              		.loc 1 503 0 discriminator 1
+ 1414 00dc 0C48     		ldr	r0, .L70+20
+ 1415 00de FFF7FEFF 		bl	HAL_SPI_GetState
+ 1416              	.LVL197:
+ 1417 00e2 0128     		cmp	r0, #1
+ 1418 00e4 FAD1     		bne	.L67
+ 1419              	.L65:
+ 504:Src/Adafruit_ILI9340.c ****         ;
+ 505:Src/Adafruit_ILI9340.c ****     }
+ 506:Src/Adafruit_ILI9340.c **** 
+ 507:Src/Adafruit_ILI9340.c ****   HAL_Delay (1); //Sometimes it's so fast that one wright overlaps the next. Makes weird effect.
+ 1420              		.loc 1 507 0
+ 1421 00e6 0120     		movs	r0, #1
+ 1422 00e8 FFF7FEFF 		bl	HAL_Delay
+ 1423              	.LVL198:
+ 508:Src/Adafruit_ILI9340.c ****   //osDelay(1);
+ 509:Src/Adafruit_ILI9340.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 1);
+ 1424              		.loc 1 509 0
+ 1425 00ec 0122     		movs	r2, #1
+ 1426 00ee 3146     		mov	r1, r6
+ 1427 00f0 2846     		mov	r0, r5
+ 1428 00f2 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1429              	.LVL199:
+ 1430              	.L57:
+ 510:Src/Adafruit_ILI9340.c **** }
+ 1431              		.loc 1 510 0
+ 1432 00f6 32B0     		add	sp, sp, #200
+ 1433              	.LCFI14:
+ 1434              		.cfi_def_cfa_offset 24
+ 1435              		@ sp needed
+ 1436 00f8 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 1437              	.LVL200:
+ 1438              	.L71:
+ 1439              		.align	2
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 35
+
+
+ 1440              	.L70:
+ 1441 00fc 00000000 		.word	.LANCHOR0
+ 1442 0100 00000000 		.word	.LANCHOR1
+ 1443 0104 00000000 		.word	LCD_DC
+ 1444 0108 00000000 		.word	LCD_NSS
+ 1445 010c 1F85EB51 		.word	1374389535
+ 1446 0110 00000000 		.word	hspi1
+ 1447              		.cfi_endproc
+ 1448              	.LFE149:
+ 1450              		.section	.text.Adafruit_ILI9340_fillScreen,"ax",%progbits
+ 1451              		.align	1
+ 1452              		.global	Adafruit_ILI9340_fillScreen
+ 1453              		.syntax unified
+ 1454              		.thumb
+ 1455              		.thumb_func
+ 1456              		.fpu fpv5-sp-d16
+ 1458              	Adafruit_ILI9340_fillScreen:
+ 1459              	.LFB148:
+ 456:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_fillRect (0, 0, _width, _height, color);
+ 1460              		.loc 1 456 0
+ 1461              		.cfi_startproc
+ 1462              		@ args = 0, pretend = 0, frame = 0
+ 1463              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1464              	.LVL201:
+ 1465 0000 00B5     		push	{lr}
+ 1466              	.LCFI15:
+ 1467              		.cfi_def_cfa_offset 4
+ 1468              		.cfi_offset 14, -4
+ 1469 0002 83B0     		sub	sp, sp, #12
+ 1470              	.LCFI16:
+ 1471              		.cfi_def_cfa_offset 16
+ 457:Src/Adafruit_ILI9340.c **** }
+ 1472              		.loc 1 457 0
+ 1473 0004 064B     		ldr	r3, .L74
+ 1474 0006 B3F90030 		ldrsh	r3, [r3]
+ 1475 000a 064A     		ldr	r2, .L74+4
+ 1476 000c B2F90020 		ldrsh	r2, [r2]
+ 1477 0010 0090     		str	r0, [sp]
+ 1478 0012 0021     		movs	r1, #0
+ 1479 0014 0846     		mov	r0, r1
+ 1480              	.LVL202:
+ 1481 0016 FFF7FEFF 		bl	Adafruit_ILI9340_fillRect
+ 1482              	.LVL203:
+ 458:Src/Adafruit_ILI9340.c **** 
+ 1483              		.loc 1 458 0
+ 1484 001a 03B0     		add	sp, sp, #12
+ 1485              	.LCFI17:
+ 1486              		.cfi_def_cfa_offset 4
+ 1487              		@ sp needed
+ 1488 001c 5DF804FB 		ldr	pc, [sp], #4
+ 1489              	.L75:
+ 1490              		.align	2
+ 1491              	.L74:
+ 1492 0020 00000000 		.word	.LANCHOR1
+ 1493 0024 00000000 		.word	.LANCHOR0
+ 1494              		.cfi_endproc
+ 1495              	.LFE148:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 36
+
+
+ 1497              		.section	.text.Adafruit_ILI9340_Color565,"ax",%progbits
+ 1498              		.align	1
+ 1499              		.global	Adafruit_ILI9340_Color565
+ 1500              		.syntax unified
+ 1501              		.thumb
+ 1502              		.thumb_func
+ 1503              		.fpu fpv5-sp-d16
+ 1505              	Adafruit_ILI9340_Color565:
+ 1506              	.LFB150:
+ 511:Src/Adafruit_ILI9340.c **** 
+ 512:Src/Adafruit_ILI9340.c **** // Pass 8-bit (each) R,G,B, get back 16-bit packed color
+ 513:Src/Adafruit_ILI9340.c **** uint16_t
+ 514:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_Color565 (uint8_t r, uint8_t g, uint8_t b)
+ 515:Src/Adafruit_ILI9340.c **** {
+ 1507              		.loc 1 515 0
+ 1508              		.cfi_startproc
+ 1509              		@ args = 0, pretend = 0, frame = 0
+ 1510              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1511              		@ link register save eliminated.
+ 1512              	.LVL204:
+ 516:Src/Adafruit_ILI9340.c ****   return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+ 1513              		.loc 1 516 0
+ 1514 0000 054B     		ldr	r3, .L77
+ 1515 0002 03EA0020 		and	r0, r3, r0, lsl #8
+ 1516              	.LVL205:
+ 1517 0006 00B2     		sxth	r0, r0
+ 1518 0008 C900     		lsls	r1, r1, #3
+ 1519              	.LVL206:
+ 1520 000a 01F4FC61 		and	r1, r1, #2016
+ 1521 000e 0843     		orrs	r0, r0, r1
+ 1522 0010 40EAD200 		orr	r0, r0, r2, lsr #3
+ 517:Src/Adafruit_ILI9340.c **** }
+ 1523              		.loc 1 517 0
+ 1524 0014 80B2     		uxth	r0, r0
+ 1525 0016 7047     		bx	lr
+ 1526              	.L78:
+ 1527              		.align	2
+ 1528              	.L77:
+ 1529 0018 00F8FFFF 		.word	-2048
+ 1530              		.cfi_endproc
+ 1531              	.LFE150:
+ 1533              		.section	.text.Adafruit_ILI9340_setVerticalScrollStartAddress,"ax",%progbits
+ 1534              		.align	1
+ 1535              		.global	Adafruit_ILI9340_setVerticalScrollStartAddress
+ 1536              		.syntax unified
+ 1537              		.thumb
+ 1538              		.thumb_func
+ 1539              		.fpu fpv5-sp-d16
+ 1541              	Adafruit_ILI9340_setVerticalScrollStartAddress:
+ 1542              	.LFB151:
+ 518:Src/Adafruit_ILI9340.c **** 
+ 519:Src/Adafruit_ILI9340.c **** void
+ 520:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_setVerticalScrollStartAddress (uint16_t address)
+ 521:Src/Adafruit_ILI9340.c **** {
+ 1543              		.loc 1 521 0
+ 1544              		.cfi_startproc
+ 1545              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 37
+
+
+ 1546              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1547              	.LVL207:
+ 1548 0000 10B5     		push	{r4, lr}
+ 1549              	.LCFI18:
+ 1550              		.cfi_def_cfa_offset 8
+ 1551              		.cfi_offset 4, -8
+ 1552              		.cfi_offset 14, -4
+ 1553 0002 0446     		mov	r4, r0
+ 522:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_VSCRSADD);
+ 1554              		.loc 1 522 0
+ 1555 0004 3720     		movs	r0, #55
+ 1556              	.LVL208:
+ 1557 0006 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 1558              	.LVL209:
+ 523:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata ((address >> 8) & 0xFF);
+ 1559              		.loc 1 523 0
+ 1560 000a 200A     		lsrs	r0, r4, #8
+ 1561 000c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1562              	.LVL210:
+ 524:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (address & 0xFF);
+ 1563              		.loc 1 524 0
+ 1564 0010 E0B2     		uxtb	r0, r4
+ 1565 0012 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1566              	.LVL211:
+ 525:Src/Adafruit_ILI9340.c **** }
+ 1567              		.loc 1 525 0
+ 1568 0016 10BD     		pop	{r4, pc}
+ 1569              		.cfi_endproc
+ 1570              	.LFE151:
+ 1572              		.section	.text.Adafruit_ILI9340_setVerticalScrollDefinition,"ax",%progbits
+ 1573              		.align	1
+ 1574              		.global	Adafruit_ILI9340_setVerticalScrollDefinition
+ 1575              		.syntax unified
+ 1576              		.thumb
+ 1577              		.thumb_func
+ 1578              		.fpu fpv5-sp-d16
+ 1580              	Adafruit_ILI9340_setVerticalScrollDefinition:
+ 1581              	.LFB152:
+ 526:Src/Adafruit_ILI9340.c **** 
+ 527:Src/Adafruit_ILI9340.c **** void
+ 528:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_setVerticalScrollDefinition (uint16_t topFixedArea,
+ 529:Src/Adafruit_ILI9340.c ****                                               uint16_t verticalScrollArea,
+ 530:Src/Adafruit_ILI9340.c ****                                               uint16_t bottomFixedArea)
+ 531:Src/Adafruit_ILI9340.c **** {
+ 1582              		.loc 1 531 0
+ 1583              		.cfi_startproc
+ 1584              		@ args = 0, pretend = 0, frame = 0
+ 1585              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1586              	.LVL212:
+ 532:Src/Adafruit_ILI9340.c ****   if (topFixedArea + verticalScrollArea + bottomFixedArea != 320)
+ 1587              		.loc 1 532 0
+ 1588 0000 4318     		adds	r3, r0, r1
+ 1589 0002 1344     		add	r3, r3, r2
+ 1590 0004 B3F5A07F 		cmp	r3, #320
+ 1591 0008 00D0     		beq	.L87
+ 1592 000a 7047     		bx	lr
+ 1593              	.L87:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 38
+
+
+ 531:Src/Adafruit_ILI9340.c ****   if (topFixedArea + verticalScrollArea + bottomFixedArea != 320)
+ 1594              		.loc 1 531 0
+ 1595 000c 70B5     		push	{r4, r5, r6, lr}
+ 1596              	.LCFI19:
+ 1597              		.cfi_def_cfa_offset 16
+ 1598              		.cfi_offset 4, -16
+ 1599              		.cfi_offset 5, -12
+ 1600              		.cfi_offset 6, -8
+ 1601              		.cfi_offset 14, -4
+ 1602 000e 1446     		mov	r4, r2
+ 1603 0010 0D46     		mov	r5, r1
+ 1604 0012 0646     		mov	r6, r0
+ 533:Src/Adafruit_ILI9340.c ****     return;
+ 534:Src/Adafruit_ILI9340.c **** 
+ 535:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_VSCRDEF);
+ 1605              		.loc 1 535 0
+ 1606 0014 3320     		movs	r0, #51
+ 1607              	.LVL213:
+ 1608 0016 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 1609              	.LVL214:
+ 536:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata ((topFixedArea >> 8) & 0xFF);
+ 1610              		.loc 1 536 0
+ 1611 001a 300A     		lsrs	r0, r6, #8
+ 1612 001c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1613              	.LVL215:
+ 537:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (topFixedArea & 0xFF);
+ 1614              		.loc 1 537 0
+ 1615 0020 F0B2     		uxtb	r0, r6
+ 1616 0022 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1617              	.LVL216:
+ 538:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata ((verticalScrollArea >> 8) & 0xFF);
+ 1618              		.loc 1 538 0
+ 1619 0026 280A     		lsrs	r0, r5, #8
+ 1620 0028 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1621              	.LVL217:
+ 539:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (verticalScrollArea & 0xFF);
+ 1622              		.loc 1 539 0
+ 1623 002c E8B2     		uxtb	r0, r5
+ 1624 002e FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1625              	.LVL218:
+ 540:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata ((bottomFixedArea >> 8) & 0xFF);
+ 1626              		.loc 1 540 0
+ 1627 0032 200A     		lsrs	r0, r4, #8
+ 1628 0034 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1629              	.LVL219:
+ 541:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writedata (bottomFixedArea & 0xFF);
+ 1630              		.loc 1 541 0
+ 1631 0038 E0B2     		uxtb	r0, r4
+ 1632 003a FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1633              	.LVL220:
+ 542:Src/Adafruit_ILI9340.c **** }
+ 1634              		.loc 1 542 0
+ 1635 003e 70BD     		pop	{r4, r5, r6, pc}
+ 1636              		.cfi_endproc
+ 1637              	.LFE152:
+ 1639              		.section	.text.Adafruit_ILI9340_setRotation,"ax",%progbits
+ 1640              		.align	1
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 39
+
+
+ 1641              		.global	Adafruit_ILI9340_setRotation
+ 1642              		.syntax unified
+ 1643              		.thumb
+ 1644              		.thumb_func
+ 1645              		.fpu fpv5-sp-d16
+ 1647              	Adafruit_ILI9340_setRotation:
+ 1648              	.LFB153:
+ 543:Src/Adafruit_ILI9340.c **** 
+ 544:Src/Adafruit_ILI9340.c **** //when pushing the limits of this display, there seems to be some diagonal
+ 545:Src/Adafruit_ILI9340.c **** //tearing when using rotations 1 and 3. There is horizontal tearing when using
+ 546:Src/Adafruit_ILI9340.c **** //rotations 0 and 2. Not sure which rotation is the most performant.
+ 547:Src/Adafruit_ILI9340.c **** void
+ 548:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_setRotation (uint8_t m)
+ 549:Src/Adafruit_ILI9340.c **** {
+ 1649              		.loc 1 549 0
+ 1650              		.cfi_startproc
+ 1651              		@ args = 0, pretend = 0, frame = 0
+ 1652              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1653              	.LVL221:
+ 1654 0000 10B5     		push	{r4, lr}
+ 1655              	.LCFI20:
+ 1656              		.cfi_def_cfa_offset 8
+ 1657              		.cfi_offset 4, -8
+ 1658              		.cfi_offset 14, -4
+ 1659 0002 0446     		mov	r4, r0
+ 550:Src/Adafruit_ILI9340.c **** 
+ 551:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (ILI9340_MADCTL);
+ 1660              		.loc 1 551 0
+ 1661 0004 3620     		movs	r0, #54
+ 1662              	.LVL222:
+ 1663 0006 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 1664              	.LVL223:
+ 552:Src/Adafruit_ILI9340.c ****   int rotation = m % 4; // can't be higher than 3
+ 553:Src/Adafruit_ILI9340.c ****   switch (rotation)
+ 1665              		.loc 1 553 0
+ 1666 000a 04F00300 		and	r0, r4, #3
+ 1667 000e 0328     		cmp	r0, #3
+ 1668 0010 0DD8     		bhi	.L88
+ 1669 0012 DFE800F0 		tbb	[pc, r0]
+ 1670              	.L91:
+ 1671 0016 02       		.byte	(.L90-.L91)/2
+ 1672 0017 0D       		.byte	(.L92-.L91)/2
+ 1673 0018 18       		.byte	(.L93-.L91)/2
+ 1674 0019 23       		.byte	(.L94-.L91)/2
+ 1675              		.p2align 1
+ 1676              	.L90:
+ 554:Src/Adafruit_ILI9340.c ****     {
+ 555:Src/Adafruit_ILI9340.c ****     case 0:
+ 556:Src/Adafruit_ILI9340.c ****       Adafruit_ILI9340_writedata (ILI9340_MADCTL_MX | ILI9340_MADCTL_BGR);
+ 1677              		.loc 1 556 0
+ 1678 001a 4820     		movs	r0, #72
+ 1679 001c FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1680              	.LVL224:
+ 557:Src/Adafruit_ILI9340.c ****       _width = ILI9340_TFTWIDTH;
+ 1681              		.loc 1 557 0
+ 1682 0020 144B     		ldr	r3, .L96
+ 1683 0022 F022     		movs	r2, #240
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 40
+
+
+ 1684 0024 1A60     		str	r2, [r3]
+ 558:Src/Adafruit_ILI9340.c ****       _height = ILI9340_TFTHEIGHT;
+ 1685              		.loc 1 558 0
+ 1686 0026 144B     		ldr	r3, .L96+4
+ 1687 0028 4FF4A072 		mov	r2, #320
+ 1688 002c 1A60     		str	r2, [r3]
+ 1689              	.L88:
+ 559:Src/Adafruit_ILI9340.c ****       break;
+ 560:Src/Adafruit_ILI9340.c ****     case 1:
+ 561:Src/Adafruit_ILI9340.c ****       Adafruit_ILI9340_writedata (ILI9340_MADCTL_MV | ILI9340_MADCTL_BGR);
+ 562:Src/Adafruit_ILI9340.c ****       _width = ILI9340_TFTHEIGHT;
+ 563:Src/Adafruit_ILI9340.c ****       _height = ILI9340_TFTWIDTH;
+ 564:Src/Adafruit_ILI9340.c ****       break;
+ 565:Src/Adafruit_ILI9340.c ****     case 2:
+ 566:Src/Adafruit_ILI9340.c ****       Adafruit_ILI9340_writedata (ILI9340_MADCTL_MY | ILI9340_MADCTL_BGR);
+ 567:Src/Adafruit_ILI9340.c ****       _width = ILI9340_TFTWIDTH;
+ 568:Src/Adafruit_ILI9340.c ****       _height = ILI9340_TFTHEIGHT;
+ 569:Src/Adafruit_ILI9340.c ****       break;
+ 570:Src/Adafruit_ILI9340.c ****     case 3:
+ 571:Src/Adafruit_ILI9340.c ****       Adafruit_ILI9340_writedata (
+ 572:Src/Adafruit_ILI9340.c ****           ILI9340_MADCTL_MV | ILI9340_MADCTL_MY | ILI9340_MADCTL_MX
+ 573:Src/Adafruit_ILI9340.c ****               | ILI9340_MADCTL_BGR);
+ 574:Src/Adafruit_ILI9340.c ****       _width = ILI9340_TFTHEIGHT;
+ 575:Src/Adafruit_ILI9340.c ****       _height = ILI9340_TFTWIDTH;
+ 576:Src/Adafruit_ILI9340.c ****       break;
+ 577:Src/Adafruit_ILI9340.c ****     }
+ 578:Src/Adafruit_ILI9340.c **** }
+ 1690              		.loc 1 578 0
+ 1691 002e 10BD     		pop	{r4, pc}
+ 1692              	.LVL225:
+ 1693              	.L92:
+ 561:Src/Adafruit_ILI9340.c ****       _width = ILI9340_TFTHEIGHT;
+ 1694              		.loc 1 561 0
+ 1695 0030 2820     		movs	r0, #40
+ 1696 0032 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1697              	.LVL226:
+ 562:Src/Adafruit_ILI9340.c ****       _height = ILI9340_TFTWIDTH;
+ 1698              		.loc 1 562 0
+ 1699 0036 0F4B     		ldr	r3, .L96
+ 1700 0038 4FF4A072 		mov	r2, #320
+ 1701 003c 1A60     		str	r2, [r3]
+ 563:Src/Adafruit_ILI9340.c ****       break;
+ 1702              		.loc 1 563 0
+ 1703 003e 0E4B     		ldr	r3, .L96+4
+ 1704 0040 F022     		movs	r2, #240
+ 1705 0042 1A60     		str	r2, [r3]
+ 564:Src/Adafruit_ILI9340.c ****     case 2:
+ 1706              		.loc 1 564 0
+ 1707 0044 F3E7     		b	.L88
+ 1708              	.L93:
+ 566:Src/Adafruit_ILI9340.c ****       _width = ILI9340_TFTWIDTH;
+ 1709              		.loc 1 566 0
+ 1710 0046 8820     		movs	r0, #136
+ 1711 0048 FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1712              	.LVL227:
+ 567:Src/Adafruit_ILI9340.c ****       _height = ILI9340_TFTHEIGHT;
+ 1713              		.loc 1 567 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 41
+
+
+ 1714 004c 094B     		ldr	r3, .L96
+ 1715 004e F022     		movs	r2, #240
+ 1716 0050 1A60     		str	r2, [r3]
+ 568:Src/Adafruit_ILI9340.c ****       break;
+ 1717              		.loc 1 568 0
+ 1718 0052 094B     		ldr	r3, .L96+4
+ 1719 0054 4FF4A072 		mov	r2, #320
+ 1720 0058 1A60     		str	r2, [r3]
+ 569:Src/Adafruit_ILI9340.c ****     case 3:
+ 1721              		.loc 1 569 0
+ 1722 005a E8E7     		b	.L88
+ 1723              	.L94:
+ 571:Src/Adafruit_ILI9340.c ****           ILI9340_MADCTL_MV | ILI9340_MADCTL_MY | ILI9340_MADCTL_MX
+ 1724              		.loc 1 571 0
+ 1725 005c E820     		movs	r0, #232
+ 1726 005e FFF7FEFF 		bl	Adafruit_ILI9340_writedata
+ 1727              	.LVL228:
+ 574:Src/Adafruit_ILI9340.c ****       _height = ILI9340_TFTWIDTH;
+ 1728              		.loc 1 574 0
+ 1729 0062 044B     		ldr	r3, .L96
+ 1730 0064 4FF4A072 		mov	r2, #320
+ 1731 0068 1A60     		str	r2, [r3]
+ 575:Src/Adafruit_ILI9340.c ****       break;
+ 1732              		.loc 1 575 0
+ 1733 006a 034B     		ldr	r3, .L96+4
+ 1734 006c F022     		movs	r2, #240
+ 1735 006e 1A60     		str	r2, [r3]
+ 1736              		.loc 1 578 0
+ 1737 0070 DDE7     		b	.L88
+ 1738              	.L97:
+ 1739 0072 00BF     		.align	2
+ 1740              	.L96:
+ 1741 0074 00000000 		.word	.LANCHOR0
+ 1742 0078 00000000 		.word	.LANCHOR1
+ 1743              		.cfi_endproc
+ 1744              	.LFE153:
+ 1746              		.section	.text.Adafruit_ILI9340_invertDisplay,"ax",%progbits
+ 1747              		.align	1
+ 1748              		.global	Adafruit_ILI9340_invertDisplay
+ 1749              		.syntax unified
+ 1750              		.thumb
+ 1751              		.thumb_func
+ 1752              		.fpu fpv5-sp-d16
+ 1754              	Adafruit_ILI9340_invertDisplay:
+ 1755              	.LFB154:
+ 579:Src/Adafruit_ILI9340.c **** 
+ 580:Src/Adafruit_ILI9340.c **** void
+ 581:Src/Adafruit_ILI9340.c **** Adafruit_ILI9340_invertDisplay (bool i)
+ 582:Src/Adafruit_ILI9340.c **** {
+ 1756              		.loc 1 582 0
+ 1757              		.cfi_startproc
+ 1758              		@ args = 0, pretend = 0, frame = 0
+ 1759              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1760              	.LVL229:
+ 1761 0000 08B5     		push	{r3, lr}
+ 1762              	.LCFI21:
+ 1763              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 42
+
+
+ 1764              		.cfi_offset 3, -8
+ 1765              		.cfi_offset 14, -4
+ 583:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (i ? ILI9340_INVON : ILI9340_INVOFF);
+ 1766              		.loc 1 583 0
+ 1767 0002 18B9     		cbnz	r0, .L102
+ 1768 0004 2020     		movs	r0, #32
+ 1769              	.LVL230:
+ 1770              	.L99:
+ 1771              		.loc 1 583 0 is_stmt 0 discriminator 4
+ 1772 0006 FFF7FEFF 		bl	Adafruit_ILI9340_writecommand
+ 1773              	.LVL231:
+ 584:Src/Adafruit_ILI9340.c **** }
+ 1774              		.loc 1 584 0 is_stmt 1 discriminator 4
+ 1775 000a 08BD     		pop	{r3, pc}
+ 1776              	.LVL232:
+ 1777              	.L102:
+ 583:Src/Adafruit_ILI9340.c ****   Adafruit_ILI9340_writecommand (i ? ILI9340_INVON : ILI9340_INVOFF);
+ 1778              		.loc 1 583 0
+ 1779 000c 2120     		movs	r0, #33
+ 1780              	.LVL233:
+ 1781 000e FAE7     		b	.L99
+ 1782              		.cfi_endproc
+ 1783              	.LFE154:
+ 1785              		.comm	txBuf,4,4
+ 1786              		.comm	rxBuf,10,4
+ 1787              		.global	_height
+ 1788              		.global	_width
+ 1789              		.comm	hwSPI,1,1
+ 1790              		.section	.data._height,"aw",%progbits
+ 1791              		.align	2
+ 1792              		.set	.LANCHOR1,. + 0
+ 1795              	_height:
+ 1796 0000 40010000 		.word	320
+ 1797              		.section	.data._width,"aw",%progbits
+ 1798              		.align	2
+ 1799              		.set	.LANCHOR0,. + 0
+ 1802              	_width:
+ 1803 0000 F0000000 		.word	240
+ 1804              		.text
+ 1805              	.Letext0:
+ 1806              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 1807              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 1808              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ 1809              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 1810              		.file 6 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f756xx.h"
+ 1811              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 1812              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 1813              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 1814              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+ 1815              		.file 11 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_def.h"
+ 1816              		.file 12 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma.h"
+ 1817              		.file 13 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_spi.h"
+ 1818              		.file 14 "Inc/Adafruit_ILI9340.h"
+ 1819              		.file 15 "Inc/spi.h"
+ 1820              		.file 16 "Inc/gpio.h"
+ 1821              		.file 17 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio.h"
+ 1822              		.file 18 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 43
+
+
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 44
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 Adafruit_ILI9340.c
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:18     .text.Adafruit_ILI9340_spiwrite:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:25     .text.Adafruit_ILI9340_spiwrite:00000000 Adafruit_ILI9340_spiwrite
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:101    .text.Adafruit_ILI9340_spiwrite:0000004c $d
+                            *COM*:00000001 hwSPI
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:108    .text.Adafruit_ILI9340_writecommand:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:115    .text.Adafruit_ILI9340_writecommand:00000000 Adafruit_ILI9340_writecommand
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:174    .text.Adafruit_ILI9340_writecommand:00000048 $d
+                            *COM*:00000004 txBuf
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:183    .text.Adafruit_ILI9340_writedata:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:190    .text.Adafruit_ILI9340_writedata:00000000 Adafruit_ILI9340_writedata
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:249    .text.Adafruit_ILI9340_writedata:00000048 $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:258    .text.Adafruit_ILI9340_begin:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:265    .text.Adafruit_ILI9340_begin:00000000 Adafruit_ILI9340_begin
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:671    .text.Adafruit_ILI9340_begin:00000250 $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:677    .text.Adafruit_ILI9340_setAddrWindow:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:684    .text.Adafruit_ILI9340_setAddrWindow:00000000 Adafruit_ILI9340_setAddrWindow
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:755    .text.Adafruit_ILI9340_pushColor:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:762    .text.Adafruit_ILI9340_pushColor:00000000 Adafruit_ILI9340_pushColor
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:827    .text.Adafruit_ILI9340_pushColor:0000004c $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:835    .text.Adafruit_ILI9340_drawPixel:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:842    .text.Adafruit_ILI9340_drawPixel:00000000 Adafruit_ILI9340_drawPixel
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:924    .text.Adafruit_ILI9340_drawPixel:00000064 $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:934    .text.Adafruit_ILI9340_drawNextPixel:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:941    .text.Adafruit_ILI9340_drawNextPixel:00000000 Adafruit_ILI9340_drawNextPixel
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:997    .text.Adafruit_ILI9340_drawNextPixel:00000040 $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1005   .text.Adafruit_ILI9340_drawFastVLine:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1012   .text.Adafruit_ILI9340_drawFastVLine:00000000 Adafruit_ILI9340_drawFastVLine
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1112   .text.Adafruit_ILI9340_drawFastVLine:0000007c $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1122   .text.Adafruit_ILI9340_drawFastHLine:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1129   .text.Adafruit_ILI9340_drawFastHLine:00000000 Adafruit_ILI9340_drawFastHLine
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1229   .text.Adafruit_ILI9340_drawFastHLine:0000007c $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1239   .text.Adafruit_ILI9340_fillRect:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1246   .text.Adafruit_ILI9340_fillRect:00000000 Adafruit_ILI9340_fillRect
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1441   .text.Adafruit_ILI9340_fillRect:000000fc $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1451   .text.Adafruit_ILI9340_fillScreen:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1458   .text.Adafruit_ILI9340_fillScreen:00000000 Adafruit_ILI9340_fillScreen
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1492   .text.Adafruit_ILI9340_fillScreen:00000020 $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1498   .text.Adafruit_ILI9340_Color565:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1505   .text.Adafruit_ILI9340_Color565:00000000 Adafruit_ILI9340_Color565
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1529   .text.Adafruit_ILI9340_Color565:00000018 $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1534   .text.Adafruit_ILI9340_setVerticalScrollStartAddress:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1541   .text.Adafruit_ILI9340_setVerticalScrollStartAddress:00000000 Adafruit_ILI9340_setVerticalScrollStartAddress
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1573   .text.Adafruit_ILI9340_setVerticalScrollDefinition:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1580   .text.Adafruit_ILI9340_setVerticalScrollDefinition:00000000 Adafruit_ILI9340_setVerticalScrollDefinition
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1640   .text.Adafruit_ILI9340_setRotation:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1647   .text.Adafruit_ILI9340_setRotation:00000000 Adafruit_ILI9340_setRotation
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1671   .text.Adafruit_ILI9340_setRotation:00000016 $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1675   .text.Adafruit_ILI9340_setRotation:0000001a $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1741   .text.Adafruit_ILI9340_setRotation:00000074 $d
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1747   .text.Adafruit_ILI9340_invertDisplay:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1754   .text.Adafruit_ILI9340_invertDisplay:00000000 Adafruit_ILI9340_invertDisplay
+                            *COM*:0000000a rxBuf
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1795   .data._height:00000000 _height
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1802   .data._width:00000000 _width
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1791   .data._height:00000000 $d
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s 			page 45
+
+
+C:\Users\micha\AppData\Local\Temp\ccH9ryY9.s:1798   .data._width:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+LCD_MOSI
+LCD_SCK
+HAL_SPI_Transmit
+LCD_DC
+LCD_NSS
+hspi1
+HAL_Delay
+LCD_RESET
+HAL_SPI_GetState
+HAL_SPI_Transmit_DMA

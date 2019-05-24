@@ -1,0 +1,4888 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"Adafruit_GFX.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Adafruit_GFX_drawCircle,"ax",%progbits
+  18              		.align	1
+  19              		.global	Adafruit_GFX_drawCircle
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	Adafruit_GFX_drawCircle:
+  26              	.LFB138:
+  27              		.file 1 "Src/Adafruit_GFX.c"
+   1:Src/Adafruit_GFX.c **** /*
+   2:Src/Adafruit_GFX.c ****  This is the core graphics library for all our displays, providing a common
+   3:Src/Adafruit_GFX.c ****  set of graphics primitives (points, lines, circles, etc.).  It needs to be
+   4:Src/Adafruit_GFX.c ****  paired with a hardware-specific library for each display device we carry
+   5:Src/Adafruit_GFX.c ****  (to handle the lower-level functions).
+   6:Src/Adafruit_GFX.c **** 
+   7:Src/Adafruit_GFX.c ****  Adafruit invests time and resources providing this open source code, please
+   8:Src/Adafruit_GFX.c ****  support Adafruit & open-source hardware by purchasing products from Adafruit!
+   9:Src/Adafruit_GFX.c **** 
+  10:Src/Adafruit_GFX.c ****  Copyright (c) 2013 Adafruit Industries.  All rights reserved.
+  11:Src/Adafruit_GFX.c **** 
+  12:Src/Adafruit_GFX.c ****  Redistribution and use in source and binary forms, with or without
+  13:Src/Adafruit_GFX.c ****  modification, are permitted provided that the following conditions are met:
+  14:Src/Adafruit_GFX.c **** 
+  15:Src/Adafruit_GFX.c ****  - Redistributions of source code must retain the above copyright notice,
+  16:Src/Adafruit_GFX.c ****  this list of conditions and the following disclaimer.
+  17:Src/Adafruit_GFX.c ****  - Redistributions in binary form must reproduce the above copyright notice,
+  18:Src/Adafruit_GFX.c ****  this list of conditions and the following disclaimer in the documentation
+  19:Src/Adafruit_GFX.c ****  and/or other materials provided with the distribution.
+  20:Src/Adafruit_GFX.c **** 
+  21:Src/Adafruit_GFX.c ****  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  22:Src/Adafruit_GFX.c ****  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  23:Src/Adafruit_GFX.c ****  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  24:Src/Adafruit_GFX.c ****  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  25:Src/Adafruit_GFX.c ****  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  26:Src/Adafruit_GFX.c ****  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  27:Src/Adafruit_GFX.c ****  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  28:Src/Adafruit_GFX.c ****  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  29:Src/Adafruit_GFX.c ****  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  30:Src/Adafruit_GFX.c ****  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  31:Src/Adafruit_GFX.c ****  POSSIBILITY OF SUCH DAMAGE.
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 2
+
+
+  32:Src/Adafruit_GFX.c ****  */
+  33:Src/Adafruit_GFX.c **** 
+  34:Src/Adafruit_GFX.c **** #include <stdlib.h>
+  35:Src/Adafruit_GFX.c **** #include <stdbool.h>
+  36:Src/Adafruit_GFX.c **** 
+  37:Src/Adafruit_GFX.c **** #include "Adafruit_GFX.h"
+  38:Src/Adafruit_GFX.c **** #include "glcdfont.c"
+  39:Src/Adafruit_GFX.c **** #include "gpio.h"
+  40:Src/Adafruit_GFX.c **** #include "spi.h"
+  41:Src/Adafruit_GFX.c **** #ifdef __AVR__
+  42:Src/Adafruit_GFX.c **** //#include <avr/pgmspace.h>
+  43:Src/Adafruit_GFX.c **** #else
+  44:Src/Adafruit_GFX.c **** #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
+  45:Src/Adafruit_GFX.c **** #endif
+  46:Src/Adafruit_GFX.c **** 
+  47:Src/Adafruit_GFX.c **** //#include "stm32f10x.h"
+  48:Src/Adafruit_GFX.c **** //#include <stm32f415xx.h>
+  49:Src/Adafruit_GFX.c **** #ifdef PSDR2
+  50:Src/Adafruit_GFX.c **** #include "stm32f429xx.h"
+  51:Src/Adafruit_GFX.c **** #endif
+  52:Src/Adafruit_GFX.c **** 
+  53:Src/Adafruit_GFX.c **** //void Adafruit_GFX_Adafruit_GFX(int16_t w, int16_t h)
+  54:Src/Adafruit_GFX.c **** //  WIDTH(w), HEIGHT(h)
+  55:Src/Adafruit_GFX.c **** //{
+  56:Src/Adafruit_GFX.c **** //  _width    = WIDTH;
+  57:Src/Adafruit_GFX.c **** //  _height   = HEIGHT;
+  58:Src/Adafruit_GFX.c **** //  rotation  = 0;
+  59:Src/Adafruit_GFX.c **** //  cursor_y  = cursor_x    = 0;
+  60:Src/Adafruit_GFX.c **** //  textsize  = 1;
+  61:Src/Adafruit_GFX.c **** //  textcolor = textbgcolor = 0xFFFF;
+  62:Src/Adafruit_GFX.c **** //  wrap      = true;
+  63:Src/Adafruit_GFX.c **** //}
+  64:Src/Adafruit_GFX.c **** 
+  65:Src/Adafruit_GFX.c **** // Draw a circle outline
+  66:Src/Adafruit_GFX.c **** void
+  67:Src/Adafruit_GFX.c **** Adafruit_GFX_drawCircle (int16_t x0, int16_t y0, int16_t r, uint16_t color)
+  68:Src/Adafruit_GFX.c **** {
+  28              		.loc 1 68 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 24
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 36
+  36              		.cfi_offset 4, -36
+  37              		.cfi_offset 5, -32
+  38              		.cfi_offset 6, -28
+  39              		.cfi_offset 7, -24
+  40              		.cfi_offset 8, -20
+  41              		.cfi_offset 9, -16
+  42              		.cfi_offset 10, -12
+  43              		.cfi_offset 11, -8
+  44              		.cfi_offset 14, -4
+  45 0004 87B0     		sub	sp, sp, #28
+  46              	.LCFI1:
+  47              		.cfi_def_cfa_offset 64
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 3
+
+
+  48 0006 0746     		mov	r7, r0
+  49 0008 0E46     		mov	r6, r1
+  50 000a 0292     		str	r2, [sp, #8]
+  51 000c 9846     		mov	r8, r3
+  52 000e 0193     		str	r3, [sp, #4]
+  69:Src/Adafruit_GFX.c ****   int16_t f = 1 - r;
+  53              		.loc 1 69 0
+  54 0010 95B2     		uxth	r5, r2
+  55 0012 C5F10104 		rsb	r4, r5, #1
+  56 0016 24B2     		sxth	r4, r4
+  57              	.LVL1:
+  70:Src/Adafruit_GFX.c ****   int16_t ddF_x = 1;
+  71:Src/Adafruit_GFX.c ****   int16_t ddF_y = -2 * r;
+  58              		.loc 1 71 0
+  59 0018 C5EBC532 		rsb	r2, r5, r5, lsl #15
+  60              	.LVL2:
+  61 001c 5300     		lsls	r3, r2, #1
+  62              	.LVL3:
+  63 001e 1AB2     		sxth	r2, r3
+  64 0020 0592     		str	r2, [sp, #20]
+  65              	.LVL4:
+  72:Src/Adafruit_GFX.c ****   int16_t x = 0;
+  73:Src/Adafruit_GFX.c ****   int16_t y = r;
+  74:Src/Adafruit_GFX.c **** 
+  75:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawPixel (x0, y0 + r, color);
+  66              		.loc 1 75 0
+  67 0022 1FFA81FB 		uxth	fp, r1
+  68 0026 05EB0B01 		add	r1, r5, fp
+  69              	.LVL5:
+  70 002a 4246     		mov	r2, r8
+  71 002c 09B2     		sxth	r1, r1
+  72 002e FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+  73              	.LVL6:
+  76:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawPixel (x0, y0 - r, color);
+  74              		.loc 1 76 0
+  75 0032 ABEB0501 		sub	r1, fp, r5
+  76 0036 4246     		mov	r2, r8
+  77 0038 09B2     		sxth	r1, r1
+  78 003a 3846     		mov	r0, r7
+  79 003c FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+  80              	.LVL7:
+  77:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawPixel (x0 + r, y0, color);
+  81              		.loc 1 77 0
+  82 0040 BFB2     		uxth	r7, r7
+  83 0042 E819     		adds	r0, r5, r7
+  84 0044 4246     		mov	r2, r8
+  85 0046 3146     		mov	r1, r6
+  86 0048 00B2     		sxth	r0, r0
+  87 004a FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+  88              	.LVL8:
+  78:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawPixel (x0 - r, y0, color);
+  89              		.loc 1 78 0
+  90 004e 781B     		subs	r0, r7, r5
+  91 0050 4246     		mov	r2, r8
+  92 0052 3146     		mov	r1, r6
+  93 0054 00B2     		sxth	r0, r0
+  94 0056 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 4
+
+
+  95              	.LVL9:
+  72:Src/Adafruit_GFX.c ****   int16_t y = r;
+  96              		.loc 1 72 0
+  97 005a 4FF0000A 		mov	r10, #0
+  70:Src/Adafruit_GFX.c ****   int16_t ddF_y = -2 * r;
+  98              		.loc 1 70 0
+  99 005e 0123     		movs	r3, #1
+ 100 0060 0393     		str	r3, [sp, #12]
+  79:Src/Adafruit_GFX.c **** 
+  80:Src/Adafruit_GFX.c ****   while (x < y)
+ 101              		.loc 1 80 0
+ 102 0062 53E0     		b	.L2
+ 103              	.LVL10:
+ 104              	.L3:
+  81:Src/Adafruit_GFX.c ****     {
+  82:Src/Adafruit_GFX.c ****       if (f >= 0)
+  83:Src/Adafruit_GFX.c ****         {
+  84:Src/Adafruit_GFX.c ****           y--;
+  85:Src/Adafruit_GFX.c ****           ddF_y += 2;
+  86:Src/Adafruit_GFX.c ****           f += ddF_y;
+  87:Src/Adafruit_GFX.c ****         }
+  88:Src/Adafruit_GFX.c ****       x++;
+ 105              		.loc 1 88 0
+ 106 0064 0AF10105 		add	r5, r10, #1
+ 107 0068 ADB2     		uxth	r5, r5
+ 108 006a 0FFA85FA 		sxth	r10, r5
+ 109              	.LVL11:
+  89:Src/Adafruit_GFX.c ****       ddF_x += 2;
+ 110              		.loc 1 89 0
+ 111 006e 039B     		ldr	r3, [sp, #12]
+ 112 0070 0233     		adds	r3, r3, #2
+ 113 0072 9BB2     		uxth	r3, r3
+ 114 0074 1AB2     		sxth	r2, r3
+ 115 0076 0392     		str	r2, [sp, #12]
+ 116              	.LVL12:
+  90:Src/Adafruit_GFX.c ****       f += ddF_x;
+ 117              		.loc 1 90 0
+ 118 0078 1C44     		add	r4, r4, r3
+ 119              	.LVL13:
+ 120 007a 24B2     		sxth	r4, r4
+ 121              	.LVL14:
+  91:Src/Adafruit_GFX.c **** 
+  92:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawPixel (x0 + x, y0 + y, color);
+ 122              		.loc 1 92 0
+ 123 007c 7B19     		adds	r3, r7, r5
+ 124 007e 1BB2     		sxth	r3, r3
+ 125 0080 BDF80860 		ldrh	r6, [sp, #8]
+ 126 0084 0BEB0609 		add	r9, fp, r6
+ 127 0088 0FFA89F9 		sxth	r9, r9
+ 128 008c 019A     		ldr	r2, [sp, #4]
+ 129 008e 4946     		mov	r1, r9
+ 130 0090 0493     		str	r3, [sp, #16]
+ 131 0092 1846     		mov	r0, r3
+ 132 0094 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 133              	.LVL15:
+  93:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawPixel (x0 - x, y0 + y, color);
+ 134              		.loc 1 93 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 5
+
+
+ 135 0098 A7EB0508 		sub	r8, r7, r5
+ 136 009c 0FFA88F8 		sxth	r8, r8
+ 137 00a0 019A     		ldr	r2, [sp, #4]
+ 138 00a2 4946     		mov	r1, r9
+ 139 00a4 4046     		mov	r0, r8
+ 140 00a6 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 141              	.LVL16:
+  94:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawPixel (x0 + x, y0 - y, color);
+ 142              		.loc 1 94 0
+ 143 00aa ABEB0609 		sub	r9, fp, r6
+ 144 00ae 0FFA89F9 		sxth	r9, r9
+ 145 00b2 019A     		ldr	r2, [sp, #4]
+ 146 00b4 4946     		mov	r1, r9
+ 147 00b6 0498     		ldr	r0, [sp, #16]
+ 148 00b8 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 149              	.LVL17:
+  95:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawPixel (x0 - x, y0 - y, color);
+ 150              		.loc 1 95 0
+ 151 00bc 019A     		ldr	r2, [sp, #4]
+ 152 00be 4946     		mov	r1, r9
+ 153 00c0 4046     		mov	r0, r8
+ 154 00c2 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 155              	.LVL18:
+  96:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawPixel (x0 + y, y0 + x, color);
+ 156              		.loc 1 96 0
+ 157 00c6 07EB0608 		add	r8, r7, r6
+ 158 00ca 0FFA88F8 		sxth	r8, r8
+ 159 00ce 0BEB0509 		add	r9, fp, r5
+ 160 00d2 0FFA89F9 		sxth	r9, r9
+ 161 00d6 019A     		ldr	r2, [sp, #4]
+ 162 00d8 4946     		mov	r1, r9
+ 163 00da 4046     		mov	r0, r8
+ 164 00dc FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 165              	.LVL19:
+  97:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawPixel (x0 - y, y0 + x, color);
+ 166              		.loc 1 97 0
+ 167 00e0 BE1B     		subs	r6, r7, r6
+ 168 00e2 36B2     		sxth	r6, r6
+ 169 00e4 019A     		ldr	r2, [sp, #4]
+ 170 00e6 4946     		mov	r1, r9
+ 171 00e8 3046     		mov	r0, r6
+ 172 00ea FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 173              	.LVL20:
+  98:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawPixel (x0 + y, y0 - x, color);
+ 174              		.loc 1 98 0
+ 175 00ee ABEB0505 		sub	r5, fp, r5
+ 176 00f2 2DB2     		sxth	r5, r5
+ 177 00f4 DDF80490 		ldr	r9, [sp, #4]
+ 178 00f8 4A46     		mov	r2, r9
+ 179 00fa 2946     		mov	r1, r5
+ 180 00fc 4046     		mov	r0, r8
+ 181 00fe FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 182              	.LVL21:
+  99:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawPixel (x0 - y, y0 - x, color);
+ 183              		.loc 1 99 0
+ 184 0102 4A46     		mov	r2, r9
+ 185 0104 2946     		mov	r1, r5
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 6
+
+
+ 186 0106 3046     		mov	r0, r6
+ 187 0108 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 188              	.LVL22:
+ 189              	.L2:
+  80:Src/Adafruit_GFX.c ****     {
+ 190              		.loc 1 80 0
+ 191 010c 029B     		ldr	r3, [sp, #8]
+ 192 010e 9A45     		cmp	r10, r3
+ 193 0110 0DDA     		bge	.L6
+  82:Src/Adafruit_GFX.c ****         {
+ 194              		.loc 1 82 0
+ 195 0112 002C     		cmp	r4, #0
+ 196 0114 A6DB     		blt	.L3
+  84:Src/Adafruit_GFX.c ****           ddF_y += 2;
+ 197              		.loc 1 84 0
+ 198 0116 029B     		ldr	r3, [sp, #8]
+ 199 0118 013B     		subs	r3, r3, #1
+ 200 011a 1BB2     		sxth	r3, r3
+ 201 011c 0293     		str	r3, [sp, #8]
+ 202              	.LVL23:
+  85:Src/Adafruit_GFX.c ****           f += ddF_y;
+ 203              		.loc 1 85 0
+ 204 011e 059B     		ldr	r3, [sp, #20]
+ 205 0120 0233     		adds	r3, r3, #2
+ 206 0122 9BB2     		uxth	r3, r3
+ 207 0124 1AB2     		sxth	r2, r3
+ 208 0126 0592     		str	r2, [sp, #20]
+ 209              	.LVL24:
+  86:Src/Adafruit_GFX.c ****         }
+ 210              		.loc 1 86 0
+ 211 0128 1C44     		add	r4, r4, r3
+ 212              	.LVL25:
+ 213 012a 24B2     		sxth	r4, r4
+ 214              	.LVL26:
+ 215 012c 9AE7     		b	.L3
+ 216              	.L6:
+ 100:Src/Adafruit_GFX.c ****     }
+ 101:Src/Adafruit_GFX.c **** }
+ 217              		.loc 1 101 0
+ 218 012e 07B0     		add	sp, sp, #28
+ 219              	.LCFI2:
+ 220              		.cfi_def_cfa_offset 36
+ 221              		@ sp needed
+ 222 0130 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 223              		.cfi_endproc
+ 224              	.LFE138:
+ 226              		.section	.text.Adafruit_GFX_drawCircleHelper,"ax",%progbits
+ 227              		.align	1
+ 228              		.global	Adafruit_GFX_drawCircleHelper
+ 229              		.syntax unified
+ 230              		.thumb
+ 231              		.thumb_func
+ 232              		.fpu fpv5-sp-d16
+ 234              	Adafruit_GFX_drawCircleHelper:
+ 235              	.LFB139:
+ 102:Src/Adafruit_GFX.c **** 
+ 103:Src/Adafruit_GFX.c **** void
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 7
+
+
+ 104:Src/Adafruit_GFX.c **** Adafruit_GFX_drawCircleHelper (int16_t x0, int16_t y0, int16_t r,
+ 105:Src/Adafruit_GFX.c ****                                uint8_t cornername, uint16_t color)
+ 106:Src/Adafruit_GFX.c **** {
+ 236              		.loc 1 106 0
+ 237              		.cfi_startproc
+ 238              		@ args = 4, pretend = 0, frame = 24
+ 239              		@ frame_needed = 0, uses_anonymous_args = 0
+ 240              	.LVL27:
+ 241 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 242              	.LCFI3:
+ 243              		.cfi_def_cfa_offset 36
+ 244              		.cfi_offset 4, -36
+ 245              		.cfi_offset 5, -32
+ 246              		.cfi_offset 6, -28
+ 247              		.cfi_offset 7, -24
+ 248              		.cfi_offset 8, -20
+ 249              		.cfi_offset 9, -16
+ 250              		.cfi_offset 10, -12
+ 251              		.cfi_offset 11, -8
+ 252              		.cfi_offset 14, -4
+ 253 0004 87B0     		sub	sp, sp, #28
+ 254              	.LCFI4:
+ 255              		.cfi_def_cfa_offset 64
+ 256 0006 0390     		str	r0, [sp, #12]
+ 257 0008 0491     		str	r1, [sp, #16]
+ 258 000a 1746     		mov	r7, r2
+ 259 000c 9946     		mov	r9, r3
+ 260 000e BDF84030 		ldrh	r3, [sp, #64]
+ 261              	.LVL28:
+ 262 0012 0193     		str	r3, [sp, #4]
+ 107:Src/Adafruit_GFX.c ****   int16_t f = 1 - r;
+ 263              		.loc 1 107 0
+ 264 0014 93B2     		uxth	r3, r2
+ 265 0016 C3F10104 		rsb	r4, r3, #1
+ 266 001a 24B2     		sxth	r4, r4
+ 267              	.LVL29:
+ 108:Src/Adafruit_GFX.c ****   int16_t ddF_x = 1;
+ 109:Src/Adafruit_GFX.c ****   int16_t ddF_y = -2 * r;
+ 268              		.loc 1 109 0
+ 269 001c C3EBC333 		rsb	r3, r3, r3, lsl #15
+ 270 0020 5A00     		lsls	r2, r3, #1
+ 271              	.LVL30:
+ 272 0022 13B2     		sxth	r3, r2
+ 273 0024 0593     		str	r3, [sp, #20]
+ 274              	.LVL31:
+ 110:Src/Adafruit_GFX.c ****   int16_t x = 0;
+ 275              		.loc 1 110 0
+ 276 0026 4FF00008 		mov	r8, #0
+ 108:Src/Adafruit_GFX.c ****   int16_t ddF_x = 1;
+ 277              		.loc 1 108 0
+ 278 002a 0123     		movs	r3, #1
+ 279 002c 0293     		str	r3, [sp, #8]
+ 111:Src/Adafruit_GFX.c ****   int16_t y = r;
+ 112:Src/Adafruit_GFX.c **** 
+ 113:Src/Adafruit_GFX.c ****   while (x < y)
+ 280              		.loc 1 113 0
+ 281 002e 18E0     		b	.L8
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 8
+
+
+ 282              	.LVL32:
+ 283              	.L9:
+ 114:Src/Adafruit_GFX.c ****     {
+ 115:Src/Adafruit_GFX.c ****       if (f >= 0)
+ 116:Src/Adafruit_GFX.c ****         {
+ 117:Src/Adafruit_GFX.c ****           y--;
+ 118:Src/Adafruit_GFX.c ****           ddF_y += 2;
+ 119:Src/Adafruit_GFX.c ****           f += ddF_y;
+ 120:Src/Adafruit_GFX.c ****         }
+ 121:Src/Adafruit_GFX.c ****       x++;
+ 284              		.loc 1 121 0
+ 285 0030 08F10108 		add	r8, r8, #1
+ 286              	.LVL33:
+ 287 0034 1FFA88F5 		uxth	r5, r8
+ 288 0038 0FFA85F8 		sxth	r8, r5
+ 289              	.LVL34:
+ 122:Src/Adafruit_GFX.c ****       ddF_x += 2;
+ 290              		.loc 1 122 0
+ 291 003c 029B     		ldr	r3, [sp, #8]
+ 292 003e 0233     		adds	r3, r3, #2
+ 293 0040 9BB2     		uxth	r3, r3
+ 294 0042 1AB2     		sxth	r2, r3
+ 295 0044 0292     		str	r2, [sp, #8]
+ 296              	.LVL35:
+ 123:Src/Adafruit_GFX.c ****       f += ddF_x;
+ 297              		.loc 1 123 0
+ 298 0046 1C44     		add	r4, r4, r3
+ 299              	.LVL36:
+ 300 0048 24B2     		sxth	r4, r4
+ 301              	.LVL37:
+ 124:Src/Adafruit_GFX.c ****       if (cornername & 0x4)
+ 302              		.loc 1 124 0
+ 303 004a 19F0040F 		tst	r9, #4
+ 304 004e 16D1     		bne	.L16
+ 305              	.L10:
+ 125:Src/Adafruit_GFX.c ****         {
+ 126:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 + x, y0 + y, color);
+ 127:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 + y, y0 + x, color);
+ 128:Src/Adafruit_GFX.c ****         }
+ 129:Src/Adafruit_GFX.c ****       if (cornername & 0x2)
+ 306              		.loc 1 129 0
+ 307 0050 19F0020F 		tst	r9, #2
+ 308 0054 2BD1     		bne	.L17
+ 309              	.L11:
+ 130:Src/Adafruit_GFX.c ****         {
+ 131:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 + x, y0 - y, color);
+ 132:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 + y, y0 - x, color);
+ 133:Src/Adafruit_GFX.c ****         }
+ 134:Src/Adafruit_GFX.c ****       if (cornername & 0x8)
+ 310              		.loc 1 134 0
+ 311 0056 19F0080F 		tst	r9, #8
+ 312 005a 40D1     		bne	.L18
+ 313              	.L12:
+ 135:Src/Adafruit_GFX.c ****         {
+ 136:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 - y, y0 + x, color);
+ 137:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 - x, y0 + y, color);
+ 138:Src/Adafruit_GFX.c ****         }
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 9
+
+
+ 139:Src/Adafruit_GFX.c ****       if (cornername & 0x1)
+ 314              		.loc 1 139 0
+ 315 005c 19F0010F 		tst	r9, #1
+ 316 0060 55D1     		bne	.L19
+ 317              	.LVL38:
+ 318              	.L8:
+ 113:Src/Adafruit_GFX.c ****     {
+ 319              		.loc 1 113 0
+ 320 0062 B845     		cmp	r8, r7
+ 321 0064 6BDA     		bge	.L20
+ 115:Src/Adafruit_GFX.c ****         {
+ 322              		.loc 1 115 0
+ 323 0066 002C     		cmp	r4, #0
+ 324 0068 E2DB     		blt	.L9
+ 117:Src/Adafruit_GFX.c ****           ddF_y += 2;
+ 325              		.loc 1 117 0
+ 326 006a 013F     		subs	r7, r7, #1
+ 327              	.LVL39:
+ 328 006c 3FB2     		sxth	r7, r7
+ 329              	.LVL40:
+ 118:Src/Adafruit_GFX.c ****           f += ddF_y;
+ 330              		.loc 1 118 0
+ 331 006e 059B     		ldr	r3, [sp, #20]
+ 332 0070 0233     		adds	r3, r3, #2
+ 333 0072 9BB2     		uxth	r3, r3
+ 334 0074 1AB2     		sxth	r2, r3
+ 335 0076 0592     		str	r2, [sp, #20]
+ 336              	.LVL41:
+ 119:Src/Adafruit_GFX.c ****         }
+ 337              		.loc 1 119 0
+ 338 0078 1C44     		add	r4, r4, r3
+ 339              	.LVL42:
+ 340 007a 24B2     		sxth	r4, r4
+ 341              	.LVL43:
+ 342 007c D8E7     		b	.L9
+ 343              	.L16:
+ 126:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 + y, y0 + x, color);
+ 344              		.loc 1 126 0
+ 345 007e BDF80CA0 		ldrh	r10, [sp, #12]
+ 346 0082 05EB0A00 		add	r0, r5, r10
+ 347 0086 BDF81060 		ldrh	r6, [sp, #16]
+ 348 008a 1FFA87FB 		uxth	fp, r7
+ 349 008e 06EB0B01 		add	r1, r6, fp
+ 350 0092 019A     		ldr	r2, [sp, #4]
+ 351 0094 09B2     		sxth	r1, r1
+ 352 0096 00B2     		sxth	r0, r0
+ 353 0098 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 354              	.LVL44:
+ 127:Src/Adafruit_GFX.c ****         }
+ 355              		.loc 1 127 0
+ 356 009c 0AEB0B00 		add	r0, r10, fp
+ 357 00a0 A919     		adds	r1, r5, r6
+ 358 00a2 019A     		ldr	r2, [sp, #4]
+ 359 00a4 09B2     		sxth	r1, r1
+ 360 00a6 00B2     		sxth	r0, r0
+ 361 00a8 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 362              	.LVL45:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 10
+
+
+ 363 00ac D0E7     		b	.L10
+ 364              	.L17:
+ 131:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 + y, y0 - x, color);
+ 365              		.loc 1 131 0
+ 366 00ae BDF80CA0 		ldrh	r10, [sp, #12]
+ 367 00b2 05EB0A00 		add	r0, r5, r10
+ 368 00b6 BDF81060 		ldrh	r6, [sp, #16]
+ 369 00ba 1FFA87FB 		uxth	fp, r7
+ 370 00be A6EB0B01 		sub	r1, r6, fp
+ 371 00c2 019A     		ldr	r2, [sp, #4]
+ 372 00c4 09B2     		sxth	r1, r1
+ 373 00c6 00B2     		sxth	r0, r0
+ 374 00c8 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 375              	.LVL46:
+ 132:Src/Adafruit_GFX.c ****         }
+ 376              		.loc 1 132 0
+ 377 00cc 0AEB0B00 		add	r0, r10, fp
+ 378 00d0 711B     		subs	r1, r6, r5
+ 379 00d2 019A     		ldr	r2, [sp, #4]
+ 380 00d4 09B2     		sxth	r1, r1
+ 381 00d6 00B2     		sxth	r0, r0
+ 382 00d8 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 383              	.LVL47:
+ 384 00dc BBE7     		b	.L11
+ 385              	.L18:
+ 136:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 - x, y0 + y, color);
+ 386              		.loc 1 136 0
+ 387 00de BDF80C60 		ldrh	r6, [sp, #12]
+ 388 00e2 1FFA87FA 		uxth	r10, r7
+ 389 00e6 A6EB0A00 		sub	r0, r6, r10
+ 390 00ea BDF810B0 		ldrh	fp, [sp, #16]
+ 391 00ee 05EB0B01 		add	r1, r5, fp
+ 392 00f2 019A     		ldr	r2, [sp, #4]
+ 393 00f4 09B2     		sxth	r1, r1
+ 394 00f6 00B2     		sxth	r0, r0
+ 395 00f8 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 396              	.LVL48:
+ 137:Src/Adafruit_GFX.c ****         }
+ 397              		.loc 1 137 0
+ 398 00fc 701B     		subs	r0, r6, r5
+ 399 00fe 0AEB0B01 		add	r1, r10, fp
+ 400 0102 019A     		ldr	r2, [sp, #4]
+ 401 0104 09B2     		sxth	r1, r1
+ 402 0106 00B2     		sxth	r0, r0
+ 403 0108 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 404              	.LVL49:
+ 405 010c A6E7     		b	.L12
+ 406              	.L19:
+ 140:Src/Adafruit_GFX.c ****         {
+ 141:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 - y, y0 - x, color);
+ 407              		.loc 1 141 0
+ 408 010e BDF80C60 		ldrh	r6, [sp, #12]
+ 409 0112 1FFA87FB 		uxth	fp, r7
+ 410 0116 A6EB0B00 		sub	r0, r6, fp
+ 411 011a BDF810A0 		ldrh	r10, [sp, #16]
+ 412 011e AAEB0501 		sub	r1, r10, r5
+ 413 0122 019A     		ldr	r2, [sp, #4]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 11
+
+
+ 414 0124 09B2     		sxth	r1, r1
+ 415 0126 00B2     		sxth	r0, r0
+ 416 0128 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 417              	.LVL50:
+ 142:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0 - x, y0 - y, color);
+ 418              		.loc 1 142 0
+ 419 012c 701B     		subs	r0, r6, r5
+ 420 012e AAEB0B01 		sub	r1, r10, fp
+ 421 0132 019A     		ldr	r2, [sp, #4]
+ 422 0134 09B2     		sxth	r1, r1
+ 423 0136 00B2     		sxth	r0, r0
+ 424 0138 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 425              	.LVL51:
+ 426 013c 91E7     		b	.L8
+ 427              	.L20:
+ 143:Src/Adafruit_GFX.c ****         }
+ 144:Src/Adafruit_GFX.c ****     }
+ 145:Src/Adafruit_GFX.c **** }
+ 428              		.loc 1 145 0
+ 429 013e 07B0     		add	sp, sp, #28
+ 430              	.LCFI5:
+ 431              		.cfi_def_cfa_offset 36
+ 432              		@ sp needed
+ 433 0140 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 434              		.cfi_endproc
+ 435              	.LFE139:
+ 437              		.section	.text.Adafruit_GFX_fillCircleHelper,"ax",%progbits
+ 438              		.align	1
+ 439              		.global	Adafruit_GFX_fillCircleHelper
+ 440              		.syntax unified
+ 441              		.thumb
+ 442              		.thumb_func
+ 443              		.fpu fpv5-sp-d16
+ 445              	Adafruit_GFX_fillCircleHelper:
+ 446              	.LFB141:
+ 146:Src/Adafruit_GFX.c **** 
+ 147:Src/Adafruit_GFX.c **** void
+ 148:Src/Adafruit_GFX.c **** Adafruit_GFX_fillCircle (int16_t x0, int16_t y0, int16_t r, uint16_t color)
+ 149:Src/Adafruit_GFX.c **** {
+ 150:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastVLine (x0, y0 - r, 2 * r + 1, color);
+ 151:Src/Adafruit_GFX.c ****   Adafruit_GFX_fillCircleHelper (x0, y0, r, 3, 0, color);
+ 152:Src/Adafruit_GFX.c **** }
+ 153:Src/Adafruit_GFX.c **** 
+ 154:Src/Adafruit_GFX.c **** // Used to do circles and roundrects
+ 155:Src/Adafruit_GFX.c **** void
+ 156:Src/Adafruit_GFX.c **** Adafruit_GFX_fillCircleHelper (int16_t x0, int16_t y0, int16_t r,
+ 157:Src/Adafruit_GFX.c ****                                uint8_t cornername, int16_t delta,
+ 158:Src/Adafruit_GFX.c ****                                uint16_t color)
+ 159:Src/Adafruit_GFX.c **** {
+ 447              		.loc 1 159 0
+ 448              		.cfi_startproc
+ 449              		@ args = 8, pretend = 0, frame = 32
+ 450              		@ frame_needed = 0, uses_anonymous_args = 0
+ 451              	.LVL52:
+ 452 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 453              	.LCFI6:
+ 454              		.cfi_def_cfa_offset 36
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 12
+
+
+ 455              		.cfi_offset 4, -36
+ 456              		.cfi_offset 5, -32
+ 457              		.cfi_offset 6, -28
+ 458              		.cfi_offset 7, -24
+ 459              		.cfi_offset 8, -20
+ 460              		.cfi_offset 9, -16
+ 461              		.cfi_offset 10, -12
+ 462              		.cfi_offset 11, -8
+ 463              		.cfi_offset 14, -4
+ 464 0004 89B0     		sub	sp, sp, #36
+ 465              	.LCFI7:
+ 466              		.cfi_def_cfa_offset 72
+ 467 0006 0390     		str	r0, [sp, #12]
+ 468 0008 0491     		str	r1, [sp, #16]
+ 469 000a 9046     		mov	r8, r2
+ 470 000c 9A46     		mov	r10, r3
+ 471 000e BDF94830 		ldrsh	r3, [sp, #72]
+ 472              	.LVL53:
+ 473 0012 0593     		str	r3, [sp, #20]
+ 474 0014 BDF84C30 		ldrh	r3, [sp, #76]
+ 475 0018 0193     		str	r3, [sp, #4]
+ 160:Src/Adafruit_GFX.c **** 
+ 161:Src/Adafruit_GFX.c ****   int16_t f = 1 - r;
+ 476              		.loc 1 161 0
+ 477 001a 93B2     		uxth	r3, r2
+ 478 001c C3F10104 		rsb	r4, r3, #1
+ 479 0020 24B2     		sxth	r4, r4
+ 480              	.LVL54:
+ 162:Src/Adafruit_GFX.c ****   int16_t ddF_x = 1;
+ 163:Src/Adafruit_GFX.c ****   int16_t ddF_y = -2 * r;
+ 481              		.loc 1 163 0
+ 482 0022 C3EBC333 		rsb	r3, r3, r3, lsl #15
+ 483 0026 5A00     		lsls	r2, r3, #1
+ 484              	.LVL55:
+ 485 0028 13B2     		sxth	r3, r2
+ 486 002a 0293     		str	r3, [sp, #8]
+ 487              	.LVL56:
+ 164:Src/Adafruit_GFX.c ****   int16_t x = 0;
+ 488              		.loc 1 164 0
+ 489 002c 0027     		movs	r7, #0
+ 162:Src/Adafruit_GFX.c ****   int16_t ddF_x = 1;
+ 490              		.loc 1 162 0
+ 491 002e 0126     		movs	r6, #1
+ 165:Src/Adafruit_GFX.c ****   int16_t y = r;
+ 166:Src/Adafruit_GFX.c **** 
+ 167:Src/Adafruit_GFX.c ****   while (x < y)
+ 492              		.loc 1 167 0
+ 493 0030 0DE0     		b	.L22
+ 494              	.LVL57:
+ 495              	.L23:
+ 168:Src/Adafruit_GFX.c ****     {
+ 169:Src/Adafruit_GFX.c ****       if (f >= 0)
+ 170:Src/Adafruit_GFX.c ****         {
+ 171:Src/Adafruit_GFX.c ****           y--;
+ 172:Src/Adafruit_GFX.c ****           ddF_y += 2;
+ 173:Src/Adafruit_GFX.c ****           f += ddF_y;
+ 174:Src/Adafruit_GFX.c ****         }
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 13
+
+
+ 175:Src/Adafruit_GFX.c ****       x++;
+ 496              		.loc 1 175 0
+ 497 0032 7D1C     		adds	r5, r7, #1
+ 498 0034 ADB2     		uxth	r5, r5
+ 499 0036 2FB2     		sxth	r7, r5
+ 500              	.LVL58:
+ 176:Src/Adafruit_GFX.c ****       ddF_x += 2;
+ 501              		.loc 1 176 0
+ 502 0038 0236     		adds	r6, r6, #2
+ 503              	.LVL59:
+ 504 003a B3B2     		uxth	r3, r6
+ 505 003c 1EB2     		sxth	r6, r3
+ 506              	.LVL60:
+ 177:Src/Adafruit_GFX.c ****       f += ddF_x;
+ 507              		.loc 1 177 0
+ 508 003e 1C44     		add	r4, r4, r3
+ 509              	.LVL61:
+ 510 0040 24B2     		sxth	r4, r4
+ 511              	.LVL62:
+ 178:Src/Adafruit_GFX.c **** 
+ 179:Src/Adafruit_GFX.c ****       if (cornername & 0x1)
+ 512              		.loc 1 179 0
+ 513 0042 1AF0010F 		tst	r10, #1
+ 514 0046 12D1     		bne	.L28
+ 515              	.L24:
+ 180:Src/Adafruit_GFX.c ****         {
+ 181:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawFastVLine (x0 + x, y0 - y, 2 * y + 1 + delta,
+ 182:Src/Adafruit_GFX.c ****                                           color);
+ 183:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawFastVLine (x0 + y, y0 - x, 2 * x + 1 + delta,
+ 184:Src/Adafruit_GFX.c ****                                           color);
+ 185:Src/Adafruit_GFX.c ****         }
+ 186:Src/Adafruit_GFX.c ****       if (cornername & 0x2)
+ 516              		.loc 1 186 0
+ 517 0048 1AF0020F 		tst	r10, #2
+ 518 004c 37D1     		bne	.L29
+ 519              	.LVL63:
+ 520              	.L22:
+ 167:Src/Adafruit_GFX.c ****     {
+ 521              		.loc 1 167 0
+ 522 004e 4745     		cmp	r7, r8
+ 523 0050 5DDA     		bge	.L30
+ 169:Src/Adafruit_GFX.c ****         {
+ 524              		.loc 1 169 0
+ 525 0052 002C     		cmp	r4, #0
+ 526 0054 EDDB     		blt	.L23
+ 171:Src/Adafruit_GFX.c ****           ddF_y += 2;
+ 527              		.loc 1 171 0
+ 528 0056 08F1FF38 		add	r8, r8, #-1
+ 529              	.LVL64:
+ 530 005a 0FFA88F8 		sxth	r8, r8
+ 531              	.LVL65:
+ 172:Src/Adafruit_GFX.c ****           f += ddF_y;
+ 532              		.loc 1 172 0
+ 533 005e 029B     		ldr	r3, [sp, #8]
+ 534 0060 0233     		adds	r3, r3, #2
+ 535 0062 9BB2     		uxth	r3, r3
+ 536 0064 1AB2     		sxth	r2, r3
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 14
+
+
+ 537 0066 0292     		str	r2, [sp, #8]
+ 538              	.LVL66:
+ 173:Src/Adafruit_GFX.c ****         }
+ 539              		.loc 1 173 0
+ 540 0068 1C44     		add	r4, r4, r3
+ 541              	.LVL67:
+ 542 006a 24B2     		sxth	r4, r4
+ 543              	.LVL68:
+ 544 006c E1E7     		b	.L23
+ 545              	.L28:
+ 181:Src/Adafruit_GFX.c ****                                           color);
+ 546              		.loc 1 181 0
+ 547 006e BDF80C30 		ldrh	r3, [sp, #12]
+ 548 0072 0693     		str	r3, [sp, #24]
+ 549 0074 E818     		adds	r0, r5, r3
+ 550 0076 BDF81010 		ldrh	r1, [sp, #16]
+ 551 007a 1FFA88FB 		uxth	fp, r8
+ 552 007e 0791     		str	r1, [sp, #28]
+ 553 0080 A1EB0B01 		sub	r1, r1, fp
+ 554 0084 4FEA4B02 		lsl	r2, fp, #1
+ 555 0088 92B2     		uxth	r2, r2
+ 556 008a BDF81490 		ldrh	r9, [sp, #20]
+ 557 008e 4A44     		add	r2, r2, r9
+ 558 0090 0132     		adds	r2, r2, #1
+ 559 0092 019B     		ldr	r3, [sp, #4]
+ 560 0094 12B2     		sxth	r2, r2
+ 561 0096 09B2     		sxth	r1, r1
+ 562 0098 00B2     		sxth	r0, r0
+ 563 009a FFF7FEFF 		bl	Adafruit_ILI9340_drawFastVLine
+ 564              	.LVL69:
+ 183:Src/Adafruit_GFX.c ****                                           color);
+ 565              		.loc 1 183 0
+ 566 009e 069A     		ldr	r2, [sp, #24]
+ 567 00a0 02EB0B00 		add	r0, r2, fp
+ 568 00a4 0799     		ldr	r1, [sp, #28]
+ 569 00a6 491B     		subs	r1, r1, r5
+ 570 00a8 6A00     		lsls	r2, r5, #1
+ 571 00aa 92B2     		uxth	r2, r2
+ 572 00ac 4A44     		add	r2, r2, r9
+ 573 00ae 0132     		adds	r2, r2, #1
+ 574 00b0 019B     		ldr	r3, [sp, #4]
+ 575 00b2 12B2     		sxth	r2, r2
+ 576 00b4 09B2     		sxth	r1, r1
+ 577 00b6 00B2     		sxth	r0, r0
+ 578 00b8 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastVLine
+ 579              	.LVL70:
+ 580 00bc C4E7     		b	.L24
+ 581              	.L29:
+ 187:Src/Adafruit_GFX.c ****         {
+ 188:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawFastVLine (x0 - x, y0 - y, 2 * y + 1 + delta,
+ 582              		.loc 1 188 0
+ 583 00be BDF80C30 		ldrh	r3, [sp, #12]
+ 584 00c2 0693     		str	r3, [sp, #24]
+ 585 00c4 581B     		subs	r0, r3, r5
+ 586 00c6 BDF81010 		ldrh	r1, [sp, #16]
+ 587 00ca 1FFA88FB 		uxth	fp, r8
+ 588 00ce 0791     		str	r1, [sp, #28]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 15
+
+
+ 589 00d0 A1EB0B01 		sub	r1, r1, fp
+ 590 00d4 4FEA4B02 		lsl	r2, fp, #1
+ 591 00d8 92B2     		uxth	r2, r2
+ 592 00da BDF81490 		ldrh	r9, [sp, #20]
+ 593 00de 4A44     		add	r2, r2, r9
+ 594 00e0 0132     		adds	r2, r2, #1
+ 595 00e2 019B     		ldr	r3, [sp, #4]
+ 596 00e4 12B2     		sxth	r2, r2
+ 597 00e6 09B2     		sxth	r1, r1
+ 598 00e8 00B2     		sxth	r0, r0
+ 599 00ea FFF7FEFF 		bl	Adafruit_ILI9340_drawFastVLine
+ 600              	.LVL71:
+ 189:Src/Adafruit_GFX.c ****                                           color);
+ 190:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawFastVLine (x0 - y, y0 - x, 2 * x + 1 + delta,
+ 601              		.loc 1 190 0
+ 602 00ee 069A     		ldr	r2, [sp, #24]
+ 603 00f0 A2EB0B00 		sub	r0, r2, fp
+ 604 00f4 0799     		ldr	r1, [sp, #28]
+ 605 00f6 491B     		subs	r1, r1, r5
+ 606 00f8 6D00     		lsls	r5, r5, #1
+ 607 00fa ADB2     		uxth	r5, r5
+ 608 00fc 4D44     		add	r5, r5, r9
+ 609 00fe 6A1C     		adds	r2, r5, #1
+ 610 0100 019B     		ldr	r3, [sp, #4]
+ 611 0102 12B2     		sxth	r2, r2
+ 612 0104 09B2     		sxth	r1, r1
+ 613 0106 00B2     		sxth	r0, r0
+ 614 0108 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastVLine
+ 615              	.LVL72:
+ 616 010c 9FE7     		b	.L22
+ 617              	.L30:
+ 191:Src/Adafruit_GFX.c ****                                           color);
+ 192:Src/Adafruit_GFX.c ****         }
+ 193:Src/Adafruit_GFX.c ****     }
+ 194:Src/Adafruit_GFX.c **** }
+ 618              		.loc 1 194 0
+ 619 010e 09B0     		add	sp, sp, #36
+ 620              	.LCFI8:
+ 621              		.cfi_def_cfa_offset 36
+ 622              		@ sp needed
+ 623 0110 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 624              		.cfi_endproc
+ 625              	.LFE141:
+ 627              		.section	.text.Adafruit_GFX_fillCircle,"ax",%progbits
+ 628              		.align	1
+ 629              		.global	Adafruit_GFX_fillCircle
+ 630              		.syntax unified
+ 631              		.thumb
+ 632              		.thumb_func
+ 633              		.fpu fpv5-sp-d16
+ 635              	Adafruit_GFX_fillCircle:
+ 636              	.LFB140:
+ 149:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastVLine (x0, y0 - r, 2 * r + 1, color);
+ 637              		.loc 1 149 0
+ 638              		.cfi_startproc
+ 639              		@ args = 0, pretend = 0, frame = 0
+ 640              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 16
+
+
+ 641              	.LVL73:
+ 642 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 643              	.LCFI9:
+ 644              		.cfi_def_cfa_offset 20
+ 645              		.cfi_offset 4, -20
+ 646              		.cfi_offset 5, -16
+ 647              		.cfi_offset 6, -12
+ 648              		.cfi_offset 7, -8
+ 649              		.cfi_offset 14, -4
+ 650 0002 83B0     		sub	sp, sp, #12
+ 651              	.LCFI10:
+ 652              		.cfi_def_cfa_offset 32
+ 653 0004 0646     		mov	r6, r0
+ 654 0006 0C46     		mov	r4, r1
+ 655 0008 1546     		mov	r5, r2
+ 656 000a 1F46     		mov	r7, r3
+ 150:Src/Adafruit_GFX.c ****   Adafruit_GFX_fillCircleHelper (x0, y0, r, 3, 0, color);
+ 657              		.loc 1 150 0
+ 658 000c 92B2     		uxth	r2, r2
+ 659 000e 891A     		subs	r1, r1, r2
+ 660              	.LVL74:
+ 661 0010 5200     		lsls	r2, r2, #1
+ 662              	.LVL75:
+ 663 0012 92B2     		uxth	r2, r2
+ 664 0014 0132     		adds	r2, r2, #1
+ 665 0016 12B2     		sxth	r2, r2
+ 666 0018 09B2     		sxth	r1, r1
+ 667 001a FFF7FEFF 		bl	Adafruit_ILI9340_drawFastVLine
+ 668              	.LVL76:
+ 151:Src/Adafruit_GFX.c **** }
+ 669              		.loc 1 151 0
+ 670 001e 0197     		str	r7, [sp, #4]
+ 671 0020 0023     		movs	r3, #0
+ 672 0022 0093     		str	r3, [sp]
+ 673 0024 0323     		movs	r3, #3
+ 674 0026 2A46     		mov	r2, r5
+ 675 0028 2146     		mov	r1, r4
+ 676 002a 3046     		mov	r0, r6
+ 677 002c FFF7FEFF 		bl	Adafruit_GFX_fillCircleHelper
+ 678              	.LVL77:
+ 152:Src/Adafruit_GFX.c **** 
+ 679              		.loc 1 152 0
+ 680 0030 03B0     		add	sp, sp, #12
+ 681              	.LCFI11:
+ 682              		.cfi_def_cfa_offset 20
+ 683              		@ sp needed
+ 684 0032 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 685              		.cfi_endproc
+ 686              	.LFE140:
+ 688              		.section	.text.Adafruit_GFX_drawLine,"ax",%progbits
+ 689              		.align	1
+ 690              		.global	Adafruit_GFX_drawLine
+ 691              		.syntax unified
+ 692              		.thumb
+ 693              		.thumb_func
+ 694              		.fpu fpv5-sp-d16
+ 696              	Adafruit_GFX_drawLine:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 17
+
+
+ 697              	.LFB142:
+ 195:Src/Adafruit_GFX.c **** 
+ 196:Src/Adafruit_GFX.c **** //int16_t abs(int16_t n)
+ 197:Src/Adafruit_GFX.c **** //{
+ 198:Src/Adafruit_GFX.c **** //	if (n < 0) return n;
+ 199:Src/Adafruit_GFX.c **** //	else return n * -1;
+ 200:Src/Adafruit_GFX.c **** //}
+ 201:Src/Adafruit_GFX.c **** 
+ 202:Src/Adafruit_GFX.c **** // Bresenham's algorithm - thx wikpedia
+ 203:Src/Adafruit_GFX.c **** void
+ 204:Src/Adafruit_GFX.c **** Adafruit_GFX_drawLine (int16_t x0, int16_t y0, int16_t x1, int16_t y1,
+ 205:Src/Adafruit_GFX.c ****                        uint16_t color)
+ 206:Src/Adafruit_GFX.c **** {
+ 698              		.loc 1 206 0
+ 699              		.cfi_startproc
+ 700              		@ args = 4, pretend = 0, frame = 8
+ 701              		@ frame_needed = 0, uses_anonymous_args = 0
+ 702              	.LVL78:
+ 703 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 704              	.LCFI12:
+ 705              		.cfi_def_cfa_offset 36
+ 706              		.cfi_offset 4, -36
+ 707              		.cfi_offset 5, -32
+ 708              		.cfi_offset 6, -28
+ 709              		.cfi_offset 7, -24
+ 710              		.cfi_offset 8, -20
+ 711              		.cfi_offset 9, -16
+ 712              		.cfi_offset 10, -12
+ 713              		.cfi_offset 11, -8
+ 714              		.cfi_offset 14, -4
+ 715 0004 83B0     		sub	sp, sp, #12
+ 716              	.LCFI13:
+ 717              		.cfi_def_cfa_offset 48
+ 718 0006 0F46     		mov	r7, r1
+ 719 0008 1646     		mov	r6, r2
+ 720 000a 1D46     		mov	r5, r3
+ 721 000c BDF83030 		ldrh	r3, [sp, #48]
+ 722              	.LVL79:
+ 723 0010 0093     		str	r3, [sp]
+ 207:Src/Adafruit_GFX.c ****   int16_t steep = abs (y1 - y0) > abs (x1 - x0);
+ 724              		.loc 1 207 0
+ 725 0012 A5EB0108 		sub	r8, r5, r1
+ 726 0016 B8F1000F 		cmp	r8, #0
+ 727 001a B8BF     		it	lt
+ 728 001c C8F10008 		rsblt	r8, r8, #0
+ 729 0020 A2EB0009 		sub	r9, r2, r0
+ 730 0024 B9F1000F 		cmp	r9, #0
+ 731 0028 B8BF     		it	lt
+ 732 002a C9F10009 		rsblt	r9, r9, #0
+ 733              	.LVL80:
+ 208:Src/Adafruit_GFX.c ****   if (steep)
+ 734              		.loc 1 208 0
+ 735 002e C845     		cmp	r8, r9
+ 736 0030 04DC     		bgt	.L34
+ 737 0032 2B46     		mov	r3, r5
+ 738 0034 1546     		mov	r5, r2
+ 739 0036 1E46     		mov	r6, r3
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 18
+
+
+ 740 0038 0746     		mov	r7, r0
+ 741 003a 0846     		mov	r0, r1
+ 742              	.LVL81:
+ 743              	.L34:
+ 209:Src/Adafruit_GFX.c ****     {
+ 210:Src/Adafruit_GFX.c ****       swap(x0, y0);
+ 211:Src/Adafruit_GFX.c ****       swap(x1, y1);
+ 212:Src/Adafruit_GFX.c ****     }
+ 213:Src/Adafruit_GFX.c **** 
+ 214:Src/Adafruit_GFX.c ****   if (x0 > x1)
+ 744              		.loc 1 214 0
+ 745 003c AF42     		cmp	r7, r5
+ 746 003e 05DC     		bgt	.L35
+ 747 0040 3346     		mov	r3, r6
+ 748 0042 0646     		mov	r6, r0
+ 749              	.LVL82:
+ 750 0044 1846     		mov	r0, r3
+ 751              	.LVL83:
+ 752 0046 2B46     		mov	r3, r5
+ 753 0048 3D46     		mov	r5, r7
+ 754              	.LVL84:
+ 755 004a 1F46     		mov	r7, r3
+ 756              	.LVL85:
+ 757              	.L35:
+ 215:Src/Adafruit_GFX.c ****     {
+ 216:Src/Adafruit_GFX.c ****       swap(x0, x1);
+ 217:Src/Adafruit_GFX.c ****       swap(y0, y1);
+ 218:Src/Adafruit_GFX.c ****     }
+ 219:Src/Adafruit_GFX.c **** 
+ 220:Src/Adafruit_GFX.c ****   int16_t dx, dy;
+ 221:Src/Adafruit_GFX.c ****   dx = x1 - x0;
+ 758              		.loc 1 221 0
+ 759 004c A7EB050B 		sub	fp, r7, r5
+ 760 0050 1FFA8BFB 		uxth	fp, fp
+ 761 0054 0FFA8BF3 		sxth	r3, fp
+ 762              	.LVL86:
+ 222:Src/Adafruit_GFX.c ****   dy = abs (y1 - y0);
+ 763              		.loc 1 222 0
+ 764 0058 A0EB060A 		sub	r10, r0, r6
+ 765 005c BAF1000F 		cmp	r10, #0
+ 766 0060 B8BF     		it	lt
+ 767 0062 CAF1000A 		rsblt	r10, r10, #0
+ 768              	.LVL87:
+ 223:Src/Adafruit_GFX.c **** 
+ 224:Src/Adafruit_GFX.c ****   int16_t err = dx / 2;
+ 769              		.loc 1 224 0
+ 770 0066 1C46     		mov	r4, r3
+ 771 0068 002B     		cmp	r3, #0
+ 772 006a 06DB     		blt	.L45
+ 773              	.L36:
+ 774 006c 6410     		asrs	r4, r4, #1
+ 775              	.LVL88:
+ 225:Src/Adafruit_GFX.c ****   int16_t ystep;
+ 226:Src/Adafruit_GFX.c **** 
+ 227:Src/Adafruit_GFX.c ****   if (y0 < y1)
+ 776              		.loc 1 227 0
+ 777 006e 8642     		cmp	r6, r0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 19
+
+
+ 778 0070 23DB     		blt	.L37
+ 228:Src/Adafruit_GFX.c ****     {
+ 229:Src/Adafruit_GFX.c ****       ystep = 1;
+ 230:Src/Adafruit_GFX.c ****     }
+ 231:Src/Adafruit_GFX.c ****   else
+ 232:Src/Adafruit_GFX.c ****     {
+ 233:Src/Adafruit_GFX.c ****       ystep = -1;
+ 779              		.loc 1 233 0
+ 780 0072 4FF0FF33 		mov	r3, #-1
+ 781              	.LVL89:
+ 782 0076 0193     		str	r3, [sp, #4]
+ 783 0078 0EE0     		b	.L42
+ 784              	.LVL90:
+ 785              	.L45:
+ 224:Src/Adafruit_GFX.c ****   int16_t ystep;
+ 786              		.loc 1 224 0
+ 787 007a 5C1C     		adds	r4, r3, #1
+ 788 007c F6E7     		b	.L36
+ 789              	.LVL91:
+ 790              	.L39:
+ 234:Src/Adafruit_GFX.c ****     }
+ 235:Src/Adafruit_GFX.c **** 
+ 236:Src/Adafruit_GFX.c ****   for (; x0 <= x1; x0++)
+ 237:Src/Adafruit_GFX.c ****     {
+ 238:Src/Adafruit_GFX.c ****       if (steep)
+ 239:Src/Adafruit_GFX.c ****         {
+ 240:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (y0, x0, color);
+ 241:Src/Adafruit_GFX.c ****         }
+ 242:Src/Adafruit_GFX.c ****       else
+ 243:Src/Adafruit_GFX.c ****         {
+ 244:Src/Adafruit_GFX.c ****           Adafruit_ILI9340_drawPixel (x0, y0, color);
+ 791              		.loc 1 244 0
+ 792 007e 009A     		ldr	r2, [sp]
+ 793 0080 3146     		mov	r1, r6
+ 794 0082 2846     		mov	r0, r5
+ 795 0084 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 796              	.LVL92:
+ 797              	.L40:
+ 245:Src/Adafruit_GFX.c ****         }
+ 246:Src/Adafruit_GFX.c ****       err -= dy;
+ 798              		.loc 1 246 0
+ 799 0088 A4EB0A04 		sub	r4, r4, r10
+ 800              	.LVL93:
+ 801 008c A3B2     		uxth	r3, r4
+ 802 008e 1CB2     		sxth	r4, r3
+ 803              	.LVL94:
+ 247:Src/Adafruit_GFX.c ****       if (err < 0)
+ 804              		.loc 1 247 0
+ 805 0090 002C     		cmp	r4, #0
+ 806 0092 0BDB     		blt	.L46
+ 807              	.L41:
+ 236:Src/Adafruit_GFX.c ****     {
+ 808              		.loc 1 236 0
+ 809 0094 0135     		adds	r5, r5, #1
+ 810              	.LVL95:
+ 811 0096 2DB2     		sxth	r5, r5
+ 812              	.LVL96:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 20
+
+
+ 813              	.L42:
+ 236:Src/Adafruit_GFX.c ****     {
+ 814              		.loc 1 236 0 is_stmt 0 discriminator 1
+ 815 0098 BD42     		cmp	r5, r7
+ 816 009a 11DC     		bgt	.L47
+ 238:Src/Adafruit_GFX.c ****         {
+ 817              		.loc 1 238 0 is_stmt 1
+ 818 009c C845     		cmp	r8, r9
+ 819 009e EEDD     		ble	.L39
+ 240:Src/Adafruit_GFX.c ****         }
+ 820              		.loc 1 240 0
+ 821 00a0 009A     		ldr	r2, [sp]
+ 822 00a2 2946     		mov	r1, r5
+ 823 00a4 3046     		mov	r0, r6
+ 824 00a6 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 825              	.LVL97:
+ 826 00aa EDE7     		b	.L40
+ 827              	.L46:
+ 248:Src/Adafruit_GFX.c ****         {
+ 249:Src/Adafruit_GFX.c ****           y0 += ystep;
+ 828              		.loc 1 249 0
+ 829 00ac 019A     		ldr	r2, [sp, #4]
+ 830 00ae 1644     		add	r6, r6, r2
+ 831              	.LVL98:
+ 832 00b0 36B2     		sxth	r6, r6
+ 833              	.LVL99:
+ 250:Src/Adafruit_GFX.c ****           err += dx;
+ 834              		.loc 1 250 0
+ 835 00b2 0BEB0304 		add	r4, fp, r3
+ 836              	.LVL100:
+ 837 00b6 24B2     		sxth	r4, r4
+ 838              	.LVL101:
+ 839 00b8 ECE7     		b	.L41
+ 840              	.LVL102:
+ 841              	.L37:
+ 229:Src/Adafruit_GFX.c ****     }
+ 842              		.loc 1 229 0
+ 843 00ba 0123     		movs	r3, #1
+ 844              	.LVL103:
+ 845 00bc 0193     		str	r3, [sp, #4]
+ 846 00be EBE7     		b	.L42
+ 847              	.LVL104:
+ 848              	.L47:
+ 251:Src/Adafruit_GFX.c ****         }
+ 252:Src/Adafruit_GFX.c ****     }
+ 253:Src/Adafruit_GFX.c **** }
+ 849              		.loc 1 253 0
+ 850 00c0 03B0     		add	sp, sp, #12
+ 851              	.LCFI14:
+ 852              		.cfi_def_cfa_offset 36
+ 853              		@ sp needed
+ 854 00c2 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 855              		.cfi_endproc
+ 856              	.LFE142:
+ 858              		.section	.text.Adafruit_GFX_drawRect,"ax",%progbits
+ 859              		.align	1
+ 860              		.global	Adafruit_GFX_drawRect
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 21
+
+
+ 861              		.syntax unified
+ 862              		.thumb
+ 863              		.thumb_func
+ 864              		.fpu fpv5-sp-d16
+ 866              	Adafruit_GFX_drawRect:
+ 867              	.LFB143:
+ 254:Src/Adafruit_GFX.c **** 
+ 255:Src/Adafruit_GFX.c **** // Draw a rectangle
+ 256:Src/Adafruit_GFX.c **** void
+ 257:Src/Adafruit_GFX.c **** Adafruit_GFX_drawRect (int16_t x, int16_t y, int16_t w, int16_t h,
+ 258:Src/Adafruit_GFX.c ****                        uint16_t color)
+ 259:Src/Adafruit_GFX.c **** {
+ 868              		.loc 1 259 0
+ 869              		.cfi_startproc
+ 870              		@ args = 4, pretend = 0, frame = 0
+ 871              		@ frame_needed = 0, uses_anonymous_args = 0
+ 872              	.LVL105:
+ 873 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 874              	.LCFI15:
+ 875              		.cfi_def_cfa_offset 24
+ 876              		.cfi_offset 4, -24
+ 877              		.cfi_offset 5, -20
+ 878              		.cfi_offset 6, -16
+ 879              		.cfi_offset 7, -12
+ 880              		.cfi_offset 8, -8
+ 881              		.cfi_offset 14, -4
+ 882 0004 0446     		mov	r4, r0
+ 883 0006 0E46     		mov	r6, r1
+ 884 0008 9046     		mov	r8, r2
+ 885 000a 1F46     		mov	r7, r3
+ 886 000c BDF81850 		ldrh	r5, [sp, #24]
+ 260:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastHLine (x, y, w, color);
+ 887              		.loc 1 260 0
+ 888 0010 2B46     		mov	r3, r5
+ 889              	.LVL106:
+ 890 0012 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastHLine
+ 891              	.LVL107:
+ 261:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastHLine (x, y + h - 1, w, color);
+ 892              		.loc 1 261 0
+ 893 0016 F119     		adds	r1, r6, r7
+ 894 0018 89B2     		uxth	r1, r1
+ 895 001a 0139     		subs	r1, r1, #1
+ 896 001c 2B46     		mov	r3, r5
+ 897 001e 4246     		mov	r2, r8
+ 898 0020 09B2     		sxth	r1, r1
+ 899 0022 2046     		mov	r0, r4
+ 900 0024 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastHLine
+ 901              	.LVL108:
+ 262:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastVLine (x, y, h, color);
+ 902              		.loc 1 262 0
+ 903 0028 2B46     		mov	r3, r5
+ 904 002a 3A46     		mov	r2, r7
+ 905 002c 3146     		mov	r1, r6
+ 906 002e 2046     		mov	r0, r4
+ 907 0030 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastVLine
+ 908              	.LVL109:
+ 263:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastVLine (x + w - 1, y, h, color);
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 22
+
+
+ 909              		.loc 1 263 0
+ 910 0034 04EB0800 		add	r0, r4, r8
+ 911 0038 80B2     		uxth	r0, r0
+ 912 003a 0138     		subs	r0, r0, #1
+ 913 003c 2B46     		mov	r3, r5
+ 914 003e 3A46     		mov	r2, r7
+ 915 0040 3146     		mov	r1, r6
+ 916 0042 00B2     		sxth	r0, r0
+ 917 0044 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastVLine
+ 918              	.LVL110:
+ 264:Src/Adafruit_GFX.c **** }
+ 919              		.loc 1 264 0
+ 920 0048 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 921              		.cfi_endproc
+ 922              	.LFE143:
+ 924              		.section	.text.Adafruit_GFX_drawFastVLine,"ax",%progbits
+ 925              		.align	1
+ 926              		.global	Adafruit_GFX_drawFastVLine
+ 927              		.syntax unified
+ 928              		.thumb
+ 929              		.thumb_func
+ 930              		.fpu fpv5-sp-d16
+ 932              	Adafruit_GFX_drawFastVLine:
+ 933              	.LFB144:
+ 265:Src/Adafruit_GFX.c **** 
+ 266:Src/Adafruit_GFX.c **** void
+ 267:Src/Adafruit_GFX.c **** Adafruit_GFX_drawFastVLine (int16_t x, int16_t y, int16_t h, uint16_t color)
+ 268:Src/Adafruit_GFX.c **** {
+ 934              		.loc 1 268 0
+ 935              		.cfi_startproc
+ 936              		@ args = 0, pretend = 0, frame = 0
+ 937              		@ frame_needed = 0, uses_anonymous_args = 0
+ 938              	.LVL111:
+ 939 0000 00B5     		push	{lr}
+ 940              	.LCFI16:
+ 941              		.cfi_def_cfa_offset 4
+ 942              		.cfi_offset 14, -4
+ 943 0002 83B0     		sub	sp, sp, #12
+ 944              	.LCFI17:
+ 945              		.cfi_def_cfa_offset 16
+ 269:Src/Adafruit_GFX.c ****   // Update in subclasses if desired!
+ 270:Src/Adafruit_GFX.c ****   Adafruit_GFX_drawLine (x, y, x, y + h - 1, color);
+ 946              		.loc 1 270 0
+ 947 0004 0A44     		add	r2, r2, r1
+ 948              	.LVL112:
+ 949 0006 92B2     		uxth	r2, r2
+ 950 0008 013A     		subs	r2, r2, #1
+ 951 000a 0093     		str	r3, [sp]
+ 952 000c 13B2     		sxth	r3, r2
+ 953              	.LVL113:
+ 954 000e 0246     		mov	r2, r0
+ 955 0010 FFF7FEFF 		bl	Adafruit_GFX_drawLine
+ 956              	.LVL114:
+ 271:Src/Adafruit_GFX.c **** }
+ 957              		.loc 1 271 0
+ 958 0014 03B0     		add	sp, sp, #12
+ 959              	.LCFI18:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 23
+
+
+ 960              		.cfi_def_cfa_offset 4
+ 961              		@ sp needed
+ 962 0016 5DF804FB 		ldr	pc, [sp], #4
+ 963              		.cfi_endproc
+ 964              	.LFE144:
+ 966              		.section	.text.Adafruit_GFX_drawFastHLine,"ax",%progbits
+ 967              		.align	1
+ 968              		.global	Adafruit_GFX_drawFastHLine
+ 969              		.syntax unified
+ 970              		.thumb
+ 971              		.thumb_func
+ 972              		.fpu fpv5-sp-d16
+ 974              	Adafruit_GFX_drawFastHLine:
+ 975              	.LFB145:
+ 272:Src/Adafruit_GFX.c **** 
+ 273:Src/Adafruit_GFX.c **** void
+ 274:Src/Adafruit_GFX.c **** Adafruit_GFX_drawFastHLine (int16_t x, int16_t y, int16_t w, uint16_t color)
+ 275:Src/Adafruit_GFX.c **** {
+ 976              		.loc 1 275 0
+ 977              		.cfi_startproc
+ 978              		@ args = 0, pretend = 0, frame = 0
+ 979              		@ frame_needed = 0, uses_anonymous_args = 0
+ 980              	.LVL115:
+ 981 0000 00B5     		push	{lr}
+ 982              	.LCFI19:
+ 983              		.cfi_def_cfa_offset 4
+ 984              		.cfi_offset 14, -4
+ 985 0002 83B0     		sub	sp, sp, #12
+ 986              	.LCFI20:
+ 987              		.cfi_def_cfa_offset 16
+ 276:Src/Adafruit_GFX.c ****   // Update in subclasses if desired!
+ 277:Src/Adafruit_GFX.c ****   Adafruit_GFX_drawLine (x, y, x + w - 1, y, color);
+ 988              		.loc 1 277 0
+ 989 0004 0244     		add	r2, r2, r0
+ 990              	.LVL116:
+ 991 0006 92B2     		uxth	r2, r2
+ 992 0008 013A     		subs	r2, r2, #1
+ 993 000a 0093     		str	r3, [sp]
+ 994 000c 0B46     		mov	r3, r1
+ 995              	.LVL117:
+ 996 000e 12B2     		sxth	r2, r2
+ 997 0010 FFF7FEFF 		bl	Adafruit_GFX_drawLine
+ 998              	.LVL118:
+ 278:Src/Adafruit_GFX.c **** }
+ 999              		.loc 1 278 0
+ 1000 0014 03B0     		add	sp, sp, #12
+ 1001              	.LCFI21:
+ 1002              		.cfi_def_cfa_offset 4
+ 1003              		@ sp needed
+ 1004 0016 5DF804FB 		ldr	pc, [sp], #4
+ 1005              		.cfi_endproc
+ 1006              	.LFE145:
+ 1008              		.section	.text.Adafruit_GFX_fillRect,"ax",%progbits
+ 1009              		.align	1
+ 1010              		.global	Adafruit_GFX_fillRect
+ 1011              		.syntax unified
+ 1012              		.thumb
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 24
+
+
+ 1013              		.thumb_func
+ 1014              		.fpu fpv5-sp-d16
+ 1016              	Adafruit_GFX_fillRect:
+ 1017              	.LFB146:
+ 279:Src/Adafruit_GFX.c **** 
+ 280:Src/Adafruit_GFX.c **** void
+ 281:Src/Adafruit_GFX.c **** Adafruit_GFX_fillRect (int16_t x, int16_t y, int16_t w, int16_t h,
+ 282:Src/Adafruit_GFX.c ****                        uint16_t color)
+ 283:Src/Adafruit_GFX.c **** {
+ 1018              		.loc 1 283 0
+ 1019              		.cfi_startproc
+ 1020              		@ args = 4, pretend = 0, frame = 0
+ 1021              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1022              	.LVL119:
+ 1023 0000 10B5     		push	{r4, lr}
+ 1024              	.LCFI22:
+ 1025              		.cfi_def_cfa_offset 8
+ 1026              		.cfi_offset 4, -8
+ 1027              		.cfi_offset 14, -4
+ 1028 0002 82B0     		sub	sp, sp, #8
+ 1029              	.LCFI23:
+ 1030              		.cfi_def_cfa_offset 16
+ 284:Src/Adafruit_GFX.c ****   // Update in subclasses if desired!
+ 285:Src/Adafruit_GFX.c ****   //int16_t i;
+ 286:Src/Adafruit_GFX.c **** //  for ( i=x; i<x+w; i++) {
+ 287:Src/Adafruit_GFX.c **** //	  Adafruit_ILI9340_drawFastVLine(i, y, h, color);
+ 288:Src/Adafruit_GFX.c **** //  }
+ 289:Src/Adafruit_GFX.c **** 
+ 290:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_fillRect (x, y, w, h, color);
+ 1031              		.loc 1 290 0
+ 1032 0004 BDF81040 		ldrh	r4, [sp, #16]
+ 1033 0008 0094     		str	r4, [sp]
+ 1034 000a FFF7FEFF 		bl	Adafruit_ILI9340_fillRect
+ 1035              	.LVL120:
+ 291:Src/Adafruit_GFX.c **** }
+ 1036              		.loc 1 291 0
+ 1037 000e 02B0     		add	sp, sp, #8
+ 1038              	.LCFI24:
+ 1039              		.cfi_def_cfa_offset 8
+ 1040              		@ sp needed
+ 1041 0010 10BD     		pop	{r4, pc}
+ 1042              		.cfi_endproc
+ 1043              	.LFE146:
+ 1045              		.section	.text.Adafruit_GFX_fillScreen,"ax",%progbits
+ 1046              		.align	1
+ 1047              		.global	Adafruit_GFX_fillScreen
+ 1048              		.syntax unified
+ 1049              		.thumb
+ 1050              		.thumb_func
+ 1051              		.fpu fpv5-sp-d16
+ 1053              	Adafruit_GFX_fillScreen:
+ 1054              	.LFB147:
+ 292:Src/Adafruit_GFX.c **** 
+ 293:Src/Adafruit_GFX.c **** void
+ 294:Src/Adafruit_GFX.c **** Adafruit_GFX_fillScreen (uint16_t color)
+ 295:Src/Adafruit_GFX.c **** {
+ 1055              		.loc 1 295 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 25
+
+
+ 1056              		.cfi_startproc
+ 1057              		@ args = 0, pretend = 0, frame = 0
+ 1058              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1059              	.LVL121:
+ 1060 0000 00B5     		push	{lr}
+ 1061              	.LCFI25:
+ 1062              		.cfi_def_cfa_offset 4
+ 1063              		.cfi_offset 14, -4
+ 1064 0002 83B0     		sub	sp, sp, #12
+ 1065              	.LCFI26:
+ 1066              		.cfi_def_cfa_offset 16
+ 296:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_fillRect (0, 0, _width, _height, color);
+ 1067              		.loc 1 296 0
+ 1068 0004 064B     		ldr	r3, .L58
+ 1069 0006 B3F90030 		ldrsh	r3, [r3]
+ 1070 000a 064A     		ldr	r2, .L58+4
+ 1071 000c B2F90020 		ldrsh	r2, [r2]
+ 1072 0010 0090     		str	r0, [sp]
+ 1073 0012 0021     		movs	r1, #0
+ 1074 0014 0846     		mov	r0, r1
+ 1075              	.LVL122:
+ 1076 0016 FFF7FEFF 		bl	Adafruit_ILI9340_fillRect
+ 1077              	.LVL123:
+ 297:Src/Adafruit_GFX.c **** }
+ 1078              		.loc 1 297 0
+ 1079 001a 03B0     		add	sp, sp, #12
+ 1080              	.LCFI27:
+ 1081              		.cfi_def_cfa_offset 4
+ 1082              		@ sp needed
+ 1083 001c 5DF804FB 		ldr	pc, [sp], #4
+ 1084              	.L59:
+ 1085              		.align	2
+ 1086              	.L58:
+ 1087 0020 00000000 		.word	_height
+ 1088 0024 00000000 		.word	_width
+ 1089              		.cfi_endproc
+ 1090              	.LFE147:
+ 1092              		.section	.text.Adafruit_GFX_drawRoundRect,"ax",%progbits
+ 1093              		.align	1
+ 1094              		.global	Adafruit_GFX_drawRoundRect
+ 1095              		.syntax unified
+ 1096              		.thumb
+ 1097              		.thumb_func
+ 1098              		.fpu fpv5-sp-d16
+ 1100              	Adafruit_GFX_drawRoundRect:
+ 1101              	.LFB148:
+ 298:Src/Adafruit_GFX.c **** 
+ 299:Src/Adafruit_GFX.c **** // Draw a rounded rectangle
+ 300:Src/Adafruit_GFX.c **** void
+ 301:Src/Adafruit_GFX.c **** Adafruit_GFX_drawRoundRect (int16_t x, int16_t y, int16_t w, int16_t h,
+ 302:Src/Adafruit_GFX.c ****                             int16_t r, uint16_t color)
+ 303:Src/Adafruit_GFX.c **** {
+ 1102              		.loc 1 303 0
+ 1103              		.cfi_startproc
+ 1104              		@ args = 8, pretend = 0, frame = 16
+ 1105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1106              	.LVL124:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 26
+
+
+ 1107 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1108              	.LCFI28:
+ 1109              		.cfi_def_cfa_offset 36
+ 1110              		.cfi_offset 4, -36
+ 1111              		.cfi_offset 5, -32
+ 1112              		.cfi_offset 6, -28
+ 1113              		.cfi_offset 7, -24
+ 1114              		.cfi_offset 8, -20
+ 1115              		.cfi_offset 9, -16
+ 1116              		.cfi_offset 10, -12
+ 1117              		.cfi_offset 11, -8
+ 1118              		.cfi_offset 14, -4
+ 1119 0004 87B0     		sub	sp, sp, #28
+ 1120              	.LCFI29:
+ 1121              		.cfi_def_cfa_offset 64
+ 1122 0006 0D46     		mov	r5, r1
+ 1123 0008 1E46     		mov	r6, r3
+ 1124 000a BDF94030 		ldrsh	r3, [sp, #64]
+ 1125              	.LVL125:
+ 1126 000e BDF84470 		ldrh	r7, [sp, #68]
+ 304:Src/Adafruit_GFX.c ****   // smarter version
+ 305:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastHLine (x + r, y, w - 2 * r, color); // Top
+ 1127              		.loc 1 305 0
+ 1128 0012 0390     		str	r0, [sp, #12]
+ 1129 0014 BDF80CA0 		ldrh	r10, [sp, #12]
+ 1130 0018 0493     		str	r3, [sp, #16]
+ 1131 001a BDF81080 		ldrh	r8, [sp, #16]
+ 1132 001e 0AEB0803 		add	r3, r10, r8
+ 1133 0022 1CB2     		sxth	r4, r3
+ 1134 0024 1FFA82FB 		uxth	fp, r2
+ 1135 0028 4FEA4809 		lsl	r9, r8, #1
+ 1136 002c 1FFA89F9 		uxth	r9, r9
+ 1137 0030 ABEB0903 		sub	r3, fp, r9
+ 1138 0034 1AB2     		sxth	r2, r3
+ 1139              	.LVL126:
+ 1140 0036 3B46     		mov	r3, r7
+ 1141 0038 0592     		str	r2, [sp, #20]
+ 1142 003a 0294     		str	r4, [sp, #8]
+ 1143 003c 2046     		mov	r0, r4
+ 1144              	.LVL127:
+ 1145 003e FFF7FEFF 		bl	Adafruit_ILI9340_drawFastHLine
+ 1146              	.LVL128:
+ 306:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastHLine (x + r, y + h - 1, w - 2 * r, color); // Bottom
+ 1147              		.loc 1 306 0
+ 1148 0042 ADB2     		uxth	r5, r5
+ 1149 0044 B6B2     		uxth	r6, r6
+ 1150 0046 AC19     		adds	r4, r5, r6
+ 1151 0048 A4B2     		uxth	r4, r4
+ 1152 004a 611E     		subs	r1, r4, #1
+ 1153 004c 3B46     		mov	r3, r7
+ 1154 004e 059A     		ldr	r2, [sp, #20]
+ 1155 0050 09B2     		sxth	r1, r1
+ 1156 0052 0298     		ldr	r0, [sp, #8]
+ 1157 0054 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastHLine
+ 1158              	.LVL129:
+ 307:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastVLine (x, y + r, h - 2 * r, color); // Left
+ 1159              		.loc 1 307 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 27
+
+
+ 1160 0058 4544     		add	r5, r5, r8
+ 1161 005a 2DB2     		sxth	r5, r5
+ 1162 005c A6EB0906 		sub	r6, r6, r9
+ 1163 0060 36B2     		sxth	r6, r6
+ 1164 0062 3B46     		mov	r3, r7
+ 1165 0064 3246     		mov	r2, r6
+ 1166 0066 2946     		mov	r1, r5
+ 1167 0068 0398     		ldr	r0, [sp, #12]
+ 1168 006a FFF7FEFF 		bl	Adafruit_ILI9340_drawFastVLine
+ 1169              	.LVL130:
+ 308:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_drawFastVLine (x + w - 1, y + r, h - 2 * r, color); // Right
+ 1170              		.loc 1 308 0
+ 1171 006e D344     		add	fp, fp, r10
+ 1172              	.LVL131:
+ 1173 0070 1FFA8BFB 		uxth	fp, fp
+ 1174 0074 0BF1FF30 		add	r0, fp, #-1
+ 1175 0078 3B46     		mov	r3, r7
+ 1176 007a 3246     		mov	r2, r6
+ 1177 007c 2946     		mov	r1, r5
+ 1178 007e 00B2     		sxth	r0, r0
+ 1179 0080 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastVLine
+ 1180              	.LVL132:
+ 309:Src/Adafruit_GFX.c ****   // draw four corners
+ 310:Src/Adafruit_GFX.c ****   Adafruit_GFX_drawCircleHelper (x + r, y + r, r, 1, color);
+ 1181              		.loc 1 310 0
+ 1182 0084 0097     		str	r7, [sp]
+ 1183 0086 0123     		movs	r3, #1
+ 1184 0088 DDF81090 		ldr	r9, [sp, #16]
+ 1185 008c 4A46     		mov	r2, r9
+ 1186 008e 2946     		mov	r1, r5
+ 1187 0090 DDF808A0 		ldr	r10, [sp, #8]
+ 1188 0094 5046     		mov	r0, r10
+ 1189 0096 FFF7FEFF 		bl	Adafruit_GFX_drawCircleHelper
+ 1190              	.LVL133:
+ 311:Src/Adafruit_GFX.c ****   Adafruit_GFX_drawCircleHelper (x + w - r - 1, y + r, r, 2, color);
+ 1191              		.loc 1 311 0
+ 1192 009a ABEB0806 		sub	r6, fp, r8
+ 1193 009e B6B2     		uxth	r6, r6
+ 1194 00a0 013E     		subs	r6, r6, #1
+ 1195 00a2 36B2     		sxth	r6, r6
+ 1196 00a4 0097     		str	r7, [sp]
+ 1197 00a6 0223     		movs	r3, #2
+ 1198 00a8 4A46     		mov	r2, r9
+ 1199 00aa 2946     		mov	r1, r5
+ 1200 00ac 3046     		mov	r0, r6
+ 1201 00ae FFF7FEFF 		bl	Adafruit_GFX_drawCircleHelper
+ 1202              	.LVL134:
+ 312:Src/Adafruit_GFX.c ****   Adafruit_GFX_drawCircleHelper (x + w - r - 1, y + h - r - 1, r, 4, color);
+ 1203              		.loc 1 312 0
+ 1204 00b2 A4EB0804 		sub	r4, r4, r8
+ 1205 00b6 A4B2     		uxth	r4, r4
+ 1206 00b8 013C     		subs	r4, r4, #1
+ 1207 00ba 24B2     		sxth	r4, r4
+ 1208 00bc 0097     		str	r7, [sp]
+ 1209 00be 0423     		movs	r3, #4
+ 1210 00c0 4A46     		mov	r2, r9
+ 1211 00c2 2146     		mov	r1, r4
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 28
+
+
+ 1212 00c4 3046     		mov	r0, r6
+ 1213 00c6 FFF7FEFF 		bl	Adafruit_GFX_drawCircleHelper
+ 1214              	.LVL135:
+ 313:Src/Adafruit_GFX.c ****   Adafruit_GFX_drawCircleHelper (x + r, y + h - r - 1, r, 8, color);
+ 1215              		.loc 1 313 0
+ 1216 00ca 0097     		str	r7, [sp]
+ 1217 00cc 0823     		movs	r3, #8
+ 1218 00ce 4A46     		mov	r2, r9
+ 1219 00d0 2146     		mov	r1, r4
+ 1220 00d2 5046     		mov	r0, r10
+ 1221 00d4 FFF7FEFF 		bl	Adafruit_GFX_drawCircleHelper
+ 1222              	.LVL136:
+ 314:Src/Adafruit_GFX.c **** }
+ 1223              		.loc 1 314 0
+ 1224 00d8 07B0     		add	sp, sp, #28
+ 1225              	.LCFI30:
+ 1226              		.cfi_def_cfa_offset 36
+ 1227              		@ sp needed
+ 1228 00da BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1229              		.cfi_endproc
+ 1230              	.LFE148:
+ 1232              		.section	.text.Adafruit_GFX_fillRoundRect,"ax",%progbits
+ 1233              		.align	1
+ 1234              		.global	Adafruit_GFX_fillRoundRect
+ 1235              		.syntax unified
+ 1236              		.thumb
+ 1237              		.thumb_func
+ 1238              		.fpu fpv5-sp-d16
+ 1240              	Adafruit_GFX_fillRoundRect:
+ 1241              	.LFB149:
+ 315:Src/Adafruit_GFX.c **** 
+ 316:Src/Adafruit_GFX.c **** // Fill a rounded rectangle
+ 317:Src/Adafruit_GFX.c **** void
+ 318:Src/Adafruit_GFX.c **** Adafruit_GFX_fillRoundRect (int16_t x, int16_t y, int16_t w, int16_t h,
+ 319:Src/Adafruit_GFX.c ****                             int16_t r, uint16_t color)
+ 320:Src/Adafruit_GFX.c **** {
+ 1242              		.loc 1 320 0
+ 1243              		.cfi_startproc
+ 1244              		@ args = 8, pretend = 0, frame = 8
+ 1245              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1246              	.LVL137:
+ 1247 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1248              	.LCFI31:
+ 1249              		.cfi_def_cfa_offset 36
+ 1250              		.cfi_offset 4, -36
+ 1251              		.cfi_offset 5, -32
+ 1252              		.cfi_offset 6, -28
+ 1253              		.cfi_offset 7, -24
+ 1254              		.cfi_offset 8, -20
+ 1255              		.cfi_offset 9, -16
+ 1256              		.cfi_offset 10, -12
+ 1257              		.cfi_offset 11, -8
+ 1258              		.cfi_offset 14, -4
+ 1259 0004 85B0     		sub	sp, sp, #20
+ 1260              	.LCFI32:
+ 1261              		.cfi_def_cfa_offset 56
+ 1262 0006 8B46     		mov	fp, r1
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 29
+
+
+ 1263 0008 0393     		str	r3, [sp, #12]
+ 1264 000a BDF93880 		ldrsh	r8, [sp, #56]
+ 1265 000e BDF83C90 		ldrh	r9, [sp, #60]
+ 321:Src/Adafruit_GFX.c ****   // smarter version
+ 322:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_fillRect (x + r, y, w - 2 * r, h, color);
+ 1266              		.loc 1 322 0
+ 1267 0012 84B2     		uxth	r4, r0
+ 1268 0014 1FFA88F5 		uxth	r5, r8
+ 1269 0018 6619     		adds	r6, r4, r5
+ 1270 001a 36B2     		sxth	r6, r6
+ 1271 001c 1FFA82FA 		uxth	r10, r2
+ 1272 0020 6F00     		lsls	r7, r5, #1
+ 1273 0022 BFB2     		uxth	r7, r7
+ 1274 0024 AAEB0702 		sub	r2, r10, r7
+ 1275              	.LVL138:
+ 1276 0028 CDF80090 		str	r9, [sp]
+ 1277 002c 12B2     		sxth	r2, r2
+ 1278 002e 3046     		mov	r0, r6
+ 1279              	.LVL139:
+ 1280 0030 FFF7FEFF 		bl	Adafruit_ILI9340_fillRect
+ 1281              	.LVL140:
+ 323:Src/Adafruit_GFX.c **** 
+ 324:Src/Adafruit_GFX.c ****   // draw four corners
+ 325:Src/Adafruit_GFX.c ****   Adafruit_GFX_fillCircleHelper (x + w - r - 1, y + r, r, 1, h - 2 * r - 1,
+ 1282              		.loc 1 325 0
+ 1283 0034 04EB0A00 		add	r0, r4, r10
+ 1284 0038 80B2     		uxth	r0, r0
+ 1285 003a 401B     		subs	r0, r0, r5
+ 1286 003c 80B2     		uxth	r0, r0
+ 1287 003e 0138     		subs	r0, r0, #1
+ 1288 0040 5D44     		add	r5, r5, fp
+ 1289 0042 2DB2     		sxth	r5, r5
+ 1290 0044 039B     		ldr	r3, [sp, #12]
+ 1291 0046 DF1B     		subs	r7, r3, r7
+ 1292 0048 BFB2     		uxth	r7, r7
+ 1293 004a 013F     		subs	r7, r7, #1
+ 1294 004c 3FB2     		sxth	r7, r7
+ 1295 004e CDF80490 		str	r9, [sp, #4]
+ 1296 0052 0097     		str	r7, [sp]
+ 1297 0054 0123     		movs	r3, #1
+ 1298 0056 4246     		mov	r2, r8
+ 1299 0058 2946     		mov	r1, r5
+ 1300 005a 00B2     		sxth	r0, r0
+ 1301 005c FFF7FEFF 		bl	Adafruit_GFX_fillCircleHelper
+ 1302              	.LVL141:
+ 326:Src/Adafruit_GFX.c ****                                  color);
+ 327:Src/Adafruit_GFX.c ****   Adafruit_GFX_fillCircleHelper (x + r, y + r, r, 2, h - 2 * r - 1, color);
+ 1303              		.loc 1 327 0
+ 1304 0060 CDF80490 		str	r9, [sp, #4]
+ 1305 0064 0097     		str	r7, [sp]
+ 1306 0066 0223     		movs	r3, #2
+ 1307 0068 4246     		mov	r2, r8
+ 1308 006a 2946     		mov	r1, r5
+ 1309 006c 3046     		mov	r0, r6
+ 1310 006e FFF7FEFF 		bl	Adafruit_GFX_fillCircleHelper
+ 1311              	.LVL142:
+ 328:Src/Adafruit_GFX.c **** }
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 30
+
+
+ 1312              		.loc 1 328 0
+ 1313 0072 05B0     		add	sp, sp, #20
+ 1314              	.LCFI33:
+ 1315              		.cfi_def_cfa_offset 36
+ 1316              		@ sp needed
+ 1317 0074 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1318              		.cfi_endproc
+ 1319              	.LFE149:
+ 1321              		.section	.text.Adafruit_GFX_drawTriangle,"ax",%progbits
+ 1322              		.align	1
+ 1323              		.global	Adafruit_GFX_drawTriangle
+ 1324              		.syntax unified
+ 1325              		.thumb
+ 1326              		.thumb_func
+ 1327              		.fpu fpv5-sp-d16
+ 1329              	Adafruit_GFX_drawTriangle:
+ 1330              	.LFB150:
+ 329:Src/Adafruit_GFX.c **** 
+ 330:Src/Adafruit_GFX.c **** // Draw a triangle
+ 331:Src/Adafruit_GFX.c **** void
+ 332:Src/Adafruit_GFX.c **** Adafruit_GFX_drawTriangle (int16_t x0, int16_t y0, int16_t x1, int16_t y1,
+ 333:Src/Adafruit_GFX.c ****                            int16_t x2, int16_t y2, uint16_t color)
+ 334:Src/Adafruit_GFX.c **** {
+ 1331              		.loc 1 334 0
+ 1332              		.cfi_startproc
+ 1333              		@ args = 12, pretend = 0, frame = 0
+ 1334              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1335              	.LVL143:
+ 1336 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 1337              	.LCFI34:
+ 1338              		.cfi_def_cfa_offset 32
+ 1339              		.cfi_offset 4, -32
+ 1340              		.cfi_offset 5, -28
+ 1341              		.cfi_offset 6, -24
+ 1342              		.cfi_offset 7, -20
+ 1343              		.cfi_offset 8, -16
+ 1344              		.cfi_offset 9, -12
+ 1345              		.cfi_offset 10, -8
+ 1346              		.cfi_offset 14, -4
+ 1347 0004 82B0     		sub	sp, sp, #8
+ 1348              	.LCFI35:
+ 1349              		.cfi_def_cfa_offset 40
+ 1350 0006 0746     		mov	r7, r0
+ 1351 0008 8846     		mov	r8, r1
+ 1352 000a 9146     		mov	r9, r2
+ 1353 000c 9A46     		mov	r10, r3
+ 1354 000e BDF92850 		ldrsh	r5, [sp, #40]
+ 1355 0012 BDF92C60 		ldrsh	r6, [sp, #44]
+ 1356 0016 BDF83040 		ldrh	r4, [sp, #48]
+ 335:Src/Adafruit_GFX.c ****   Adafruit_GFX_drawLine (x0, y0, x1, y1, color);
+ 1357              		.loc 1 335 0
+ 1358 001a 0094     		str	r4, [sp]
+ 1359 001c FFF7FEFF 		bl	Adafruit_GFX_drawLine
+ 1360              	.LVL144:
+ 336:Src/Adafruit_GFX.c ****   Adafruit_GFX_drawLine (x1, y1, x2, y2, color);
+ 1361              		.loc 1 336 0
+ 1362 0020 0094     		str	r4, [sp]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 31
+
+
+ 1363 0022 3346     		mov	r3, r6
+ 1364 0024 2A46     		mov	r2, r5
+ 1365 0026 5146     		mov	r1, r10
+ 1366 0028 4846     		mov	r0, r9
+ 1367 002a FFF7FEFF 		bl	Adafruit_GFX_drawLine
+ 1368              	.LVL145:
+ 337:Src/Adafruit_GFX.c ****   Adafruit_GFX_drawLine (x2, y2, x0, y0, color);
+ 1369              		.loc 1 337 0
+ 1370 002e 0094     		str	r4, [sp]
+ 1371 0030 4346     		mov	r3, r8
+ 1372 0032 3A46     		mov	r2, r7
+ 1373 0034 3146     		mov	r1, r6
+ 1374 0036 2846     		mov	r0, r5
+ 1375 0038 FFF7FEFF 		bl	Adafruit_GFX_drawLine
+ 1376              	.LVL146:
+ 338:Src/Adafruit_GFX.c **** }
+ 1377              		.loc 1 338 0
+ 1378 003c 02B0     		add	sp, sp, #8
+ 1379              	.LCFI36:
+ 1380              		.cfi_def_cfa_offset 32
+ 1381              		@ sp needed
+ 1382 003e BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 1383              		.cfi_endproc
+ 1384              	.LFE150:
+ 1386              		.section	.text.Adafruit_GFX_fillTriangle,"ax",%progbits
+ 1387              		.align	1
+ 1388              		.global	Adafruit_GFX_fillTriangle
+ 1389              		.syntax unified
+ 1390              		.thumb
+ 1391              		.thumb_func
+ 1392              		.fpu fpv5-sp-d16
+ 1394              	Adafruit_GFX_fillTriangle:
+ 1395              	.LFB151:
+ 339:Src/Adafruit_GFX.c **** 
+ 340:Src/Adafruit_GFX.c **** // Fill a triangle
+ 341:Src/Adafruit_GFX.c **** void
+ 342:Src/Adafruit_GFX.c **** Adafruit_GFX_fillTriangle (int16_t x0, int16_t y0, int16_t x1, int16_t y1,
+ 343:Src/Adafruit_GFX.c ****                            int16_t x2, int16_t y2, uint16_t color)
+ 344:Src/Adafruit_GFX.c **** {
+ 1396              		.loc 1 344 0
+ 1397              		.cfi_startproc
+ 1398              		@ args = 12, pretend = 0, frame = 32
+ 1399              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1400              	.LVL147:
+ 1401 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1402              	.LCFI37:
+ 1403              		.cfi_def_cfa_offset 36
+ 1404              		.cfi_offset 4, -36
+ 1405              		.cfi_offset 5, -32
+ 1406              		.cfi_offset 6, -28
+ 1407              		.cfi_offset 7, -24
+ 1408              		.cfi_offset 8, -20
+ 1409              		.cfi_offset 9, -16
+ 1410              		.cfi_offset 10, -12
+ 1411              		.cfi_offset 11, -8
+ 1412              		.cfi_offset 14, -4
+ 1413 0004 89B0     		sub	sp, sp, #36
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 32
+
+
+ 1414              	.LCFI38:
+ 1415              		.cfi_def_cfa_offset 72
+ 1416 0006 8846     		mov	r8, r1
+ 1417 0008 0393     		str	r3, [sp, #12]
+ 1418 000a BDF94850 		ldrsh	r5, [sp, #72]
+ 1419 000e BDF94C10 		ldrsh	r1, [sp, #76]
+ 1420              	.LVL148:
+ 1421 0012 0191     		str	r1, [sp, #4]
+ 1422 0014 BDF85010 		ldrh	r1, [sp, #80]
+ 1423 0018 0091     		str	r1, [sp]
+ 345:Src/Adafruit_GFX.c **** 
+ 346:Src/Adafruit_GFX.c ****   int16_t a, b, y, last;
+ 347:Src/Adafruit_GFX.c **** 
+ 348:Src/Adafruit_GFX.c ****   // Sort coordinates by Y order (y2 >= y1 >= y0)
+ 349:Src/Adafruit_GFX.c ****   if (y0 > y1)
+ 1424              		.loc 1 349 0
+ 1425 001a 9845     		cmp	r8, r3
+ 1426 001c 05DC     		bgt	.L67
+ 1427 001e CDF80C80 		str	r8, [sp, #12]
+ 1428 0022 9846     		mov	r8, r3
+ 1429 0024 1346     		mov	r3, r2
+ 1430              	.LVL149:
+ 1431 0026 0246     		mov	r2, r0
+ 1432              	.LVL150:
+ 1433 0028 1846     		mov	r0, r3
+ 1434              	.LVL151:
+ 1435              	.L67:
+ 350:Src/Adafruit_GFX.c ****     {
+ 351:Src/Adafruit_GFX.c ****       swap(y0, y1);
+ 352:Src/Adafruit_GFX.c ****       swap(x0, x1);
+ 353:Src/Adafruit_GFX.c ****     }
+ 354:Src/Adafruit_GFX.c ****   if (y1 > y2)
+ 1436              		.loc 1 354 0
+ 1437 002a 019B     		ldr	r3, [sp, #4]
+ 1438 002c 9845     		cmp	r8, r3
+ 1439 002e 05DC     		bgt	.L68
+ 1440 0030 CDF80480 		str	r8, [sp, #4]
+ 1441 0034 9846     		mov	r8, r3
+ 1442              	.LVL152:
+ 1443 0036 2B46     		mov	r3, r5
+ 1444 0038 0546     		mov	r5, r0
+ 1445 003a 1846     		mov	r0, r3
+ 1446              	.LVL153:
+ 1447              	.L68:
+ 355:Src/Adafruit_GFX.c ****     {
+ 356:Src/Adafruit_GFX.c ****       swap(y2, y1);
+ 357:Src/Adafruit_GFX.c ****       swap(x2, x1);
+ 358:Src/Adafruit_GFX.c ****     }
+ 359:Src/Adafruit_GFX.c ****   if (y0 > y1)
+ 1448              		.loc 1 359 0
+ 1449 003c 0399     		ldr	r1, [sp, #12]
+ 1450 003e 019C     		ldr	r4, [sp, #4]
+ 1451 0040 A142     		cmp	r1, r4
+ 1452 0042 04DC     		bgt	.L69
+ 1453 0044 0191     		str	r1, [sp, #4]
+ 1454              	.LVL154:
+ 1455 0046 0394     		str	r4, [sp, #12]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 33
+
+
+ 1456              	.LVL155:
+ 1457 0048 2B46     		mov	r3, r5
+ 1458 004a 1546     		mov	r5, r2
+ 1459              	.LVL156:
+ 1460 004c 1A46     		mov	r2, r3
+ 1461              	.LVL157:
+ 1462              	.L69:
+ 360:Src/Adafruit_GFX.c ****     {
+ 361:Src/Adafruit_GFX.c ****       swap(y0, y1);
+ 362:Src/Adafruit_GFX.c ****       swap(x0, x1);
+ 363:Src/Adafruit_GFX.c ****     }
+ 364:Src/Adafruit_GFX.c **** 
+ 365:Src/Adafruit_GFX.c ****   if (y0 == y2)
+ 1463              		.loc 1 365 0
+ 1464 004e 019B     		ldr	r3, [sp, #4]
+ 1465 0050 4345     		cmp	r3, r8
+ 1466 0052 2ED0     		beq	.L85
+ 366:Src/Adafruit_GFX.c ****     { // Handle awkward all-on-same-line case as its own thing
+ 367:Src/Adafruit_GFX.c ****       a = b = x0;
+ 368:Src/Adafruit_GFX.c ****       if (x1 < a)
+ 369:Src/Adafruit_GFX.c ****         a = x1;
+ 370:Src/Adafruit_GFX.c ****       else if (x1 > b)
+ 371:Src/Adafruit_GFX.c ****         b = x1;
+ 372:Src/Adafruit_GFX.c ****       if (x2 < a)
+ 373:Src/Adafruit_GFX.c ****         a = x2;
+ 374:Src/Adafruit_GFX.c ****       else if (x2 > b)
+ 375:Src/Adafruit_GFX.c ****         b = x2;
+ 376:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawFastHLine (a, y0, b - a + 1, color);
+ 377:Src/Adafruit_GFX.c ****       return;
+ 378:Src/Adafruit_GFX.c ****     }
+ 379:Src/Adafruit_GFX.c **** 
+ 380:Src/Adafruit_GFX.c ****   int16_t dx01 = x1 - x0, dy01 = y1 - y0, dx02 = x2 - x0, dy02 = y2 - y0, dx12 =
+ 1467              		.loc 1 380 0
+ 1468 0054 1FFA82FA 		uxth	r10, r2
+ 1469 0058 ADB2     		uxth	r5, r5
+ 1470 005a AAEB0503 		sub	r3, r10, r5
+ 1471 005e 9BB2     		uxth	r3, r3
+ 1472 0060 9C46     		mov	ip, r3
+ 1473              	.LVL158:
+ 1474 0062 039C     		ldr	r4, [sp, #12]
+ 1475 0064 A2B2     		uxth	r2, r4
+ 1476              	.LVL159:
+ 1477 0066 BDF80490 		ldrh	r9, [sp, #4]
+ 1478 006a A2EB0903 		sub	r3, r2, r9
+ 1479 006e 1BB2     		sxth	r3, r3
+ 1480 0070 0493     		str	r3, [sp, #16]
+ 1481              	.LVL160:
+ 1482 0072 80B2     		uxth	r0, r0
+ 1483 0074 A0EB050B 		sub	fp, r0, r5
+ 1484 0078 1FFA8BFB 		uxth	fp, fp
+ 1485              	.LVL161:
+ 1486 007c 1FFA88F3 		uxth	r3, r8
+ 1487 0080 A3EB0909 		sub	r9, r3, r9
+ 1488 0084 0FFA89F9 		sxth	r9, r9
+ 1489              	.LVL162:
+ 381:Src/Adafruit_GFX.c ****       x2 - x1, dy12 = y2 - y1, sa = 0, sb = 0;
+ 1490              		.loc 1 381 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 34
+
+
+ 1491 0088 A0EB0A00 		sub	r0, r0, r10
+ 1492              	.LVL163:
+ 1493 008c 81B2     		uxth	r1, r0
+ 1494 008e 0291     		str	r1, [sp, #8]
+ 1495              	.LVL164:
+ 1496 0090 9B1A     		subs	r3, r3, r2
+ 1497 0092 1BB2     		sxth	r3, r3
+ 1498 0094 0593     		str	r3, [sp, #20]
+ 1499              	.LVL165:
+ 382:Src/Adafruit_GFX.c **** 
+ 383:Src/Adafruit_GFX.c ****   // For upper part of triangle, find scanline crossings for segments
+ 384:Src/Adafruit_GFX.c ****   // 0-1 and 0-2.  If y1=y2 (flat-bottomed triangle), the scanline y1
+ 385:Src/Adafruit_GFX.c ****   // is included here (and second loop will be skipped, avoiding a /0
+ 386:Src/Adafruit_GFX.c ****   // error there), otherwise scanline y1 is skipped here and handled
+ 387:Src/Adafruit_GFX.c ****   // in the second loop...which also avoids a /0 error here if y0=y1
+ 388:Src/Adafruit_GFX.c ****   // (flat-topped triangle).
+ 389:Src/Adafruit_GFX.c ****   if (y1 == y2)
+ 1500              		.loc 1 389 0
+ 1501 0096 4445     		cmp	r4, r8
+ 1502 0098 26D0     		beq	.L83
+ 390:Src/Adafruit_GFX.c ****     last = y1;   // Include y1 scanline
+ 391:Src/Adafruit_GFX.c ****   else
+ 392:Src/Adafruit_GFX.c ****     last = y1 - 1; // Skip it
+ 1503              		.loc 1 392 0
+ 1504 009a 013A     		subs	r2, r2, #1
+ 1505 009c 13B2     		sxth	r3, r2
+ 1506              	.LVL166:
+ 1507              	.L74:
+ 393:Src/Adafruit_GFX.c **** 
+ 394:Src/Adafruit_GFX.c ****   for (y = y0; y <= last; y++)
+ 1508              		.loc 1 394 0
+ 1509 009e 019C     		ldr	r4, [sp, #4]
+ 381:Src/Adafruit_GFX.c **** 
+ 1510              		.loc 1 381 0
+ 1511 00a0 0026     		movs	r6, #0
+ 1512 00a2 3746     		mov	r7, r6
+ 1513 00a4 CDF818A0 		str	r10, [sp, #24]
+ 1514 00a8 9A46     		mov	r10, r3
+ 1515              	.LVL167:
+ 1516 00aa CDF81C80 		str	r8, [sp, #28]
+ 1517 00ae E046     		mov	r8, ip
+ 1518              	.LVL168:
+ 1519              		.loc 1 394 0
+ 1520 00b0 26E0     		b	.L75
+ 1521              	.LVL169:
+ 1522              	.L85:
+ 368:Src/Adafruit_GFX.c ****         a = x1;
+ 1523              		.loc 1 368 0
+ 1524 00b2 9542     		cmp	r5, r2
+ 1525 00b4 01DC     		bgt	.L71
+ 370:Src/Adafruit_GFX.c ****         b = x1;
+ 1526              		.loc 1 370 0
+ 1527 00b6 11DB     		blt	.L81
+ 367:Src/Adafruit_GFX.c ****       if (x1 < a)
+ 1528              		.loc 1 367 0
+ 1529 00b8 2A46     		mov	r2, r5
+ 1530              	.LVL170:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 35
+
+
+ 1531              	.L71:
+ 372:Src/Adafruit_GFX.c ****         a = x2;
+ 1532              		.loc 1 372 0
+ 1533 00ba 9042     		cmp	r0, r2
+ 1534 00bc 03DB     		blt	.L72
+ 374:Src/Adafruit_GFX.c ****         b = x2;
+ 1535              		.loc 1 374 0
+ 1536 00be A842     		cmp	r0, r5
+ 1537 00c0 10DD     		ble	.L86
+ 375:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawFastHLine (a, y0, b - a + 1, color);
+ 1538              		.loc 1 375 0
+ 1539 00c2 0546     		mov	r5, r0
+ 1540              	.LVL171:
+ 1541 00c4 1046     		mov	r0, r2
+ 1542              	.LVL172:
+ 1543              	.L72:
+ 376:Src/Adafruit_GFX.c ****       return;
+ 1544              		.loc 1 376 0
+ 1545 00c6 2A1A     		subs	r2, r5, r0
+ 1546 00c8 92B2     		uxth	r2, r2
+ 1547 00ca 0132     		adds	r2, r2, #1
+ 1548 00cc 009B     		ldr	r3, [sp]
+ 1549 00ce 12B2     		sxth	r2, r2
+ 1550 00d0 0199     		ldr	r1, [sp, #4]
+ 1551 00d2 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastHLine
+ 1552              	.LVL173:
+ 1553              	.L66:
+ 395:Src/Adafruit_GFX.c ****     {
+ 396:Src/Adafruit_GFX.c ****       a = x0 + sa / dy01;
+ 397:Src/Adafruit_GFX.c ****       b = x0 + sb / dy02;
+ 398:Src/Adafruit_GFX.c ****       sa += dx01;
+ 399:Src/Adafruit_GFX.c ****       sb += dx02;
+ 400:Src/Adafruit_GFX.c ****       /* longhand:
+ 401:Src/Adafruit_GFX.c ****        a = x0 + (x1 - x0) * (y - y0) / (y1 - y0);
+ 402:Src/Adafruit_GFX.c ****        b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
+ 403:Src/Adafruit_GFX.c ****        */
+ 404:Src/Adafruit_GFX.c ****       if (a > b)
+ 405:Src/Adafruit_GFX.c ****         swap(a, b);
+ 406:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawFastHLine (a, y, b - a + 1, color);
+ 407:Src/Adafruit_GFX.c ****     }
+ 408:Src/Adafruit_GFX.c **** 
+ 409:Src/Adafruit_GFX.c ****   // For lower part of triangle, find scanline crossings for segments
+ 410:Src/Adafruit_GFX.c ****   // 0-2 and 1-2.  This loop is skipped if y1=y2.
+ 411:Src/Adafruit_GFX.c ****   sa = dx12 * (y - y1);
+ 412:Src/Adafruit_GFX.c ****   sb = dx02 * (y - y0);
+ 413:Src/Adafruit_GFX.c ****   for (; y <= y2; y++)
+ 414:Src/Adafruit_GFX.c ****     {
+ 415:Src/Adafruit_GFX.c ****       a = x1 + sa / dy12;
+ 416:Src/Adafruit_GFX.c ****       b = x0 + sb / dy02;
+ 417:Src/Adafruit_GFX.c ****       sa += dx12;
+ 418:Src/Adafruit_GFX.c ****       sb += dx02;
+ 419:Src/Adafruit_GFX.c ****       /* longhand:
+ 420:Src/Adafruit_GFX.c ****        a = x1 + (x2 - x1) * (y - y1) / (y2 - y1);
+ 421:Src/Adafruit_GFX.c ****        b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
+ 422:Src/Adafruit_GFX.c ****        */
+ 423:Src/Adafruit_GFX.c ****       if (a > b)
+ 424:Src/Adafruit_GFX.c ****         swap(a, b);
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 36
+
+
+ 425:Src/Adafruit_GFX.c ****       Adafruit_ILI9340_drawFastHLine (a, y, b - a + 1, color);
+ 426:Src/Adafruit_GFX.c ****     }
+ 427:Src/Adafruit_GFX.c **** }
+ 1554              		.loc 1 427 0
+ 1555 00d6 09B0     		add	sp, sp, #36
+ 1556              	.LCFI39:
+ 1557              		.cfi_remember_state
+ 1558              		.cfi_def_cfa_offset 36
+ 1559              		@ sp needed
+ 1560 00d8 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1561              	.LVL174:
+ 1562              	.L81:
+ 1563              	.LCFI40:
+ 1564              		.cfi_restore_state
+ 1565 00dc 1346     		mov	r3, r2
+ 367:Src/Adafruit_GFX.c ****       if (x1 < a)
+ 1566              		.loc 1 367 0
+ 1567 00de 2A46     		mov	r2, r5
+ 1568              	.LVL175:
+ 371:Src/Adafruit_GFX.c ****       if (x2 < a)
+ 1569              		.loc 1 371 0
+ 1570 00e0 1D46     		mov	r5, r3
+ 1571              	.LVL176:
+ 1572 00e2 EAE7     		b	.L71
+ 1573              	.LVL177:
+ 1574              	.L86:
+ 374:Src/Adafruit_GFX.c ****         b = x2;
+ 1575              		.loc 1 374 0
+ 1576 00e4 1046     		mov	r0, r2
+ 1577              	.LVL178:
+ 1578 00e6 EEE7     		b	.L72
+ 1579              	.LVL179:
+ 1580              	.L83:
+ 390:Src/Adafruit_GFX.c ****   else
+ 1581              		.loc 1 390 0
+ 1582 00e8 039B     		ldr	r3, [sp, #12]
+ 1583 00ea D8E7     		b	.L74
+ 1584              	.LVL180:
+ 1585              	.L76:
+ 406:Src/Adafruit_GFX.c ****     }
+ 1586              		.loc 1 406 0 discriminator 2
+ 1587 00ec 121A     		subs	r2, r2, r0
+ 1588              	.LVL181:
+ 1589 00ee 92B2     		uxth	r2, r2
+ 1590 00f0 0132     		adds	r2, r2, #1
+ 1591 00f2 009B     		ldr	r3, [sp]
+ 1592 00f4 12B2     		sxth	r2, r2
+ 1593 00f6 2146     		mov	r1, r4
+ 1594 00f8 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastHLine
+ 1595              	.LVL182:
+ 394:Src/Adafruit_GFX.c ****     {
+ 1596              		.loc 1 394 0 discriminator 2
+ 1597 00fc 0134     		adds	r4, r4, #1
+ 1598              	.LVL183:
+ 1599 00fe 24B2     		sxth	r4, r4
+ 1600              	.LVL184:
+ 1601              	.L75:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 37
+
+
+ 394:Src/Adafruit_GFX.c ****     {
+ 1602              		.loc 1 394 0 is_stmt 0 discriminator 1
+ 1603 0100 5445     		cmp	r4, r10
+ 1604 0102 12DC     		bgt	.L87
+ 396:Src/Adafruit_GFX.c ****       b = x0 + sb / dy02;
+ 1605              		.loc 1 396 0 is_stmt 1
+ 1606 0104 049B     		ldr	r3, [sp, #16]
+ 1607 0106 97FBF3F2 		sdiv	r2, r7, r3
+ 1608 010a 2A44     		add	r2, r2, r5
+ 1609 010c 12B2     		sxth	r2, r2
+ 1610              	.LVL185:
+ 397:Src/Adafruit_GFX.c ****       sa += dx01;
+ 1611              		.loc 1 397 0
+ 1612 010e 96FBF9F0 		sdiv	r0, r6, r9
+ 1613 0112 2844     		add	r0, r0, r5
+ 1614 0114 00B2     		sxth	r0, r0
+ 1615              	.LVL186:
+ 398:Src/Adafruit_GFX.c ****       sb += dx02;
+ 1616              		.loc 1 398 0
+ 1617 0116 4744     		add	r7, r7, r8
+ 1618              	.LVL187:
+ 1619 0118 3FB2     		sxth	r7, r7
+ 1620              	.LVL188:
+ 399:Src/Adafruit_GFX.c ****       /* longhand:
+ 1621              		.loc 1 399 0
+ 1622 011a 5E44     		add	r6, r6, fp
+ 1623              	.LVL189:
+ 1624 011c 36B2     		sxth	r6, r6
+ 1625              	.LVL190:
+ 404:Src/Adafruit_GFX.c ****         swap(a, b);
+ 1626              		.loc 1 404 0
+ 1627 011e 8242     		cmp	r2, r0
+ 1628 0120 E4DC     		bgt	.L76
+ 1629 0122 0346     		mov	r3, r0
+ 396:Src/Adafruit_GFX.c ****       b = x0 + sb / dy02;
+ 1630              		.loc 1 396 0
+ 1631 0124 1046     		mov	r0, r2
+ 1632              	.LVL191:
+ 397:Src/Adafruit_GFX.c ****       sa += dx01;
+ 1633              		.loc 1 397 0
+ 1634 0126 1A46     		mov	r2, r3
+ 1635              	.LVL192:
+ 1636 0128 E0E7     		b	.L76
+ 1637              	.LVL193:
+ 1638              	.L87:
+ 1639 012a DDF818A0 		ldr	r10, [sp, #24]
+ 1640 012e DDF81C80 		ldr	r8, [sp, #28]
+ 1641              	.LVL194:
+ 411:Src/Adafruit_GFX.c ****   sb = dx02 * (y - y0);
+ 1642              		.loc 1 411 0
+ 1643 0132 039B     		ldr	r3, [sp, #12]
+ 1644 0134 E61A     		subs	r6, r4, r3
+ 1645              	.LVL195:
+ 1646 0136 029B     		ldr	r3, [sp, #8]
+ 1647 0138 16FB03F6 		smulbb	r6, r6, r3
+ 1648 013c 36B2     		sxth	r6, r6
+ 1649              	.LVL196:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 38
+
+
+ 412:Src/Adafruit_GFX.c ****   for (; y <= y2; y++)
+ 1650              		.loc 1 412 0
+ 1651 013e 019B     		ldr	r3, [sp, #4]
+ 1652 0140 E71A     		subs	r7, r4, r3
+ 1653 0142 17FB0BF7 		smulbb	r7, r7, fp
+ 1654 0146 3FB2     		sxth	r7, r7
+ 1655              	.LVL197:
+ 413:Src/Adafruit_GFX.c ****     {
+ 1656              		.loc 1 413 0
+ 1657 0148 09E0     		b	.L78
+ 1658              	.L79:
+ 1659              	.LVL198:
+ 425:Src/Adafruit_GFX.c ****     }
+ 1660              		.loc 1 425 0
+ 1661 014a 121A     		subs	r2, r2, r0
+ 1662              	.LVL199:
+ 1663 014c 92B2     		uxth	r2, r2
+ 1664 014e 0132     		adds	r2, r2, #1
+ 1665 0150 009B     		ldr	r3, [sp]
+ 1666 0152 12B2     		sxth	r2, r2
+ 1667 0154 2146     		mov	r1, r4
+ 1668 0156 FFF7FEFF 		bl	Adafruit_ILI9340_drawFastHLine
+ 1669              	.LVL200:
+ 413:Src/Adafruit_GFX.c ****     {
+ 1670              		.loc 1 413 0
+ 1671 015a 0134     		adds	r4, r4, #1
+ 1672              	.LVL201:
+ 1673 015c 24B2     		sxth	r4, r4
+ 1674              	.LVL202:
+ 1675              	.L78:
+ 413:Src/Adafruit_GFX.c ****     {
+ 1676              		.loc 1 413 0 is_stmt 0 discriminator 1
+ 1677 015e A045     		cmp	r8, r4
+ 1678 0160 B9DB     		blt	.L66
+ 415:Src/Adafruit_GFX.c ****       b = x0 + sb / dy02;
+ 1679              		.loc 1 415 0 is_stmt 1
+ 1680 0162 059B     		ldr	r3, [sp, #20]
+ 1681 0164 96FBF3F2 		sdiv	r2, r6, r3
+ 1682 0168 5244     		add	r2, r2, r10
+ 1683 016a 12B2     		sxth	r2, r2
+ 1684              	.LVL203:
+ 416:Src/Adafruit_GFX.c ****       sa += dx12;
+ 1685              		.loc 1 416 0
+ 1686 016c 97FBF9F0 		sdiv	r0, r7, r9
+ 1687 0170 2844     		add	r0, r0, r5
+ 1688 0172 00B2     		sxth	r0, r0
+ 1689              	.LVL204:
+ 417:Src/Adafruit_GFX.c ****       sb += dx02;
+ 1690              		.loc 1 417 0
+ 1691 0174 029B     		ldr	r3, [sp, #8]
+ 1692 0176 1E44     		add	r6, r6, r3
+ 1693              	.LVL205:
+ 1694 0178 36B2     		sxth	r6, r6
+ 1695              	.LVL206:
+ 418:Src/Adafruit_GFX.c ****       /* longhand:
+ 1696              		.loc 1 418 0
+ 1697 017a 5F44     		add	r7, r7, fp
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 39
+
+
+ 1698              	.LVL207:
+ 1699 017c 3FB2     		sxth	r7, r7
+ 1700              	.LVL208:
+ 423:Src/Adafruit_GFX.c ****         swap(a, b);
+ 1701              		.loc 1 423 0
+ 1702 017e 8242     		cmp	r2, r0
+ 1703 0180 E3DC     		bgt	.L79
+ 1704 0182 0346     		mov	r3, r0
+ 415:Src/Adafruit_GFX.c ****       b = x0 + sb / dy02;
+ 1705              		.loc 1 415 0
+ 1706 0184 1046     		mov	r0, r2
+ 1707              	.LVL209:
+ 416:Src/Adafruit_GFX.c ****       sa += dx12;
+ 1708              		.loc 1 416 0
+ 1709 0186 1A46     		mov	r2, r3
+ 1710              	.LVL210:
+ 1711 0188 DFE7     		b	.L79
+ 1712              		.cfi_endproc
+ 1713              	.LFE151:
+ 1715              		.section	.text.Adafruit_GFX_drawBitmap,"ax",%progbits
+ 1716              		.align	1
+ 1717              		.global	Adafruit_GFX_drawBitmap
+ 1718              		.syntax unified
+ 1719              		.thumb
+ 1720              		.thumb_func
+ 1721              		.fpu fpv5-sp-d16
+ 1723              	Adafruit_GFX_drawBitmap:
+ 1724              	.LFB152:
+ 428:Src/Adafruit_GFX.c **** 
+ 429:Src/Adafruit_GFX.c **** void
+ 430:Src/Adafruit_GFX.c **** Adafruit_GFX_drawBitmap (int16_t x, int16_t y, const uint8_t *bitmap, int16_t w,
+ 431:Src/Adafruit_GFX.c ****                          int16_t h, uint16_t color)
+ 432:Src/Adafruit_GFX.c **** {
+ 1725              		.loc 1 432 0
+ 1726              		.cfi_startproc
+ 1727              		@ args = 8, pretend = 0, frame = 8
+ 1728              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1729              	.LVL211:
+ 1730 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1731              	.LCFI41:
+ 1732              		.cfi_def_cfa_offset 36
+ 1733              		.cfi_offset 4, -36
+ 1734              		.cfi_offset 5, -32
+ 1735              		.cfi_offset 6, -28
+ 1736              		.cfi_offset 7, -24
+ 1737              		.cfi_offset 8, -20
+ 1738              		.cfi_offset 9, -16
+ 1739              		.cfi_offset 10, -12
+ 1740              		.cfi_offset 11, -8
+ 1741              		.cfi_offset 14, -4
+ 1742 0004 83B0     		sub	sp, sp, #12
+ 1743              	.LCFI42:
+ 1744              		.cfi_def_cfa_offset 48
+ 1745 0006 8146     		mov	r9, r0
+ 1746 0008 8A46     		mov	r10, r1
+ 1747 000a 9046     		mov	r8, r2
+ 1748 000c 1E46     		mov	r6, r3
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 40
+
+
+ 1749 000e BDF930B0 		ldrsh	fp, [sp, #48]
+ 1750 0012 BDF83430 		ldrh	r3, [sp, #52]
+ 1751              	.LVL212:
+ 1752 0016 0193     		str	r3, [sp, #4]
+ 433:Src/Adafruit_GFX.c **** 
+ 434:Src/Adafruit_GFX.c ****   int16_t i, j, byteWidth = (w + 7) / 8;
+ 1753              		.loc 1 434 0
+ 1754 0018 F71D     		adds	r7, r6, #7
+ 1755 001a 02D4     		bmi	.L97
+ 1756              	.L89:
+ 1757 001c FF10     		asrs	r7, r7, #3
+ 1758              	.LVL213:
+ 435:Src/Adafruit_GFX.c **** 
+ 436:Src/Adafruit_GFX.c ****   for (j = 0; j < h; j++)
+ 1759              		.loc 1 436 0
+ 1760 001e 0025     		movs	r5, #0
+ 1761 0020 24E0     		b	.L90
+ 1762              	.LVL214:
+ 1763              	.L97:
+ 434:Src/Adafruit_GFX.c **** 
+ 1764              		.loc 1 434 0
+ 1765 0022 0737     		adds	r7, r7, #7
+ 1766 0024 FAE7     		b	.L89
+ 1767              	.LVL215:
+ 1768              	.L91:
+ 437:Src/Adafruit_GFX.c ****     {
+ 438:Src/Adafruit_GFX.c ****       for (i = 0; i < w; i++)
+ 439:Src/Adafruit_GFX.c ****         {
+ 440:Src/Adafruit_GFX.c ****           if (pgm_read_byte(bitmap + j * byteWidth + i / 8) & (128 >> (i & 7)))
+ 1769              		.loc 1 440 0
+ 1770 0026 43F3CF03 		sbfx	r3, r3, #3, #16
+ 1771 002a 1344     		add	r3, r3, r2
+ 1772 002c 18F80320 		ldrb	r2, [r8, r3]	@ zero_extendqisi2
+ 1773 0030 A4B2     		uxth	r4, r4
+ 1774 0032 04F00701 		and	r1, r4, #7
+ 1775 0036 8023     		movs	r3, #128
+ 1776 0038 0B41     		asrs	r3, r3, r1
+ 1777 003a 1A42     		tst	r2, r3
+ 1778 003c 0AD1     		bne	.L98
+ 1779              	.L92:
+ 438:Src/Adafruit_GFX.c ****         {
+ 1780              		.loc 1 438 0 discriminator 2
+ 1781 003e 0134     		adds	r4, r4, #1
+ 1782              	.LVL216:
+ 1783 0040 24B2     		sxth	r4, r4
+ 1784              	.LVL217:
+ 1785              	.L94:
+ 438:Src/Adafruit_GFX.c ****         {
+ 1786              		.loc 1 438 0 is_stmt 0 discriminator 1
+ 1787 0042 B442     		cmp	r4, r6
+ 1788 0044 10DA     		bge	.L99
+ 1789              		.loc 1 440 0 is_stmt 1
+ 1790 0046 07FB05F2 		mul	r2, r7, r5
+ 1791 004a 2346     		mov	r3, r4
+ 1792 004c 002C     		cmp	r4, #0
+ 1793 004e EADA     		bge	.L91
+ 1794 0050 E31D     		adds	r3, r4, #7
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 41
+
+
+ 1795 0052 E8E7     		b	.L91
+ 1796              	.L98:
+ 441:Src/Adafruit_GFX.c ****             {
+ 442:Src/Adafruit_GFX.c ****               Adafruit_ILI9340_drawPixel (x + i, y + j, color);
+ 1797              		.loc 1 442 0
+ 1798 0054 04EB0900 		add	r0, r4, r9
+ 1799 0058 0AEB0501 		add	r1, r10, r5
+ 1800 005c 019A     		ldr	r2, [sp, #4]
+ 1801 005e 09B2     		sxth	r1, r1
+ 1802 0060 00B2     		sxth	r0, r0
+ 1803 0062 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 1804              	.LVL218:
+ 1805 0066 EAE7     		b	.L92
+ 1806              	.L99:
+ 436:Src/Adafruit_GFX.c ****     {
+ 1807              		.loc 1 436 0 discriminator 2
+ 1808 0068 0135     		adds	r5, r5, #1
+ 1809              	.LVL219:
+ 1810 006a 2DB2     		sxth	r5, r5
+ 1811              	.LVL220:
+ 1812              	.L90:
+ 436:Src/Adafruit_GFX.c ****     {
+ 1813              		.loc 1 436 0 is_stmt 0 discriminator 1
+ 1814 006c 5D45     		cmp	r5, fp
+ 1815 006e 01DA     		bge	.L100
+ 438:Src/Adafruit_GFX.c ****         {
+ 1816              		.loc 1 438 0 is_stmt 1
+ 1817 0070 0024     		movs	r4, #0
+ 1818 0072 E6E7     		b	.L94
+ 1819              	.L100:
+ 443:Src/Adafruit_GFX.c ****             }
+ 444:Src/Adafruit_GFX.c ****         }
+ 445:Src/Adafruit_GFX.c ****     }
+ 446:Src/Adafruit_GFX.c **** }
+ 1820              		.loc 1 446 0
+ 1821 0074 03B0     		add	sp, sp, #12
+ 1822              	.LCFI43:
+ 1823              		.cfi_def_cfa_offset 36
+ 1824              		@ sp needed
+ 1825 0076 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1826              		.cfi_endproc
+ 1827              	.LFE152:
+ 1829              		.section	.text.Adafruit_GFX_drawColorBitmap,"ax",%progbits
+ 1830              		.align	1
+ 1831              		.global	Adafruit_GFX_drawColorBitmap
+ 1832              		.syntax unified
+ 1833              		.thumb
+ 1834              		.thumb_func
+ 1835              		.fpu fpv5-sp-d16
+ 1837              	Adafruit_GFX_drawColorBitmap:
+ 1838              	.LFB153:
+ 447:Src/Adafruit_GFX.c **** 
+ 448:Src/Adafruit_GFX.c **** void Adafruit_GFX_drawColorBitmap (int16_t x, int16_t y, uint8_t *bitmap, int16_t w,
+ 449:Src/Adafruit_GFX.c ****                               int16_t h, uint16_t tintMask)
+ 450:Src/Adafruit_GFX.c **** {
+ 1839              		.loc 1 450 0
+ 1840              		.cfi_startproc
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 42
+
+
+ 1841              		@ args = 8, pretend = 0, frame = 16
+ 1842              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1843              	.LVL221:
+ 1844 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 1845              	.LCFI44:
+ 1846              		.cfi_def_cfa_offset 28
+ 1847              		.cfi_offset 4, -28
+ 1848              		.cfi_offset 5, -24
+ 1849              		.cfi_offset 6, -20
+ 1850              		.cfi_offset 7, -16
+ 1851              		.cfi_offset 8, -12
+ 1852              		.cfi_offset 9, -8
+ 1853              		.cfi_offset 14, -4
+ 1854 0004 85B0     		sub	sp, sp, #20
+ 1855              	.LCFI45:
+ 1856              		.cfi_def_cfa_offset 48
+ 1857 0006 9046     		mov	r8, r2
+ 1858 0008 1D46     		mov	r5, r3
+ 1859 000a BDF93060 		ldrsh	r6, [sp, #48]
+ 1860 000e BDF83470 		ldrh	r7, [sp, #52]
+ 451:Src/Adafruit_GFX.c ****   int16_t i; //, j, bmIndex;
+ 452:Src/Adafruit_GFX.c **** 
+ 453:Src/Adafruit_GFX.c ****   Adafruit_ILI9340_setAddrWindow (x, y, x + w - 1, y + h - 1);
+ 1861              		.loc 1 453 0
+ 1862 0012 80B2     		uxth	r0, r0
+ 1863 0014 89B2     		uxth	r1, r1
+ 1864 0016 9CB2     		uxth	r4, r3
+ 1865 0018 0219     		adds	r2, r0, r4
+ 1866              	.LVL222:
+ 1867 001a 92B2     		uxth	r2, r2
+ 1868 001c 1FFA86F9 		uxth	r9, r6
+ 1869 0020 01EB0903 		add	r3, r1, r9
+ 1870              	.LVL223:
+ 1871 0024 9BB2     		uxth	r3, r3
+ 1872 0026 013B     		subs	r3, r3, #1
+ 1873 0028 013A     		subs	r2, r2, #1
+ 1874 002a 9BB2     		uxth	r3, r3
+ 1875 002c 92B2     		uxth	r2, r2
+ 1876 002e FFF7FEFF 		bl	Adafruit_ILI9340_setAddrWindow
+ 1877              	.LVL224:
+ 454:Src/Adafruit_GFX.c **** 
+ 455:Src/Adafruit_GFX.c ****   HAL_GPIO_WritePin (LCD_DC.port, LCD_DC.pin, 1);
+ 1878              		.loc 1 455 0
+ 1879 0032 1E4B     		ldr	r3, .L109
+ 1880 0034 0122     		movs	r2, #1
+ 1881 0036 9988     		ldrh	r1, [r3, #4]
+ 1882 0038 1868     		ldr	r0, [r3]
+ 1883 003a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1884              	.LVL225:
+ 456:Src/Adafruit_GFX.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 0);
+ 1885              		.loc 1 456 0
+ 1886 003e 1C4B     		ldr	r3, .L109+4
+ 1887 0040 0022     		movs	r2, #0
+ 1888 0042 9988     		ldrh	r1, [r3, #4]
+ 1889 0044 1868     		ldr	r0, [r3]
+ 1890 0046 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1891              	.LVL226:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 43
+
+
+ 457:Src/Adafruit_GFX.c **** 
+ 458:Src/Adafruit_GFX.c ****   uint8_t txBuf[10];
+ 459:Src/Adafruit_GFX.c **** 
+ 460:Src/Adafruit_GFX.c ****   //Using DMA is going to mean that I can't alter the image, so for now we'll
+ 461:Src/Adafruit_GFX.c ****   //use different code when using the tintMask
+ 462:Src/Adafruit_GFX.c ****   //TODO: Yes, I can, I just need to make the change in a buffer before sending
+ 463:Src/Adafruit_GFX.c ****   if (tintMask == 0xFFFF)
+ 1892              		.loc 1 463 0
+ 1893 004a 4FF6FF73 		movw	r3, #65535
+ 1894 004e 9F42     		cmp	r7, r3
+ 1895 0050 01D0     		beq	.L108
+ 464:Src/Adafruit_GFX.c ****     {
+ 465:Src/Adafruit_GFX.c ****       HAL_SPI_Transmit_DMA (&hspi1, (uint8_t*) bitmap, w * h * 2);
+ 466:Src/Adafruit_GFX.c ****       while (HAL_SPI_GetState (&hspi1) != HAL_SPI_STATE_READY);
+ 467:Src/Adafruit_GFX.c ****     }
+ 468:Src/Adafruit_GFX.c ****   else
+ 469:Src/Adafruit_GFX.c ****     {
+ 470:Src/Adafruit_GFX.c ****       for (i = 0; i < w * h; i++)
+ 1896              		.loc 1 470 0
+ 1897 0052 0024     		movs	r4, #0
+ 1898              	.LVL227:
+ 1899 0054 1CE0     		b	.L102
+ 1900              	.L108:
+ 465:Src/Adafruit_GFX.c ****       while (HAL_SPI_GetState (&hspi1) != HAL_SPI_STATE_READY);
+ 1901              		.loc 1 465 0
+ 1902 0056 14FB09F2 		smulbb	r2, r4, r9
+ 1903 005a 5200     		lsls	r2, r2, #1
+ 1904 005c 92B2     		uxth	r2, r2
+ 1905 005e 4146     		mov	r1, r8
+ 1906 0060 1448     		ldr	r0, .L109+8
+ 1907 0062 FFF7FEFF 		bl	HAL_SPI_Transmit_DMA
+ 1908              	.LVL228:
+ 1909              	.L103:
+ 466:Src/Adafruit_GFX.c ****     }
+ 1910              		.loc 1 466 0 discriminator 1
+ 1911 0066 1348     		ldr	r0, .L109+8
+ 1912 0068 FFF7FEFF 		bl	HAL_SPI_GetState
+ 1913              	.LVL229:
+ 1914 006c 0128     		cmp	r0, #1
+ 1915 006e FAD1     		bne	.L103
+ 1916 0070 12E0     		b	.L104
+ 1917              	.LVL230:
+ 1918              	.L105:
+ 471:Src/Adafruit_GFX.c ****         {
+ 472:Src/Adafruit_GFX.c ****           txBuf[0] = (bitmap[i] & tintMask) >> 8;
+ 1919              		.loc 1 472 0 discriminator 3
+ 1920 0072 18F80430 		ldrb	r3, [r8, r4]	@ zero_extendqisi2
+ 1921 0076 0022     		movs	r2, #0
+ 1922 0078 8DF80420 		strb	r2, [sp, #4]
+ 473:Src/Adafruit_GFX.c ****           txBuf[1] = (bitmap[i] & tintMask) & 0xFF;
+ 1923              		.loc 1 473 0 discriminator 3
+ 1924 007c 3B40     		ands	r3, r3, r7
+ 1925 007e 8DF80530 		strb	r3, [sp, #5]
+ 474:Src/Adafruit_GFX.c ****           HAL_SPI_Transmit_DMA (&hspi1, txBuf, 2);
+ 1926              		.loc 1 474 0 discriminator 3
+ 1927 0082 0222     		movs	r2, #2
+ 1928 0084 01A9     		add	r1, sp, #4
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 44
+
+
+ 1929 0086 0B48     		ldr	r0, .L109+8
+ 1930 0088 FFF7FEFF 		bl	HAL_SPI_Transmit_DMA
+ 1931              	.LVL231:
+ 470:Src/Adafruit_GFX.c ****         {
+ 1932              		.loc 1 470 0 discriminator 3
+ 1933 008c 0134     		adds	r4, r4, #1
+ 1934              	.LVL232:
+ 1935 008e 24B2     		sxth	r4, r4
+ 1936              	.LVL233:
+ 1937              	.L102:
+ 470:Src/Adafruit_GFX.c ****         {
+ 1938              		.loc 1 470 0 is_stmt 0 discriminator 1
+ 1939 0090 06FB05F3 		mul	r3, r6, r5
+ 1940 0094 9C42     		cmp	r4, r3
+ 1941 0096 ECDB     		blt	.L105
+ 1942              	.LVL234:
+ 1943              	.L104:
+ 475:Src/Adafruit_GFX.c ****         }
+ 476:Src/Adafruit_GFX.c ****     }
+ 477:Src/Adafruit_GFX.c **** 
+ 478:Src/Adafruit_GFX.c ****   HAL_GPIO_WritePin (LCD_NSS.port, LCD_NSS.pin, 1);
+ 1944              		.loc 1 478 0 is_stmt 1
+ 1945 0098 054B     		ldr	r3, .L109+4
+ 1946 009a 0122     		movs	r2, #1
+ 1947 009c 9988     		ldrh	r1, [r3, #4]
+ 1948 009e 1868     		ldr	r0, [r3]
+ 1949 00a0 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1950              	.LVL235:
+ 479:Src/Adafruit_GFX.c **** }
+ 1951              		.loc 1 479 0
+ 1952 00a4 05B0     		add	sp, sp, #20
+ 1953              	.LCFI46:
+ 1954              		.cfi_def_cfa_offset 28
+ 1955              		@ sp needed
+ 1956 00a6 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 1957              	.LVL236:
+ 1958              	.L110:
+ 1959 00aa 00BF     		.align	2
+ 1960              	.L109:
+ 1961 00ac 00000000 		.word	LCD_DC
+ 1962 00b0 00000000 		.word	LCD_NSS
+ 1963 00b4 00000000 		.word	hspi1
+ 1964              		.cfi_endproc
+ 1965              	.LFE153:
+ 1967              		.section	.text.Adafruit_GFX_drawChar,"ax",%progbits
+ 1968              		.align	1
+ 1969              		.global	Adafruit_GFX_drawChar
+ 1970              		.syntax unified
+ 1971              		.thumb
+ 1972              		.thumb_func
+ 1973              		.fpu fpv5-sp-d16
+ 1975              	Adafruit_GFX_drawChar:
+ 1976              	.LFB155:
+ 480:Src/Adafruit_GFX.c **** 
+ 481:Src/Adafruit_GFX.c **** #if ARDUINO >= 100
+ 482:Src/Adafruit_GFX.c **** size_t Adafruit_GFX_write(uint8_t c)
+ 483:Src/Adafruit_GFX.c ****   {
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 45
+
+
+ 484:Src/Adafruit_GFX.c **** #else
+ 485:Src/Adafruit_GFX.c **** void
+ 486:Src/Adafruit_GFX.c **** Adafruit_GFX_write (uint8_t c)
+ 487:Src/Adafruit_GFX.c **** {
+ 488:Src/Adafruit_GFX.c **** #endif
+ 489:Src/Adafruit_GFX.c ****   if (c == '\n')
+ 490:Src/Adafruit_GFX.c ****     {
+ 491:Src/Adafruit_GFX.c ****       cursor_y += textsize * 8;
+ 492:Src/Adafruit_GFX.c ****       cursor_x = 0;
+ 493:Src/Adafruit_GFX.c ****     }
+ 494:Src/Adafruit_GFX.c ****   else if (c == '\r')
+ 495:Src/Adafruit_GFX.c ****     {
+ 496:Src/Adafruit_GFX.c ****       // skip em
+ 497:Src/Adafruit_GFX.c ****     }
+ 498:Src/Adafruit_GFX.c ****   else
+ 499:Src/Adafruit_GFX.c ****     {
+ 500:Src/Adafruit_GFX.c ****       Adafruit_GFX_drawChar (cursor_x, cursor_y, c, textcolor, textbgcolor,
+ 501:Src/Adafruit_GFX.c ****                              textsize);
+ 502:Src/Adafruit_GFX.c ****       cursor_x += textsize * 6;
+ 503:Src/Adafruit_GFX.c ****       if (wrap && (cursor_x > (_width - textsize * 6)))
+ 504:Src/Adafruit_GFX.c ****         {
+ 505:Src/Adafruit_GFX.c ****           cursor_y += textsize * 8;
+ 506:Src/Adafruit_GFX.c ****           cursor_x = 0;
+ 507:Src/Adafruit_GFX.c ****         }
+ 508:Src/Adafruit_GFX.c ****     }
+ 509:Src/Adafruit_GFX.c **** #if ARDUINO >= 100
+ 510:Src/Adafruit_GFX.c ****   return 1;
+ 511:Src/Adafruit_GFX.c **** #endif
+ 512:Src/Adafruit_GFX.c **** }
+ 513:Src/Adafruit_GFX.c **** 
+ 514:Src/Adafruit_GFX.c **** // Draw a character
+ 515:Src/Adafruit_GFX.c **** void
+ 516:Src/Adafruit_GFX.c **** Adafruit_GFX_drawChar (int16_t x, int16_t y, unsigned char c, uint16_t color,
+ 517:Src/Adafruit_GFX.c ****                        uint16_t bg, uint8_t size)
+ 518:Src/Adafruit_GFX.c **** {
+ 1977              		.loc 1 518 0
+ 1978              		.cfi_startproc
+ 1979              		@ args = 8, pretend = 0, frame = 8
+ 1980              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1981              	.LVL237:
+ 1982 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1983              	.LCFI47:
+ 1984              		.cfi_def_cfa_offset 36
+ 1985              		.cfi_offset 4, -36
+ 1986              		.cfi_offset 5, -32
+ 1987              		.cfi_offset 6, -28
+ 1988              		.cfi_offset 7, -24
+ 1989              		.cfi_offset 8, -20
+ 1990              		.cfi_offset 9, -16
+ 1991              		.cfi_offset 10, -12
+ 1992              		.cfi_offset 11, -8
+ 1993              		.cfi_offset 14, -4
+ 1994 0004 85B0     		sub	sp, sp, #20
+ 1995              	.LCFI48:
+ 1996              		.cfi_def_cfa_offset 56
+ 1997 0006 8346     		mov	fp, r0
+ 1998 0008 8A46     		mov	r10, r1
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 46
+
+
+ 1999 000a 0392     		str	r2, [sp, #12]
+ 2000 000c 9846     		mov	r8, r3
+ 2001 000e BDF83890 		ldrh	r9, [sp, #56]
+ 2002 0012 9DF83C60 		ldrb	r6, [sp, #60]	@ zero_extendqisi2
+ 2003              	.LVL238:
+ 519:Src/Adafruit_GFX.c **** 
+ 520:Src/Adafruit_GFX.c **** //  if((x >= _width)            || // Clip right
+ 521:Src/Adafruit_GFX.c **** //     (y >= _height)           || // Clip bottom
+ 522:Src/Adafruit_GFX.c **** //     ((x + 6 * size - 1) < 0) || // Clip left
+ 523:Src/Adafruit_GFX.c **** //     ((y + 8 * size - 1) < 0))   // Clip top
+ 524:Src/Adafruit_GFX.c **** //    return;
+ 525:Src/Adafruit_GFX.c **** 
+ 526:Src/Adafruit_GFX.c ****   int8_t i;
+ 527:Src/Adafruit_GFX.c ****   for (i = 0; i < 6; i++)
+ 2004              		.loc 1 527 0
+ 2005 0016 0027     		movs	r7, #0
+ 2006 0018 40E0     		b	.L112
+ 2007              	.LVL239:
+ 2008              	.L125:
+ 2009              	.LBB2:
+ 528:Src/Adafruit_GFX.c ****     {
+ 529:Src/Adafruit_GFX.c ****       uint8_t line;
+ 530:Src/Adafruit_GFX.c ****       if (i == 5)
+ 531:Src/Adafruit_GFX.c ****         line = 0x0;
+ 532:Src/Adafruit_GFX.c ****       else
+ 533:Src/Adafruit_GFX.c ****         line = pgm_read_byte(font + (c * 5) + i);
+ 534:Src/Adafruit_GFX.c ****       int8_t j;
+ 535:Src/Adafruit_GFX.c ****       for (j = 0; j < 8; j++)
+ 536:Src/Adafruit_GFX.c ****         {
+ 537:Src/Adafruit_GFX.c ****           if (line & 0x1)
+ 538:Src/Adafruit_GFX.c ****             {
+ 539:Src/Adafruit_GFX.c ****               if (size == 1) // default size
+ 540:Src/Adafruit_GFX.c ****                 Adafruit_ILI9340_drawPixel (x + i, y + j, color);
+ 2010              		.loc 1 540 0
+ 2011 001a 07EB0B00 		add	r0, r7, fp
+ 2012 001e 04EB0A01 		add	r1, r4, r10
+ 2013 0022 4246     		mov	r2, r8
+ 2014 0024 09B2     		sxth	r1, r1
+ 2015 0026 00B2     		sxth	r0, r0
+ 2016 0028 FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 2017              	.LVL240:
+ 2018 002c 10E0     		b	.L116
+ 2019              	.L114:
+ 541:Src/Adafruit_GFX.c ****               //Adafruit_SSD1306_drawPixel(x+i, y+j, color);
+ 542:Src/Adafruit_GFX.c ****               else
+ 543:Src/Adafruit_GFX.c ****                 {  // big size
+ 544:Src/Adafruit_GFX.c ****                   //Adafruit_ILI9340_fillRect(x+(i*size), y+(j*size), size, size, color);
+ 545:Src/Adafruit_GFX.c ****                   Adafruit_GFX_fillRect (x + (i * size), y + (j * size), size,
+ 546:Src/Adafruit_GFX.c ****                                          size, color);
+ 547:Src/Adafruit_GFX.c ****                 }
+ 548:Src/Adafruit_GFX.c ****             }
+ 549:Src/Adafruit_GFX.c ****           else if (bg != color)
+ 2020              		.loc 1 549 0
+ 2021 002e C145     		cmp	r9, r8
+ 2022 0030 0ED0     		beq	.L116
+ 550:Src/Adafruit_GFX.c ****             {
+ 551:Src/Adafruit_GFX.c ****               if (size == 1) // default size
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 47
+
+
+ 2023              		.loc 1 551 0
+ 2024 0032 012E     		cmp	r6, #1
+ 2025 0034 24D0     		beq	.L123
+ 552:Src/Adafruit_GFX.c ****                 {
+ 553:Src/Adafruit_GFX.c ****                   Adafruit_ILI9340_drawPixel (x + i, y + j, bg);
+ 554:Src/Adafruit_GFX.c ****                   //Adafruit_SSD1306_drawPixel(x+i, y+j, bg);
+ 555:Src/Adafruit_GFX.c ****                 }
+ 556:Src/Adafruit_GFX.c ****               else
+ 557:Src/Adafruit_GFX.c ****                 {  // big size
+ 558:Src/Adafruit_GFX.c ****                   //Adafruit_ILI9340_fillRect(x+i*size, y+j*size, size, size, bg);
+ 559:Src/Adafruit_GFX.c ****                   Adafruit_GFX_fillRect (x + i * size, y + j * size, size, size,
+ 2026              		.loc 1 559 0
+ 2027 0036 B1B2     		uxth	r1, r6
+ 2028 0038 07FB01B0 		mla	r0, r7, r1, fp
+ 2029 003c 04FB01A1 		mla	r1, r4, r1, r10
+ 2030 0040 32B2     		sxth	r2, r6
+ 2031 0042 CDF80090 		str	r9, [sp]
+ 2032 0046 1346     		mov	r3, r2
+ 2033 0048 09B2     		sxth	r1, r1
+ 2034 004a 00B2     		sxth	r0, r0
+ 2035 004c FFF7FEFF 		bl	Adafruit_GFX_fillRect
+ 2036              	.LVL241:
+ 2037              	.L116:
+ 560:Src/Adafruit_GFX.c ****                                          bg);
+ 561:Src/Adafruit_GFX.c ****                 }
+ 562:Src/Adafruit_GFX.c ****             }
+ 563:Src/Adafruit_GFX.c ****           line >>= 1;
+ 2038              		.loc 1 563 0 discriminator 2
+ 2039 0050 6D08     		lsrs	r5, r5, #1
+ 2040              	.LVL242:
+ 535:Src/Adafruit_GFX.c ****         {
+ 2041              		.loc 1 535 0 discriminator 2
+ 2042 0052 0134     		adds	r4, r4, #1
+ 2043              	.LVL243:
+ 2044 0054 64B2     		sxtb	r4, r4
+ 2045              	.LVL244:
+ 2046              	.L118:
+ 535:Src/Adafruit_GFX.c ****         {
+ 2047              		.loc 1 535 0 is_stmt 0 discriminator 1
+ 2048 0056 072C     		cmp	r4, #7
+ 2049 0058 1EDC     		bgt	.L124
+ 537:Src/Adafruit_GFX.c ****             {
+ 2050              		.loc 1 537 0 is_stmt 1
+ 2051 005a 15F0010F 		tst	r5, #1
+ 2052 005e E6D0     		beq	.L114
+ 539:Src/Adafruit_GFX.c ****                 Adafruit_ILI9340_drawPixel (x + i, y + j, color);
+ 2053              		.loc 1 539 0
+ 2054 0060 012E     		cmp	r6, #1
+ 2055 0062 DAD0     		beq	.L125
+ 545:Src/Adafruit_GFX.c ****                                          size, color);
+ 2056              		.loc 1 545 0
+ 2057 0064 B1B2     		uxth	r1, r6
+ 2058 0066 07FB01B0 		mla	r0, r7, r1, fp
+ 2059 006a 04FB01A1 		mla	r1, r4, r1, r10
+ 2060 006e 32B2     		sxth	r2, r6
+ 2061 0070 CDF80080 		str	r8, [sp]
+ 2062 0074 1346     		mov	r3, r2
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 48
+
+
+ 2063 0076 09B2     		sxth	r1, r1
+ 2064 0078 00B2     		sxth	r0, r0
+ 2065 007a FFF7FEFF 		bl	Adafruit_GFX_fillRect
+ 2066              	.LVL245:
+ 2067 007e E7E7     		b	.L116
+ 2068              	.L123:
+ 553:Src/Adafruit_GFX.c ****                   //Adafruit_SSD1306_drawPixel(x+i, y+j, bg);
+ 2069              		.loc 1 553 0
+ 2070 0080 07EB0B00 		add	r0, r7, fp
+ 2071 0084 04EB0A01 		add	r1, r4, r10
+ 2072 0088 4A46     		mov	r2, r9
+ 2073 008a 09B2     		sxth	r1, r1
+ 2074 008c 00B2     		sxth	r0, r0
+ 2075 008e FFF7FEFF 		bl	Adafruit_ILI9340_drawPixel
+ 2076              	.LVL246:
+ 2077 0092 DDE7     		b	.L116
+ 2078              	.LVL247:
+ 2079              	.L121:
+ 531:Src/Adafruit_GFX.c ****       else
+ 2080              		.loc 1 531 0
+ 2081 0094 0025     		movs	r5, #0
+ 2082 0096 0BE0     		b	.L113
+ 2083              	.LVL248:
+ 2084              	.L124:
+ 2085              	.LBE2:
+ 527:Src/Adafruit_GFX.c ****     {
+ 2086              		.loc 1 527 0 discriminator 2
+ 2087 0098 0137     		adds	r7, r7, #1
+ 2088              	.LVL249:
+ 2089 009a 7FB2     		sxtb	r7, r7
+ 2090              	.LVL250:
+ 2091              	.L112:
+ 527:Src/Adafruit_GFX.c ****     {
+ 2092              		.loc 1 527 0 is_stmt 0 discriminator 1
+ 2093 009c 052F     		cmp	r7, #5
+ 2094 009e 09DC     		bgt	.L126
+ 2095              	.LBB3:
+ 530:Src/Adafruit_GFX.c ****         line = 0x0;
+ 2096              		.loc 1 530 0 is_stmt 1
+ 2097 00a0 052F     		cmp	r7, #5
+ 2098 00a2 F7D0     		beq	.L121
+ 533:Src/Adafruit_GFX.c ****       int8_t j;
+ 2099              		.loc 1 533 0
+ 2100 00a4 039B     		ldr	r3, [sp, #12]
+ 2101 00a6 03EB8303 		add	r3, r3, r3, lsl #2
+ 2102 00aa 3B44     		add	r3, r3, r7
+ 2103 00ac 034A     		ldr	r2, .L127
+ 2104 00ae D55C     		ldrb	r5, [r2, r3]	@ zero_extendqisi2
+ 2105              	.LVL251:
+ 2106              	.L113:
+ 531:Src/Adafruit_GFX.c ****       else
+ 2107              		.loc 1 531 0 discriminator 1
+ 2108 00b0 0024     		movs	r4, #0
+ 2109 00b2 D0E7     		b	.L118
+ 2110              	.L126:
+ 2111              	.LBE3:
+ 564:Src/Adafruit_GFX.c ****         }
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 49
+
+
+ 565:Src/Adafruit_GFX.c ****     }
+ 566:Src/Adafruit_GFX.c **** }
+ 2112              		.loc 1 566 0
+ 2113 00b4 05B0     		add	sp, sp, #20
+ 2114              	.LCFI49:
+ 2115              		.cfi_def_cfa_offset 36
+ 2116              		@ sp needed
+ 2117 00b6 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 2118              	.LVL252:
+ 2119              	.L128:
+ 2120 00ba 00BF     		.align	2
+ 2121              	.L127:
+ 2122 00bc 00000000 		.word	.LANCHOR0
+ 2123              		.cfi_endproc
+ 2124              	.LFE155:
+ 2126              		.section	.text.Adafruit_GFX_write,"ax",%progbits
+ 2127              		.align	1
+ 2128              		.global	Adafruit_GFX_write
+ 2129              		.syntax unified
+ 2130              		.thumb
+ 2131              		.thumb_func
+ 2132              		.fpu fpv5-sp-d16
+ 2134              	Adafruit_GFX_write:
+ 2135              	.LFB154:
+ 487:Src/Adafruit_GFX.c **** #endif
+ 2136              		.loc 1 487 0
+ 2137              		.cfi_startproc
+ 2138              		@ args = 0, pretend = 0, frame = 0
+ 2139              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2140              	.LVL253:
+ 489:Src/Adafruit_GFX.c ****     {
+ 2141              		.loc 1 489 0
+ 2142 0000 0A28     		cmp	r0, #10
+ 2143 0002 32D0     		beq	.L136
+ 494:Src/Adafruit_GFX.c ****     {
+ 2144              		.loc 1 494 0
+ 2145 0004 0D28     		cmp	r0, #13
+ 2146 0006 3BD0     		beq	.L133
+ 487:Src/Adafruit_GFX.c **** #endif
+ 2147              		.loc 1 487 0
+ 2148 0008 70B5     		push	{r4, r5, r6, lr}
+ 2149              	.LCFI50:
+ 2150              		.cfi_def_cfa_offset 16
+ 2151              		.cfi_offset 4, -16
+ 2152              		.cfi_offset 5, -12
+ 2153              		.cfi_offset 6, -8
+ 2154              		.cfi_offset 14, -4
+ 2155 000a 82B0     		sub	sp, sp, #8
+ 2156              	.LCFI51:
+ 2157              		.cfi_def_cfa_offset 24
+ 2158 000c 0246     		mov	r2, r0
+ 500:Src/Adafruit_GFX.c ****                              textsize);
+ 2159              		.loc 1 500 0
+ 2160 000e 1D4B     		ldr	r3, .L137
+ 2161 0010 1B88     		ldrh	r3, [r3]
+ 2162 0012 1D49     		ldr	r1, .L137+4
+ 2163 0014 B1F90010 		ldrsh	r1, [r1]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 50
+
+
+ 2164 0018 1C4C     		ldr	r4, .L137+8
+ 2165 001a B4F90000 		ldrsh	r0, [r4]
+ 2166              	.LVL254:
+ 2167 001e 1C4D     		ldr	r5, .L137+12
+ 2168 0020 2E78     		ldrb	r6, [r5]	@ zero_extendqisi2
+ 2169 0022 0196     		str	r6, [sp, #4]
+ 2170 0024 1B4E     		ldr	r6, .L137+16
+ 2171 0026 3688     		ldrh	r6, [r6]
+ 2172 0028 0096     		str	r6, [sp]
+ 2173 002a FFF7FEFF 		bl	Adafruit_GFX_drawChar
+ 2174              	.LVL255:
+ 502:Src/Adafruit_GFX.c ****       if (wrap && (cursor_x > (_width - textsize * 6)))
+ 2175              		.loc 1 502 0
+ 2176 002e 2A78     		ldrb	r2, [r5]	@ zero_extendqisi2
+ 2177 0030 91B2     		uxth	r1, r2
+ 2178 0032 01EB4100 		add	r0, r1, r1, lsl #1
+ 2179 0036 4300     		lsls	r3, r0, #1
+ 2180 0038 2088     		ldrh	r0, [r4]
+ 2181 003a 0344     		add	r3, r3, r0
+ 2182 003c 1BB2     		sxth	r3, r3
+ 2183 003e 2380     		strh	r3, [r4]	@ movhi
+ 503:Src/Adafruit_GFX.c ****         {
+ 2184              		.loc 1 503 0
+ 2185 0040 1548     		ldr	r0, .L137+20
+ 2186 0042 0078     		ldrb	r0, [r0]	@ zero_extendqisi2
+ 2187 0044 78B1     		cbz	r0, .L129
+ 503:Src/Adafruit_GFX.c ****         {
+ 2188              		.loc 1 503 0 is_stmt 0 discriminator 1
+ 2189 0046 A2EB8202 		sub	r2, r2, r2, lsl #2
+ 2190 004a 5000     		lsls	r0, r2, #1
+ 2191 004c 134A     		ldr	r2, .L137+24
+ 2192 004e B2F90020 		ldrsh	r2, [r2]
+ 2193 0052 0244     		add	r2, r2, r0
+ 2194 0054 9342     		cmp	r3, r2
+ 2195 0056 06DD     		ble	.L129
+ 505:Src/Adafruit_GFX.c ****           cursor_x = 0;
+ 2196              		.loc 1 505 0 is_stmt 1
+ 2197 0058 0B4A     		ldr	r2, .L137+4
+ 2198 005a 1388     		ldrh	r3, [r2]
+ 2199 005c 03EBC101 		add	r1, r3, r1, lsl #3
+ 2200 0060 1180     		strh	r1, [r2]	@ movhi
+ 506:Src/Adafruit_GFX.c ****         }
+ 2201              		.loc 1 506 0
+ 2202 0062 0022     		movs	r2, #0
+ 2203 0064 2280     		strh	r2, [r4]	@ movhi
+ 2204              	.L129:
+ 512:Src/Adafruit_GFX.c **** 
+ 2205              		.loc 1 512 0
+ 2206 0066 02B0     		add	sp, sp, #8
+ 2207              	.LCFI52:
+ 2208              		.cfi_def_cfa_offset 16
+ 2209              		@ sp needed
+ 2210 0068 70BD     		pop	{r4, r5, r6, pc}
+ 2211              	.LVL256:
+ 2212              	.L136:
+ 2213              	.LCFI53:
+ 2214              		.cfi_def_cfa_offset 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 51
+
+
+ 2215              		.cfi_restore 4
+ 2216              		.cfi_restore 5
+ 2217              		.cfi_restore 6
+ 2218              		.cfi_restore 14
+ 491:Src/Adafruit_GFX.c ****       cursor_x = 0;
+ 2219              		.loc 1 491 0
+ 2220 006a 074A     		ldr	r2, .L137+4
+ 2221 006c 084B     		ldr	r3, .L137+12
+ 2222 006e 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 2223 0070 1388     		ldrh	r3, [r2]
+ 2224 0072 03EBC103 		add	r3, r3, r1, lsl #3
+ 2225 0076 1380     		strh	r3, [r2]	@ movhi
+ 492:Src/Adafruit_GFX.c ****     }
+ 2226              		.loc 1 492 0
+ 2227 0078 044B     		ldr	r3, .L137+8
+ 2228 007a 0022     		movs	r2, #0
+ 2229 007c 1A80     		strh	r2, [r3]	@ movhi
+ 2230 007e 7047     		bx	lr
+ 2231              	.L133:
+ 2232 0080 7047     		bx	lr
+ 2233              	.L138:
+ 2234 0082 00BF     		.align	2
+ 2235              	.L137:
+ 2236 0084 00000000 		.word	textcolor
+ 2237 0088 00000000 		.word	cursor_y
+ 2238 008c 00000000 		.word	cursor_x
+ 2239 0090 00000000 		.word	textsize
+ 2240 0094 00000000 		.word	textbgcolor
+ 2241 0098 00000000 		.word	wrap
+ 2242 009c 00000000 		.word	_width
+ 2243              		.cfi_endproc
+ 2244              	.LFE154:
+ 2246              		.section	.text.Adafruit_GFX_setCursor,"ax",%progbits
+ 2247              		.align	1
+ 2248              		.global	Adafruit_GFX_setCursor
+ 2249              		.syntax unified
+ 2250              		.thumb
+ 2251              		.thumb_func
+ 2252              		.fpu fpv5-sp-d16
+ 2254              	Adafruit_GFX_setCursor:
+ 2255              	.LFB156:
+ 567:Src/Adafruit_GFX.c **** 
+ 568:Src/Adafruit_GFX.c **** void
+ 569:Src/Adafruit_GFX.c **** Adafruit_GFX_setCursor (int16_t x, int16_t y)
+ 570:Src/Adafruit_GFX.c **** {
+ 2256              		.loc 1 570 0
+ 2257              		.cfi_startproc
+ 2258              		@ args = 0, pretend = 0, frame = 0
+ 2259              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2260              		@ link register save eliminated.
+ 2261              	.LVL257:
+ 571:Src/Adafruit_GFX.c ****   cursor_x = x;
+ 2262              		.loc 1 571 0
+ 2263 0000 024B     		ldr	r3, .L140
+ 2264 0002 1880     		strh	r0, [r3]	@ movhi
+ 572:Src/Adafruit_GFX.c ****   cursor_y = y;
+ 2265              		.loc 1 572 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 52
+
+
+ 2266 0004 024B     		ldr	r3, .L140+4
+ 2267 0006 1980     		strh	r1, [r3]	@ movhi
+ 573:Src/Adafruit_GFX.c **** }
+ 2268              		.loc 1 573 0
+ 2269 0008 7047     		bx	lr
+ 2270              	.L141:
+ 2271 000a 00BF     		.align	2
+ 2272              	.L140:
+ 2273 000c 00000000 		.word	cursor_x
+ 2274 0010 00000000 		.word	cursor_y
+ 2275              		.cfi_endproc
+ 2276              	.LFE156:
+ 2278              		.section	.text.Adafruit_GFX_setTextSize,"ax",%progbits
+ 2279              		.align	1
+ 2280              		.global	Adafruit_GFX_setTextSize
+ 2281              		.syntax unified
+ 2282              		.thumb
+ 2283              		.thumb_func
+ 2284              		.fpu fpv5-sp-d16
+ 2286              	Adafruit_GFX_setTextSize:
+ 2287              	.LFB157:
+ 574:Src/Adafruit_GFX.c **** 
+ 575:Src/Adafruit_GFX.c **** void
+ 576:Src/Adafruit_GFX.c **** Adafruit_GFX_setTextSize (uint8_t s)
+ 577:Src/Adafruit_GFX.c **** {
+ 2288              		.loc 1 577 0
+ 2289              		.cfi_startproc
+ 2290              		@ args = 0, pretend = 0, frame = 0
+ 2291              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2292              		@ link register save eliminated.
+ 2293              	.LVL258:
+ 578:Src/Adafruit_GFX.c ****   textsize = (s > 0) ? s : 1;
+ 2294              		.loc 1 578 0
+ 2295 0000 0346     		mov	r3, r0
+ 2296 0002 00B9     		cbnz	r0, .L143
+ 2297 0004 0123     		movs	r3, #1
+ 2298              	.L143:
+ 2299              		.loc 1 578 0 is_stmt 0 discriminator 4
+ 2300 0006 014A     		ldr	r2, .L145
+ 2301 0008 1370     		strb	r3, [r2]
+ 579:Src/Adafruit_GFX.c **** }
+ 2302              		.loc 1 579 0 is_stmt 1 discriminator 4
+ 2303 000a 7047     		bx	lr
+ 2304              	.L146:
+ 2305              		.align	2
+ 2306              	.L145:
+ 2307 000c 00000000 		.word	textsize
+ 2308              		.cfi_endproc
+ 2309              	.LFE157:
+ 2311              		.section	.text.Adafruit_GFX_setTextColor,"ax",%progbits
+ 2312              		.align	1
+ 2313              		.global	Adafruit_GFX_setTextColor
+ 2314              		.syntax unified
+ 2315              		.thumb
+ 2316              		.thumb_func
+ 2317              		.fpu fpv5-sp-d16
+ 2319              	Adafruit_GFX_setTextColor:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 53
+
+
+ 2320              	.LFB158:
+ 580:Src/Adafruit_GFX.c **** 
+ 581:Src/Adafruit_GFX.c **** //void Adafruit_GFX_setTextColor(uint16_t c) {
+ 582:Src/Adafruit_GFX.c **** //  // For 'transparent' background, we'll set the bg
+ 583:Src/Adafruit_GFX.c **** //  // to the same as fg instead of using a flag
+ 584:Src/Adafruit_GFX.c **** //  textcolor = textbgcolor = c;
+ 585:Src/Adafruit_GFX.c **** //}
+ 586:Src/Adafruit_GFX.c **** 
+ 587:Src/Adafruit_GFX.c **** void
+ 588:Src/Adafruit_GFX.c **** Adafruit_GFX_setTextColor (uint16_t c, uint16_t b)
+ 589:Src/Adafruit_GFX.c **** {
+ 2321              		.loc 1 589 0
+ 2322              		.cfi_startproc
+ 2323              		@ args = 0, pretend = 0, frame = 0
+ 2324              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2325              		@ link register save eliminated.
+ 2326              	.LVL259:
+ 590:Src/Adafruit_GFX.c ****   textcolor = c;
+ 2327              		.loc 1 590 0
+ 2328 0000 024B     		ldr	r3, .L148
+ 2329 0002 1880     		strh	r0, [r3]	@ movhi
+ 591:Src/Adafruit_GFX.c ****   textbgcolor = b;
+ 2330              		.loc 1 591 0
+ 2331 0004 024B     		ldr	r3, .L148+4
+ 2332 0006 1980     		strh	r1, [r3]	@ movhi
+ 592:Src/Adafruit_GFX.c **** }
+ 2333              		.loc 1 592 0
+ 2334 0008 7047     		bx	lr
+ 2335              	.L149:
+ 2336 000a 00BF     		.align	2
+ 2337              	.L148:
+ 2338 000c 00000000 		.word	textcolor
+ 2339 0010 00000000 		.word	textbgcolor
+ 2340              		.cfi_endproc
+ 2341              	.LFE158:
+ 2343              		.section	.text.Adafruit_GFX_setTextWrap,"ax",%progbits
+ 2344              		.align	1
+ 2345              		.global	Adafruit_GFX_setTextWrap
+ 2346              		.syntax unified
+ 2347              		.thumb
+ 2348              		.thumb_func
+ 2349              		.fpu fpv5-sp-d16
+ 2351              	Adafruit_GFX_setTextWrap:
+ 2352              	.LFB159:
+ 593:Src/Adafruit_GFX.c **** 
+ 594:Src/Adafruit_GFX.c **** void
+ 595:Src/Adafruit_GFX.c **** Adafruit_GFX_setTextWrap (bool w)
+ 596:Src/Adafruit_GFX.c **** {
+ 2353              		.loc 1 596 0
+ 2354              		.cfi_startproc
+ 2355              		@ args = 0, pretend = 0, frame = 0
+ 2356              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2357              		@ link register save eliminated.
+ 2358              	.LVL260:
+ 597:Src/Adafruit_GFX.c ****   wrap = w;
+ 2359              		.loc 1 597 0
+ 2360 0000 014B     		ldr	r3, .L151
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 54
+
+
+ 2361 0002 1870     		strb	r0, [r3]
+ 598:Src/Adafruit_GFX.c **** }
+ 2362              		.loc 1 598 0
+ 2363 0004 7047     		bx	lr
+ 2364              	.L152:
+ 2365 0006 00BF     		.align	2
+ 2366              	.L151:
+ 2367 0008 00000000 		.word	wrap
+ 2368              		.cfi_endproc
+ 2369              	.LFE159:
+ 2371              		.section	.text.Adafruit_GFX_getRotation,"ax",%progbits
+ 2372              		.align	1
+ 2373              		.global	Adafruit_GFX_getRotation
+ 2374              		.syntax unified
+ 2375              		.thumb
+ 2376              		.thumb_func
+ 2377              		.fpu fpv5-sp-d16
+ 2379              	Adafruit_GFX_getRotation:
+ 2380              	.LFB160:
+ 599:Src/Adafruit_GFX.c **** 
+ 600:Src/Adafruit_GFX.c **** uint8_t
+ 601:Src/Adafruit_GFX.c **** Adafruit_GFX_getRotation (void)
+ 602:Src/Adafruit_GFX.c **** {
+ 2381              		.loc 1 602 0
+ 2382              		.cfi_startproc
+ 2383              		@ args = 0, pretend = 0, frame = 0
+ 2384              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2385              		@ link register save eliminated.
+ 603:Src/Adafruit_GFX.c ****   return rotation;
+ 604:Src/Adafruit_GFX.c **** }
+ 2386              		.loc 1 604 0
+ 2387 0000 014B     		ldr	r3, .L154
+ 2388 0002 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 2389 0004 7047     		bx	lr
+ 2390              	.L155:
+ 2391 0006 00BF     		.align	2
+ 2392              	.L154:
+ 2393 0008 00000000 		.word	rotation
+ 2394              		.cfi_endproc
+ 2395              	.LFE160:
+ 2397              		.section	.text.Adafruit_GFX_setRotation,"ax",%progbits
+ 2398              		.align	1
+ 2399              		.global	Adafruit_GFX_setRotation
+ 2400              		.syntax unified
+ 2401              		.thumb
+ 2402              		.thumb_func
+ 2403              		.fpu fpv5-sp-d16
+ 2405              	Adafruit_GFX_setRotation:
+ 2406              	.LFB161:
+ 605:Src/Adafruit_GFX.c **** 
+ 606:Src/Adafruit_GFX.c **** void
+ 607:Src/Adafruit_GFX.c **** Adafruit_GFX_setRotation (uint8_t x)
+ 608:Src/Adafruit_GFX.c **** {
+ 2407              		.loc 1 608 0
+ 2408              		.cfi_startproc
+ 2409              		@ args = 0, pretend = 0, frame = 0
+ 2410              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 55
+
+
+ 2411              		@ link register save eliminated.
+ 2412              	.LVL261:
+ 609:Src/Adafruit_GFX.c ****   rotation = (x & 3);
+ 2413              		.loc 1 609 0
+ 2414 0000 00F00300 		and	r0, r0, #3
+ 2415              	.LVL262:
+ 2416 0004 0C4B     		ldr	r3, .L161
+ 2417 0006 1870     		strb	r0, [r3]
+ 610:Src/Adafruit_GFX.c ****   switch (rotation)
+ 2418              		.loc 1 610 0
+ 2419 0008 0328     		cmp	r0, #3
+ 2420 000a 14D8     		bhi	.L156
+ 2421 000c DFE800F0 		tbb	[pc, r0]
+ 2422              	.L159:
+ 2423 0010 02       		.byte	(.L158-.L159)/2
+ 2424 0011 0B       		.byte	(.L160-.L159)/2
+ 2425 0012 02       		.byte	(.L158-.L159)/2
+ 2426 0013 0B       		.byte	(.L160-.L159)/2
+ 2427              		.p2align 1
+ 2428              	.L158:
+ 611:Src/Adafruit_GFX.c ****     {
+ 612:Src/Adafruit_GFX.c ****     case 0:
+ 613:Src/Adafruit_GFX.c ****     case 2:
+ 614:Src/Adafruit_GFX.c ****       _width = WIDTH;
+ 2429              		.loc 1 614 0
+ 2430 0014 094B     		ldr	r3, .L161+4
+ 2431 0016 1A88     		ldrh	r2, [r3]
+ 2432 0018 094B     		ldr	r3, .L161+8
+ 2433 001a 1A80     		strh	r2, [r3]	@ movhi
+ 615:Src/Adafruit_GFX.c ****       _height = HEIGHT;
+ 2434              		.loc 1 615 0
+ 2435 001c 094B     		ldr	r3, .L161+12
+ 2436 001e 1A88     		ldrh	r2, [r3]
+ 2437 0020 094B     		ldr	r3, .L161+16
+ 2438 0022 1A80     		strh	r2, [r3]	@ movhi
+ 616:Src/Adafruit_GFX.c ****       break;
+ 2439              		.loc 1 616 0
+ 2440 0024 7047     		bx	lr
+ 2441              	.L160:
+ 617:Src/Adafruit_GFX.c ****     case 1:
+ 618:Src/Adafruit_GFX.c ****     case 3:
+ 619:Src/Adafruit_GFX.c ****       _width = HEIGHT;
+ 2442              		.loc 1 619 0
+ 2443 0026 074B     		ldr	r3, .L161+12
+ 2444 0028 1A88     		ldrh	r2, [r3]
+ 2445 002a 054B     		ldr	r3, .L161+8
+ 2446 002c 1A80     		strh	r2, [r3]	@ movhi
+ 620:Src/Adafruit_GFX.c ****       _height = WIDTH;
+ 2447              		.loc 1 620 0
+ 2448 002e 034B     		ldr	r3, .L161+4
+ 2449 0030 1A88     		ldrh	r2, [r3]
+ 2450 0032 054B     		ldr	r3, .L161+16
+ 2451 0034 1A80     		strh	r2, [r3]	@ movhi
+ 2452              	.L156:
+ 621:Src/Adafruit_GFX.c ****       break;
+ 622:Src/Adafruit_GFX.c ****     }
+ 623:Src/Adafruit_GFX.c **** }
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 56
+
+
+ 2453              		.loc 1 623 0
+ 2454 0036 7047     		bx	lr
+ 2455              	.L162:
+ 2456              		.align	2
+ 2457              	.L161:
+ 2458 0038 00000000 		.word	rotation
+ 2459 003c 00000000 		.word	WIDTH
+ 2460 0040 00000000 		.word	_width
+ 2461 0044 00000000 		.word	HEIGHT
+ 2462 0048 00000000 		.word	_height
+ 2463              		.cfi_endproc
+ 2464              	.LFE161:
+ 2466              		.section	.text.Adafruit_GFX_width,"ax",%progbits
+ 2467              		.align	1
+ 2468              		.global	Adafruit_GFX_width
+ 2469              		.syntax unified
+ 2470              		.thumb
+ 2471              		.thumb_func
+ 2472              		.fpu fpv5-sp-d16
+ 2474              	Adafruit_GFX_width:
+ 2475              	.LFB162:
+ 624:Src/Adafruit_GFX.c **** 
+ 625:Src/Adafruit_GFX.c **** // Return the size of the display (per current rotation)
+ 626:Src/Adafruit_GFX.c **** int16_t
+ 627:Src/Adafruit_GFX.c **** Adafruit_GFX_width (void)
+ 628:Src/Adafruit_GFX.c **** {
+ 2476              		.loc 1 628 0
+ 2477              		.cfi_startproc
+ 2478              		@ args = 0, pretend = 0, frame = 0
+ 2479              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2480              		@ link register save eliminated.
+ 629:Src/Adafruit_GFX.c ****   return _width;
+ 630:Src/Adafruit_GFX.c **** }
+ 2481              		.loc 1 630 0
+ 2482 0000 014B     		ldr	r3, .L164
+ 2483 0002 B3F90000 		ldrsh	r0, [r3]
+ 2484 0006 7047     		bx	lr
+ 2485              	.L165:
+ 2486              		.align	2
+ 2487              	.L164:
+ 2488 0008 00000000 		.word	_width
+ 2489              		.cfi_endproc
+ 2490              	.LFE162:
+ 2492              		.section	.text.Adafruit_GFX_height,"ax",%progbits
+ 2493              		.align	1
+ 2494              		.global	Adafruit_GFX_height
+ 2495              		.syntax unified
+ 2496              		.thumb
+ 2497              		.thumb_func
+ 2498              		.fpu fpv5-sp-d16
+ 2500              	Adafruit_GFX_height:
+ 2501              	.LFB163:
+ 631:Src/Adafruit_GFX.c **** 
+ 632:Src/Adafruit_GFX.c **** int16_t
+ 633:Src/Adafruit_GFX.c **** Adafruit_GFX_height (void)
+ 634:Src/Adafruit_GFX.c **** {
+ 2502              		.loc 1 634 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 57
+
+
+ 2503              		.cfi_startproc
+ 2504              		@ args = 0, pretend = 0, frame = 0
+ 2505              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2506              		@ link register save eliminated.
+ 635:Src/Adafruit_GFX.c ****   return _height;
+ 636:Src/Adafruit_GFX.c **** }
+ 2507              		.loc 1 636 0
+ 2508 0000 014B     		ldr	r3, .L167
+ 2509 0002 B3F90000 		ldrsh	r0, [r3]
+ 2510 0006 7047     		bx	lr
+ 2511              	.L168:
+ 2512              		.align	2
+ 2513              	.L167:
+ 2514 0008 00000000 		.word	_height
+ 2515              		.cfi_endproc
+ 2516              	.LFE163:
+ 2518              		.section	.text.Adafruit_GFX_invertDisplay,"ax",%progbits
+ 2519              		.align	1
+ 2520              		.global	Adafruit_GFX_invertDisplay
+ 2521              		.syntax unified
+ 2522              		.thumb
+ 2523              		.thumb_func
+ 2524              		.fpu fpv5-sp-d16
+ 2526              	Adafruit_GFX_invertDisplay:
+ 2527              	.LFB164:
+ 637:Src/Adafruit_GFX.c **** 
+ 638:Src/Adafruit_GFX.c **** void
+ 639:Src/Adafruit_GFX.c **** Adafruit_GFX_invertDisplay (bool i)
+ 640:Src/Adafruit_GFX.c **** {
+ 2528              		.loc 1 640 0
+ 2529              		.cfi_startproc
+ 2530              		@ args = 0, pretend = 0, frame = 0
+ 2531              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2532              		@ link register save eliminated.
+ 2533              	.LVL263:
+ 641:Src/Adafruit_GFX.c ****   // Do nothing, must be subclassed if supported
+ 642:Src/Adafruit_GFX.c **** }
+ 2534              		.loc 1 642 0
+ 2535 0000 7047     		bx	lr
+ 2536              		.cfi_endproc
+ 2537              	.LFE164:
+ 2539              		.comm	wrap,1,1
+ 2540              		.comm	rotation,1,1
+ 2541              		.comm	textsize,1,1
+ 2542              		.comm	textbgcolor,2,2
+ 2543              		.comm	textcolor,2,2
+ 2544              		.comm	cursor_y,2,2
+ 2545              		.comm	cursor_x,2,2
+ 2546              		.comm	_height,2,2
+ 2547              		.comm	_width,2,2
+ 2548              		.comm	HEIGHT,2,2
+ 2549              		.comm	WIDTH,2,2
+ 2550              		.comm	hwSPI,1,1
+ 2551              		.section	.rodata.font,"a",%progbits
+ 2552              		.align	2
+ 2553              		.set	.LANCHOR0,. + 0
+ 2556              	font:
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 58
+
+
+ 2557 0000 00       		.byte	0
+ 2558 0001 00       		.byte	0
+ 2559 0002 00       		.byte	0
+ 2560 0003 00       		.byte	0
+ 2561 0004 00       		.byte	0
+ 2562 0005 3E       		.byte	62
+ 2563 0006 5B       		.byte	91
+ 2564 0007 4F       		.byte	79
+ 2565 0008 5B       		.byte	91
+ 2566 0009 3E       		.byte	62
+ 2567 000a 3E       		.byte	62
+ 2568 000b 6B       		.byte	107
+ 2569 000c 4F       		.byte	79
+ 2570 000d 6B       		.byte	107
+ 2571 000e 3E       		.byte	62
+ 2572 000f 1C       		.byte	28
+ 2573 0010 3E       		.byte	62
+ 2574 0011 7C       		.byte	124
+ 2575 0012 3E       		.byte	62
+ 2576 0013 1C       		.byte	28
+ 2577 0014 18       		.byte	24
+ 2578 0015 3C       		.byte	60
+ 2579 0016 7E       		.byte	126
+ 2580 0017 3C       		.byte	60
+ 2581 0018 18       		.byte	24
+ 2582 0019 1C       		.byte	28
+ 2583 001a 57       		.byte	87
+ 2584 001b 7D       		.byte	125
+ 2585 001c 57       		.byte	87
+ 2586 001d 1C       		.byte	28
+ 2587 001e 1C       		.byte	28
+ 2588 001f 5E       		.byte	94
+ 2589 0020 7F       		.byte	127
+ 2590 0021 5E       		.byte	94
+ 2591 0022 1C       		.byte	28
+ 2592 0023 00       		.byte	0
+ 2593 0024 18       		.byte	24
+ 2594 0025 3C       		.byte	60
+ 2595 0026 18       		.byte	24
+ 2596 0027 00       		.byte	0
+ 2597 0028 FF       		.byte	-1
+ 2598 0029 E7       		.byte	-25
+ 2599 002a C3       		.byte	-61
+ 2600 002b E7       		.byte	-25
+ 2601 002c FF       		.byte	-1
+ 2602 002d 00       		.byte	0
+ 2603 002e 18       		.byte	24
+ 2604 002f 24       		.byte	36
+ 2605 0030 18       		.byte	24
+ 2606 0031 00       		.byte	0
+ 2607 0032 FF       		.byte	-1
+ 2608 0033 E7       		.byte	-25
+ 2609 0034 DB       		.byte	-37
+ 2610 0035 E7       		.byte	-25
+ 2611 0036 FF       		.byte	-1
+ 2612 0037 30       		.byte	48
+ 2613 0038 48       		.byte	72
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 59
+
+
+ 2614 0039 3A       		.byte	58
+ 2615 003a 06       		.byte	6
+ 2616 003b 0E       		.byte	14
+ 2617 003c 26       		.byte	38
+ 2618 003d 29       		.byte	41
+ 2619 003e 79       		.byte	121
+ 2620 003f 29       		.byte	41
+ 2621 0040 26       		.byte	38
+ 2622 0041 40       		.byte	64
+ 2623 0042 7F       		.byte	127
+ 2624 0043 05       		.byte	5
+ 2625 0044 05       		.byte	5
+ 2626 0045 07       		.byte	7
+ 2627 0046 40       		.byte	64
+ 2628 0047 7F       		.byte	127
+ 2629 0048 05       		.byte	5
+ 2630 0049 25       		.byte	37
+ 2631 004a 3F       		.byte	63
+ 2632 004b 5A       		.byte	90
+ 2633 004c 3C       		.byte	60
+ 2634 004d E7       		.byte	-25
+ 2635 004e 3C       		.byte	60
+ 2636 004f 5A       		.byte	90
+ 2637 0050 7F       		.byte	127
+ 2638 0051 3E       		.byte	62
+ 2639 0052 1C       		.byte	28
+ 2640 0053 1C       		.byte	28
+ 2641 0054 08       		.byte	8
+ 2642 0055 08       		.byte	8
+ 2643 0056 1C       		.byte	28
+ 2644 0057 1C       		.byte	28
+ 2645 0058 3E       		.byte	62
+ 2646 0059 7F       		.byte	127
+ 2647 005a 14       		.byte	20
+ 2648 005b 22       		.byte	34
+ 2649 005c 7F       		.byte	127
+ 2650 005d 22       		.byte	34
+ 2651 005e 14       		.byte	20
+ 2652 005f 5F       		.byte	95
+ 2653 0060 5F       		.byte	95
+ 2654 0061 00       		.byte	0
+ 2655 0062 5F       		.byte	95
+ 2656 0063 5F       		.byte	95
+ 2657 0064 06       		.byte	6
+ 2658 0065 09       		.byte	9
+ 2659 0066 7F       		.byte	127
+ 2660 0067 01       		.byte	1
+ 2661 0068 7F       		.byte	127
+ 2662 0069 00       		.byte	0
+ 2663 006a 66       		.byte	102
+ 2664 006b 89       		.byte	-119
+ 2665 006c 95       		.byte	-107
+ 2666 006d 6A       		.byte	106
+ 2667 006e 60       		.byte	96
+ 2668 006f 60       		.byte	96
+ 2669 0070 60       		.byte	96
+ 2670 0071 60       		.byte	96
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 60
+
+
+ 2671 0072 60       		.byte	96
+ 2672 0073 94       		.byte	-108
+ 2673 0074 A2       		.byte	-94
+ 2674 0075 FF       		.byte	-1
+ 2675 0076 A2       		.byte	-94
+ 2676 0077 94       		.byte	-108
+ 2677 0078 08       		.byte	8
+ 2678 0079 04       		.byte	4
+ 2679 007a 7E       		.byte	126
+ 2680 007b 04       		.byte	4
+ 2681 007c 08       		.byte	8
+ 2682 007d 10       		.byte	16
+ 2683 007e 20       		.byte	32
+ 2684 007f 7E       		.byte	126
+ 2685 0080 20       		.byte	32
+ 2686 0081 10       		.byte	16
+ 2687 0082 08       		.byte	8
+ 2688 0083 08       		.byte	8
+ 2689 0084 2A       		.byte	42
+ 2690 0085 1C       		.byte	28
+ 2691 0086 08       		.byte	8
+ 2692 0087 08       		.byte	8
+ 2693 0088 1C       		.byte	28
+ 2694 0089 2A       		.byte	42
+ 2695 008a 08       		.byte	8
+ 2696 008b 08       		.byte	8
+ 2697 008c 1E       		.byte	30
+ 2698 008d 10       		.byte	16
+ 2699 008e 10       		.byte	16
+ 2700 008f 10       		.byte	16
+ 2701 0090 10       		.byte	16
+ 2702 0091 0C       		.byte	12
+ 2703 0092 1E       		.byte	30
+ 2704 0093 0C       		.byte	12
+ 2705 0094 1E       		.byte	30
+ 2706 0095 0C       		.byte	12
+ 2707 0096 30       		.byte	48
+ 2708 0097 38       		.byte	56
+ 2709 0098 3E       		.byte	62
+ 2710 0099 38       		.byte	56
+ 2711 009a 30       		.byte	48
+ 2712 009b 06       		.byte	6
+ 2713 009c 0E       		.byte	14
+ 2714 009d 3E       		.byte	62
+ 2715 009e 0E       		.byte	14
+ 2716 009f 06       		.byte	6
+ 2717 00a0 00       		.byte	0
+ 2718 00a1 00       		.byte	0
+ 2719 00a2 00       		.byte	0
+ 2720 00a3 00       		.byte	0
+ 2721 00a4 00       		.byte	0
+ 2722 00a5 00       		.byte	0
+ 2723 00a6 00       		.byte	0
+ 2724 00a7 5F       		.byte	95
+ 2725 00a8 00       		.byte	0
+ 2726 00a9 00       		.byte	0
+ 2727 00aa 00       		.byte	0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 61
+
+
+ 2728 00ab 07       		.byte	7
+ 2729 00ac 00       		.byte	0
+ 2730 00ad 07       		.byte	7
+ 2731 00ae 00       		.byte	0
+ 2732 00af 14       		.byte	20
+ 2733 00b0 7F       		.byte	127
+ 2734 00b1 14       		.byte	20
+ 2735 00b2 7F       		.byte	127
+ 2736 00b3 14       		.byte	20
+ 2737 00b4 24       		.byte	36
+ 2738 00b5 2A       		.byte	42
+ 2739 00b6 7F       		.byte	127
+ 2740 00b7 2A       		.byte	42
+ 2741 00b8 12       		.byte	18
+ 2742 00b9 23       		.byte	35
+ 2743 00ba 13       		.byte	19
+ 2744 00bb 08       		.byte	8
+ 2745 00bc 64       		.byte	100
+ 2746 00bd 62       		.byte	98
+ 2747 00be 36       		.byte	54
+ 2748 00bf 49       		.byte	73
+ 2749 00c0 56       		.byte	86
+ 2750 00c1 20       		.byte	32
+ 2751 00c2 50       		.byte	80
+ 2752 00c3 00       		.byte	0
+ 2753 00c4 08       		.byte	8
+ 2754 00c5 07       		.byte	7
+ 2755 00c6 03       		.byte	3
+ 2756 00c7 00       		.byte	0
+ 2757 00c8 00       		.byte	0
+ 2758 00c9 1C       		.byte	28
+ 2759 00ca 22       		.byte	34
+ 2760 00cb 41       		.byte	65
+ 2761 00cc 00       		.byte	0
+ 2762 00cd 00       		.byte	0
+ 2763 00ce 41       		.byte	65
+ 2764 00cf 22       		.byte	34
+ 2765 00d0 1C       		.byte	28
+ 2766 00d1 00       		.byte	0
+ 2767 00d2 2A       		.byte	42
+ 2768 00d3 1C       		.byte	28
+ 2769 00d4 7F       		.byte	127
+ 2770 00d5 1C       		.byte	28
+ 2771 00d6 2A       		.byte	42
+ 2772 00d7 08       		.byte	8
+ 2773 00d8 08       		.byte	8
+ 2774 00d9 3E       		.byte	62
+ 2775 00da 08       		.byte	8
+ 2776 00db 08       		.byte	8
+ 2777 00dc 00       		.byte	0
+ 2778 00dd 80       		.byte	-128
+ 2779 00de 70       		.byte	112
+ 2780 00df 30       		.byte	48
+ 2781 00e0 00       		.byte	0
+ 2782 00e1 08       		.byte	8
+ 2783 00e2 08       		.byte	8
+ 2784 00e3 08       		.byte	8
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 62
+
+
+ 2785 00e4 08       		.byte	8
+ 2786 00e5 08       		.byte	8
+ 2787 00e6 00       		.byte	0
+ 2788 00e7 00       		.byte	0
+ 2789 00e8 60       		.byte	96
+ 2790 00e9 60       		.byte	96
+ 2791 00ea 00       		.byte	0
+ 2792 00eb 20       		.byte	32
+ 2793 00ec 10       		.byte	16
+ 2794 00ed 08       		.byte	8
+ 2795 00ee 04       		.byte	4
+ 2796 00ef 02       		.byte	2
+ 2797 00f0 3E       		.byte	62
+ 2798 00f1 51       		.byte	81
+ 2799 00f2 49       		.byte	73
+ 2800 00f3 45       		.byte	69
+ 2801 00f4 3E       		.byte	62
+ 2802 00f5 00       		.byte	0
+ 2803 00f6 42       		.byte	66
+ 2804 00f7 7F       		.byte	127
+ 2805 00f8 40       		.byte	64
+ 2806 00f9 00       		.byte	0
+ 2807 00fa 72       		.byte	114
+ 2808 00fb 49       		.byte	73
+ 2809 00fc 49       		.byte	73
+ 2810 00fd 49       		.byte	73
+ 2811 00fe 46       		.byte	70
+ 2812 00ff 21       		.byte	33
+ 2813 0100 41       		.byte	65
+ 2814 0101 49       		.byte	73
+ 2815 0102 4D       		.byte	77
+ 2816 0103 33       		.byte	51
+ 2817 0104 18       		.byte	24
+ 2818 0105 14       		.byte	20
+ 2819 0106 12       		.byte	18
+ 2820 0107 7F       		.byte	127
+ 2821 0108 10       		.byte	16
+ 2822 0109 27       		.byte	39
+ 2823 010a 45       		.byte	69
+ 2824 010b 45       		.byte	69
+ 2825 010c 45       		.byte	69
+ 2826 010d 39       		.byte	57
+ 2827 010e 3C       		.byte	60
+ 2828 010f 4A       		.byte	74
+ 2829 0110 49       		.byte	73
+ 2830 0111 49       		.byte	73
+ 2831 0112 31       		.byte	49
+ 2832 0113 41       		.byte	65
+ 2833 0114 21       		.byte	33
+ 2834 0115 11       		.byte	17
+ 2835 0116 09       		.byte	9
+ 2836 0117 07       		.byte	7
+ 2837 0118 36       		.byte	54
+ 2838 0119 49       		.byte	73
+ 2839 011a 49       		.byte	73
+ 2840 011b 49       		.byte	73
+ 2841 011c 36       		.byte	54
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 63
+
+
+ 2842 011d 46       		.byte	70
+ 2843 011e 49       		.byte	73
+ 2844 011f 49       		.byte	73
+ 2845 0120 29       		.byte	41
+ 2846 0121 1E       		.byte	30
+ 2847 0122 00       		.byte	0
+ 2848 0123 00       		.byte	0
+ 2849 0124 14       		.byte	20
+ 2850 0125 00       		.byte	0
+ 2851 0126 00       		.byte	0
+ 2852 0127 00       		.byte	0
+ 2853 0128 40       		.byte	64
+ 2854 0129 34       		.byte	52
+ 2855 012a 00       		.byte	0
+ 2856 012b 00       		.byte	0
+ 2857 012c 00       		.byte	0
+ 2858 012d 08       		.byte	8
+ 2859 012e 14       		.byte	20
+ 2860 012f 22       		.byte	34
+ 2861 0130 41       		.byte	65
+ 2862 0131 14       		.byte	20
+ 2863 0132 14       		.byte	20
+ 2864 0133 14       		.byte	20
+ 2865 0134 14       		.byte	20
+ 2866 0135 14       		.byte	20
+ 2867 0136 00       		.byte	0
+ 2868 0137 41       		.byte	65
+ 2869 0138 22       		.byte	34
+ 2870 0139 14       		.byte	20
+ 2871 013a 08       		.byte	8
+ 2872 013b 02       		.byte	2
+ 2873 013c 01       		.byte	1
+ 2874 013d 59       		.byte	89
+ 2875 013e 09       		.byte	9
+ 2876 013f 06       		.byte	6
+ 2877 0140 3E       		.byte	62
+ 2878 0141 41       		.byte	65
+ 2879 0142 5D       		.byte	93
+ 2880 0143 59       		.byte	89
+ 2881 0144 4E       		.byte	78
+ 2882 0145 7C       		.byte	124
+ 2883 0146 12       		.byte	18
+ 2884 0147 11       		.byte	17
+ 2885 0148 12       		.byte	18
+ 2886 0149 7C       		.byte	124
+ 2887 014a 7F       		.byte	127
+ 2888 014b 49       		.byte	73
+ 2889 014c 49       		.byte	73
+ 2890 014d 49       		.byte	73
+ 2891 014e 36       		.byte	54
+ 2892 014f 3E       		.byte	62
+ 2893 0150 41       		.byte	65
+ 2894 0151 41       		.byte	65
+ 2895 0152 41       		.byte	65
+ 2896 0153 22       		.byte	34
+ 2897 0154 7F       		.byte	127
+ 2898 0155 41       		.byte	65
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 64
+
+
+ 2899 0156 41       		.byte	65
+ 2900 0157 41       		.byte	65
+ 2901 0158 3E       		.byte	62
+ 2902 0159 7F       		.byte	127
+ 2903 015a 49       		.byte	73
+ 2904 015b 49       		.byte	73
+ 2905 015c 49       		.byte	73
+ 2906 015d 41       		.byte	65
+ 2907 015e 7F       		.byte	127
+ 2908 015f 09       		.byte	9
+ 2909 0160 09       		.byte	9
+ 2910 0161 09       		.byte	9
+ 2911 0162 01       		.byte	1
+ 2912 0163 3E       		.byte	62
+ 2913 0164 41       		.byte	65
+ 2914 0165 41       		.byte	65
+ 2915 0166 51       		.byte	81
+ 2916 0167 73       		.byte	115
+ 2917 0168 7F       		.byte	127
+ 2918 0169 08       		.byte	8
+ 2919 016a 08       		.byte	8
+ 2920 016b 08       		.byte	8
+ 2921 016c 7F       		.byte	127
+ 2922 016d 00       		.byte	0
+ 2923 016e 41       		.byte	65
+ 2924 016f 7F       		.byte	127
+ 2925 0170 41       		.byte	65
+ 2926 0171 00       		.byte	0
+ 2927 0172 20       		.byte	32
+ 2928 0173 40       		.byte	64
+ 2929 0174 41       		.byte	65
+ 2930 0175 3F       		.byte	63
+ 2931 0176 01       		.byte	1
+ 2932 0177 7F       		.byte	127
+ 2933 0178 08       		.byte	8
+ 2934 0179 14       		.byte	20
+ 2935 017a 22       		.byte	34
+ 2936 017b 41       		.byte	65
+ 2937 017c 7F       		.byte	127
+ 2938 017d 40       		.byte	64
+ 2939 017e 40       		.byte	64
+ 2940 017f 40       		.byte	64
+ 2941 0180 40       		.byte	64
+ 2942 0181 7F       		.byte	127
+ 2943 0182 02       		.byte	2
+ 2944 0183 1C       		.byte	28
+ 2945 0184 02       		.byte	2
+ 2946 0185 7F       		.byte	127
+ 2947 0186 7F       		.byte	127
+ 2948 0187 04       		.byte	4
+ 2949 0188 08       		.byte	8
+ 2950 0189 10       		.byte	16
+ 2951 018a 7F       		.byte	127
+ 2952 018b 3E       		.byte	62
+ 2953 018c 41       		.byte	65
+ 2954 018d 41       		.byte	65
+ 2955 018e 41       		.byte	65
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 65
+
+
+ 2956 018f 3E       		.byte	62
+ 2957 0190 7F       		.byte	127
+ 2958 0191 09       		.byte	9
+ 2959 0192 09       		.byte	9
+ 2960 0193 09       		.byte	9
+ 2961 0194 06       		.byte	6
+ 2962 0195 3E       		.byte	62
+ 2963 0196 41       		.byte	65
+ 2964 0197 51       		.byte	81
+ 2965 0198 21       		.byte	33
+ 2966 0199 5E       		.byte	94
+ 2967 019a 7F       		.byte	127
+ 2968 019b 09       		.byte	9
+ 2969 019c 19       		.byte	25
+ 2970 019d 29       		.byte	41
+ 2971 019e 46       		.byte	70
+ 2972 019f 26       		.byte	38
+ 2973 01a0 49       		.byte	73
+ 2974 01a1 49       		.byte	73
+ 2975 01a2 49       		.byte	73
+ 2976 01a3 32       		.byte	50
+ 2977 01a4 03       		.byte	3
+ 2978 01a5 01       		.byte	1
+ 2979 01a6 7F       		.byte	127
+ 2980 01a7 01       		.byte	1
+ 2981 01a8 03       		.byte	3
+ 2982 01a9 3F       		.byte	63
+ 2983 01aa 40       		.byte	64
+ 2984 01ab 40       		.byte	64
+ 2985 01ac 40       		.byte	64
+ 2986 01ad 3F       		.byte	63
+ 2987 01ae 1F       		.byte	31
+ 2988 01af 20       		.byte	32
+ 2989 01b0 40       		.byte	64
+ 2990 01b1 20       		.byte	32
+ 2991 01b2 1F       		.byte	31
+ 2992 01b3 3F       		.byte	63
+ 2993 01b4 40       		.byte	64
+ 2994 01b5 38       		.byte	56
+ 2995 01b6 40       		.byte	64
+ 2996 01b7 3F       		.byte	63
+ 2997 01b8 63       		.byte	99
+ 2998 01b9 14       		.byte	20
+ 2999 01ba 08       		.byte	8
+ 3000 01bb 14       		.byte	20
+ 3001 01bc 63       		.byte	99
+ 3002 01bd 03       		.byte	3
+ 3003 01be 04       		.byte	4
+ 3004 01bf 78       		.byte	120
+ 3005 01c0 04       		.byte	4
+ 3006 01c1 03       		.byte	3
+ 3007 01c2 61       		.byte	97
+ 3008 01c3 59       		.byte	89
+ 3009 01c4 49       		.byte	73
+ 3010 01c5 4D       		.byte	77
+ 3011 01c6 43       		.byte	67
+ 3012 01c7 00       		.byte	0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 66
+
+
+ 3013 01c8 7F       		.byte	127
+ 3014 01c9 41       		.byte	65
+ 3015 01ca 41       		.byte	65
+ 3016 01cb 41       		.byte	65
+ 3017 01cc 02       		.byte	2
+ 3018 01cd 04       		.byte	4
+ 3019 01ce 08       		.byte	8
+ 3020 01cf 10       		.byte	16
+ 3021 01d0 20       		.byte	32
+ 3022 01d1 00       		.byte	0
+ 3023 01d2 41       		.byte	65
+ 3024 01d3 41       		.byte	65
+ 3025 01d4 41       		.byte	65
+ 3026 01d5 7F       		.byte	127
+ 3027 01d6 04       		.byte	4
+ 3028 01d7 02       		.byte	2
+ 3029 01d8 01       		.byte	1
+ 3030 01d9 02       		.byte	2
+ 3031 01da 04       		.byte	4
+ 3032 01db 40       		.byte	64
+ 3033 01dc 40       		.byte	64
+ 3034 01dd 40       		.byte	64
+ 3035 01de 40       		.byte	64
+ 3036 01df 40       		.byte	64
+ 3037 01e0 00       		.byte	0
+ 3038 01e1 03       		.byte	3
+ 3039 01e2 07       		.byte	7
+ 3040 01e3 08       		.byte	8
+ 3041 01e4 00       		.byte	0
+ 3042 01e5 20       		.byte	32
+ 3043 01e6 54       		.byte	84
+ 3044 01e7 54       		.byte	84
+ 3045 01e8 78       		.byte	120
+ 3046 01e9 40       		.byte	64
+ 3047 01ea 7F       		.byte	127
+ 3048 01eb 28       		.byte	40
+ 3049 01ec 44       		.byte	68
+ 3050 01ed 44       		.byte	68
+ 3051 01ee 38       		.byte	56
+ 3052 01ef 38       		.byte	56
+ 3053 01f0 44       		.byte	68
+ 3054 01f1 44       		.byte	68
+ 3055 01f2 44       		.byte	68
+ 3056 01f3 28       		.byte	40
+ 3057 01f4 38       		.byte	56
+ 3058 01f5 44       		.byte	68
+ 3059 01f6 44       		.byte	68
+ 3060 01f7 28       		.byte	40
+ 3061 01f8 7F       		.byte	127
+ 3062 01f9 38       		.byte	56
+ 3063 01fa 54       		.byte	84
+ 3064 01fb 54       		.byte	84
+ 3065 01fc 54       		.byte	84
+ 3066 01fd 18       		.byte	24
+ 3067 01fe 00       		.byte	0
+ 3068 01ff 08       		.byte	8
+ 3069 0200 7E       		.byte	126
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 67
+
+
+ 3070 0201 09       		.byte	9
+ 3071 0202 02       		.byte	2
+ 3072 0203 18       		.byte	24
+ 3073 0204 A4       		.byte	-92
+ 3074 0205 A4       		.byte	-92
+ 3075 0206 9C       		.byte	-100
+ 3076 0207 78       		.byte	120
+ 3077 0208 7F       		.byte	127
+ 3078 0209 08       		.byte	8
+ 3079 020a 04       		.byte	4
+ 3080 020b 04       		.byte	4
+ 3081 020c 78       		.byte	120
+ 3082 020d 00       		.byte	0
+ 3083 020e 44       		.byte	68
+ 3084 020f 7D       		.byte	125
+ 3085 0210 40       		.byte	64
+ 3086 0211 00       		.byte	0
+ 3087 0212 20       		.byte	32
+ 3088 0213 40       		.byte	64
+ 3089 0214 40       		.byte	64
+ 3090 0215 3D       		.byte	61
+ 3091 0216 00       		.byte	0
+ 3092 0217 7F       		.byte	127
+ 3093 0218 10       		.byte	16
+ 3094 0219 28       		.byte	40
+ 3095 021a 44       		.byte	68
+ 3096 021b 00       		.byte	0
+ 3097 021c 00       		.byte	0
+ 3098 021d 41       		.byte	65
+ 3099 021e 7F       		.byte	127
+ 3100 021f 40       		.byte	64
+ 3101 0220 00       		.byte	0
+ 3102 0221 7C       		.byte	124
+ 3103 0222 04       		.byte	4
+ 3104 0223 78       		.byte	120
+ 3105 0224 04       		.byte	4
+ 3106 0225 78       		.byte	120
+ 3107 0226 7C       		.byte	124
+ 3108 0227 08       		.byte	8
+ 3109 0228 04       		.byte	4
+ 3110 0229 04       		.byte	4
+ 3111 022a 78       		.byte	120
+ 3112 022b 38       		.byte	56
+ 3113 022c 44       		.byte	68
+ 3114 022d 44       		.byte	68
+ 3115 022e 44       		.byte	68
+ 3116 022f 38       		.byte	56
+ 3117 0230 FC       		.byte	-4
+ 3118 0231 18       		.byte	24
+ 3119 0232 24       		.byte	36
+ 3120 0233 24       		.byte	36
+ 3121 0234 18       		.byte	24
+ 3122 0235 18       		.byte	24
+ 3123 0236 24       		.byte	36
+ 3124 0237 24       		.byte	36
+ 3125 0238 18       		.byte	24
+ 3126 0239 FC       		.byte	-4
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 68
+
+
+ 3127 023a 7C       		.byte	124
+ 3128 023b 08       		.byte	8
+ 3129 023c 04       		.byte	4
+ 3130 023d 04       		.byte	4
+ 3131 023e 08       		.byte	8
+ 3132 023f 48       		.byte	72
+ 3133 0240 54       		.byte	84
+ 3134 0241 54       		.byte	84
+ 3135 0242 54       		.byte	84
+ 3136 0243 24       		.byte	36
+ 3137 0244 04       		.byte	4
+ 3138 0245 04       		.byte	4
+ 3139 0246 3F       		.byte	63
+ 3140 0247 44       		.byte	68
+ 3141 0248 24       		.byte	36
+ 3142 0249 3C       		.byte	60
+ 3143 024a 40       		.byte	64
+ 3144 024b 40       		.byte	64
+ 3145 024c 20       		.byte	32
+ 3146 024d 7C       		.byte	124
+ 3147 024e 1C       		.byte	28
+ 3148 024f 20       		.byte	32
+ 3149 0250 40       		.byte	64
+ 3150 0251 20       		.byte	32
+ 3151 0252 1C       		.byte	28
+ 3152 0253 3C       		.byte	60
+ 3153 0254 40       		.byte	64
+ 3154 0255 30       		.byte	48
+ 3155 0256 40       		.byte	64
+ 3156 0257 3C       		.byte	60
+ 3157 0258 44       		.byte	68
+ 3158 0259 28       		.byte	40
+ 3159 025a 10       		.byte	16
+ 3160 025b 28       		.byte	40
+ 3161 025c 44       		.byte	68
+ 3162 025d 4C       		.byte	76
+ 3163 025e 90       		.byte	-112
+ 3164 025f 90       		.byte	-112
+ 3165 0260 90       		.byte	-112
+ 3166 0261 7C       		.byte	124
+ 3167 0262 44       		.byte	68
+ 3168 0263 64       		.byte	100
+ 3169 0264 54       		.byte	84
+ 3170 0265 4C       		.byte	76
+ 3171 0266 44       		.byte	68
+ 3172 0267 00       		.byte	0
+ 3173 0268 08       		.byte	8
+ 3174 0269 36       		.byte	54
+ 3175 026a 41       		.byte	65
+ 3176 026b 00       		.byte	0
+ 3177 026c 00       		.byte	0
+ 3178 026d 00       		.byte	0
+ 3179 026e 77       		.byte	119
+ 3180 026f 00       		.byte	0
+ 3181 0270 00       		.byte	0
+ 3182 0271 00       		.byte	0
+ 3183 0272 41       		.byte	65
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 69
+
+
+ 3184 0273 36       		.byte	54
+ 3185 0274 08       		.byte	8
+ 3186 0275 00       		.byte	0
+ 3187 0276 02       		.byte	2
+ 3188 0277 01       		.byte	1
+ 3189 0278 02       		.byte	2
+ 3190 0279 04       		.byte	4
+ 3191 027a 02       		.byte	2
+ 3192 027b 3C       		.byte	60
+ 3193 027c 26       		.byte	38
+ 3194 027d 23       		.byte	35
+ 3195 027e 26       		.byte	38
+ 3196 027f 3C       		.byte	60
+ 3197 0280 1E       		.byte	30
+ 3198 0281 A1       		.byte	-95
+ 3199 0282 A1       		.byte	-95
+ 3200 0283 61       		.byte	97
+ 3201 0284 12       		.byte	18
+ 3202 0285 3A       		.byte	58
+ 3203 0286 40       		.byte	64
+ 3204 0287 40       		.byte	64
+ 3205 0288 20       		.byte	32
+ 3206 0289 7A       		.byte	122
+ 3207 028a 38       		.byte	56
+ 3208 028b 54       		.byte	84
+ 3209 028c 54       		.byte	84
+ 3210 028d 55       		.byte	85
+ 3211 028e 59       		.byte	89
+ 3212 028f 21       		.byte	33
+ 3213 0290 55       		.byte	85
+ 3214 0291 55       		.byte	85
+ 3215 0292 79       		.byte	121
+ 3216 0293 41       		.byte	65
+ 3217 0294 21       		.byte	33
+ 3218 0295 54       		.byte	84
+ 3219 0296 54       		.byte	84
+ 3220 0297 78       		.byte	120
+ 3221 0298 41       		.byte	65
+ 3222 0299 21       		.byte	33
+ 3223 029a 55       		.byte	85
+ 3224 029b 54       		.byte	84
+ 3225 029c 78       		.byte	120
+ 3226 029d 40       		.byte	64
+ 3227 029e 20       		.byte	32
+ 3228 029f 54       		.byte	84
+ 3229 02a0 55       		.byte	85
+ 3230 02a1 79       		.byte	121
+ 3231 02a2 40       		.byte	64
+ 3232 02a3 0C       		.byte	12
+ 3233 02a4 1E       		.byte	30
+ 3234 02a5 52       		.byte	82
+ 3235 02a6 72       		.byte	114
+ 3236 02a7 12       		.byte	18
+ 3237 02a8 39       		.byte	57
+ 3238 02a9 55       		.byte	85
+ 3239 02aa 55       		.byte	85
+ 3240 02ab 55       		.byte	85
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 70
+
+
+ 3241 02ac 59       		.byte	89
+ 3242 02ad 39       		.byte	57
+ 3243 02ae 54       		.byte	84
+ 3244 02af 54       		.byte	84
+ 3245 02b0 54       		.byte	84
+ 3246 02b1 59       		.byte	89
+ 3247 02b2 39       		.byte	57
+ 3248 02b3 55       		.byte	85
+ 3249 02b4 54       		.byte	84
+ 3250 02b5 54       		.byte	84
+ 3251 02b6 58       		.byte	88
+ 3252 02b7 00       		.byte	0
+ 3253 02b8 00       		.byte	0
+ 3254 02b9 45       		.byte	69
+ 3255 02ba 7C       		.byte	124
+ 3256 02bb 41       		.byte	65
+ 3257 02bc 00       		.byte	0
+ 3258 02bd 02       		.byte	2
+ 3259 02be 45       		.byte	69
+ 3260 02bf 7D       		.byte	125
+ 3261 02c0 42       		.byte	66
+ 3262 02c1 00       		.byte	0
+ 3263 02c2 01       		.byte	1
+ 3264 02c3 45       		.byte	69
+ 3265 02c4 7C       		.byte	124
+ 3266 02c5 40       		.byte	64
+ 3267 02c6 F0       		.byte	-16
+ 3268 02c7 29       		.byte	41
+ 3269 02c8 24       		.byte	36
+ 3270 02c9 29       		.byte	41
+ 3271 02ca F0       		.byte	-16
+ 3272 02cb F0       		.byte	-16
+ 3273 02cc 28       		.byte	40
+ 3274 02cd 25       		.byte	37
+ 3275 02ce 28       		.byte	40
+ 3276 02cf F0       		.byte	-16
+ 3277 02d0 7C       		.byte	124
+ 3278 02d1 54       		.byte	84
+ 3279 02d2 55       		.byte	85
+ 3280 02d3 45       		.byte	69
+ 3281 02d4 00       		.byte	0
+ 3282 02d5 20       		.byte	32
+ 3283 02d6 54       		.byte	84
+ 3284 02d7 54       		.byte	84
+ 3285 02d8 7C       		.byte	124
+ 3286 02d9 54       		.byte	84
+ 3287 02da 7C       		.byte	124
+ 3288 02db 0A       		.byte	10
+ 3289 02dc 09       		.byte	9
+ 3290 02dd 7F       		.byte	127
+ 3291 02de 49       		.byte	73
+ 3292 02df 32       		.byte	50
+ 3293 02e0 49       		.byte	73
+ 3294 02e1 49       		.byte	73
+ 3295 02e2 49       		.byte	73
+ 3296 02e3 32       		.byte	50
+ 3297 02e4 32       		.byte	50
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 71
+
+
+ 3298 02e5 48       		.byte	72
+ 3299 02e6 48       		.byte	72
+ 3300 02e7 48       		.byte	72
+ 3301 02e8 32       		.byte	50
+ 3302 02e9 32       		.byte	50
+ 3303 02ea 4A       		.byte	74
+ 3304 02eb 48       		.byte	72
+ 3305 02ec 48       		.byte	72
+ 3306 02ed 30       		.byte	48
+ 3307 02ee 3A       		.byte	58
+ 3308 02ef 41       		.byte	65
+ 3309 02f0 41       		.byte	65
+ 3310 02f1 21       		.byte	33
+ 3311 02f2 7A       		.byte	122
+ 3312 02f3 3A       		.byte	58
+ 3313 02f4 42       		.byte	66
+ 3314 02f5 40       		.byte	64
+ 3315 02f6 20       		.byte	32
+ 3316 02f7 78       		.byte	120
+ 3317 02f8 00       		.byte	0
+ 3318 02f9 9D       		.byte	-99
+ 3319 02fa A0       		.byte	-96
+ 3320 02fb A0       		.byte	-96
+ 3321 02fc 7D       		.byte	125
+ 3322 02fd 39       		.byte	57
+ 3323 02fe 44       		.byte	68
+ 3324 02ff 44       		.byte	68
+ 3325 0300 44       		.byte	68
+ 3326 0301 39       		.byte	57
+ 3327 0302 3D       		.byte	61
+ 3328 0303 40       		.byte	64
+ 3329 0304 40       		.byte	64
+ 3330 0305 40       		.byte	64
+ 3331 0306 3D       		.byte	61
+ 3332 0307 3C       		.byte	60
+ 3333 0308 24       		.byte	36
+ 3334 0309 FF       		.byte	-1
+ 3335 030a 24       		.byte	36
+ 3336 030b 24       		.byte	36
+ 3337 030c 48       		.byte	72
+ 3338 030d 7E       		.byte	126
+ 3339 030e 49       		.byte	73
+ 3340 030f 43       		.byte	67
+ 3341 0310 66       		.byte	102
+ 3342 0311 2B       		.byte	43
+ 3343 0312 2F       		.byte	47
+ 3344 0313 FC       		.byte	-4
+ 3345 0314 2F       		.byte	47
+ 3346 0315 2B       		.byte	43
+ 3347 0316 FF       		.byte	-1
+ 3348 0317 09       		.byte	9
+ 3349 0318 29       		.byte	41
+ 3350 0319 F6       		.byte	-10
+ 3351 031a 20       		.byte	32
+ 3352 031b C0       		.byte	-64
+ 3353 031c 88       		.byte	-120
+ 3354 031d 7E       		.byte	126
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 72
+
+
+ 3355 031e 09       		.byte	9
+ 3356 031f 03       		.byte	3
+ 3357 0320 20       		.byte	32
+ 3358 0321 54       		.byte	84
+ 3359 0322 54       		.byte	84
+ 3360 0323 79       		.byte	121
+ 3361 0324 41       		.byte	65
+ 3362 0325 00       		.byte	0
+ 3363 0326 00       		.byte	0
+ 3364 0327 44       		.byte	68
+ 3365 0328 7D       		.byte	125
+ 3366 0329 41       		.byte	65
+ 3367 032a 30       		.byte	48
+ 3368 032b 48       		.byte	72
+ 3369 032c 48       		.byte	72
+ 3370 032d 4A       		.byte	74
+ 3371 032e 32       		.byte	50
+ 3372 032f 38       		.byte	56
+ 3373 0330 40       		.byte	64
+ 3374 0331 40       		.byte	64
+ 3375 0332 22       		.byte	34
+ 3376 0333 7A       		.byte	122
+ 3377 0334 00       		.byte	0
+ 3378 0335 7A       		.byte	122
+ 3379 0336 0A       		.byte	10
+ 3380 0337 0A       		.byte	10
+ 3381 0338 72       		.byte	114
+ 3382 0339 7D       		.byte	125
+ 3383 033a 0D       		.byte	13
+ 3384 033b 19       		.byte	25
+ 3385 033c 31       		.byte	49
+ 3386 033d 7D       		.byte	125
+ 3387 033e 26       		.byte	38
+ 3388 033f 29       		.byte	41
+ 3389 0340 29       		.byte	41
+ 3390 0341 2F       		.byte	47
+ 3391 0342 28       		.byte	40
+ 3392 0343 26       		.byte	38
+ 3393 0344 29       		.byte	41
+ 3394 0345 29       		.byte	41
+ 3395 0346 29       		.byte	41
+ 3396 0347 26       		.byte	38
+ 3397 0348 30       		.byte	48
+ 3398 0349 48       		.byte	72
+ 3399 034a 4D       		.byte	77
+ 3400 034b 40       		.byte	64
+ 3401 034c 20       		.byte	32
+ 3402 034d 38       		.byte	56
+ 3403 034e 08       		.byte	8
+ 3404 034f 08       		.byte	8
+ 3405 0350 08       		.byte	8
+ 3406 0351 08       		.byte	8
+ 3407 0352 08       		.byte	8
+ 3408 0353 08       		.byte	8
+ 3409 0354 08       		.byte	8
+ 3410 0355 08       		.byte	8
+ 3411 0356 38       		.byte	56
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 73
+
+
+ 3412 0357 2F       		.byte	47
+ 3413 0358 10       		.byte	16
+ 3414 0359 C8       		.byte	-56
+ 3415 035a AC       		.byte	-84
+ 3416 035b BA       		.byte	-70
+ 3417 035c 2F       		.byte	47
+ 3418 035d 10       		.byte	16
+ 3419 035e 28       		.byte	40
+ 3420 035f 34       		.byte	52
+ 3421 0360 FA       		.byte	-6
+ 3422 0361 00       		.byte	0
+ 3423 0362 00       		.byte	0
+ 3424 0363 7B       		.byte	123
+ 3425 0364 00       		.byte	0
+ 3426 0365 00       		.byte	0
+ 3427 0366 08       		.byte	8
+ 3428 0367 14       		.byte	20
+ 3429 0368 2A       		.byte	42
+ 3430 0369 14       		.byte	20
+ 3431 036a 22       		.byte	34
+ 3432 036b 22       		.byte	34
+ 3433 036c 14       		.byte	20
+ 3434 036d 2A       		.byte	42
+ 3435 036e 14       		.byte	20
+ 3436 036f 08       		.byte	8
+ 3437 0370 AA       		.byte	-86
+ 3438 0371 00       		.byte	0
+ 3439 0372 55       		.byte	85
+ 3440 0373 00       		.byte	0
+ 3441 0374 AA       		.byte	-86
+ 3442 0375 AA       		.byte	-86
+ 3443 0376 55       		.byte	85
+ 3444 0377 AA       		.byte	-86
+ 3445 0378 55       		.byte	85
+ 3446 0379 AA       		.byte	-86
+ 3447 037a 00       		.byte	0
+ 3448 037b 00       		.byte	0
+ 3449 037c 00       		.byte	0
+ 3450 037d FF       		.byte	-1
+ 3451 037e 00       		.byte	0
+ 3452 037f 10       		.byte	16
+ 3453 0380 10       		.byte	16
+ 3454 0381 10       		.byte	16
+ 3455 0382 FF       		.byte	-1
+ 3456 0383 00       		.byte	0
+ 3457 0384 14       		.byte	20
+ 3458 0385 14       		.byte	20
+ 3459 0386 14       		.byte	20
+ 3460 0387 FF       		.byte	-1
+ 3461 0388 00       		.byte	0
+ 3462 0389 10       		.byte	16
+ 3463 038a 10       		.byte	16
+ 3464 038b FF       		.byte	-1
+ 3465 038c 00       		.byte	0
+ 3466 038d FF       		.byte	-1
+ 3467 038e 10       		.byte	16
+ 3468 038f 10       		.byte	16
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 74
+
+
+ 3469 0390 F0       		.byte	-16
+ 3470 0391 10       		.byte	16
+ 3471 0392 F0       		.byte	-16
+ 3472 0393 14       		.byte	20
+ 3473 0394 14       		.byte	20
+ 3474 0395 14       		.byte	20
+ 3475 0396 FC       		.byte	-4
+ 3476 0397 00       		.byte	0
+ 3477 0398 14       		.byte	20
+ 3478 0399 14       		.byte	20
+ 3479 039a F7       		.byte	-9
+ 3480 039b 00       		.byte	0
+ 3481 039c FF       		.byte	-1
+ 3482 039d 00       		.byte	0
+ 3483 039e 00       		.byte	0
+ 3484 039f FF       		.byte	-1
+ 3485 03a0 00       		.byte	0
+ 3486 03a1 FF       		.byte	-1
+ 3487 03a2 14       		.byte	20
+ 3488 03a3 14       		.byte	20
+ 3489 03a4 F4       		.byte	-12
+ 3490 03a5 04       		.byte	4
+ 3491 03a6 FC       		.byte	-4
+ 3492 03a7 14       		.byte	20
+ 3493 03a8 14       		.byte	20
+ 3494 03a9 17       		.byte	23
+ 3495 03aa 10       		.byte	16
+ 3496 03ab 1F       		.byte	31
+ 3497 03ac 10       		.byte	16
+ 3498 03ad 10       		.byte	16
+ 3499 03ae 1F       		.byte	31
+ 3500 03af 10       		.byte	16
+ 3501 03b0 1F       		.byte	31
+ 3502 03b1 14       		.byte	20
+ 3503 03b2 14       		.byte	20
+ 3504 03b3 14       		.byte	20
+ 3505 03b4 1F       		.byte	31
+ 3506 03b5 00       		.byte	0
+ 3507 03b6 10       		.byte	16
+ 3508 03b7 10       		.byte	16
+ 3509 03b8 10       		.byte	16
+ 3510 03b9 F0       		.byte	-16
+ 3511 03ba 00       		.byte	0
+ 3512 03bb 00       		.byte	0
+ 3513 03bc 00       		.byte	0
+ 3514 03bd 00       		.byte	0
+ 3515 03be 1F       		.byte	31
+ 3516 03bf 10       		.byte	16
+ 3517 03c0 10       		.byte	16
+ 3518 03c1 10       		.byte	16
+ 3519 03c2 10       		.byte	16
+ 3520 03c3 1F       		.byte	31
+ 3521 03c4 10       		.byte	16
+ 3522 03c5 10       		.byte	16
+ 3523 03c6 10       		.byte	16
+ 3524 03c7 10       		.byte	16
+ 3525 03c8 F0       		.byte	-16
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 75
+
+
+ 3526 03c9 10       		.byte	16
+ 3527 03ca 00       		.byte	0
+ 3528 03cb 00       		.byte	0
+ 3529 03cc 00       		.byte	0
+ 3530 03cd FF       		.byte	-1
+ 3531 03ce 10       		.byte	16
+ 3532 03cf 10       		.byte	16
+ 3533 03d0 10       		.byte	16
+ 3534 03d1 10       		.byte	16
+ 3535 03d2 10       		.byte	16
+ 3536 03d3 10       		.byte	16
+ 3537 03d4 10       		.byte	16
+ 3538 03d5 10       		.byte	16
+ 3539 03d6 10       		.byte	16
+ 3540 03d7 FF       		.byte	-1
+ 3541 03d8 10       		.byte	16
+ 3542 03d9 00       		.byte	0
+ 3543 03da 00       		.byte	0
+ 3544 03db 00       		.byte	0
+ 3545 03dc FF       		.byte	-1
+ 3546 03dd 14       		.byte	20
+ 3547 03de 00       		.byte	0
+ 3548 03df 00       		.byte	0
+ 3549 03e0 FF       		.byte	-1
+ 3550 03e1 00       		.byte	0
+ 3551 03e2 FF       		.byte	-1
+ 3552 03e3 00       		.byte	0
+ 3553 03e4 00       		.byte	0
+ 3554 03e5 1F       		.byte	31
+ 3555 03e6 10       		.byte	16
+ 3556 03e7 17       		.byte	23
+ 3557 03e8 00       		.byte	0
+ 3558 03e9 00       		.byte	0
+ 3559 03ea FC       		.byte	-4
+ 3560 03eb 04       		.byte	4
+ 3561 03ec F4       		.byte	-12
+ 3562 03ed 14       		.byte	20
+ 3563 03ee 14       		.byte	20
+ 3564 03ef 17       		.byte	23
+ 3565 03f0 10       		.byte	16
+ 3566 03f1 17       		.byte	23
+ 3567 03f2 14       		.byte	20
+ 3568 03f3 14       		.byte	20
+ 3569 03f4 F4       		.byte	-12
+ 3570 03f5 04       		.byte	4
+ 3571 03f6 F4       		.byte	-12
+ 3572 03f7 00       		.byte	0
+ 3573 03f8 00       		.byte	0
+ 3574 03f9 FF       		.byte	-1
+ 3575 03fa 00       		.byte	0
+ 3576 03fb F7       		.byte	-9
+ 3577 03fc 14       		.byte	20
+ 3578 03fd 14       		.byte	20
+ 3579 03fe 14       		.byte	20
+ 3580 03ff 14       		.byte	20
+ 3581 0400 14       		.byte	20
+ 3582 0401 14       		.byte	20
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 76
+
+
+ 3583 0402 14       		.byte	20
+ 3584 0403 F7       		.byte	-9
+ 3585 0404 00       		.byte	0
+ 3586 0405 F7       		.byte	-9
+ 3587 0406 14       		.byte	20
+ 3588 0407 14       		.byte	20
+ 3589 0408 14       		.byte	20
+ 3590 0409 17       		.byte	23
+ 3591 040a 14       		.byte	20
+ 3592 040b 10       		.byte	16
+ 3593 040c 10       		.byte	16
+ 3594 040d 1F       		.byte	31
+ 3595 040e 10       		.byte	16
+ 3596 040f 1F       		.byte	31
+ 3597 0410 14       		.byte	20
+ 3598 0411 14       		.byte	20
+ 3599 0412 14       		.byte	20
+ 3600 0413 F4       		.byte	-12
+ 3601 0414 14       		.byte	20
+ 3602 0415 10       		.byte	16
+ 3603 0416 10       		.byte	16
+ 3604 0417 F0       		.byte	-16
+ 3605 0418 10       		.byte	16
+ 3606 0419 F0       		.byte	-16
+ 3607 041a 00       		.byte	0
+ 3608 041b 00       		.byte	0
+ 3609 041c 1F       		.byte	31
+ 3610 041d 10       		.byte	16
+ 3611 041e 1F       		.byte	31
+ 3612 041f 00       		.byte	0
+ 3613 0420 00       		.byte	0
+ 3614 0421 00       		.byte	0
+ 3615 0422 1F       		.byte	31
+ 3616 0423 14       		.byte	20
+ 3617 0424 00       		.byte	0
+ 3618 0425 00       		.byte	0
+ 3619 0426 00       		.byte	0
+ 3620 0427 FC       		.byte	-4
+ 3621 0428 14       		.byte	20
+ 3622 0429 00       		.byte	0
+ 3623 042a 00       		.byte	0
+ 3624 042b F0       		.byte	-16
+ 3625 042c 10       		.byte	16
+ 3626 042d F0       		.byte	-16
+ 3627 042e 10       		.byte	16
+ 3628 042f 10       		.byte	16
+ 3629 0430 FF       		.byte	-1
+ 3630 0431 10       		.byte	16
+ 3631 0432 FF       		.byte	-1
+ 3632 0433 14       		.byte	20
+ 3633 0434 14       		.byte	20
+ 3634 0435 14       		.byte	20
+ 3635 0436 FF       		.byte	-1
+ 3636 0437 14       		.byte	20
+ 3637 0438 10       		.byte	16
+ 3638 0439 10       		.byte	16
+ 3639 043a 10       		.byte	16
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 77
+
+
+ 3640 043b 1F       		.byte	31
+ 3641 043c 00       		.byte	0
+ 3642 043d 00       		.byte	0
+ 3643 043e 00       		.byte	0
+ 3644 043f 00       		.byte	0
+ 3645 0440 F0       		.byte	-16
+ 3646 0441 10       		.byte	16
+ 3647 0442 FF       		.byte	-1
+ 3648 0443 FF       		.byte	-1
+ 3649 0444 FF       		.byte	-1
+ 3650 0445 FF       		.byte	-1
+ 3651 0446 FF       		.byte	-1
+ 3652 0447 F0       		.byte	-16
+ 3653 0448 F0       		.byte	-16
+ 3654 0449 F0       		.byte	-16
+ 3655 044a F0       		.byte	-16
+ 3656 044b F0       		.byte	-16
+ 3657 044c FF       		.byte	-1
+ 3658 044d FF       		.byte	-1
+ 3659 044e FF       		.byte	-1
+ 3660 044f 00       		.byte	0
+ 3661 0450 00       		.byte	0
+ 3662 0451 00       		.byte	0
+ 3663 0452 00       		.byte	0
+ 3664 0453 00       		.byte	0
+ 3665 0454 FF       		.byte	-1
+ 3666 0455 FF       		.byte	-1
+ 3667 0456 0F       		.byte	15
+ 3668 0457 0F       		.byte	15
+ 3669 0458 0F       		.byte	15
+ 3670 0459 0F       		.byte	15
+ 3671 045a 0F       		.byte	15
+ 3672 045b 38       		.byte	56
+ 3673 045c 44       		.byte	68
+ 3674 045d 44       		.byte	68
+ 3675 045e 38       		.byte	56
+ 3676 045f 44       		.byte	68
+ 3677 0460 7C       		.byte	124
+ 3678 0461 2A       		.byte	42
+ 3679 0462 2A       		.byte	42
+ 3680 0463 3E       		.byte	62
+ 3681 0464 14       		.byte	20
+ 3682 0465 7E       		.byte	126
+ 3683 0466 02       		.byte	2
+ 3684 0467 02       		.byte	2
+ 3685 0468 06       		.byte	6
+ 3686 0469 06       		.byte	6
+ 3687 046a 02       		.byte	2
+ 3688 046b 7E       		.byte	126
+ 3689 046c 02       		.byte	2
+ 3690 046d 7E       		.byte	126
+ 3691 046e 02       		.byte	2
+ 3692 046f 63       		.byte	99
+ 3693 0470 55       		.byte	85
+ 3694 0471 49       		.byte	73
+ 3695 0472 41       		.byte	65
+ 3696 0473 63       		.byte	99
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 78
+
+
+ 3697 0474 38       		.byte	56
+ 3698 0475 44       		.byte	68
+ 3699 0476 44       		.byte	68
+ 3700 0477 3C       		.byte	60
+ 3701 0478 04       		.byte	4
+ 3702 0479 40       		.byte	64
+ 3703 047a 7E       		.byte	126
+ 3704 047b 20       		.byte	32
+ 3705 047c 1E       		.byte	30
+ 3706 047d 20       		.byte	32
+ 3707 047e 06       		.byte	6
+ 3708 047f 02       		.byte	2
+ 3709 0480 7E       		.byte	126
+ 3710 0481 02       		.byte	2
+ 3711 0482 02       		.byte	2
+ 3712 0483 99       		.byte	-103
+ 3713 0484 A5       		.byte	-91
+ 3714 0485 E7       		.byte	-25
+ 3715 0486 A5       		.byte	-91
+ 3716 0487 99       		.byte	-103
+ 3717 0488 1C       		.byte	28
+ 3718 0489 2A       		.byte	42
+ 3719 048a 49       		.byte	73
+ 3720 048b 2A       		.byte	42
+ 3721 048c 1C       		.byte	28
+ 3722 048d 4C       		.byte	76
+ 3723 048e 72       		.byte	114
+ 3724 048f 01       		.byte	1
+ 3725 0490 72       		.byte	114
+ 3726 0491 4C       		.byte	76
+ 3727 0492 30       		.byte	48
+ 3728 0493 4A       		.byte	74
+ 3729 0494 4D       		.byte	77
+ 3730 0495 4D       		.byte	77
+ 3731 0496 30       		.byte	48
+ 3732 0497 30       		.byte	48
+ 3733 0498 48       		.byte	72
+ 3734 0499 78       		.byte	120
+ 3735 049a 48       		.byte	72
+ 3736 049b 30       		.byte	48
+ 3737 049c BC       		.byte	-68
+ 3738 049d 62       		.byte	98
+ 3739 049e 5A       		.byte	90
+ 3740 049f 46       		.byte	70
+ 3741 04a0 3D       		.byte	61
+ 3742 04a1 3E       		.byte	62
+ 3743 04a2 49       		.byte	73
+ 3744 04a3 49       		.byte	73
+ 3745 04a4 49       		.byte	73
+ 3746 04a5 00       		.byte	0
+ 3747 04a6 7E       		.byte	126
+ 3748 04a7 01       		.byte	1
+ 3749 04a8 01       		.byte	1
+ 3750 04a9 01       		.byte	1
+ 3751 04aa 7E       		.byte	126
+ 3752 04ab 2A       		.byte	42
+ 3753 04ac 2A       		.byte	42
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 79
+
+
+ 3754 04ad 2A       		.byte	42
+ 3755 04ae 2A       		.byte	42
+ 3756 04af 2A       		.byte	42
+ 3757 04b0 44       		.byte	68
+ 3758 04b1 44       		.byte	68
+ 3759 04b2 5F       		.byte	95
+ 3760 04b3 44       		.byte	68
+ 3761 04b4 44       		.byte	68
+ 3762 04b5 40       		.byte	64
+ 3763 04b6 51       		.byte	81
+ 3764 04b7 4A       		.byte	74
+ 3765 04b8 44       		.byte	68
+ 3766 04b9 40       		.byte	64
+ 3767 04ba 40       		.byte	64
+ 3768 04bb 44       		.byte	68
+ 3769 04bc 4A       		.byte	74
+ 3770 04bd 51       		.byte	81
+ 3771 04be 40       		.byte	64
+ 3772 04bf 00       		.byte	0
+ 3773 04c0 00       		.byte	0
+ 3774 04c1 FF       		.byte	-1
+ 3775 04c2 01       		.byte	1
+ 3776 04c3 03       		.byte	3
+ 3777 04c4 E0       		.byte	-32
+ 3778 04c5 80       		.byte	-128
+ 3779 04c6 FF       		.byte	-1
+ 3780 04c7 00       		.byte	0
+ 3781 04c8 00       		.byte	0
+ 3782 04c9 08       		.byte	8
+ 3783 04ca 08       		.byte	8
+ 3784 04cb 6B       		.byte	107
+ 3785 04cc 6B       		.byte	107
+ 3786 04cd 08       		.byte	8
+ 3787 04ce 36       		.byte	54
+ 3788 04cf 12       		.byte	18
+ 3789 04d0 36       		.byte	54
+ 3790 04d1 24       		.byte	36
+ 3791 04d2 36       		.byte	54
+ 3792 04d3 06       		.byte	6
+ 3793 04d4 0F       		.byte	15
+ 3794 04d5 09       		.byte	9
+ 3795 04d6 0F       		.byte	15
+ 3796 04d7 06       		.byte	6
+ 3797 04d8 00       		.byte	0
+ 3798 04d9 00       		.byte	0
+ 3799 04da 18       		.byte	24
+ 3800 04db 18       		.byte	24
+ 3801 04dc 00       		.byte	0
+ 3802 04dd 00       		.byte	0
+ 3803 04de 00       		.byte	0
+ 3804 04df 10       		.byte	16
+ 3805 04e0 10       		.byte	16
+ 3806 04e1 00       		.byte	0
+ 3807 04e2 30       		.byte	48
+ 3808 04e3 40       		.byte	64
+ 3809 04e4 FF       		.byte	-1
+ 3810 04e5 01       		.byte	1
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 80
+
+
+ 3811 04e6 01       		.byte	1
+ 3812 04e7 00       		.byte	0
+ 3813 04e8 1F       		.byte	31
+ 3814 04e9 01       		.byte	1
+ 3815 04ea 01       		.byte	1
+ 3816 04eb 1E       		.byte	30
+ 3817 04ec 00       		.byte	0
+ 3818 04ed 19       		.byte	25
+ 3819 04ee 1D       		.byte	29
+ 3820 04ef 17       		.byte	23
+ 3821 04f0 12       		.byte	18
+ 3822 04f1 00       		.byte	0
+ 3823 04f2 3C       		.byte	60
+ 3824 04f3 3C       		.byte	60
+ 3825 04f4 3C       		.byte	60
+ 3826 04f5 3C       		.byte	60
+ 3827 04f6 00       		.byte	0
+ 3828 04f7 00       		.byte	0
+ 3829 04f8 00       		.byte	0
+ 3830 04f9 00       		.byte	0
+ 3831 04fa 00       		.byte	0
+ 3832              		.text
+ 3833              	.Letext0:
+ 3834              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 3835              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 3836              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 3837              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 3838              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 3839              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 3840              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 3841              		.file 9 "Drivers/CMSIS/Include/core_cm7.h"
+ 3842              		.file 10 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 3843              		.file 11 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f756xx.h"
+ 3844              		.file 12 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_def.h"
+ 3845              		.file 13 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma.h"
+ 3846              		.file 14 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_spi.h"
+ 3847              		.file 15 "Inc/Adafruit_ILI9340.h"
+ 3848              		.file 16 "Inc/Adafruit_GFX.h"
+ 3849              		.file 17 "Inc/gpio.h"
+ 3850              		.file 18 "Inc/spi.h"
+ 3851              		.file 19 "Src/glcdfont.c"
+ 3852              		.file 20 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 81
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 Adafruit_GFX.c
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:18     .text.Adafruit_GFX_drawCircle:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:25     .text.Adafruit_GFX_drawCircle:00000000 Adafruit_GFX_drawCircle
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:227    .text.Adafruit_GFX_drawCircleHelper:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:234    .text.Adafruit_GFX_drawCircleHelper:00000000 Adafruit_GFX_drawCircleHelper
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:438    .text.Adafruit_GFX_fillCircleHelper:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:445    .text.Adafruit_GFX_fillCircleHelper:00000000 Adafruit_GFX_fillCircleHelper
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:628    .text.Adafruit_GFX_fillCircle:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:635    .text.Adafruit_GFX_fillCircle:00000000 Adafruit_GFX_fillCircle
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:689    .text.Adafruit_GFX_drawLine:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:696    .text.Adafruit_GFX_drawLine:00000000 Adafruit_GFX_drawLine
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:859    .text.Adafruit_GFX_drawRect:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:866    .text.Adafruit_GFX_drawRect:00000000 Adafruit_GFX_drawRect
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:925    .text.Adafruit_GFX_drawFastVLine:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:932    .text.Adafruit_GFX_drawFastVLine:00000000 Adafruit_GFX_drawFastVLine
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:967    .text.Adafruit_GFX_drawFastHLine:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:974    .text.Adafruit_GFX_drawFastHLine:00000000 Adafruit_GFX_drawFastHLine
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1009   .text.Adafruit_GFX_fillRect:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1016   .text.Adafruit_GFX_fillRect:00000000 Adafruit_GFX_fillRect
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1046   .text.Adafruit_GFX_fillScreen:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1053   .text.Adafruit_GFX_fillScreen:00000000 Adafruit_GFX_fillScreen
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1087   .text.Adafruit_GFX_fillScreen:00000020 $d
+                            *COM*:00000002 _height
+                            *COM*:00000002 _width
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1093   .text.Adafruit_GFX_drawRoundRect:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1100   .text.Adafruit_GFX_drawRoundRect:00000000 Adafruit_GFX_drawRoundRect
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1233   .text.Adafruit_GFX_fillRoundRect:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1240   .text.Adafruit_GFX_fillRoundRect:00000000 Adafruit_GFX_fillRoundRect
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1322   .text.Adafruit_GFX_drawTriangle:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1329   .text.Adafruit_GFX_drawTriangle:00000000 Adafruit_GFX_drawTriangle
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1387   .text.Adafruit_GFX_fillTriangle:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1394   .text.Adafruit_GFX_fillTriangle:00000000 Adafruit_GFX_fillTriangle
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1716   .text.Adafruit_GFX_drawBitmap:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1723   .text.Adafruit_GFX_drawBitmap:00000000 Adafruit_GFX_drawBitmap
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1830   .text.Adafruit_GFX_drawColorBitmap:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1837   .text.Adafruit_GFX_drawColorBitmap:00000000 Adafruit_GFX_drawColorBitmap
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1961   .text.Adafruit_GFX_drawColorBitmap:000000ac $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1968   .text.Adafruit_GFX_drawChar:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:1975   .text.Adafruit_GFX_drawChar:00000000 Adafruit_GFX_drawChar
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2122   .text.Adafruit_GFX_drawChar:000000bc $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2127   .text.Adafruit_GFX_write:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2134   .text.Adafruit_GFX_write:00000000 Adafruit_GFX_write
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2236   .text.Adafruit_GFX_write:00000084 $d
+                            *COM*:00000002 textcolor
+                            *COM*:00000002 cursor_y
+                            *COM*:00000002 cursor_x
+                            *COM*:00000001 textsize
+                            *COM*:00000002 textbgcolor
+                            *COM*:00000001 wrap
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2247   .text.Adafruit_GFX_setCursor:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2254   .text.Adafruit_GFX_setCursor:00000000 Adafruit_GFX_setCursor
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2273   .text.Adafruit_GFX_setCursor:0000000c $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2279   .text.Adafruit_GFX_setTextSize:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2286   .text.Adafruit_GFX_setTextSize:00000000 Adafruit_GFX_setTextSize
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2307   .text.Adafruit_GFX_setTextSize:0000000c $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2312   .text.Adafruit_GFX_setTextColor:00000000 $t
+ARM GAS  C:\Users\micha\AppData\Local\Temp\ccI90XZs.s 			page 82
+
+
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2319   .text.Adafruit_GFX_setTextColor:00000000 Adafruit_GFX_setTextColor
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2338   .text.Adafruit_GFX_setTextColor:0000000c $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2344   .text.Adafruit_GFX_setTextWrap:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2351   .text.Adafruit_GFX_setTextWrap:00000000 Adafruit_GFX_setTextWrap
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2367   .text.Adafruit_GFX_setTextWrap:00000008 $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2372   .text.Adafruit_GFX_getRotation:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2379   .text.Adafruit_GFX_getRotation:00000000 Adafruit_GFX_getRotation
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2393   .text.Adafruit_GFX_getRotation:00000008 $d
+                            *COM*:00000001 rotation
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2398   .text.Adafruit_GFX_setRotation:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2405   .text.Adafruit_GFX_setRotation:00000000 Adafruit_GFX_setRotation
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2423   .text.Adafruit_GFX_setRotation:00000010 $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2427   .text.Adafruit_GFX_setRotation:00000014 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2458   .text.Adafruit_GFX_setRotation:00000038 $d
+                            *COM*:00000002 WIDTH
+                            *COM*:00000002 HEIGHT
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2467   .text.Adafruit_GFX_width:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2474   .text.Adafruit_GFX_width:00000000 Adafruit_GFX_width
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2488   .text.Adafruit_GFX_width:00000008 $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2493   .text.Adafruit_GFX_height:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2500   .text.Adafruit_GFX_height:00000000 Adafruit_GFX_height
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2514   .text.Adafruit_GFX_height:00000008 $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2519   .text.Adafruit_GFX_invertDisplay:00000000 $t
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2526   .text.Adafruit_GFX_invertDisplay:00000000 Adafruit_GFX_invertDisplay
+                            *COM*:00000001 hwSPI
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2552   .rodata.font:00000000 $d
+C:\Users\micha\AppData\Local\Temp\ccI90XZs.s:2556   .rodata.font:00000000 font
+
+UNDEFINED SYMBOLS
+Adafruit_ILI9340_drawPixel
+Adafruit_ILI9340_drawFastVLine
+Adafruit_ILI9340_drawFastHLine
+Adafruit_ILI9340_fillRect
+Adafruit_ILI9340_setAddrWindow
+HAL_GPIO_WritePin
+HAL_SPI_Transmit_DMA
+HAL_SPI_GetState
+LCD_DC
+LCD_NSS
+hspi1

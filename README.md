@@ -26,3 +26,22 @@ You should end up with PSDR/Source/Debug/PSDR.elf  which is the binary firmware 
 TODO: Flashing firmware to the PSDR instructions
 
 
+
+
+
+New Architecture Build Instructions (WIP):
+
+Windows:
+1. Install the GNU Tools ARM Embedded. Add bin (not arm-none-eabi/bin) to path?
+2. Navigate to firmware directory in shell and execute: make
+3. Use whatever editor you want for the files
+
+For eclipse:
+1. File->New->Project...
+2. C/C++->Makefule Project with Existing Code, "Next"
+3. Browse to the root directory of the PSDR firmware
+4. I have been selecting "Cross ARM GCC" not sure if that's needed. "Next"
+5. Right click on the project in the Project Explorer and select settings. In C/C++ Build, uncheck "Use default build command" and type "make" (or "make VERBOSE=1") without the quotes. Clock "OK"
+6. Try to build the project: CTRL-B or Project Menu->Build-All or right click on the project->Build Project
+7. TODO: Set up debugging. Fix all the error messages that come up.
+For some reason this doesn't work for me unless I build it at least once from the command line. Also, if I do a make clean, I have to build from the command line. More to learn!

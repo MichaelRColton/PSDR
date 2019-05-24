@@ -1,0 +1,1122 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gpio.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MX_GPIO_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	MX_GPIO_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	MX_GPIO_Init:
+  26              	.LFB138:
+  27              		.file 1 "Src/gpio.c"
+   1:Src/gpio.c    **** /**
+   2:Src/gpio.c    ****   ******************************************************************************
+   3:Src/gpio.c    ****   * File Name          : gpio.c
+   4:Src/gpio.c    ****   * Description        : This file provides code for the configuration
+   5:Src/gpio.c    ****   *                      of all used GPIO pins.
+   6:Src/gpio.c    ****   ******************************************************************************
+   7:Src/gpio.c    ****   * This notice applies to any and all portions of this file
+   8:Src/gpio.c    ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/gpio.c    ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/gpio.c    ****   * inserted by the user or by software development tools
+  11:Src/gpio.c    ****   * are owned by their respective copyright owners.
+  12:Src/gpio.c    ****   *
+  13:Src/gpio.c    ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/gpio.c    ****   * All rights reserved.
+  15:Src/gpio.c    ****   *
+  16:Src/gpio.c    ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/gpio.c    ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/gpio.c    ****   *
+  19:Src/gpio.c    ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/gpio.c    ****   *    this list of conditions and the following disclaimer.
+  21:Src/gpio.c    ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/gpio.c    ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/gpio.c    ****   *    and/or other materials provided with the distribution.
+  24:Src/gpio.c    ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/gpio.c    ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/gpio.c    ****   *    derived from this software without specific written permission.
+  27:Src/gpio.c    ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/gpio.c    ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/gpio.c    ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/gpio.c    ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/gpio.c    ****   *    this license is void and will automatically terminate your rights under 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 2
+
+
+  32:Src/gpio.c    ****   *    this license. 
+  33:Src/gpio.c    ****   *
+  34:Src/gpio.c    ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/gpio.c    ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/gpio.c    ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/gpio.c    ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/gpio.c    ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/gpio.c    ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/gpio.c    ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/gpio.c    ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/gpio.c    ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/gpio.c    ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/gpio.c    ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/gpio.c    ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/gpio.c    ****   *
+  47:Src/gpio.c    ****   ******************************************************************************
+  48:Src/gpio.c    ****   */
+  49:Src/gpio.c    **** 
+  50:Src/gpio.c    **** /* Includes ------------------------------------------------------------------*/
+  51:Src/gpio.c    **** #include "gpio.h"
+  52:Src/gpio.c    **** /* USER CODE BEGIN 0 */
+  53:Src/gpio.c    **** 
+  54:Src/gpio.c    **** /* USER CODE END 0 */
+  55:Src/gpio.c    **** 
+  56:Src/gpio.c    **** /*----------------------------------------------------------------------------*/
+  57:Src/gpio.c    **** /* Configure GPIO                                                             */
+  58:Src/gpio.c    **** /*----------------------------------------------------------------------------*/
+  59:Src/gpio.c    **** /* USER CODE BEGIN 1 */
+  60:Src/gpio.c    **** const Gpio_Pin LCD_DC =
+  61:Src/gpio.c    ****   { GPIOB, GPIO_PIN_7 }; //2.5
+  62:Src/gpio.c    **** const Gpio_Pin LCD_RESET =
+  63:Src/gpio.c    ****   { GPIOB, GPIO_PIN_6 }; //2.5
+  64:Src/gpio.c    **** const Gpio_Pin LCD_NSS =
+  65:Src/gpio.c    ****   { GPIOA, GPIO_PIN_15 }; //2.5 //When this was set wrong, the display still worked. No need?
+  66:Src/gpio.c    **** const Gpio_Pin LCD_LED =
+  67:Src/gpio.c    ****   { GPIOC, GPIO_PIN_13 }; //2.5
+  68:Src/gpio.c    **** const Gpio_Pin LCD_MOSI =
+  69:Src/gpio.c    ****   { GPIOB, GPIO_PIN_5 }; //2.5
+  70:Src/gpio.c    **** const Gpio_Pin LCD_MISO =
+  71:Src/gpio.c    ****   { GPIOB, GPIO_PIN_4 }; //2.5
+  72:Src/gpio.c    **** const Gpio_Pin LCD_SCK =
+  73:Src/gpio.c    ****   { GPIOB, GPIO_PIN_3 }; //2.5
+  74:Src/gpio.c    **** const Gpio_Pin encoderBee =
+  75:Src/gpio.c    ****   { GPIOE, GPIO_PIN_0 }; //2.5
+  76:Src/gpio.c    **** const Gpio_Pin encoderB =
+  77:Src/gpio.c    ****   { GPIOE, GPIO_PIN_1 }; //2.5 (really ENC_A)
+  78:Src/gpio.c    **** const Gpio_Pin encoderP =
+  79:Src/gpio.c    ****   { GPIOB, GPIO_PIN_9 }; //2.5
+  80:Src/gpio.c    **** const Gpio_Pin RX_Q =
+  81:Src/gpio.c    ****   { GPIOA, GPIO_PIN_2 }; //2.5
+  82:Src/gpio.c    **** const Gpio_Pin RX_I =
+  83:Src/gpio.c    ****   { GPIOA, GPIO_PIN_3 }; //2.5
+  84:Src/gpio.c    **** const Gpio_Pin dac1 =
+  85:Src/gpio.c    ****   { GPIOA, GPIO_PIN_4 }; //2.5
+  86:Src/gpio.c    **** const Gpio_Pin dac2 =
+  87:Src/gpio.c    ****   { GPIOA, GPIO_PIN_5 }; //2.5
+  88:Src/gpio.c    **** const Gpio_Pin AMP_SWITCH_A =
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 3
+
+
+  89:Src/gpio.c    ****   { GPIOA, GPIO_PIN_0 }; //2.5
+  90:Src/gpio.c    **** const Gpio_Pin AMP_SWITCH_B =
+  91:Src/gpio.c    ****   { GPIOE, GPIO_PIN_6 }; //2.5
+  92:Src/gpio.c    **** const Gpio_Pin IMP_BRIDGE_SWITCH_A =
+  93:Src/gpio.c    ****   { GPIOC, GPIO_PIN_1 }; //2.5
+  94:Src/gpio.c    **** const Gpio_Pin IMP_BRIDGE_SWITCH_B =
+  95:Src/gpio.c    ****   { GPIOA, GPIO_PIN_6 }; //2.5
+  96:Src/gpio.c    **** const Gpio_Pin TX_RF_SWITCH_A =
+  97:Src/gpio.c    ****   { GPIOB, GPIO_PIN_2 }; //2.5
+  98:Src/gpio.c    **** const Gpio_Pin TX_RF_SWITCH_B =
+  99:Src/gpio.c    ****   { GPIOA, GPIO_PIN_7 }; //2.5
+ 100:Src/gpio.c    **** const Gpio_Pin AMP_POWER =
+ 101:Src/gpio.c    ****   { GPIOE, GPIO_PIN_3 }; //2.5
+ 102:Src/gpio.c    **** const Gpio_Pin FILTER_GAIN_POT_SCLK =
+ 103:Src/gpio.c    ****   { GPIOB, GPIO_PIN_13 }; //2.5
+ 104:Src/gpio.c    **** const Gpio_Pin FILTER_GAIN_POT_MOSI =
+ 105:Src/gpio.c    ****   { GPIOB, GPIO_PIN_15 }; //2.5
+ 106:Src/gpio.c    **** const Gpio_Pin GAIN_POT_NSS =
+ 107:Src/gpio.c    ****   { GPIOE, GPIO_PIN_5 }; //2.5
+ 108:Src/gpio.c    **** const Gpio_Pin DAC_MUX =
+ 109:Src/gpio.c    ****   { GPIOE, GPIO_PIN_4 }; //2.5
+ 110:Src/gpio.c    **** const Gpio_Pin AUDIO_AMP_NSHTDWN =
+ 111:Src/gpio.c    ****   { GPIOE, GPIO_PIN_14 }; //2.5
+ 112:Src/gpio.c    **** const Gpio_Pin EARPHONE_NOT_INSERTED =
+ 113:Src/gpio.c    ****   { GPIOD, GPIO_PIN_11 }; //2.5
+ 114:Src/gpio.c    **** const Gpio_Pin SIDETONE =
+ 115:Src/gpio.c    ****   { GPIOD, GPIO_PIN_12 }; //2.5 //Should be a timer pin.
+ 116:Src/gpio.c    **** const Gpio_Pin MIC_IN =
+ 117:Src/gpio.c    ****   { GPIOB, GPIO_PIN_1 }; //2.5
+ 118:Src/gpio.c    **** const Gpio_Pin MIC_SWITCH =
+ 119:Src/gpio.c    ****   { GPIOD, GPIO_PIN_10 }; //2.5
+ 120:Src/gpio.c    **** const Gpio_Pin PREAMP_POWER =
+ 121:Src/gpio.c    ****   { GPIOD, GPIO_PIN_14 }; //2.5
+ 122:Src/gpio.c    **** const Gpio_Pin PADDLE_THUMB_NO =
+ 123:Src/gpio.c    ****   { GPIOD, GPIO_PIN_3 }; //2.5
+ 124:Src/gpio.c    **** const Gpio_Pin PADDLE_INDEX_NO =
+ 125:Src/gpio.c    ****   { GPIOD, GPIO_PIN_7 }; //2.5
+ 126:Src/gpio.c    **** const Gpio_Pin PADDLE_THUMB_NC =
+ 127:Src/gpio.c    ****   { GPIOD, GPIO_PIN_5 }; //2.5
+ 128:Src/gpio.c    **** const Gpio_Pin PADDLE_INDEX_NC =
+ 129:Src/gpio.c    ****   { GPIOD, GPIO_PIN_6 }; //2.5
+ 130:Src/gpio.c    **** const Gpio_Pin GPS_RESET =
+ 131:Src/gpio.c    ****   { GPIOE, GPIO_PIN_15 }; //2.5
+ 132:Src/gpio.c    **** const Gpio_Pin GPS_PPS =
+ 133:Src/gpio.c    ****   { GPIOE, GPIO_PIN_7 }; //2.5
+ 134:Src/gpio.c    **** const Gpio_Pin GPS_POWER =
+ 135:Src/gpio.c    ****   { GPIOA, GPIO_PIN_8 }; //2.5
+ 136:Src/gpio.c    **** const Gpio_Pin RX_TO_GPS =
+ 137:Src/gpio.c    ****   { GPIOC, GPIO_PIN_6 }; //2.5
+ 138:Src/gpio.c    **** const Gpio_Pin TX_FROM_GPS =
+ 139:Src/gpio.c    ****   { GPIOC, GPIO_PIN_7 }; //2.5
+ 140:Src/gpio.c    **** const Gpio_Pin IN_AMP_ENABLE =
+ 141:Src/gpio.c    ****   { GPIOC, GPIO_PIN_2 }; //2.5
+ 142:Src/gpio.c    **** const Gpio_Pin FILTER_S0 =
+ 143:Src/gpio.c    ****     { GPIOE, GPIO_PIN_10 }; //2.5
+ 144:Src/gpio.c    **** const Gpio_Pin FILTER_S1 =
+ 145:Src/gpio.c    ****     { GPIOD, GPIO_PIN_8  }; //2.5
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 4
+
+
+ 146:Src/gpio.c    **** const Gpio_Pin TRX_SWITCH =
+ 147:Src/gpio.c    ****     { GPIOC, GPIO_PIN_3  }; //2.5
+ 148:Src/gpio.c    **** const Gpio_Pin I2C_SCL =
+ 149:Src/gpio.c    ****     { GPIOB, GPIO_PIN_10 };
+ 150:Src/gpio.c    **** const Gpio_Pin I2C_SDA =
+ 151:Src/gpio.c    ****     { GPIOB, GPIO_PIN_11 };
+ 152:Src/gpio.c    **** const Gpio_Pin FLIP_FLOP_ENABLE =
+ 153:Src/gpio.c    ****     { GPIOE, GPIO_PIN_8  };
+ 154:Src/gpio.c    **** const Gpio_Pin RED_LED =
+ 155:Src/gpio.c    ****     { GPIOE, GPIO_PIN_13 };
+ 156:Src/gpio.c    **** const Gpio_Pin FIVE_VOLT_REGULATOR_ENABLE =
+ 157:Src/gpio.c    ****     { GPIOE, GPIO_PIN_2 };
+ 158:Src/gpio.c    **** const Gpio_Pin CHARGE_POWER_SOURCE =
+ 159:Src/gpio.c    ****     { GPIOB, GPIO_PIN_8 };
+ 160:Src/gpio.c    **** 
+ 161:Src/gpio.c    **** /* USER CODE END 1 */
+ 162:Src/gpio.c    **** 
+ 163:Src/gpio.c    **** /** Configure pins as 
+ 164:Src/gpio.c    ****         * Analog 
+ 165:Src/gpio.c    ****         * Input 
+ 166:Src/gpio.c    ****         * Output
+ 167:Src/gpio.c    ****         * EVENT_OUT
+ 168:Src/gpio.c    ****         * EXTI
+ 169:Src/gpio.c    ****      PA9   ------> USB_OTG_FS_VBUS
+ 170:Src/gpio.c    ****      PA10   ------> USB_OTG_FS_ID
+ 171:Src/gpio.c    ****      PA11   ------> USB_OTG_FS_DM
+ 172:Src/gpio.c    ****      PA12   ------> USB_OTG_FS_DP
+ 173:Src/gpio.c    **** */
+ 174:Src/gpio.c    **** void MX_GPIO_Init(void)
+ 175:Src/gpio.c    **** {
+  28              		.loc 1 175 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 48
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 32
+  35              		.cfi_offset 4, -32
+  36              		.cfi_offset 5, -28
+  37              		.cfi_offset 6, -24
+  38              		.cfi_offset 7, -20
+  39              		.cfi_offset 8, -16
+  40              		.cfi_offset 9, -12
+  41              		.cfi_offset 10, -8
+  42              		.cfi_offset 14, -4
+  43 0004 8CB0     		sub	sp, sp, #48
+  44              	.LCFI1:
+  45              		.cfi_def_cfa_offset 80
+  46              	.LBB2:
+ 176:Src/gpio.c    **** 
+ 177:Src/gpio.c    ****   GPIO_InitTypeDef GPIO_InitStruct;
+ 178:Src/gpio.c    **** 
+ 179:Src/gpio.c    ****   /* GPIO Ports Clock Enable */
+ 180:Src/gpio.c    ****   __HAL_RCC_GPIOE_CLK_ENABLE();
+  47              		.loc 1 180 0
+  48 0006 674B     		ldr	r3, .L3
+  49 0008 1A6B     		ldr	r2, [r3, #48]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 5
+
+
+  50 000a 42F01002 		orr	r2, r2, #16
+  51 000e 1A63     		str	r2, [r3, #48]
+  52 0010 1A6B     		ldr	r2, [r3, #48]
+  53 0012 02F01002 		and	r2, r2, #16
+  54 0016 0192     		str	r2, [sp, #4]
+  55 0018 019A     		ldr	r2, [sp, #4]
+  56              	.LBE2:
+  57              	.LBB3:
+ 181:Src/gpio.c    ****   __HAL_RCC_GPIOC_CLK_ENABLE();
+  58              		.loc 1 181 0
+  59 001a 1A6B     		ldr	r2, [r3, #48]
+  60 001c 42F00402 		orr	r2, r2, #4
+  61 0020 1A63     		str	r2, [r3, #48]
+  62 0022 1A6B     		ldr	r2, [r3, #48]
+  63 0024 02F00402 		and	r2, r2, #4
+  64 0028 0292     		str	r2, [sp, #8]
+  65 002a 029A     		ldr	r2, [sp, #8]
+  66              	.LBE3:
+  67              	.LBB4:
+ 182:Src/gpio.c    ****   __HAL_RCC_GPIOH_CLK_ENABLE();
+  68              		.loc 1 182 0
+  69 002c 1A6B     		ldr	r2, [r3, #48]
+  70 002e 42F08002 		orr	r2, r2, #128
+  71 0032 1A63     		str	r2, [r3, #48]
+  72 0034 1A6B     		ldr	r2, [r3, #48]
+  73 0036 02F08002 		and	r2, r2, #128
+  74 003a 0392     		str	r2, [sp, #12]
+  75 003c 039A     		ldr	r2, [sp, #12]
+  76              	.LBE4:
+  77              	.LBB5:
+ 183:Src/gpio.c    ****   __HAL_RCC_GPIOA_CLK_ENABLE();
+  78              		.loc 1 183 0
+  79 003e 1A6B     		ldr	r2, [r3, #48]
+  80 0040 42F00102 		orr	r2, r2, #1
+  81 0044 1A63     		str	r2, [r3, #48]
+  82 0046 1A6B     		ldr	r2, [r3, #48]
+  83 0048 02F00102 		and	r2, r2, #1
+  84 004c 0492     		str	r2, [sp, #16]
+  85 004e 049A     		ldr	r2, [sp, #16]
+  86              	.LBE5:
+  87              	.LBB6:
+ 184:Src/gpio.c    ****   __HAL_RCC_GPIOB_CLK_ENABLE();
+  88              		.loc 1 184 0
+  89 0050 1A6B     		ldr	r2, [r3, #48]
+  90 0052 42F00202 		orr	r2, r2, #2
+  91 0056 1A63     		str	r2, [r3, #48]
+  92 0058 1A6B     		ldr	r2, [r3, #48]
+  93 005a 02F00202 		and	r2, r2, #2
+  94 005e 0592     		str	r2, [sp, #20]
+  95 0060 059A     		ldr	r2, [sp, #20]
+  96              	.LBE6:
+  97              	.LBB7:
+ 185:Src/gpio.c    ****   __HAL_RCC_GPIOD_CLK_ENABLE();
+  98              		.loc 1 185 0
+  99 0062 1A6B     		ldr	r2, [r3, #48]
+ 100 0064 42F00802 		orr	r2, r2, #8
+ 101 0068 1A63     		str	r2, [r3, #48]
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 6
+
+
+ 102 006a 1B6B     		ldr	r3, [r3, #48]
+ 103 006c 03F00803 		and	r3, r3, #8
+ 104 0070 0693     		str	r3, [sp, #24]
+ 105 0072 069B     		ldr	r3, [sp, #24]
+ 106              	.LBE7:
+ 186:Src/gpio.c    **** 
+ 187:Src/gpio.c    ****   /*Configure GPIO pin Output Level */
+ 188:Src/gpio.c    ****   HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
+ 107              		.loc 1 188 0
+ 108 0074 4C4F     		ldr	r7, .L3+4
+ 109 0076 0022     		movs	r2, #0
+ 110 0078 4FF67C51 		movw	r1, #64892
+ 111 007c 3846     		mov	r0, r7
+ 112 007e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 113              	.LVL0:
+ 189:Src/gpio.c    ****                           |GPIO_PIN_6|GPIO_PIN_8|GPIO_PIN_10|GPIO_PIN_11 
+ 190:Src/gpio.c    ****                           |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+ 191:Src/gpio.c    **** 
+ 192:Src/gpio.c    ****   /*Configure GPIO pin Output Level */
+ 193:Src/gpio.c    ****   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET);
+ 114              		.loc 1 193 0
+ 115 0082 DFF82CA1 		ldr	r10, .L3+12
+ 116 0086 0022     		movs	r2, #0
+ 117 0088 42F20E01 		movw	r1, #8206
+ 118 008c 5046     		mov	r0, r10
+ 119 008e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 120              	.LVL1:
+ 194:Src/gpio.c    **** 
+ 195:Src/gpio.c    ****   /*Configure GPIO pin Output Level */
+ 196:Src/gpio.c    ****   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8 
+ 121              		.loc 1 196 0
+ 122 0092 464D     		ldr	r5, .L3+8
+ 123 0094 0022     		movs	r2, #0
+ 124 0096 48F2C111 		movw	r1, #33217
+ 125 009a 2846     		mov	r0, r5
+ 126 009c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 127              	.LVL2:
+ 197:Src/gpio.c    ****                           |GPIO_PIN_15, GPIO_PIN_RESET);
+ 198:Src/gpio.c    **** 
+ 199:Src/gpio.c    ****   /*Configure GPIO pin Output Level */
+ 200:Src/gpio.c    ****   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8, GPIO_PIN_RESET);
+ 128              		.loc 1 200 0
+ 129 00a0 DFF81081 		ldr	r8, .L3+16
+ 130 00a4 0022     		movs	r2, #0
+ 131 00a6 4FF4E271 		mov	r1, #452
+ 132 00aa 4046     		mov	r0, r8
+ 133 00ac FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 134              	.LVL3:
+ 201:Src/gpio.c    **** 
+ 202:Src/gpio.c    ****   /*Configure GPIO pin Output Level */
+ 203:Src/gpio.c    ****   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8|GPIO_PIN_10|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+ 135              		.loc 1 203 0
+ 136 00b0 DFF80491 		ldr	r9, .L3+20
+ 137 00b4 0022     		movs	r2, #0
+ 138 00b6 4FF44541 		mov	r1, #50432
+ 139 00ba 4846     		mov	r0, r9
+ 140 00bc FFF7FEFF 		bl	HAL_GPIO_WritePin
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 7
+
+
+ 141              	.LVL4:
+ 204:Src/gpio.c    **** 
+ 205:Src/gpio.c    ****   /*Configure GPIO pins : PE2 PE3 PE4 PE5 
+ 206:Src/gpio.c    ****                            PE6 PE8 PE10 PE11 
+ 207:Src/gpio.c    ****                            PE12 PE13 PE14 PE15 */
+ 208:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
+ 142              		.loc 1 208 0
+ 143 00c0 4FF67C53 		movw	r3, #64892
+ 144 00c4 0793     		str	r3, [sp, #28]
+ 209:Src/gpio.c    ****                           |GPIO_PIN_6|GPIO_PIN_8|GPIO_PIN_10|GPIO_PIN_11 
+ 210:Src/gpio.c    ****                           |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+ 211:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 145              		.loc 1 211 0
+ 146 00c6 0126     		movs	r6, #1
+ 147 00c8 0896     		str	r6, [sp, #32]
+ 212:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 148              		.loc 1 212 0
+ 149 00ca 0024     		movs	r4, #0
+ 150 00cc 0994     		str	r4, [sp, #36]
+ 213:Src/gpio.c    ****   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 151              		.loc 1 213 0
+ 152 00ce 0A94     		str	r4, [sp, #40]
+ 214:Src/gpio.c    ****   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+ 153              		.loc 1 214 0
+ 154 00d0 07A9     		add	r1, sp, #28
+ 155 00d2 3846     		mov	r0, r7
+ 156 00d4 FFF7FEFF 		bl	HAL_GPIO_Init
+ 157              	.LVL5:
+ 215:Src/gpio.c    **** 
+ 216:Src/gpio.c    ****   /*Configure GPIO pins : PC13 PC1 PC2 PC3 */
+ 217:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
+ 158              		.loc 1 217 0
+ 159 00d8 42F20E03 		movw	r3, #8206
+ 160 00dc 0793     		str	r3, [sp, #28]
+ 218:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 161              		.loc 1 218 0
+ 162 00de 0896     		str	r6, [sp, #32]
+ 219:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 163              		.loc 1 219 0
+ 164 00e0 0994     		str	r4, [sp, #36]
+ 220:Src/gpio.c    ****   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 165              		.loc 1 220 0
+ 166 00e2 0A94     		str	r4, [sp, #40]
+ 221:Src/gpio.c    ****   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+ 167              		.loc 1 221 0
+ 168 00e4 07A9     		add	r1, sp, #28
+ 169 00e6 5046     		mov	r0, r10
+ 170 00e8 FFF7FEFF 		bl	HAL_GPIO_Init
+ 171              	.LVL6:
+ 222:Src/gpio.c    **** 
+ 223:Src/gpio.c    ****   /*Configure GPIO pins : PA0 PA6 PA7 PA8 
+ 224:Src/gpio.c    ****                            PA15 */
+ 225:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8 
+ 172              		.loc 1 225 0
+ 173 00ec 48F2C113 		movw	r3, #33217
+ 174 00f0 0793     		str	r3, [sp, #28]
+ 226:Src/gpio.c    ****                           |GPIO_PIN_15;
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 8
+
+
+ 227:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 175              		.loc 1 227 0
+ 176 00f2 0896     		str	r6, [sp, #32]
+ 228:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 177              		.loc 1 228 0
+ 178 00f4 0994     		str	r4, [sp, #36]
+ 229:Src/gpio.c    ****   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 179              		.loc 1 229 0
+ 180 00f6 0A94     		str	r4, [sp, #40]
+ 230:Src/gpio.c    ****   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 181              		.loc 1 230 0
+ 182 00f8 07A9     		add	r1, sp, #28
+ 183 00fa 2846     		mov	r0, r5
+ 184 00fc FFF7FEFF 		bl	HAL_GPIO_Init
+ 185              	.LVL7:
+ 231:Src/gpio.c    **** 
+ 232:Src/gpio.c    ****   /*Configure GPIO pin : PA1 */
+ 233:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_1;
+ 186              		.loc 1 233 0
+ 187 0100 4FF0020A 		mov	r10, #2
+ 188 0104 CDF81CA0 		str	r10, [sp, #28]
+ 234:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 189              		.loc 1 234 0
+ 190 0108 0894     		str	r4, [sp, #32]
+ 235:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 191              		.loc 1 235 0
+ 192 010a 0994     		str	r4, [sp, #36]
+ 236:Src/gpio.c    ****   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 193              		.loc 1 236 0
+ 194 010c 07A9     		add	r1, sp, #28
+ 195 010e 2846     		mov	r0, r5
+ 196 0110 FFF7FEFF 		bl	HAL_GPIO_Init
+ 197              	.LVL8:
+ 237:Src/gpio.c    **** 
+ 238:Src/gpio.c    ****   /*Configure GPIO pins : PB2 PB6 PB7 PB8 */
+ 239:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8;
+ 198              		.loc 1 239 0
+ 199 0114 4FF4E273 		mov	r3, #452
+ 200 0118 0793     		str	r3, [sp, #28]
+ 240:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 201              		.loc 1 240 0
+ 202 011a 0896     		str	r6, [sp, #32]
+ 241:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 203              		.loc 1 241 0
+ 204 011c 0994     		str	r4, [sp, #36]
+ 242:Src/gpio.c    ****   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 205              		.loc 1 242 0
+ 206 011e 0A94     		str	r4, [sp, #40]
+ 243:Src/gpio.c    ****   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+ 207              		.loc 1 243 0
+ 208 0120 07A9     		add	r1, sp, #28
+ 209 0122 4046     		mov	r0, r8
+ 210 0124 FFF7FEFF 		bl	HAL_GPIO_Init
+ 211              	.LVL9:
+ 244:Src/gpio.c    **** 
+ 245:Src/gpio.c    ****   /*Configure GPIO pins : PD8 PD10 PD14 PD15 */
+ 246:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_10|GPIO_PIN_14|GPIO_PIN_15;
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 9
+
+
+ 212              		.loc 1 246 0
+ 213 0128 4FF44543 		mov	r3, #50432
+ 214 012c 0793     		str	r3, [sp, #28]
+ 247:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 215              		.loc 1 247 0
+ 216 012e 0896     		str	r6, [sp, #32]
+ 248:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 217              		.loc 1 248 0
+ 218 0130 0994     		str	r4, [sp, #36]
+ 249:Src/gpio.c    ****   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 219              		.loc 1 249 0
+ 220 0132 0A94     		str	r4, [sp, #40]
+ 250:Src/gpio.c    ****   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+ 221              		.loc 1 250 0
+ 222 0134 07A9     		add	r1, sp, #28
+ 223 0136 4846     		mov	r0, r9
+ 224 0138 FFF7FEFF 		bl	HAL_GPIO_Init
+ 225              	.LVL10:
+ 251:Src/gpio.c    **** 
+ 252:Src/gpio.c    ****   /*Configure GPIO pins : PD9 PD11 PD13 PD0 
+ 253:Src/gpio.c    ****                            PD1 PD3 PD4 PD5 
+ 254:Src/gpio.c    ****                            PD6 PD7 */
+ 255:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_9|GPIO_PIN_11|GPIO_PIN_13|GPIO_PIN_0 
+ 226              		.loc 1 255 0
+ 227 013c 42F6FB23 		movw	r3, #11003
+ 228 0140 0793     		str	r3, [sp, #28]
+ 256:Src/gpio.c    ****                           |GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
+ 257:Src/gpio.c    ****                           |GPIO_PIN_6|GPIO_PIN_7;
+ 258:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 229              		.loc 1 258 0
+ 230 0142 0894     		str	r4, [sp, #32]
+ 259:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 231              		.loc 1 259 0
+ 232 0144 0994     		str	r4, [sp, #36]
+ 260:Src/gpio.c    ****   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+ 233              		.loc 1 260 0
+ 234 0146 07A9     		add	r1, sp, #28
+ 235 0148 4846     		mov	r0, r9
+ 236 014a FFF7FEFF 		bl	HAL_GPIO_Init
+ 237              	.LVL11:
+ 261:Src/gpio.c    **** 
+ 262:Src/gpio.c    ****   /*Configure GPIO pin : PA9 */
+ 263:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_9;
+ 238              		.loc 1 263 0
+ 239 014e 4FF40079 		mov	r9, #512
+ 240 0152 CDF81C90 		str	r9, [sp, #28]
+ 264:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 241              		.loc 1 264 0
+ 242 0156 0894     		str	r4, [sp, #32]
+ 265:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 243              		.loc 1 265 0
+ 244 0158 0994     		str	r4, [sp, #36]
+ 266:Src/gpio.c    ****   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 245              		.loc 1 266 0
+ 246 015a 07A9     		add	r1, sp, #28
+ 247 015c 2846     		mov	r0, r5
+ 248 015e FFF7FEFF 		bl	HAL_GPIO_Init
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 10
+
+
+ 249              	.LVL12:
+ 267:Src/gpio.c    **** 
+ 268:Src/gpio.c    ****   /*Configure GPIO pins : PA10 PA11 PA12 */
+ 269:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
+ 250              		.loc 1 269 0
+ 251 0162 4FF4E053 		mov	r3, #7168
+ 252 0166 0793     		str	r3, [sp, #28]
+ 270:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+ 253              		.loc 1 270 0
+ 254 0168 CDF820A0 		str	r10, [sp, #32]
+ 271:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 255              		.loc 1 271 0
+ 256 016c 0994     		str	r4, [sp, #36]
+ 272:Src/gpio.c    ****   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+ 257              		.loc 1 272 0
+ 258 016e 0326     		movs	r6, #3
+ 259 0170 0A96     		str	r6, [sp, #40]
+ 273:Src/gpio.c    ****   GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+ 260              		.loc 1 273 0
+ 261 0172 0A23     		movs	r3, #10
+ 262 0174 0B93     		str	r3, [sp, #44]
+ 274:Src/gpio.c    ****   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 263              		.loc 1 274 0
+ 264 0176 07A9     		add	r1, sp, #28
+ 265 0178 2846     		mov	r0, r5
+ 266 017a FFF7FEFF 		bl	HAL_GPIO_Init
+ 267              	.LVL13:
+ 275:Src/gpio.c    **** 
+ 276:Src/gpio.c    ****   /*Configure GPIO pin : PB9 */
+ 277:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_9;
+ 268              		.loc 1 277 0
+ 269 017e CDF81C90 		str	r9, [sp, #28]
+ 278:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 270              		.loc 1 278 0
+ 271 0182 0894     		str	r4, [sp, #32]
+ 279:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 272              		.loc 1 279 0
+ 273 0184 0994     		str	r4, [sp, #36]
+ 280:Src/gpio.c    ****   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+ 274              		.loc 1 280 0
+ 275 0186 07A9     		add	r1, sp, #28
+ 276 0188 4046     		mov	r0, r8
+ 277 018a FFF7FEFF 		bl	HAL_GPIO_Init
+ 278              	.LVL14:
+ 281:Src/gpio.c    **** 
+ 282:Src/gpio.c    ****   /*Configure GPIO pins : PE0 PE1 */
+ 283:Src/gpio.c    ****   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+ 279              		.loc 1 283 0
+ 280 018e 0796     		str	r6, [sp, #28]
+ 284:Src/gpio.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 281              		.loc 1 284 0
+ 282 0190 0894     		str	r4, [sp, #32]
+ 285:Src/gpio.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 283              		.loc 1 285 0
+ 284 0192 0994     		str	r4, [sp, #36]
+ 286:Src/gpio.c    ****   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+ 285              		.loc 1 286 0
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 11
+
+
+ 286 0194 07A9     		add	r1, sp, #28
+ 287 0196 3846     		mov	r0, r7
+ 288 0198 FFF7FEFF 		bl	HAL_GPIO_Init
+ 289              	.LVL15:
+ 287:Src/gpio.c    **** 
+ 288:Src/gpio.c    **** }
+ 290              		.loc 1 288 0
+ 291 019c 0CB0     		add	sp, sp, #48
+ 292              	.LCFI2:
+ 293              		.cfi_def_cfa_offset 32
+ 294              		@ sp needed
+ 295 019e BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 296              	.L4:
+ 297 01a2 00BF     		.align	2
+ 298              	.L3:
+ 299 01a4 00380240 		.word	1073887232
+ 300 01a8 00100240 		.word	1073876992
+ 301 01ac 00000240 		.word	1073872896
+ 302 01b0 00080240 		.word	1073874944
+ 303 01b4 00040240 		.word	1073873920
+ 304 01b8 000C0240 		.word	1073875968
+ 305              		.cfi_endproc
+ 306              	.LFE138:
+ 308              		.global	CHARGE_POWER_SOURCE
+ 309              		.global	FIVE_VOLT_REGULATOR_ENABLE
+ 310              		.global	RED_LED
+ 311              		.global	FLIP_FLOP_ENABLE
+ 312              		.global	I2C_SDA
+ 313              		.global	I2C_SCL
+ 314              		.global	TRX_SWITCH
+ 315              		.global	FILTER_S1
+ 316              		.global	FILTER_S0
+ 317              		.global	IN_AMP_ENABLE
+ 318              		.global	TX_FROM_GPS
+ 319              		.global	RX_TO_GPS
+ 320              		.global	GPS_POWER
+ 321              		.global	GPS_PPS
+ 322              		.global	GPS_RESET
+ 323              		.global	PADDLE_INDEX_NC
+ 324              		.global	PADDLE_THUMB_NC
+ 325              		.global	PADDLE_INDEX_NO
+ 326              		.global	PADDLE_THUMB_NO
+ 327              		.global	PREAMP_POWER
+ 328              		.global	MIC_SWITCH
+ 329              		.global	MIC_IN
+ 330              		.global	SIDETONE
+ 331              		.global	EARPHONE_NOT_INSERTED
+ 332              		.global	AUDIO_AMP_NSHTDWN
+ 333              		.global	DAC_MUX
+ 334              		.global	GAIN_POT_NSS
+ 335              		.global	FILTER_GAIN_POT_MOSI
+ 336              		.global	FILTER_GAIN_POT_SCLK
+ 337              		.global	AMP_POWER
+ 338              		.global	TX_RF_SWITCH_B
+ 339              		.global	TX_RF_SWITCH_A
+ 340              		.global	IMP_BRIDGE_SWITCH_B
+ 341              		.global	IMP_BRIDGE_SWITCH_A
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 12
+
+
+ 342              		.global	AMP_SWITCH_B
+ 343              		.global	AMP_SWITCH_A
+ 344              		.global	dac2
+ 345              		.global	dac1
+ 346              		.global	RX_I
+ 347              		.global	RX_Q
+ 348              		.global	encoderP
+ 349              		.global	encoderB
+ 350              		.global	encoderBee
+ 351              		.global	LCD_SCK
+ 352              		.global	LCD_MISO
+ 353              		.global	LCD_MOSI
+ 354              		.global	LCD_LED
+ 355              		.global	LCD_NSS
+ 356              		.global	LCD_RESET
+ 357              		.global	LCD_DC
+ 358              		.section	.rodata.AMP_POWER,"a",%progbits
+ 359              		.align	2
+ 362              	AMP_POWER:
+ 363 0000 00100240 		.word	1073876992
+ 364 0004 0800     		.short	8
+ 365 0006 0000     		.space	2
+ 366              		.section	.rodata.AMP_SWITCH_A,"a",%progbits
+ 367              		.align	2
+ 370              	AMP_SWITCH_A:
+ 371 0000 00000240 		.word	1073872896
+ 372 0004 0100     		.short	1
+ 373 0006 0000     		.space	2
+ 374              		.section	.rodata.AMP_SWITCH_B,"a",%progbits
+ 375              		.align	2
+ 378              	AMP_SWITCH_B:
+ 379 0000 00100240 		.word	1073876992
+ 380 0004 4000     		.short	64
+ 381 0006 0000     		.space	2
+ 382              		.section	.rodata.AUDIO_AMP_NSHTDWN,"a",%progbits
+ 383              		.align	2
+ 386              	AUDIO_AMP_NSHTDWN:
+ 387 0000 00100240 		.word	1073876992
+ 388 0004 0040     		.short	16384
+ 389 0006 0000     		.space	2
+ 390              		.section	.rodata.CHARGE_POWER_SOURCE,"a",%progbits
+ 391              		.align	2
+ 394              	CHARGE_POWER_SOURCE:
+ 395 0000 00040240 		.word	1073873920
+ 396 0004 0001     		.short	256
+ 397 0006 0000     		.space	2
+ 398              		.section	.rodata.DAC_MUX,"a",%progbits
+ 399              		.align	2
+ 402              	DAC_MUX:
+ 403 0000 00100240 		.word	1073876992
+ 404 0004 1000     		.short	16
+ 405 0006 0000     		.space	2
+ 406              		.section	.rodata.EARPHONE_NOT_INSERTED,"a",%progbits
+ 407              		.align	2
+ 410              	EARPHONE_NOT_INSERTED:
+ 411 0000 000C0240 		.word	1073875968
+ 412 0004 0008     		.short	2048
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 13
+
+
+ 413 0006 0000     		.space	2
+ 414              		.section	.rodata.FILTER_GAIN_POT_MOSI,"a",%progbits
+ 415              		.align	2
+ 418              	FILTER_GAIN_POT_MOSI:
+ 419 0000 00040240 		.word	1073873920
+ 420 0004 0080     		.short	-32768
+ 421 0006 0000     		.space	2
+ 422              		.section	.rodata.FILTER_GAIN_POT_SCLK,"a",%progbits
+ 423              		.align	2
+ 426              	FILTER_GAIN_POT_SCLK:
+ 427 0000 00040240 		.word	1073873920
+ 428 0004 0020     		.short	8192
+ 429 0006 0000     		.space	2
+ 430              		.section	.rodata.FILTER_S0,"a",%progbits
+ 431              		.align	2
+ 434              	FILTER_S0:
+ 435 0000 00100240 		.word	1073876992
+ 436 0004 0004     		.short	1024
+ 437 0006 0000     		.space	2
+ 438              		.section	.rodata.FILTER_S1,"a",%progbits
+ 439              		.align	2
+ 442              	FILTER_S1:
+ 443 0000 000C0240 		.word	1073875968
+ 444 0004 0001     		.short	256
+ 445 0006 0000     		.space	2
+ 446              		.section	.rodata.FIVE_VOLT_REGULATOR_ENABLE,"a",%progbits
+ 447              		.align	2
+ 450              	FIVE_VOLT_REGULATOR_ENABLE:
+ 451 0000 00100240 		.word	1073876992
+ 452 0004 0400     		.short	4
+ 453 0006 0000     		.space	2
+ 454              		.section	.rodata.FLIP_FLOP_ENABLE,"a",%progbits
+ 455              		.align	2
+ 458              	FLIP_FLOP_ENABLE:
+ 459 0000 00100240 		.word	1073876992
+ 460 0004 0001     		.short	256
+ 461 0006 0000     		.space	2
+ 462              		.section	.rodata.GAIN_POT_NSS,"a",%progbits
+ 463              		.align	2
+ 466              	GAIN_POT_NSS:
+ 467 0000 00100240 		.word	1073876992
+ 468 0004 2000     		.short	32
+ 469 0006 0000     		.space	2
+ 470              		.section	.rodata.GPS_POWER,"a",%progbits
+ 471              		.align	2
+ 474              	GPS_POWER:
+ 475 0000 00000240 		.word	1073872896
+ 476 0004 0001     		.short	256
+ 477 0006 0000     		.space	2
+ 478              		.section	.rodata.GPS_PPS,"a",%progbits
+ 479              		.align	2
+ 482              	GPS_PPS:
+ 483 0000 00100240 		.word	1073876992
+ 484 0004 8000     		.short	128
+ 485 0006 0000     		.space	2
+ 486              		.section	.rodata.GPS_RESET,"a",%progbits
+ 487              		.align	2
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 14
+
+
+ 490              	GPS_RESET:
+ 491 0000 00100240 		.word	1073876992
+ 492 0004 0080     		.short	-32768
+ 493 0006 0000     		.space	2
+ 494              		.section	.rodata.I2C_SCL,"a",%progbits
+ 495              		.align	2
+ 498              	I2C_SCL:
+ 499 0000 00040240 		.word	1073873920
+ 500 0004 0004     		.short	1024
+ 501 0006 0000     		.space	2
+ 502              		.section	.rodata.I2C_SDA,"a",%progbits
+ 503              		.align	2
+ 506              	I2C_SDA:
+ 507 0000 00040240 		.word	1073873920
+ 508 0004 0008     		.short	2048
+ 509 0006 0000     		.space	2
+ 510              		.section	.rodata.IMP_BRIDGE_SWITCH_A,"a",%progbits
+ 511              		.align	2
+ 514              	IMP_BRIDGE_SWITCH_A:
+ 515 0000 00080240 		.word	1073874944
+ 516 0004 0200     		.short	2
+ 517 0006 0000     		.space	2
+ 518              		.section	.rodata.IMP_BRIDGE_SWITCH_B,"a",%progbits
+ 519              		.align	2
+ 522              	IMP_BRIDGE_SWITCH_B:
+ 523 0000 00000240 		.word	1073872896
+ 524 0004 4000     		.short	64
+ 525 0006 0000     		.space	2
+ 526              		.section	.rodata.IN_AMP_ENABLE,"a",%progbits
+ 527              		.align	2
+ 530              	IN_AMP_ENABLE:
+ 531 0000 00080240 		.word	1073874944
+ 532 0004 0400     		.short	4
+ 533 0006 0000     		.space	2
+ 534              		.section	.rodata.LCD_DC,"a",%progbits
+ 535              		.align	2
+ 538              	LCD_DC:
+ 539 0000 00040240 		.word	1073873920
+ 540 0004 8000     		.short	128
+ 541 0006 0000     		.space	2
+ 542              		.section	.rodata.LCD_LED,"a",%progbits
+ 543              		.align	2
+ 546              	LCD_LED:
+ 547 0000 00080240 		.word	1073874944
+ 548 0004 0020     		.short	8192
+ 549 0006 0000     		.space	2
+ 550              		.section	.rodata.LCD_MISO,"a",%progbits
+ 551              		.align	2
+ 554              	LCD_MISO:
+ 555 0000 00040240 		.word	1073873920
+ 556 0004 1000     		.short	16
+ 557 0006 0000     		.space	2
+ 558              		.section	.rodata.LCD_MOSI,"a",%progbits
+ 559              		.align	2
+ 562              	LCD_MOSI:
+ 563 0000 00040240 		.word	1073873920
+ 564 0004 2000     		.short	32
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 15
+
+
+ 565 0006 0000     		.space	2
+ 566              		.section	.rodata.LCD_NSS,"a",%progbits
+ 567              		.align	2
+ 570              	LCD_NSS:
+ 571 0000 00000240 		.word	1073872896
+ 572 0004 0080     		.short	-32768
+ 573 0006 0000     		.space	2
+ 574              		.section	.rodata.LCD_RESET,"a",%progbits
+ 575              		.align	2
+ 578              	LCD_RESET:
+ 579 0000 00040240 		.word	1073873920
+ 580 0004 4000     		.short	64
+ 581 0006 0000     		.space	2
+ 582              		.section	.rodata.LCD_SCK,"a",%progbits
+ 583              		.align	2
+ 586              	LCD_SCK:
+ 587 0000 00040240 		.word	1073873920
+ 588 0004 0800     		.short	8
+ 589 0006 0000     		.space	2
+ 590              		.section	.rodata.MIC_IN,"a",%progbits
+ 591              		.align	2
+ 594              	MIC_IN:
+ 595 0000 00040240 		.word	1073873920
+ 596 0004 0200     		.short	2
+ 597 0006 0000     		.space	2
+ 598              		.section	.rodata.MIC_SWITCH,"a",%progbits
+ 599              		.align	2
+ 602              	MIC_SWITCH:
+ 603 0000 000C0240 		.word	1073875968
+ 604 0004 0004     		.short	1024
+ 605 0006 0000     		.space	2
+ 606              		.section	.rodata.PADDLE_INDEX_NC,"a",%progbits
+ 607              		.align	2
+ 610              	PADDLE_INDEX_NC:
+ 611 0000 000C0240 		.word	1073875968
+ 612 0004 4000     		.short	64
+ 613 0006 0000     		.space	2
+ 614              		.section	.rodata.PADDLE_INDEX_NO,"a",%progbits
+ 615              		.align	2
+ 618              	PADDLE_INDEX_NO:
+ 619 0000 000C0240 		.word	1073875968
+ 620 0004 8000     		.short	128
+ 621 0006 0000     		.space	2
+ 622              		.section	.rodata.PADDLE_THUMB_NC,"a",%progbits
+ 623              		.align	2
+ 626              	PADDLE_THUMB_NC:
+ 627 0000 000C0240 		.word	1073875968
+ 628 0004 2000     		.short	32
+ 629 0006 0000     		.space	2
+ 630              		.section	.rodata.PADDLE_THUMB_NO,"a",%progbits
+ 631              		.align	2
+ 634              	PADDLE_THUMB_NO:
+ 635 0000 000C0240 		.word	1073875968
+ 636 0004 0800     		.short	8
+ 637 0006 0000     		.space	2
+ 638              		.section	.rodata.PREAMP_POWER,"a",%progbits
+ 639              		.align	2
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 16
+
+
+ 642              	PREAMP_POWER:
+ 643 0000 000C0240 		.word	1073875968
+ 644 0004 0040     		.short	16384
+ 645 0006 0000     		.space	2
+ 646              		.section	.rodata.RED_LED,"a",%progbits
+ 647              		.align	2
+ 650              	RED_LED:
+ 651 0000 00100240 		.word	1073876992
+ 652 0004 0020     		.short	8192
+ 653 0006 0000     		.space	2
+ 654              		.section	.rodata.RX_I,"a",%progbits
+ 655              		.align	2
+ 658              	RX_I:
+ 659 0000 00000240 		.word	1073872896
+ 660 0004 0800     		.short	8
+ 661 0006 0000     		.space	2
+ 662              		.section	.rodata.RX_Q,"a",%progbits
+ 663              		.align	2
+ 666              	RX_Q:
+ 667 0000 00000240 		.word	1073872896
+ 668 0004 0400     		.short	4
+ 669 0006 0000     		.space	2
+ 670              		.section	.rodata.RX_TO_GPS,"a",%progbits
+ 671              		.align	2
+ 674              	RX_TO_GPS:
+ 675 0000 00080240 		.word	1073874944
+ 676 0004 4000     		.short	64
+ 677 0006 0000     		.space	2
+ 678              		.section	.rodata.SIDETONE,"a",%progbits
+ 679              		.align	2
+ 682              	SIDETONE:
+ 683 0000 000C0240 		.word	1073875968
+ 684 0004 0010     		.short	4096
+ 685 0006 0000     		.space	2
+ 686              		.section	.rodata.TRX_SWITCH,"a",%progbits
+ 687              		.align	2
+ 690              	TRX_SWITCH:
+ 691 0000 00080240 		.word	1073874944
+ 692 0004 0800     		.short	8
+ 693 0006 0000     		.space	2
+ 694              		.section	.rodata.TX_FROM_GPS,"a",%progbits
+ 695              		.align	2
+ 698              	TX_FROM_GPS:
+ 699 0000 00080240 		.word	1073874944
+ 700 0004 8000     		.short	128
+ 701 0006 0000     		.space	2
+ 702              		.section	.rodata.TX_RF_SWITCH_A,"a",%progbits
+ 703              		.align	2
+ 706              	TX_RF_SWITCH_A:
+ 707 0000 00040240 		.word	1073873920
+ 708 0004 0400     		.short	4
+ 709 0006 0000     		.space	2
+ 710              		.section	.rodata.TX_RF_SWITCH_B,"a",%progbits
+ 711              		.align	2
+ 714              	TX_RF_SWITCH_B:
+ 715 0000 00000240 		.word	1073872896
+ 716 0004 8000     		.short	128
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 17
+
+
+ 717 0006 0000     		.space	2
+ 718              		.section	.rodata.dac1,"a",%progbits
+ 719              		.align	2
+ 722              	dac1:
+ 723 0000 00000240 		.word	1073872896
+ 724 0004 1000     		.short	16
+ 725 0006 0000     		.space	2
+ 726              		.section	.rodata.dac2,"a",%progbits
+ 727              		.align	2
+ 730              	dac2:
+ 731 0000 00000240 		.word	1073872896
+ 732 0004 2000     		.short	32
+ 733 0006 0000     		.space	2
+ 734              		.section	.rodata.encoderB,"a",%progbits
+ 735              		.align	2
+ 738              	encoderB:
+ 739 0000 00100240 		.word	1073876992
+ 740 0004 0200     		.short	2
+ 741 0006 0000     		.space	2
+ 742              		.section	.rodata.encoderBee,"a",%progbits
+ 743              		.align	2
+ 746              	encoderBee:
+ 747 0000 00100240 		.word	1073876992
+ 748 0004 0100     		.short	1
+ 749 0006 0000     		.space	2
+ 750              		.section	.rodata.encoderP,"a",%progbits
+ 751              		.align	2
+ 754              	encoderP:
+ 755 0000 00040240 		.word	1073873920
+ 756 0004 0002     		.short	512
+ 757 0006 0000     		.space	2
+ 758              		.text
+ 759              	.Letext0:
+ 760              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 761              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 762              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+ 763              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+ 764              		.file 6 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f756xx.h"
+ 765              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 766              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ 767              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+ 768              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\includ
+ 769              		.file 11 "Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_gpio.h"
+ 770              		.file 12 "Inc/gpio.h"
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 18
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 gpio.c
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:18     .text.MX_GPIO_Init:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:25     .text.MX_GPIO_Init:00000000 MX_GPIO_Init
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:299    .text.MX_GPIO_Init:000001a4 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:394    .rodata.CHARGE_POWER_SOURCE:00000000 CHARGE_POWER_SOURCE
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:450    .rodata.FIVE_VOLT_REGULATOR_ENABLE:00000000 FIVE_VOLT_REGULATOR_ENABLE
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:650    .rodata.RED_LED:00000000 RED_LED
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:458    .rodata.FLIP_FLOP_ENABLE:00000000 FLIP_FLOP_ENABLE
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:506    .rodata.I2C_SDA:00000000 I2C_SDA
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:498    .rodata.I2C_SCL:00000000 I2C_SCL
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:690    .rodata.TRX_SWITCH:00000000 TRX_SWITCH
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:442    .rodata.FILTER_S1:00000000 FILTER_S1
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:434    .rodata.FILTER_S0:00000000 FILTER_S0
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:530    .rodata.IN_AMP_ENABLE:00000000 IN_AMP_ENABLE
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:698    .rodata.TX_FROM_GPS:00000000 TX_FROM_GPS
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:674    .rodata.RX_TO_GPS:00000000 RX_TO_GPS
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:474    .rodata.GPS_POWER:00000000 GPS_POWER
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:482    .rodata.GPS_PPS:00000000 GPS_PPS
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:490    .rodata.GPS_RESET:00000000 GPS_RESET
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:610    .rodata.PADDLE_INDEX_NC:00000000 PADDLE_INDEX_NC
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:626    .rodata.PADDLE_THUMB_NC:00000000 PADDLE_THUMB_NC
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:618    .rodata.PADDLE_INDEX_NO:00000000 PADDLE_INDEX_NO
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:634    .rodata.PADDLE_THUMB_NO:00000000 PADDLE_THUMB_NO
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:642    .rodata.PREAMP_POWER:00000000 PREAMP_POWER
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:602    .rodata.MIC_SWITCH:00000000 MIC_SWITCH
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:594    .rodata.MIC_IN:00000000 MIC_IN
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:682    .rodata.SIDETONE:00000000 SIDETONE
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:410    .rodata.EARPHONE_NOT_INSERTED:00000000 EARPHONE_NOT_INSERTED
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:386    .rodata.AUDIO_AMP_NSHTDWN:00000000 AUDIO_AMP_NSHTDWN
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:402    .rodata.DAC_MUX:00000000 DAC_MUX
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:466    .rodata.GAIN_POT_NSS:00000000 GAIN_POT_NSS
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:418    .rodata.FILTER_GAIN_POT_MOSI:00000000 FILTER_GAIN_POT_MOSI
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:426    .rodata.FILTER_GAIN_POT_SCLK:00000000 FILTER_GAIN_POT_SCLK
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:362    .rodata.AMP_POWER:00000000 AMP_POWER
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:714    .rodata.TX_RF_SWITCH_B:00000000 TX_RF_SWITCH_B
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:706    .rodata.TX_RF_SWITCH_A:00000000 TX_RF_SWITCH_A
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:522    .rodata.IMP_BRIDGE_SWITCH_B:00000000 IMP_BRIDGE_SWITCH_B
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:514    .rodata.IMP_BRIDGE_SWITCH_A:00000000 IMP_BRIDGE_SWITCH_A
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:378    .rodata.AMP_SWITCH_B:00000000 AMP_SWITCH_B
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:370    .rodata.AMP_SWITCH_A:00000000 AMP_SWITCH_A
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:730    .rodata.dac2:00000000 dac2
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:722    .rodata.dac1:00000000 dac1
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:658    .rodata.RX_I:00000000 RX_I
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:666    .rodata.RX_Q:00000000 RX_Q
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:754    .rodata.encoderP:00000000 encoderP
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:738    .rodata.encoderB:00000000 encoderB
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:746    .rodata.encoderBee:00000000 encoderBee
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:586    .rodata.LCD_SCK:00000000 LCD_SCK
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:554    .rodata.LCD_MISO:00000000 LCD_MISO
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:562    .rodata.LCD_MOSI:00000000 LCD_MOSI
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:546    .rodata.LCD_LED:00000000 LCD_LED
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:570    .rodata.LCD_NSS:00000000 LCD_NSS
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:578    .rodata.LCD_RESET:00000000 LCD_RESET
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:538    .rodata.LCD_DC:00000000 LCD_DC
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:359    .rodata.AMP_POWER:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:367    .rodata.AMP_SWITCH_A:00000000 $d
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cchLef9R.s 			page 19
+
+
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:375    .rodata.AMP_SWITCH_B:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:383    .rodata.AUDIO_AMP_NSHTDWN:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:391    .rodata.CHARGE_POWER_SOURCE:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:399    .rodata.DAC_MUX:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:407    .rodata.EARPHONE_NOT_INSERTED:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:415    .rodata.FILTER_GAIN_POT_MOSI:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:423    .rodata.FILTER_GAIN_POT_SCLK:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:431    .rodata.FILTER_S0:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:439    .rodata.FILTER_S1:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:447    .rodata.FIVE_VOLT_REGULATOR_ENABLE:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:455    .rodata.FLIP_FLOP_ENABLE:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:463    .rodata.GAIN_POT_NSS:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:471    .rodata.GPS_POWER:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:479    .rodata.GPS_PPS:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:487    .rodata.GPS_RESET:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:495    .rodata.I2C_SCL:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:503    .rodata.I2C_SDA:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:511    .rodata.IMP_BRIDGE_SWITCH_A:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:519    .rodata.IMP_BRIDGE_SWITCH_B:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:527    .rodata.IN_AMP_ENABLE:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:535    .rodata.LCD_DC:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:543    .rodata.LCD_LED:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:551    .rodata.LCD_MISO:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:559    .rodata.LCD_MOSI:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:567    .rodata.LCD_NSS:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:575    .rodata.LCD_RESET:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:583    .rodata.LCD_SCK:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:591    .rodata.MIC_IN:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:599    .rodata.MIC_SWITCH:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:607    .rodata.PADDLE_INDEX_NC:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:615    .rodata.PADDLE_INDEX_NO:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:623    .rodata.PADDLE_THUMB_NC:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:631    .rodata.PADDLE_THUMB_NO:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:639    .rodata.PREAMP_POWER:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:647    .rodata.RED_LED:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:655    .rodata.RX_I:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:663    .rodata.RX_Q:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:671    .rodata.RX_TO_GPS:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:679    .rodata.SIDETONE:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:687    .rodata.TRX_SWITCH:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:695    .rodata.TX_FROM_GPS:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:703    .rodata.TX_RF_SWITCH_A:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:711    .rodata.TX_RF_SWITCH_B:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:719    .rodata.dac1:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:727    .rodata.dac2:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:735    .rodata.encoderB:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:743    .rodata.encoderBee:00000000 $d
+C:\Users\micha\AppData\Local\Temp\cchLef9R.s:751    .rodata.encoderP:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_GPIO_Init

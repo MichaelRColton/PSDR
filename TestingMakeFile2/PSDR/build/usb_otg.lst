@@ -1,0 +1,124 @@
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc8Xq92Y.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"usb_otg.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MX_USB_OTG_FS_USB_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	MX_USB_OTG_FS_USB_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv5-sp-d16
+  25              	MX_USB_OTG_FS_USB_Init:
+  26              	.LFB138:
+  27              		.file 1 "Src/usb_otg.c"
+   1:Src/usb_otg.c **** /**
+   2:Src/usb_otg.c ****   ******************************************************************************
+   3:Src/usb_otg.c ****   * File Name          : USB_OTG.c
+   4:Src/usb_otg.c ****   * Description        : This file provides code for the configuration
+   5:Src/usb_otg.c ****   *                      of the USB_OTG instances.
+   6:Src/usb_otg.c ****   ******************************************************************************
+   7:Src/usb_otg.c ****   * This notice applies to any and all portions of this file
+   8:Src/usb_otg.c ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/usb_otg.c ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/usb_otg.c ****   * inserted by the user or by software development tools
+  11:Src/usb_otg.c ****   * are owned by their respective copyright owners.
+  12:Src/usb_otg.c ****   *
+  13:Src/usb_otg.c ****   * Copyright (c) 2018 STMicroelectronics International N.V. 
+  14:Src/usb_otg.c ****   * All rights reserved.
+  15:Src/usb_otg.c ****   *
+  16:Src/usb_otg.c ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/usb_otg.c ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/usb_otg.c ****   *
+  19:Src/usb_otg.c ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/usb_otg.c ****   *    this list of conditions and the following disclaimer.
+  21:Src/usb_otg.c ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/usb_otg.c ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/usb_otg.c ****   *    and/or other materials provided with the distribution.
+  24:Src/usb_otg.c ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/usb_otg.c ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/usb_otg.c ****   *    derived from this software without specific written permission.
+  27:Src/usb_otg.c ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/usb_otg.c ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/usb_otg.c ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/usb_otg.c ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/usb_otg.c ****   *    this license is void and will automatically terminate your rights under 
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc8Xq92Y.s 			page 2
+
+
+  32:Src/usb_otg.c ****   *    this license. 
+  33:Src/usb_otg.c ****   *
+  34:Src/usb_otg.c ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/usb_otg.c ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/usb_otg.c ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/usb_otg.c ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/usb_otg.c ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/usb_otg.c ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/usb_otg.c ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/usb_otg.c ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/usb_otg.c ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/usb_otg.c ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/usb_otg.c ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/usb_otg.c ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/usb_otg.c ****   *
+  47:Src/usb_otg.c ****   ******************************************************************************
+  48:Src/usb_otg.c ****   */
+  49:Src/usb_otg.c **** 
+  50:Src/usb_otg.c **** /* Includes ------------------------------------------------------------------*/
+  51:Src/usb_otg.c **** #include "usb_otg.h"
+  52:Src/usb_otg.c **** 
+  53:Src/usb_otg.c **** #include "gpio.h"
+  54:Src/usb_otg.c **** 
+  55:Src/usb_otg.c **** /* USER CODE BEGIN 0 */
+  56:Src/usb_otg.c **** 
+  57:Src/usb_otg.c **** /* USER CODE END 0 */
+  58:Src/usb_otg.c **** 
+  59:Src/usb_otg.c **** /* USB_OTG_FS init function */
+  60:Src/usb_otg.c **** 
+  61:Src/usb_otg.c **** void MX_USB_OTG_FS_USB_Init(void)
+  62:Src/usb_otg.c **** {
+  28              		.loc 1 62 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  63:Src/usb_otg.c **** 
+  64:Src/usb_otg.c **** }
+  33              		.loc 1 64 0
+  34 0000 7047     		bx	lr
+  35              		.cfi_endproc
+  36              	.LFE138:
+  38              		.text
+  39              	.Letext0:
+  40              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+  41              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+  42              		.file 4 "Drivers/CMSIS/Include/core_cm7.h"
+  43              		.file 5 "Drivers/CMSIS/Device/ST/STM32F7xx/Include/system_stm32f7xx.h"
+  44              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+  45              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+  46              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\lib\\gcc\\arm-none-eab
+  47              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\7 2018-q2-update\\arm-none-eabi\\include
+ARM GAS  C:\Users\micha\AppData\Local\Temp\cc8Xq92Y.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 usb_otg.c
+C:\Users\micha\AppData\Local\Temp\cc8Xq92Y.s:18     .text.MX_USB_OTG_FS_USB_Init:00000000 $t
+C:\Users\micha\AppData\Local\Temp\cc8Xq92Y.s:25     .text.MX_USB_OTG_FS_USB_Init:00000000 MX_USB_OTG_FS_USB_Init
+
+NO UNDEFINED SYMBOLS

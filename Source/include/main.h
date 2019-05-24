@@ -6,6 +6,8 @@
 #define PSDR257 4
 //#define ARM_MATH_CM7
 
+#include "stm32f7xx_hal.h"
+//#include "stm32f7xx_hal_def.h"
 
 //#define PSDR_BOARD PSDR2
 
@@ -42,22 +44,22 @@
 //#include "stm32f756xx.h"
 #define  ART_ACCLERATOR_ENABLE 1
 
-#include "stm32f7xx.h"
-#include "stm32f7xx_hal_conf.h"
-#include "stm32f7xx_hal.h"
-#include "stm32f7xx_hal_gpio.h"
-#include "stm32f7xx_hal_def.h"
-#include "stm32f7xx_it.h"
-#include "stm32f7xx_hal_tim.h"
-#include "stm32f7xx_hal_cortex.h"
-#include "stm32f7xx_hal_dma.h"
-#include "stm32f7xx_hal_dac.h"
-#include "stm32f7xx_hal_uart.h"
-#include "stm32f7xx_hal_usart.h"
-#include "stm32f7xx_hal_i2c.h"
-#include "stm32f7xx_hal_i2c_ex.h"
-#include "stm32f7xx_hal_tim_ex.h"
-#include "stm32f7xx_hal_pwr.h"
+//#include "stm32f7xx.h"
+//#include "stm32f7xx_hal_conf.h"
+//#include "stm32f7xx_hal.h"
+//#include "stm32f7xx_hal_gpio.h"
+//#include "stm32f7xx_hal_def.h"
+//#include "stm32f7xx_it.h"
+//#include "stm32f7xx_hal_tim.h"
+//#include "stm32f7xx_hal_cortex.h"
+//#include "stm32f7xx_hal_dma.h"
+//#include "stm32f7xx_hal_dac.h"
+//#include "stm32f7xx_hal_uart.h"
+//#include "stm32f7xx_hal_usart.h"
+//#include "stm32f7xx_hal_i2c.h"
+//#include "stm32f7xx_hal_i2c_ex.h"
+//#include "stm32f7xx_hal_tim_ex.h"
+//#include "stm32f7xx_hal_pwr.h"
 #endif
 
 
@@ -79,6 +81,7 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9340.h"
 #include "spi.h"
+
 
 //#include "stm32f4xx_hal_rcc.h"
 //#include "stm32f4xx_hal.h"

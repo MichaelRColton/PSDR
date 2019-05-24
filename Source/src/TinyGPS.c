@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #include "TinyGPS.h"
 #include <math.h>
 //#include <trig.h>
-#include <hal.h>
+//#include <hal.h>
 
 #define _GPRMC_TERM "GPRMC"
 #define _GPGGA_TERM "GPGGA"
