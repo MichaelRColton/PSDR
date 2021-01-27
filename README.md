@@ -2,46 +2,38 @@ PSDR
 ====
 
 PortableSDR - A Stand Alone HF Software Defined Transciever.
+[Hackaday.io Link](https://hackaday.io/project/1538-portablesdr)
 
+The PortableSDR is an all-in-one solution for ham operators, hikers, backpackers, and DIY enthusiasts who are looking for an open-source QRP (low-power) radio for communication. It is a fully stand-alone HF/Shortwave Software Defined Radio (SDR) Transceiver and includes a Vector Network Analyzer and Antenna Analyzer as well as GPS, perfect for portable operations in a variety of conditions. It is designed to be a flexible platform for development, a learning aid, and and a useful instrument for electronics enthusiasts.
 
+## Features
 
-Firmware Build Notes
-====================
+- Coverage from 0 to 35MHz
+- Waterfall display that lets you see radio signals
+- Receives AM, USB (Upper Side Band), LSB (Lower Side Band), and Morse code (CW)
+- Modulates USB and LSB signals
+- Variable bandpass filter
 
-* Install gcc-arm-none-eabi: apt-get install gcc-arm-none-eabi, or download from https://launchpad.net/gcc-arm-embedded/4.7
-* Download Eclipse Kepler, v4.3 for C/C++ dev from https://eclipse.org/downloads/packages/release/Kepler/SR2
-* Help -> Install New software
-* add Name: GNU ARM, Location: http://gnuarmeclipse.sourceforge.net/updates
-* Click the radio button, and hit next, next, agree to the license, finsh, Hit OK to allow unsigned contents
-* Restart eclipse
-* Help -> Install New Software
-* same as before,add: Name: Zylin Embedded CDT, Location: http://opensource.zylin.com/zylincdt 
-* sudo apt-get install openocd
-* File -> import -> Existing Projects into Workspace (May be a better way here!)
-* Navigate to the PSDR/Source directory and add it.
-* hit Build All
+## Hardware
 
-You should end up with PSDR/Source/Debug/PSDR.elf  which is the binary firmware file
+- Powerful ARM processor
+- Color LCD display
+- Dual DDS frequency Synthesizers
+- Quadrature Sampling Detector & Exciter
+- Digitally controllable instrumentation amplifiers
+- Morse Code key (the "Giblet" on the bottom right corner of the enclosure)
+- Magnitude & Phase measurement chip (for VNA and antenna analysis functions) with Impedance Bridge
+- Dual SMA connectors, smartphone style earphone/microphone connector, and USB port
+- GPS
+- Built in Microphone and Speaker
+- Internal Lithium Polymer battery with charger and high efficiency switching regulator
+- MicroSD slot
+- Pads for grabbing raw I/Q signals, both in and out.
 
-TODO: Flashing firmware to the PSDR instructions
+## Why did I make it?
+I'm an avid backpacker and radio enthusiast. To me there is something exciting about making contact with others from remote locations where cell phones and the internet can't reach. I wanted an advanced radio that was ideally suited to tough environments. That meant I it needed to be very compact, integrated, and durable. As an engineer, I wanted an open platform that really takes advantage of the hardware and has the potential to grow and be used for other applications.
 
+There are numerous, excellent radios out there, but none offered the combination I wanted. The best radios are closed source, larger, and expensive, while most open designs are very basic and lacking in flexibility.
 
-
-
-
-New Architecture Build Instructions (WIP):
-
-Windows:
-1. Install the GNU Tools ARM Embedded. Add bin (not arm-none-eabi/bin) to path?
-2. Navigate to firmware directory in shell and execute: make
-3. Use whatever editor you want for the files
-
-For eclipse:
-1. File->New->Project...
-2. C/C++->Makefule Project with Existing Code, "Next"
-3. Browse to the root directory of the PSDR firmware
-4. I have been selecting "Cross ARM GCC" not sure if that's needed. "Next"
-5. Right click on the project in the Project Explorer and select settings. In C/C++ Build, uncheck "Use default build command" and type "make" (or "make VERBOSE=1") without the quotes. Clock "OK"
-6. Try to build the project: CTRL-B or Project Menu->Build-All or right click on the project->Build Project
-7. TODO: Set up debugging. Fix all the error messages that come up.
-For some reason this doesn't work for me unless I build it at least once from the command line. Also, if I do a make clean, I have to build from the command line. More to learn!
+## Contributing
+Please read our [Contributing.md](CONTRIBUTING.md) for ways to help keep this project going.
