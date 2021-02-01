@@ -1,1 +1,0 @@
-Schematics and Board layout files are for Mentorgraphics PADS.
