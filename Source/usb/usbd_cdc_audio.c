@@ -11,7 +11,7 @@
 
 #define CDC_MPS          64U
 #define CDC_CMD_MPS      8U
-#define AUDIO_PKT        (AUDIO_SAMPLES_PER_FRAME * 2U)   /* 96 bytes mono 16-bit */
+#define AUDIO_MAX_PKT    (AUDIO_MAX_SAMPLES_PER_FRAME * 2U)   /* 64 bytes: iso wMaxPacketSize */
 
 #define USB_CDC_AUDIO_CONFIG_DESC_SIZ   174U
 
@@ -33,11 +33,12 @@ typedef struct {
     uint8_t  cmd;                    /* pending EP0 class request opcode       */
     uint8_t  as_alt;                 /* audio-streaming alt setting (0/1)      */
     uint8_t  ep0_buf[8];
-    int16_t  audio_buf[AUDIO_SAMPLES_PER_FRAME];
+    int16_t  audio_buf[AUDIO_MAX_SAMPLES_PER_FRAME];
 } CDC_AUDIO_Handle;
 
 static CDC_AUDIO_Handle hcls;        /* single static instance (one device)    */
 static volatile uint8_t iso_armed = 0;  /* an iso IN transfer is queued/in-flight */
+static volatile uint8_t iso_stuck = 0;  /* SOF watchdog: frames armed w/o completion */
 
 /* ---- SWD-readable enumeration trace (temporary diagnostics) ------------- *
  * USB is the thing under test, so the console can't report. Read this struct
@@ -110,7 +111,7 @@ __ALIGN_BEGIN static uint8_t CfgDesc[] __ALIGN_END = {
           LOBYTE(AUDIO_SAMPLE_RATE), (uint8_t)((AUDIO_SAMPLE_RATE >> 8) & 0xFF),
           (uint8_t)((AUDIO_SAMPLE_RATE >> 16) & 0xFF),     /* 48000 Hz                      */
     0x09, USB_DESC_TYPE_ENDPOINT, AUDIO_IN_EP, 0x05,       /* iso, async                    */
-          LOBYTE(AUDIO_PKT), HIBYTE(AUDIO_PKT), 0x01, 0x00, 0x00,
+          LOBYTE(AUDIO_MAX_PKT), HIBYTE(AUDIO_MAX_PKT), 0x01, 0x00, 0x00,
     0x07, 0x25, 0x01, 0x00, 0x00, 0x00, 0x00,              /* CS audio endpoint             */
 };
 _Static_assert(sizeof(CfgDesc) == USB_CDC_AUDIO_CONFIG_DESC_SIZ,
@@ -120,18 +121,22 @@ __ALIGN_BEGIN static uint8_t DevQualDesc[10] __ALIGN_END =
     { 10, 0x06, 0x00, 0x02, 0x00, 0x00, 0x00, 0x40, 0x01, 0x00 };
 
 /* ---- audio sample source (weak default = quiet 1 kHz test tone) --------- */
-__attribute__((weak)) void usb_audio_get_samples(int16_t *dst, uint32_t n)
+__attribute__((weak)) uint32_t usb_audio_get_samples(int16_t *dst, uint32_t max)
 {
     static uint32_t ph;
-    /* ~1 kHz at 48 kHz: 48 samples/cycle. Low amplitude. */
+    /* Quiet ~1 kHz triangle test tone (no DSP source linked). One frame's worth. */
+    uint32_t n = (AUDIO_SAMPLES_PER_FRAME < max) ? AUDIO_SAMPLES_PER_FRAME : max;
     for (uint32_t i = 0; i < n; i++) {
-        /* crude triangle to avoid a sin table: cheap and recognizable */
-        uint32_t p = ph & 0x2FU;                 /* 0..47 */
-        int32_t v = (p < 24) ? (int32_t)p - 12 : 36 - (int32_t)p;  /* -12..+12..-11 */
-        dst[i] = (int16_t)(v * 200);             /* ~+/-2400 */
+        uint32_t p = ph % 24U;                   /* 24 samples/cycle @ 24 kHz = 1 kHz */
+        int32_t v = (p < 12) ? (int32_t)p - 6 : 18 - (int32_t)p;
+        dst[i] = (int16_t)(v * 200);
         ph++;
     }
+    return n;
 }
+
+/* Weak no-op so a build without a DSP source still links. main.c overrides it. */
+__attribute__((weak)) void usb_audio_push(int16_t sample) { (void)sample; }
 
 int usb_audio_streaming(void) { return hcls.as_alt == 1; }
 
@@ -176,8 +181,14 @@ static void iso_send(USBD_HandleTypeDef *pdev)
 {
     g_usbdbg.iso_arm++;
     iso_armed = 1U;
-    usb_audio_get_samples(hcls.audio_buf, AUDIO_SAMPLES_PER_FRAME);
-    (void)USBD_LL_Transmit(pdev, AUDIO_IN_EP, (uint8_t *)hcls.audio_buf, AUDIO_PKT);
+    iso_stuck = 0U;
+    uint32_t n = usb_audio_get_samples(hcls.audio_buf, AUDIO_MAX_SAMPLES_PER_FRAME);
+    /* Never send a zero-length packet: the HAL does not raise DataIn for a 0-byte
+       iso IN, which stalls the completion chain. Pad an underrun up to the nominal
+       frame with silence so the stream keeps pacing; send extra when the ring has
+       built up (clock drift) so it drains instead of overflowing. */
+    while (n < AUDIO_SAMPLES_PER_FRAME) hcls.audio_buf[n++] = 0;
+    (void)USBD_LL_Transmit(pdev, AUDIO_IN_EP, (uint8_t *)hcls.audio_buf, (uint16_t)(n * 2U));
 }
 
 static void audio_set_alt(USBD_HandleTypeDef *pdev, uint8_t alt)
@@ -185,7 +196,7 @@ static void audio_set_alt(USBD_HandleTypeDef *pdev, uint8_t alt)
     if (alt == hcls.as_alt) return;
     if (alt == 1U) {
         g_usbdbg.audio_alt1_opens++;
-        USBD_LL_OpenEP(pdev, AUDIO_IN_EP, USBD_EP_TYPE_ISOC, AUDIO_PKT);
+        USBD_LL_OpenEP(pdev, AUDIO_IN_EP, USBD_EP_TYPE_ISOC, AUDIO_MAX_PKT);
         pdev->ep_in[AUDIO_IN_EP & 0x0FU].is_used = 1U;
         hcls.as_alt = 1;
         iso_send(pdev);               /* prime the first frame */
@@ -287,9 +298,19 @@ static uint8_t DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 static uint8_t SOF(USBD_HandleTypeDef *pdev)
 {
     g_usbdbg.sof_count++;
-    /* SOF only kicks the stream if the completion chain has stalled (e.g. after
-       an incomplete). Steady state is driven by DataIn. */
-    if (hcls.as_alt == 1U && iso_armed == 0U) iso_send(pdev);
+    /* Steady-state pacing is the DataIn completion chain. The SOF starts it and
+       acts as a watchdog: if a completion is missed and iso_armed stays stuck for
+       a few frames, flush and restart so the stream can't wedge. The >=3 threshold
+       tolerates the normal 1-frame arm->send->complete pipeline. */
+    if (hcls.as_alt == 1U) {
+        if (iso_armed == 0U) {
+            iso_send(pdev);
+        } else if (++iso_stuck >= 3U) {
+            (void)USBD_LL_FlushEP(pdev, AUDIO_IN_EP);
+            iso_armed = 0U;
+            iso_send(pdev);
+        }
+    }
     return (uint8_t)USBD_OK;
 }
 
@@ -300,6 +321,7 @@ static uint8_t IsoINIncomplete(USBD_HandleTypeDef *pdev, uint8_t epnum)
     (void)epnum;
     g_usbdbg.iso_incomplete++;
     iso_armed = 0U;
+    iso_stuck = 0U;
     (void)USBD_LL_FlushEP(pdev, AUDIO_IN_EP);
     return (uint8_t)USBD_OK;
 }

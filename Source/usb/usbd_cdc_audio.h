@@ -41,9 +41,18 @@ uint8_t usb_cdc_tx(uint8_t *buf, uint16_t len);
 /* Audio sample source. The composite calls this once per USB frame (1 ms) to get
  * AUDIO_SAMPLES_PER_FRAME mono int16 samples for the mic stream. A weak default
  * emits a quiet test tone; the receiver DSP can override it with a strong symbol. */
-#define AUDIO_SAMPLE_RATE        48000U
-#define AUDIO_SAMPLES_PER_FRAME  (AUDIO_SAMPLE_RATE / 1000U)   /* 48 */
-void usb_audio_get_samples(int16_t *dst, uint32_t n);
+#define AUDIO_SAMPLE_RATE            24000U                       /* matches the DSP Fs (TIM3) */
+#define AUDIO_SAMPLES_PER_FRAME      (AUDIO_SAMPLE_RATE / 1000U)  /* 24 nominal per 1 ms frame  */
+#define AUDIO_MAX_SAMPLES_PER_FRAME  32U                          /* headroom for async jitter  */
+
+/* Fill up to `max` mono int16 samples from the audio source and return the
+ * count actually written (0..max). The composite calls this once per frame to
+ * pace the mic. A weak default emits a quiet test tone; the DSP overrides it. */
+uint32_t usb_audio_get_samples(int16_t *dst, uint32_t max);
+
+/* Producer: push one mono demod sample into the USB audio FIFO. Called from the
+ * DSP sample ISR; lock-free single-producer / single-consumer with the USB ISR. */
+void usb_audio_push(int16_t sample);
 
 /* True once the host has opened the mic (AS alt-setting 1). */
 int usb_audio_streaming(void);

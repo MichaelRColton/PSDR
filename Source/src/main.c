@@ -481,6 +481,51 @@ void Encoder(void)
 	int dac2OutVal = 0;
 	int txDacOutValMax = 0;
 
+	/* ---- USB sound-card mic FIFO --------------------------------------- *
+	 * captureSamples() (TIM3 ISR, 24 kHz) pushes demod audio here; the USB iso
+	 * IN endpoint drains it ~once per 1 ms frame. Lock-free single-producer
+	 * (TIM3 ISR) / single-consumer (OTG_FS ISR); strong overrides of the weak
+	 * stubs in usbd_cdc_audio.c. */
+	extern int usb_audio_streaming(void);   /* 1 once the host has opened the mic */
+	#define USB_AUDIO_RING 512U    /* power of two, ~21 ms at 24 kHz */
+	static volatile int16_t  usbAudioRing[USB_AUDIO_RING];
+	static volatile uint16_t usbAudioHead = 0;
+	static volatile uint16_t usbAudioTail = 0;
+	volatile uint32_t g_ring_push = 0;   /* SWD diag: samples pushed (producer)  */
+	volatile uint32_t g_ring_drop = 0;   /* SWD diag: samples dropped (ring full) */
+
+	void usb_audio_push(int16_t s)
+	{
+		uint16_t h  = usbAudioHead;
+		uint16_t nh = (uint16_t)((h + 1U) & (USB_AUDIO_RING - 1U));
+		if(nh != usbAudioTail)           /* drop if the host has fallen behind */
+		{
+			usbAudioRing[h] = s;
+			__DMB();                      /* publish the sample before the index */
+			usbAudioHead = nh;
+			g_ring_push++;
+		}
+		else
+		{
+			g_ring_drop++;
+		}
+	}
+
+	uint32_t usb_audio_get_samples(int16_t *dst, uint32_t max)
+	{
+		uint32_t n = 0;
+		uint16_t t = usbAudioTail;
+		uint16_t h = usbAudioHead;
+		while(n < max && t != h)
+		{
+			dst[n++] = usbAudioRing[t];
+			t = (uint16_t)((t + 1U) & (USB_AUDIO_RING - 1U));
+		}
+		__DMB();
+		usbAudioTail = t;
+		return n;
+	}
+
 	void captureSamples()
 	{
 		if(adcConfigured)
@@ -637,6 +682,26 @@ void Encoder(void)
 				//dac1SetValue(outputSamplesA[sampleIndex*2]);
 
 				agcLevel = agcLevel * (1 - 0.0001);
+
+				/* feed the USB sound-card mic: pre-volume demod audio, RX only.
+				   The output bank is B/C/A for sampleBank 0/1/2. Taking the
+				   real part [*2] gives mono demod; afGain (speaker volume) is
+				   deliberately NOT applied so the USB level is independent.
+				   Only push while the host is listening, so the FIFO starts
+				   fresh on open (no stale backlog) and idles when closed. */
+				if(transmitting == 0 && usb_audio_streaming())
+				{
+					float afOut;
+					switch(sampleBank)
+					{
+					case 0:  afOut = samplesB[sampleIndex * 2]; break;
+					case 1:  afOut = samplesC[sampleIndex * 2]; break;
+					default: afOut = samplesA[sampleIndex * 2]; break;
+					}
+					int32_t v = (int32_t)(afOut * 32767.0f);
+					if(v > 32767) v = 32767; else if(v < -32768) v = -32768;
+					usb_audio_push((int16_t)v);
+				}
 
 				sampleIndex++;
 				if(sampleIndex >= FFT_SIZE) //- (filterKernelLength/2))
@@ -2158,7 +2223,7 @@ void TIM_Try(void)
 
 	TimHandle.Instance = TIM3;
 	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
-	TimHandle.Init.Period = 1050; //was 1050, 800 works okay, not in AM though. Can't remember what that works out to. I think 44kHz or so
+	TimHandle.Init.Period = 899; //24.000 kHz exactly: 21.6MHz/(899+1). Was 1050 (~20.55 kHz). Raised to a standard rate for the USB sound-card output.
 	TimHandle.Init.Prescaler = uwPrescalerValue;
 	TimHandle.Init.ClockDivision = 0;
 	HAL_TIM_Base_Init(&TimHandle);
@@ -2180,7 +2245,7 @@ HAL_NVIC_EnableIRQ(TIMx_IRQn);
 	  __TIM4_CLK_ENABLE();
 		TimHandle4.Instance = TIM4;
 		TimHandle4.Init.CounterMode = TIM_COUNTERMODE_UP;
-		TimHandle4.Init.Period = 1050; //was 1050, 800 works okay, not in AM though.
+		TimHandle4.Init.Period = 899; //match TIM3 at 24.000 kHz (was 1050).
 		TimHandle4.Init.Prescaler = uwPrescalerValue;
 		TimHandle4.Init.ClockDivision = 0;
 
