@@ -746,6 +746,9 @@ volatile int      g_filter_in        = 0;           // 0 = bypass (B2, stock), 1
 
 volatile int      g_amp_in           = 0;           // 1 = power + insert the HMC482 RF gain block in RX
 volatile int      g_amp_pol          = 0;           // AMP_SWITCH sense (flip if "insert" is the wrong way)
+volatile int      g_trx              = 0;           // TRX_SWITCH: 0 = receive
+volatile int      g_txrf             = 1;           // TX_RF_SWITCH_A: 1 = antenna/normal, 0 = VNA-out path
+volatile int      g_imp              = 0;           // IMP_BRIDGE_SWITCH_A: 0 = bypass
 
 /* USB CDC serial console (Source/usb/usb_serial.c). */
 void usb_serial_init(void);
@@ -1213,6 +1216,13 @@ setFreq(vfoAFrequency);
 			HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0);  // stock bypass
 			HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1);
 		}
+		// Force the rest of the RX path deterministically (don't depend on signalPath
+		// having run): T/R switch, the TX/antenna RF switch, and the imp-bridge switch.
+		HAL_GPIO_WritePin(TRX_SWITCH.port, TRX_SWITCH.pin, g_trx ? 1 : 0);
+		HAL_GPIO_WritePin(TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, g_txrf ? 1 : 0);
+		HAL_GPIO_WritePin(TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, g_txrf ? 0 : 1);
+		HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, g_imp ? 1 : 0);
+		HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, g_imp ? 0 : 1);
 		usb_serial_poll();   // process any serial-console commands
 
 		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn't LOOK bad, but maybe it is negatively effecting things.

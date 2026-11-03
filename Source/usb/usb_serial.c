@@ -19,6 +19,9 @@ extern volatile uint32_t g_hmc1023_reg1;
 extern volatile uint32_t g_hmc1023_reg2;
 extern volatile int      g_amp_in;
 extern volatile int      g_amp_pol;
+extern volatile int      g_trx;
+extern volatile int      g_txrf;
+extern volatile int      g_imp;
 extern long              vfoAFrequency;
 void     hmc1023_write(uint32_t reg, uint32_t val);
 uint32_t hmc1023_read(uint32_t reg);
@@ -62,11 +65,9 @@ void usb_serial_on_rx(uint8_t *buf, uint32_t len)
 
 static void print_status(void)
 {
-	usb_printf("S=%u vfo=%ld filt=%d amp=%d/pol%d reg0=%06lX reg1=%02lX reg2=%03lX\r\n",
+	usb_printf("S=%u vfo=%ld filt=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX\r\n",
 	           (unsigned)maxAmplitude, vfoAFrequency, g_filter_in, g_amp_in, g_amp_pol,
-	           (unsigned long)g_hmc1023_readback,
-	           (unsigned long)g_hmc1023_reg1,
-	           (unsigned long)g_hmc1023_reg2);
+	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2);
 	maxAmplitude = 0;   /* peak since last read */
 }
 
@@ -82,11 +83,14 @@ static void handle_cmd(char *s)
 	case 'v': afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); break;
 	case 'F': { long hz = strtol(s + 1, 0, 10); if (hz >= 2500000L && hz <= 35000000L) vfoAFrequency = hz;
 	            usb_printf("vfo=%ld\r\n", vfoAFrequency); } break;
+	case 't': g_trx  = (s[1] == '1'); usb_printf("trx=%d\r\n", g_trx); break;
+	case 'x': g_txrf = (s[1] == '1'); usb_printf("txrf=%d\r\n", g_txrf); break;
+	case 'b': g_imp  = (s[1] == '1'); usb_printf("imp=%d\r\n", g_imp); break;
 	case 'r': { uint32_t reg = (uint32_t)(s[1] - '0'); uint32_t val = strtoul(s + 2, 0, 16);
 	            hmc1023_write(reg, val); usb_printf("wrote reg%lu=%lX\r\n", (unsigned long)reg, (unsigned long)val); } break;
 	case 'R': { uint32_t reg = (uint32_t)(s[1] - '0'); uint32_t val = hmc1023_read(reg);
 	            usb_printf("reg%lu=%06lX\r\n", (unsigned long)reg, (unsigned long)val); } break;
-	default:  usb_printf("cmds: s | F<hz> tune | f1/f0 filter | a1/a0 amp | A1/A0 ampPol | r<reg> <hex> | R<reg> | m1/m0 stream | v<gain>\r\n"); break;
+	default:  usb_printf("cmds: s | F<hz> | f filter | a amp | A ampPol | t trx | x txrf | b impbridge | r<reg> <hex> | R<reg> | m stream | v<gain>\r\n"); break;
 	}
 }
 
