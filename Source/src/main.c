@@ -53,7 +53,7 @@ void dac2SetValue(uint16_t value);
 __IO long long millis = 0;
 
 
-float afGain = 1.0;
+float afGain = 0.0;   // default muted for bench testing (was 1.0)
 float afGainLast = 2.0;
 float afGainStep = 0.1;
 float afGainMax = 25.0;
@@ -742,6 +742,7 @@ volatile uint32_t g_hmc1023_readback = 0xDEADBEEF;  // reg0 presence word (expec
 volatile uint32_t g_hmc1023_reg1     = 0xDEADBEEF;  // reg1 read-back after config
 volatile uint32_t g_hmc1023_reg2     = 0xDEADBEEF;  // reg2 read-back after config
 volatile uint8_t  g_hmc1023_r3       = 0xAA;
+volatile int      g_filter_in        = 1;           // 1 = route RX through HMC1023 (mux B4), 0 = bypass (B2). Poke over SWD to A/B.
 
 static void hmc_sck(int v){ HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, v); }
 static void hmc_mosi(int v){ HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, v); }
@@ -1180,6 +1181,11 @@ setFreq(vfoAFrequency);
 	//MAIN LOOP - Lowest Priority
 	while(1)
 	{
+		// Live filter A/B (bench): re-assert the RX mux every loop so signalPath()
+		// can't force bypass. Poke g_filter_in over SWD: 1=HMC1023 in (B4), 0=bypass.
+		HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, 1);
+		HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, g_filter_in ? 1 : 0);
+
 		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn't LOOK bad, but maybe it is negatively effecting things.
 		//I could do something where the dial moves around on screen, but if you get too close to the edge, the DDSs start moving the frequency
 		//Hmm, I think that's kind of a cool idea. It would be cool in two ways: it would allow you to shift the IF so you could get away from
