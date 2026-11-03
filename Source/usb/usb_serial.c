@@ -31,6 +31,8 @@ void     hmc1023_write(uint32_t reg, uint32_t val);
 uint32_t hmc1023_read(uint32_t reg);
 void     hmc1023_config_rx(void);
 void     lpf_power(int on);
+void     setGainPot(uint8_t a, uint8_t b);
+static uint16_t g_gain_pot = 200;   /* last MAX5388 value set over the console */
 
 #define CMD_MAX 64
 static volatile char     cmdBuf[CMD_MAX];
@@ -94,8 +96,10 @@ static void handle_cmd(char *s)
 	case 'A': g_amp_pol = (s[1] == '1'); usb_printf("amp switch pol=%d\r\n", g_amp_pol); break;
 	case 'm': g_stream = (s[1] == '1'); usb_printf("stream %s\r\n", g_stream ? "on" : "off"); break;
 	case 'v': afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); break;
-	case 'F': { long hz = strtol(s + 1, 0, 10); if (hz >= 2500000L && hz <= 35000000L) vfoAFrequency = hz;
+	case 'F': { long hz = strtol(s + 1, 0, 10); if (hz >= 2500000L && hz <= 175000000L) vfoAFrequency = hz;
 	            usb_printf("vfo=%ld\r\n", vfoAFrequency); } break;
+	case 'G': { int v = atoi(s + 1); if (v < 0) v = 0; if (v > 255) v = 255; g_gain_pot = (uint16_t)v;
+	            setGainPot((uint8_t)v, (uint8_t)v); usb_printf("gainpot=%u\r\n", g_gain_pot); } break;
 	case 'g': g_bench = (s[1] == '1'); usb_printf("bench=%d\r\n", g_bench); break;
 	case 'M': g_filt_ch = (s[1] - '0') & 3; usb_printf("mux ch=%d (S1=%d S0=%d) %s\r\n", g_filt_ch,
 	          (g_filt_ch >> 1) & 1, g_filt_ch & 1,
