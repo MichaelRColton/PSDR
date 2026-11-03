@@ -1202,9 +1202,11 @@ setFreq(vfoAFrequency);
 		// can't force bypass. Poke g_filter_in over SWD: 1=HMC1023 in (B4), 0=bypass.
 		HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, 1);
 		HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, g_filter_in ? 1 : 0);
-		// Keep the 5V boost enabled: signalPath() turns it off in RX, which would
-		// unpower both the LPF and the RF amp. We need it on for both.
-		HAL_GPIO_WritePin(FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 1);
+		// 5V boost: enable ONLY when the LPF or amp needs it. Stock RX turns it off
+		// on purpose -- the ADP1613 switcher desensitizes the HF front end -- so
+		// forcing it on was deafening the receiver. Off in plain bypass RX.
+		HAL_GPIO_WritePin(FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin,
+		                  (g_filter_in || g_amp_in) ? 1 : 0);
 		// RF gain block (HMC482). amp OFF -> stock BYPASS (A=0,B=1, exactly as
 		// signalPath sets it) so the signal passes straight through. amp ON ->
 		// insert it; g_amp_pol flips the unverified insert sense.
