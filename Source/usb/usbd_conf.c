@@ -104,13 +104,15 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
 
 	if (HAL_PCD_Init(&hpcd_USB_OTG_FS) != HAL_OK) { for(;;) {} }
 
-	/* 320 x 32-bit words of FIFO RAM, now split across EP0-3 TX + RX.
-	   RX 0x60, EP0 0x20, EP1 (CDC data IN) 0x40, EP2 (CDC cmd) 0x10, EP3 (audio iso) 0x40 = 272. */
+	/* 320 x 32-bit words of FIFO RAM across RX + EP0-4 TX.
+	   RX 0x60, EP0 0x20, EP1 (CDC bulk) 0x40, EP2 (CDC cmd) 0x10,
+	   EP3 (demod iso, <=64 B) 0x20, EP4 (I/Q iso, <=128 B = 32 w) 0x28 = 280. */
 	HAL_PCDEx_SetRxFiFo(&hpcd_USB_OTG_FS, 0x60);
 	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 0, 0x20);
 	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 1, 0x40);
 	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 2, 0x10);
-	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 3, 0x40);
+	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 3, 0x20);
+	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 4, 0x28);
 	return USBD_OK;
 }
 

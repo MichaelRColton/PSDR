@@ -28,7 +28,8 @@ extern volatile int      g_bench;
 extern volatile int      g_filt_ch;
 extern float             passBandRms;   /* the real S-meter: what drives the red bar (drawSMeter) */
 extern long              vfoAFrequency;
-extern float             usbAudioGain;     /* extra gain on the USB mic feed      */
+extern float             usbAudioGain;     /* gain on the USB demod-mic feed      */
+extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed     */
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
 extern int16_t           filterUpperLimit; /* DSP filter LPF edge, FFT-bin index  */
 extern int16_t           filterLowerLimit; /* DSP filter HPF edge, FFT-bin index  */
@@ -122,6 +123,8 @@ static void handle_cmd(char *s)
 	            usb_printf("reg%lu=%06lX\r\n", (unsigned long)reg, (unsigned long)val); } break;
 	case 'Z': { float gz = (float)atof(s + 1); if (gz < 0.0f) gz = 0.0f; if (gz > 256.0f) gz = 256.0f;
 	            usbAudioGain = gz; usb_printf("usbAudioGain=%d/100\r\n", (int)(usbAudioGain * 100.0f)); } break;
+	case 'Q': { float gq = (float)atof(s + 1); if (gq < 0.0f) gq = 0.0f; if (gq > 256.0f) gq = 256.0f;
+	            usbIqGain = gq; usb_printf("usbIqGain=%d/100\r\n", (int)(usbIqGain * 100.0f)); } break;
 	case 'D': { int m = atoi(s + 1); if (m < 0) m = 0; if (m > 2) m = 2; mode = (uint8_t)m;
 	            populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 	            usb_printf("mode=%d (%s)\r\n", mode, mode==0?"LSB":mode==1?"USB":"AM"); } break;

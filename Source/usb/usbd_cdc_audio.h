@@ -54,8 +54,15 @@ uint32_t usb_audio_get_samples(int16_t *dst, uint32_t max);
  * DSP sample ISR; lock-free single-producer / single-consumer with the USB ISR. */
 void usb_audio_push(int16_t sample);
 
-/* True once the host has opened the mic (AS alt-setting 1). */
+/* Stereo I/Q stream (second USB audio device, L=I R=Q). Fill up to `frames`
+ * interleaved L,R pairs, return frames written (weak default = silence). */
+uint32_t usb_iq_get_samples(int16_t *dst, uint32_t frames);
+/* Producer: push one I/Q pair into the USB I/Q FIFO (from the DSP sample ISR). */
+void usb_iq_push(int16_t i_samp, int16_t q_samp);
+
+/* True once the host has opened the mono demod mic / the stereo I/Q device. */
 int usb_audio_streaming(void);
+int usb_iq_streaming(void);
 
 #ifdef __cplusplus
 }

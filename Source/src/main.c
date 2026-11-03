@@ -527,6 +527,46 @@ void Encoder(void)
 		return n;
 	}
 
+	/* ---- USB stereo I/Q FIFO (second audio device, L=I R=Q) ------------ *
+	 * Same lock-free SPSC pattern, but each slot is an I,Q pair; indices count
+	 * pairs. Fed with the raw pre-FFT baseband; drained by the I/Q iso endpoint. */
+	extern int usb_iq_streaming(void);
+	#define USB_IQ_RING 512U       /* pairs (power of two) */
+	static volatile int16_t  usbIqRing[USB_IQ_RING * 2];
+	static volatile uint16_t usbIqHead = 0;
+	static volatile uint16_t usbIqTail = 0;
+	float usbIqGain = 6.0f;        /* gain on the raw I/Q USB feed (console 'Q') */
+
+	void usb_iq_push(int16_t i_samp, int16_t q_samp)
+	{
+		uint16_t h  = usbIqHead;
+		uint16_t nh = (uint16_t)((h + 1U) & (USB_IQ_RING - 1U));
+		if(nh != usbIqTail)
+		{
+			usbIqRing[h * 2U]      = i_samp;   /* L = I */
+			usbIqRing[h * 2U + 1U] = q_samp;   /* R = Q */
+			__DMB();
+			usbIqHead = nh;
+		}
+	}
+
+	uint32_t usb_iq_get_samples(int16_t *dst, uint32_t frames)
+	{
+		uint32_t n = 0;
+		uint16_t t = usbIqTail;
+		uint16_t h = usbIqHead;
+		while(n < frames && t != h)
+		{
+			dst[n * 2U]      = usbIqRing[t * 2U];
+			dst[n * 2U + 1U] = usbIqRing[t * 2U + 1U];
+			t = (uint16_t)((t + 1U) & (USB_IQ_RING - 1U));
+			n++;
+		}
+		__DMB();
+		usbIqTail = t;
+		return n;
+	}
+
 	void captureSamples()
 	{
 		if(adcConfigured)
@@ -702,6 +742,19 @@ void Encoder(void)
 					int32_t v = (int32_t)(afOut * usbAudioGain * 32767.0f);
 					if(v > 32767) v = 32767; else if(v < -32768) v = -32768;
 					usb_audio_push((int16_t)v);
+				}
+
+				/* feed the USB stereo I/Q device: raw baseband before the FFT.
+				   L = I (ADC2), R = Q (ADC3), same DC removal as the DSP input. */
+				if(transmitting == 0 && usb_iq_streaming())
+				{
+					float fi = (uhADCxConvertedValue2 - dcOffset2) / 4096.0f;
+					float fq = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
+					int32_t li = (int32_t)(fi * usbIqGain * 32767.0f);
+					int32_t lq = (int32_t)(fq * usbIqGain * 32767.0f);
+					if(li > 32767) li = 32767; else if(li < -32768) li = -32768;
+					if(lq > 32767) lq = 32767; else if(lq < -32768) lq = -32768;
+					usb_iq_push((int16_t)li, (int16_t)lq);
 				}
 
 				sampleIndex++;

@@ -25,7 +25,7 @@ __ALIGN_BEGIN static uint8_t USBD_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END = {
 	USB_MAX_EP0_SIZE,           /* bMaxPacketSize0 */
 	LOBYTE(USBD_VID), HIBYTE(USBD_VID),
 	LOBYTE(USBD_PID), HIBYTE(USBD_PID),
-	0x02, 0x02,                 /* bcdDevice 2.02 (bumped so Windows re-reads fresh) */
+	0x03, 0x02,                 /* bcdDevice 2.03 (bumped so Windows re-reads fresh strings) */
 	USBD_IDX_MFC_STR,           /* iManufacturer */
 	USBD_IDX_PRODUCT_STR,       /* iProduct */
 	USBD_IDX_SERIAL_STR,        /* iSerialNumber */
