@@ -738,7 +738,9 @@ void setGainPot(uint8_t a, uint8_t b)
 // SCK=FILTER_GAIN_POT_SCLK(PB13), MOSI=FILTER_GAIN_POT_MOSI(PB15),
 // MISO=PB14, CS=FILTER_CS(PB12). Protocol per the UHSDR driver: 32-bit frames,
 // last byte = 0x5 | (regaddr<<3); reading register 0 must return 0x114080.
-volatile uint32_t g_hmc1023_readback = 0xDEADBEEF;
+volatile uint32_t g_hmc1023_readback = 0xDEADBEEF;  // reg0 presence word (expect 0x114080)
+volatile uint32_t g_hmc1023_reg1     = 0xDEADBEEF;  // reg1 read-back after config
+volatile uint32_t g_hmc1023_reg2     = 0xDEADBEEF;  // reg2 read-back after config
 volatile uint8_t  g_hmc1023_r3       = 0xAA;
 
 static void hmc_sck(int v){ HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, v); }
@@ -755,10 +757,33 @@ static uint8_t hmc_rx_byte(void){              // sample SDO while SCK high
 	return b;
 }
 
+// Write a 24-bit value to register regaddr (last byte tags chip id 0x5 + regaddr).
+static void hmc_write_reg(uint32_t regaddr, uint32_t value)
+{
+	hmc_cs(0);
+	hmc_tx_byte((value >> 16) & 0xFF);
+	hmc_tx_byte((value >> 8) & 0xFF);
+	hmc_tx_byte(value & 0xFF);
+	hmc_tx_byte(0x5 | (regaddr << 3));
+	hmc_cs(1);
+}
+
+// Read a register: point the read mux at it (write reg0 = regaddr), then clock
+// out 4 bytes (one dummy clock first to align the frame). Stashes chip id in r3.
+static uint32_t hmc_read_reg(uint32_t regaddr)
+{
+	hmc_write_reg(0, regaddr);
+	hmc_cs(0);
+	hmc_mosi(0); hmc_sck(1); hmc_sck(0);
+	uint8_t r0 = hmc_rx_byte(), r1 = hmc_rx_byte(), r2 = hmc_rx_byte(), r3 = hmc_rx_byte();
+	hmc_cs(1);
+	g_hmc1023_r3 = r3;
+	return ((uint32_t)r0 << 16) | ((uint32_t)r1 << 8) | r2;
+}
+
 void hmc1023_probe(void)
 {
 	GPIO_InitTypeDef g;
-	g_hmc1023_readback = 0x0000B0B0;            // entry marker: proves the probe ran
 	g.Pin = GPIO_PIN_12; g.Mode = GPIO_MODE_OUTPUT_PP; g.Pull = GPIO_NOPULL; g.Speed = GPIO_SPEED_LOW;
 	HAL_GPIO_Init(GPIOB, &g);                  // CS output
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, 1);  // idle high
@@ -766,20 +791,23 @@ void hmc1023_probe(void)
 	HAL_GPIO_Init(GPIOB, &g);                  // MISO input
 	hmc_sck(0);
 
-	// Step 1: write register 0 = 0 to set the read pointer. value=0, tag=0x05.
-	hmc_cs(0);
-	hmc_tx_byte(0x00); hmc_tx_byte(0x00); hmc_tx_byte(0x00); hmc_tx_byte(0x05);
-	hmc_cs(1);
+	// 1) presence check (expect 0x114080)
+	g_hmc1023_readback = hmc_read_reg(0);
 
-	// Step 2: clock out 4 bytes and capture SDO. One dummy clock first: SDO is
-	// valid one bit before our capture window, so align the frame by skipping it.
-	hmc_cs(0);
-	hmc_mosi(0); hmc_sck(1); hmc_sck(0);
-	uint8_t r0 = hmc_rx_byte(), r1 = hmc_rx_byte(), r2 = hmc_rx_byte(), r3 = hmc_rx_byte();
-	hmc_cs(1);
+	// 2) reg1: use SPI bandwidth settings (bit1) + force cal code (bit4)
+	hmc_write_reg(1, 0x12);
 
-	g_hmc1023_r3 = r3;                          // low 3 bits should read back as 0x5
-	g_hmc1023_readback = ((uint32_t)r0 << 16) | ((uint32_t)r1 << 8) | r2;  // expect 0x114080
+	// 3) reg2: coarse=4, bypass OFF (bit5=0), GAIN ON (bit4=1), drvr=1, opamp=1  => 0x115
+	hmc_write_reg(2, (4u << 6) | (0u << 5) | (1u << 4) | (1u << 2) | (1u << 0));
+
+	// 4) read config back to prove the writes landed
+	g_hmc1023_reg1 = hmc_read_reg(1);
+	g_hmc1023_reg2 = hmc_read_reg(2);
+
+	// 5) route the RX signal THROUGH the filter: mux channel B4 (S0=1, S1=1).
+	//    Stock firmware parks on B2 = straight-through bypass (S0=1, S1=0).
+	HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, 1);
+	HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, 1);
 }
 
 //USART1_IRQHandler(void)
