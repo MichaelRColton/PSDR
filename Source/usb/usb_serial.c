@@ -4,6 +4,7 @@
 #include "usbd_desc.h"
 #include "usbd_cdc.h"
 #include "usbd_cdc_if.h"
+#include "usbd_cdc_audio.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,8 +44,7 @@ static volatile uint8_t  g_stream = 0;   /* periodic S-meter streaming */
 void usb_serial_init(void)
 {
 	USBD_Init(&hUsbDeviceFS, &CDC_Desc, DEVICE_FS);
-	USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC);
-	USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops_FS);
+	USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC_AUDIO);   /* composite: CDC console + UAC mic */
 	USBD_Start(&hUsbDeviceFS);
 }
 
@@ -57,7 +57,7 @@ void usb_printf(const char *fmt, ...)
 	if (n <= 0) return;
 	if (n > (int)sizeof(buf)) n = (int)sizeof(buf);
 	for (int tries = 0; tries < 4000; tries++)
-		if (CDC_Transmit_FS((uint8_t *)buf, (uint16_t)n) == USBD_OK) return;
+		if (usb_cdc_tx((uint8_t *)buf, (uint16_t)n) == USBD_OK) return;
 }
 
 /* USB IRQ context: buffer bytes, flag a complete line on CR/LF. */

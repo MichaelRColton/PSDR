@@ -19,13 +19,13 @@ __ALIGN_BEGIN static uint8_t USBD_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END = {
 	0x12,                       /* bLength */
 	USB_DESC_TYPE_DEVICE,       /* bDescriptorType */
 	0x00, 0x02,                 /* bcdUSB 2.00 */
-	0x02,                       /* bDeviceClass: CDC */
-	0x02,                       /* bDeviceSubClass */
-	0x00,                       /* bDeviceProtocol */
+	0xEF,                       /* bDeviceClass: Misc (IAD composite) */
+	0x02,                       /* bDeviceSubClass: Common Class */
+	0x01,                       /* bDeviceProtocol: Interface Association Descriptor */
 	USB_MAX_EP0_SIZE,           /* bMaxPacketSize0 */
 	LOBYTE(USBD_VID), HIBYTE(USBD_VID),
 	LOBYTE(USBD_PID), HIBYTE(USBD_PID),
-	0x00, 0x02,                 /* bcdDevice 2.00 */
+	0x02, 0x02,                 /* bcdDevice 2.02 (bumped so Windows re-reads fresh) */
 	USBD_IDX_MFC_STR,           /* iManufacturer */
 	USBD_IDX_PRODUCT_STR,       /* iProduct */
 	USBD_IDX_SERIAL_STR,        /* iSerialNumber */

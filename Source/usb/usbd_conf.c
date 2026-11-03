@@ -92,7 +92,7 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
 	hpcd_USB_OTG_FS.Init.dma_enable = DISABLE;
 	hpcd_USB_OTG_FS.Init.ep0_mps = DEP0CTL_MPS_64;
 	hpcd_USB_OTG_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
-	hpcd_USB_OTG_FS.Init.Sof_enable = DISABLE;
+	hpcd_USB_OTG_FS.Init.Sof_enable = ENABLE;   /* SOF paces the audio iso IN */
 	hpcd_USB_OTG_FS.Init.low_power_enable = DISABLE;
 	hpcd_USB_OTG_FS.Init.lpm_enable = DISABLE;
 	hpcd_USB_OTG_FS.Init.vbus_sensing_enable = DISABLE;
@@ -104,10 +104,13 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
 
 	if (HAL_PCD_Init(&hpcd_USB_OTG_FS) != HAL_OK) { for(;;) {} }
 
-	/* 320 x 32-bit words of FIFO RAM: RX 128, EP0-TX 64, EP1-TX 128. */
-	HAL_PCDEx_SetRxFiFo(&hpcd_USB_OTG_FS, 0x80);
-	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 0, 0x40);
-	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 1, 0x80);
+	/* 320 x 32-bit words of FIFO RAM, now split across EP0-3 TX + RX.
+	   RX 0x60, EP0 0x20, EP1 (CDC data IN) 0x40, EP2 (CDC cmd) 0x10, EP3 (audio iso) 0x40 = 272. */
+	HAL_PCDEx_SetRxFiFo(&hpcd_USB_OTG_FS, 0x60);
+	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 0, 0x20);
+	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 1, 0x40);
+	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 2, 0x10);
+	HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_FS, 3, 0x40);
 	return USBD_OK;
 }
 

@@ -18,8 +18,12 @@
 #define __ALIGN_END     __attribute__((aligned(4)))
 #endif
 
-/* CDC ACM: one configuration, one data interface pair. */
-#define USBD_MAX_NUM_INTERFACES        1U
+/* Composite CDC + UAC: interfaces 0-3. This gates USBD_Std{Itf,EP}Req: the core
+   STALLs any standard/class interface request whose wIndex exceeds it (see
+   usbd_ctlreq.c). At 1, SET_INTERFACE/GET_INTERFACE to the audio interfaces (2,3)
+   stalled, so Windows' usbccgp failed to start the device (code 10) the moment the
+   audio streaming interface had a second alt setting. Must cover the highest iface #. */
+#define USBD_MAX_NUM_INTERFACES        4U
 #define USBD_MAX_NUM_CONFIGURATION     1U
 #define USBD_MAX_STR_DESC_SIZ          0x100U
 #define USBD_SELF_POWERED              1U
