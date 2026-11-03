@@ -28,6 +28,10 @@ extern volatile int      g_bench;
 extern volatile int      g_filt_ch;
 extern float             passBandRms;   /* the real S-meter: what drives the red bar (drawSMeter) */
 extern long              vfoAFrequency;
+extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
+extern int16_t           filterUpperLimit; /* DSP filter LPF edge, FFT-bin index  */
+extern int16_t           filterLowerLimit; /* DSP filter HPF edge, FFT-bin index  */
+void     populateCoeficients(int bandwidth, int sideband, int offset);
 void     hmc1023_write(uint32_t reg, uint32_t val);
 uint32_t hmc1023_read(uint32_t reg);
 void     hmc1023_config_rx(void);
@@ -75,9 +79,9 @@ static void print_status(void)
 {
 	unsigned long rms_u = (unsigned long)(passBandRms * 1000000.0f);
 	int bar = (int)(10.0 * log((double)passBandRms * 1000000.0 + 1.0));
-	usb_printf("rms=%lu bar=%d S=%u vfo=%ld filt=%d mux=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX\r\n",
+	usb_printf("rms=%lu bar=%d S=%u vfo=%ld filt=%d mux=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX mode=%d flo=%d fhi=%d\r\n",
 	           rms_u, bar, (unsigned)maxAmplitude, vfoAFrequency, g_filter_in, g_filt_ch, g_amp_in, g_amp_pol,
-	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2);
+	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2, mode, filterLowerLimit, filterUpperLimit);
 	maxAmplitude = 0;   /* peak since last read */
 }
 
@@ -115,7 +119,17 @@ static void handle_cmd(char *s)
 	            hmc1023_write(reg, val); usb_printf("wrote reg%lu=%lX\r\n", (unsigned long)reg, (unsigned long)val); } break;
 	case 'R': { uint32_t reg = (uint32_t)(s[1] - '0'); uint32_t val = hmc1023_read(reg);
 	            usb_printf("reg%lu=%06lX\r\n", (unsigned long)reg, (unsigned long)val); } break;
-	default:  usb_printf("cmds: s | F<hz> | f filter | a amp | A ampPol | t trx | x txrf | b impbridge | r<reg> <hex> | R<reg> | m stream | v<gain>\r\n"); break;
+	case 'D': { int m = atoi(s + 1); if (m < 0) m = 0; if (m > 2) m = 2; mode = (uint8_t)m;
+	            populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
+	            usb_printf("mode=%d (%s)\r\n", mode, mode==0?"LSB":mode==1?"USB":"AM"); } break;
+	case 'K': {   /* K <lo> <hi> : DSP filter edges in FFT bins (HPF, LPF); ~46.875 Hz/bin @ 24k */
+	            char *p = s + 1; long lo = strtol(p, &p, 10); long hi = strtol(p, &p, 10);
+	            if (lo < 0) lo = 0; if (hi > 128) hi = 128; if (hi <= lo) hi = lo + 1;
+	            filterLowerLimit = (int16_t)lo; filterUpperLimit = (int16_t)hi;
+	            populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
+	            usb_printf("filt lo=%d hi=%d (~%ld..%ld Hz)\r\n", filterLowerLimit, filterUpperLimit,
+	                       lo * 46L, hi * 46L); } break;
+	default:  usb_printf("cmds: s | F<hz> | f | a | A | t | x | b | r<reg><hex> | R<reg> | m | v<g> | D<0-2 mode> | K<lo> <hi> filt\r\n"); break;
 	}
 }
 
