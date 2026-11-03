@@ -346,9 +346,15 @@ class Panel(tk.Tk):
         self.lpf.grid(row=4, column=0, columnspan=2, sticky="we")
         self.filt_hz_lbl = tk.Label(g, text="passband —", bg=PANEL, fg=MUTE)
         self.filt_hz_lbl.grid(row=5, column=0, columnspan=2, sticky="w")
+        tk.Label(g, text="USB level (Z)", bg=PANEL, fg=MUTE).grid(row=6, column=0, sticky="w")
+        self.usbg = tk.Scale(g, from_=0, to=50, resolution=1, orient="horizontal", length=180,
+                             bg=PANEL, fg=INK, troughcolor=BG, highlightthickness=0,
+                             command=self.set_usbgain)
+        self.usbg.set(10)
+        self.usbg.grid(row=7, column=0, columnspan=2, sticky="we")
         self.listen_btn = tk.Button(g, text="Listen on PC speakers", command=self.toggle_listen,
                                     bg=BG, fg=GOOD)
-        self.listen_btn.grid(row=6, column=0, columnspan=2, sticky="we", pady=(4, 2))
+        self.listen_btn.grid(row=8, column=0, columnspan=2, sticky="we", pady=(4, 2))
 
         # --- TX / switches ---
         g = self._group(col, "T/R & RF switches")
@@ -520,6 +526,9 @@ class Panel(tk.Tk):
     def set_mode(self):
         self.mode_i = self.mode_var.get()
         self.link.write(f"D{self.mode_i}")
+
+    def set_usbgain(self, _=None):
+        self.link.write(f"Z{int(float(self.usbg.get()))}")
 
     def _filt_hz_label(self):
         lo, hi = int(self.hpf.get()), int(self.lpf.get())
