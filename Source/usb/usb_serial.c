@@ -22,6 +22,7 @@ extern volatile int      g_amp_pol;
 extern volatile int      g_trx;
 extern volatile int      g_txrf;
 extern volatile int      g_imp;
+extern volatile int      g_bench;
 extern long              vfoAFrequency;
 void     hmc1023_write(uint32_t reg, uint32_t val);
 uint32_t hmc1023_read(uint32_t reg);
@@ -83,6 +84,7 @@ static void handle_cmd(char *s)
 	case 'v': afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); break;
 	case 'F': { long hz = strtol(s + 1, 0, 10); if (hz >= 2500000L && hz <= 35000000L) vfoAFrequency = hz;
 	            usb_printf("vfo=%ld\r\n", vfoAFrequency); } break;
+	case 'g': g_bench = (s[1] == '1'); usb_printf("bench=%d\r\n", g_bench); break;
 	case 't': g_trx  = (s[1] == '1'); usb_printf("trx=%d\r\n", g_trx); break;
 	case 'x': g_txrf = (s[1] == '1'); usb_printf("txrf=%d\r\n", g_txrf); break;
 	case 'b': g_imp  = (s[1] == '1'); usb_printf("imp=%d\r\n", g_imp); break;

@@ -746,6 +746,7 @@ volatile int      g_filter_in        = 0;           // 0 = bypass (B2, stock), 1
 
 volatile int      g_amp_in           = 0;           // 1 = power + insert the HMC482 RF gain block in RX
 volatile int      g_amp_pol          = 0;           // AMP_SWITCH sense (flip if "insert" is the wrong way)
+volatile int      g_bench            = 0;           // 0 = stock RX path (no GPIO overrides); 1 = apply bench forcing
 volatile int      g_trx              = 0;           // TRX_SWITCH: 0 = receive
 volatile int      g_txrf             = 1;           // TX_RF_SWITCH_A: 1 = antenna/normal, 0 = VNA-out path
 volatile int      g_imp              = 0;           // IMP_BRIDGE_SWITCH_A: 0 = bypass
@@ -1181,8 +1182,8 @@ setFreq(vfoAFrequency);
 	setGainPot(200, 200);
 
 	// Bench bring-up: probe whether the (now-powered) HMC1023 answers on SPI.
-	for(volatile int d = 0; d < 400000; d++) { }   // settle delay, no systick dependency
-	hmc1023_probe();
+	//for(volatile int d = 0; d < 400000; d++) { }   // (HMC probe disabled for the RX bisect)
+	//hmc1023_probe();
 
 	usb_serial_init();   // bring up the USB CDC serial console
 
@@ -1198,6 +1199,7 @@ setFreq(vfoAFrequency);
 	//MAIN LOOP - Lowest Priority
 	while(1)
 	{
+		if (g_bench) {   // bench overrides OFF by default -> use the stock receive path
 		// Live filter A/B (bench): re-assert the RX mux every loop so signalPath()
 		// can't force bypass. Poke g_filter_in over SWD: 1=HMC1023 in (B4), 0=bypass.
 		HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, 1);
@@ -1225,6 +1227,7 @@ setFreq(vfoAFrequency);
 		HAL_GPIO_WritePin(TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, g_txrf ? 0 : 1);
 		HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, g_imp ? 1 : 0);
 		HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, g_imp ? 0 : 1);
+		}   // end bench overrides (g_bench)
 		usb_serial_poll();   // process any serial-console commands
 
 		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn't LOOK bad, but maybe it is negatively effecting things.
