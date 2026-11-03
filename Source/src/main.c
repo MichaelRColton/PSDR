@@ -493,6 +493,7 @@ void Encoder(void)
 	static volatile uint16_t usbAudioTail = 0;
 	volatile uint32_t g_ring_push = 0;   /* SWD diag: samples pushed (producer)  */
 	volatile uint32_t g_ring_drop = 0;   /* SWD diag: samples dropped (ring full) */
+	float usbAudioGain = 10.0f;          /* gain on the USB mic feed (console 'Z'); demod float is small */
 
 	void usb_audio_push(int16_t s)
 	{
@@ -683,12 +684,12 @@ void Encoder(void)
 
 				agcLevel = agcLevel * (1 - 0.0001);
 
-				/* feed the USB sound-card mic: pre-volume demod audio, RX only.
-				   The output bank is B/C/A for sampleBank 0/1/2. Taking the
-				   real part [*2] gives mono demod; afGain (speaker volume) is
-				   deliberately NOT applied so the USB level is independent.
-				   Only push while the host is listening, so the FIFO starts
-				   fresh on open (no stale backlog) and idles when closed. */
+				/* feed the USB sound-card mic: demod audio, RX only. Output bank
+				   is B/C/A for sampleBank 0/1/2; real part [*2] = mono demod.
+				   Independent of afGain (the speaker knob) so the PC level holds
+				   even with the bench speaker turned down - set it with usbAudioGain
+				   (console 'Z'). The raw demod float is small, hence the big scale.
+				   Only push while the host is listening. */
 				if(transmitting == 0 && usb_audio_streaming())
 				{
 					float afOut;
@@ -698,7 +699,7 @@ void Encoder(void)
 					case 1:  afOut = samplesC[sampleIndex * 2]; break;
 					default: afOut = samplesA[sampleIndex * 2]; break;
 					}
-					int32_t v = (int32_t)(afOut * 32767.0f);
+					int32_t v = (int32_t)(afOut * usbAudioGain * 32767.0f);
 					if(v > 32767) v = 32767; else if(v < -32768) v = -32768;
 					usb_audio_push((int16_t)v);
 				}
