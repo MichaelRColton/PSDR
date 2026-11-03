@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "filename": "PSDR_2.6.1.kicad_pro",
+    "version": 3
+  },
+  "sheets": [
+    [
+      "137b8d2d-efce-5ab6-89b2-aebefbfa805e",
+      "Root"
+    ],
+    [
+      "fb42ae72-6ae5-578c-9380-6a70711a96c2",
+      "p02 MCU / GPS / USB"
+    ],
+    [
+      "f313d5ba-2f25-5bcc-8827-06671ef7da1e",
+      "p03 Clock (Si5338)"
+    ],
+    [
+      "2b677771-841e-5938-9a44-08f2532f5ac4",
+      "p04 Analog switches / drivers"
+    ],
+    [
+      "bc0c3c40-c10c-5f5f-addf-9a885f42c3fa",
+      "p05 RX/TX baseband"
+    ],
+    [
+      "c6ba8a02-c8f5-5eac-ac5a-c1b4c090eea5",
+      "p06 Audio / microphone"
+    ],
+    [
+      "9c22ff7c-1f05-5cc5-a628-f85bdbc658ee",
+      "p07 UI: paddles / LEDs / LCD"
+    ],
+    [
+      "8bbe2059-fa4d-5b65-824d-c7baa51537e6",
+      "p08 Power"
+    ],
+    [
+      "f80dc095-6269-521f-9418-d2516e9f1a06",
+      "p09 RF front end"
+    ],
+    [
+      "c7951b88-ac97-527b-bf93-cca697c0f0cf",
+      "p10 Variable filter"
+    ]
+  ],
+  "libraries": {
+    "pinned_footprint_libs": [],
+    "pinned_symbol_libs": []
+  },
+  "schematic": {
+    "legacy_lib_dir": "",
+    "legacy_lib_list": []
+  },
+  "text_variables": {}
+}

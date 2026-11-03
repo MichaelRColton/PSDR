@@ -1,0 +1,8 @@
+# KiCad files are LF on disk. Without this, a Windows checkout with
+# core.autocrlf=true rewrites them to CRLF and every regenerated file
+# shows up as a whole-file diff.
+*.kicad_sch text eol=lf
+*.kicad_sym text eol=lf
+*.kicad_pro text eol=lf
+*.kicad_pcb text eol=lf
+sym-lib-table text eol=lf

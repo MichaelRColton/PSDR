@@ -1,0 +1,1524 @@
+(kicad_sch
+	(version 20250610)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "9c22ff7c-1f05-5cc5-a628-f85bdbc658ee")
+	(paper "User" 558.8000 431.8000)
+	(title_block
+		(title "PSDR 2.6.1 - PDF page 7: UI: paddles / LEDs / LCD")
+		(date "2026-10-31")
+		(rev "generated")
+		(comment 1 "Netlist: Hardware/PSDR.asc (PADS Layout ASCII, upstream 468dc41)")
+		(comment 2 "Placement: Hardware/PSDR_2.6.1_Schematic_2016-07-31.pdf page 7")
+		(comment 3 "Connectivity is carried by global labels; original wiring is in the PDF")
+	)
+	(lib_symbols
+		(symbol "PSDR_2.6.1:P_0.1__6P_HEADER_DUAL_ENTRY_1241152-6"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 0.0000 7.6200 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Value" "0.1\"_6P_HEADER_DUAL_ENTRY_1241152-6"
+				(at 0.0000 -7.6200 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Footprint" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Datasheet" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Description" "Reconstructed from PADS part type 0.1\"_6P_HEADER_DUAL_ENTRY_1241152-6"
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(symbol "P_0.1__6P_HEADER_DUAL_ENTRY_1241152-6_0_1"
+				(rectangle (start -3.8100 5.0800) (end 3.8100 -5.0800)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "P_0.1__6P_HEADER_DUAL_ENTRY_1241152-6_1_1"
+				(pin passive line
+					(at -7.6200 2.5400 0)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at -7.6200 0.0000 0)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "2" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at -7.6200 -2.5400 0)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "3" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 7.6200 2.5400 180)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "4" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 7.6200 0.0000 180)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "5" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 7.6200 -2.5400 180)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "6" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
+		(symbol "PSDR_2.6.1:LED_0603"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "D"
+				(at 0.0000 5.0800 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Value" "LED_0603"
+				(at 0.0000 -5.0800 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Footprint" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Datasheet" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Description" "Reconstructed from PADS part type LED_0603"
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(symbol "LED_0603_0_1"
+				(rectangle (start -5.0800 2.5400) (end 5.0800 -2.5400)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "LED_0603_1_1"
+				(pin passive line
+					(at -8.8900 0.0000 0)
+					(length 3.81)
+					(name "1" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 8.8900 0.0000 180)
+					(length 3.81)
+					(name "2" (effects (font (size 1.27 1.27))))
+					(number "2" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
+		(symbol "PSDR_2.6.1:MORSE_PADDLE_CONTACTS"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "CW"
+				(at 0.0000 5.0800 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Value" "MORSE_PADDLE_CONTACTS"
+				(at 0.0000 -5.0800 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Footprint" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Datasheet" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Description" "Reconstructed from PADS part type MORSE_PADDLE_CONTACTS"
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(symbol "MORSE_PADDLE_CONTACTS_0_1"
+				(rectangle (start -5.0800 2.5400) (end 5.0800 -2.5400)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "MORSE_PADDLE_CONTACTS_1_1"
+				(pin passive line
+					(at -8.8900 0.0000 0)
+					(length 3.81)
+					(name "NO" (effects (font (size 1.27 1.27))))
+					(number "2" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 8.8900 0.0000 180)
+					(length 3.81)
+					(name "NC" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
+		(symbol "PSDR_2.6.1:MOSFET_P_SOT23_IRLML6401"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "Q"
+				(at 0.0000 6.3500 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Value" "MOSFET_P_SOT23_IRLML6401"
+				(at 0.0000 -6.3500 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Footprint" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Datasheet" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Description" "Reconstructed from PADS part type MOSFET_P_SOT23_IRLML6401"
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(symbol "MOSFET_P_SOT23_IRLML6401_0_1"
+				(rectangle (start -3.8100 3.8100) (end 3.8100 -3.8100)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "MOSFET_P_SOT23_IRLML6401_1_1"
+				(pin passive line
+					(at -7.6200 1.2700 0)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at -7.6200 -1.2700 0)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "2" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 7.6200 0.0000 180)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "3" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
+		(symbol "PSDR_2.6.1:PAD_1MM"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "LO"
+				(at 0.0000 5.0800 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Value" "PAD_1MM"
+				(at 0.0000 -5.0800 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Footprint" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Datasheet" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Description" "Reconstructed from PADS part type PAD_1MM"
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(symbol "PAD_1MM_0_1"
+				(rectangle (start -3.8100 2.5400) (end 3.8100 -2.5400)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "PAD_1MM_1_1"
+				(pin passive line
+					(at 7.6200 0.0000 180)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
+		(symbol "PSDR_2.6.1:RES_0603"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 0.0000 5.0800 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Value" "RES_0603"
+				(at 0.0000 -5.0800 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Footprint" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Datasheet" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Description" "Reconstructed from PADS part type RES_0603"
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(symbol "RES_0603_0_1"
+				(rectangle (start -3.8100 2.5400) (end 3.8100 -2.5400)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "RES_0603_1_1"
+				(pin passive line
+					(at -7.6200 0.0000 0)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 7.6200 0.0000 180)
+					(length 3.81)
+					(name "" (effects (font (size 1.27 1.27))))
+					(number "2" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
+		(symbol "PSDR_2.6.1:SPI_LCD_BOTTOM_ENTRY"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 0.0000 10.1600 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Value" "SPI_LCD_BOTTOM_ENTRY"
+				(at 0.0000 -10.1600 0)
+				(effects (font (size 1.27 1.27)))
+			)
+			(property "Footprint" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Datasheet" ""
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(property "Description" "Reconstructed from PADS part type SPI_LCD_BOTTOM_ENTRY"
+				(at 0.0000 0.0000 0)
+				(effects (font (size 1.27 1.27)) (hide yes))
+			)
+			(symbol "SPI_LCD_BOTTOM_ENTRY_0_1"
+				(rectangle (start -8.8900 7.6200) (end 8.8900 -7.6200)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "SPI_LCD_BOTTOM_ENTRY_1_1"
+				(pin passive line
+					(at -12.7000 5.0800 0)
+					(length 3.81)
+					(name "VCC" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at -12.7000 2.5400 0)
+					(length 3.81)
+					(name "GND" (effects (font (size 1.27 1.27))))
+					(number "2" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at -12.7000 0.0000 0)
+					(length 3.81)
+					(name "CS" (effects (font (size 1.27 1.27))))
+					(number "3" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at -12.7000 -2.5400 0)
+					(length 3.81)
+					(name "RESET" (effects (font (size 1.27 1.27))))
+					(number "4" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at -12.7000 -5.0800 0)
+					(length 3.81)
+					(name "DC/RS" (effects (font (size 1.27 1.27))))
+					(number "5" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 12.7000 3.8100 180)
+					(length 3.81)
+					(name "SDI/MOSI" (effects (font (size 1.27 1.27))))
+					(number "6" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 12.7000 1.2700 180)
+					(length 3.81)
+					(name "SCK" (effects (font (size 1.27 1.27))))
+					(number "7" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 12.7000 -1.2700 180)
+					(length 3.81)
+					(name "LED" (effects (font (size 1.27 1.27))))
+					(number "8" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 12.7000 -3.8100 180)
+					(length 3.81)
+					(name "SDO/MISO" (effects (font (size 1.27 1.27))))
+					(number "9" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
+	)
+	(text "Generated from PADS ASCII. Net names are labels, not drawn wires. Original drawing: PSDR_2.6.1_Schematic_2016-07-31.pdf page 7."
+		(exclude_from_sim no)
+		(at 8.0000 6.0000 0)
+		(effects (font (size 1.4 1.4)) (justify left top))
+		(uuid "6736a8a6-e794-51f8-9617-fb748b2605fa")
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:MORSE_PADDLE_CONTACTS")
+		(at 135.8900 229.8700 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3e7610f2-0687-509c-80c9-c2e4a5a2b69d")
+		(property "Reference" "CW1"
+			(at 135.8900 224.7900 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "MORSE_PADDLE_CONTACTS"
+			(at 135.8900 234.9500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:MORSE_PADDLE_CONTACTS"
+			(at 135.8900 229.8700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 135.8900 229.8700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type MORSE_PADDLE_CONTACTS"
+			(at 135.8900 229.8700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "2"
+			(uuid "9fb72090-c51a-5c47-a696-0bb69ad5c255")
+		)
+		(pin "1"
+			(uuid "d08f9765-cf09-5e56-92a2-4a85c84985c5")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "CW1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:MORSE_PADDLE_CONTACTS")
+		(at 135.8900 214.6300 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e00b8b05-e5f6-5bb4-a29b-6d7316efa742")
+		(property "Reference" "CW2"
+			(at 135.8900 209.5500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "MORSE_PADDLE_CONTACTS"
+			(at 135.8900 219.7100 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:MORSE_PADDLE_CONTACTS"
+			(at 135.8900 214.6300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 135.8900 214.6300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type MORSE_PADDLE_CONTACTS"
+			(at 135.8900 214.6300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "2"
+			(uuid "9951dc9c-5e21-5b0a-9a6c-7c3dda26abb8")
+		)
+		(pin "1"
+			(uuid "1309606a-9330-581a-b6b8-c35fea37c2d2")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "CW2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:LED_0603")
+		(at 118.1100 328.9300 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6655a0aa-20fb-5764-8e75-963367382046")
+		(property "Reference" "D100"
+			(at 118.1100 323.8500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "LED_0603"
+			(at 118.1100 334.0100 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:LED_0603"
+			(at 118.1100 328.9300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 118.1100 328.9300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type LED_0603"
+			(at 118.1100 328.9300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "cd4aea5b-919c-5712-b9a7-3f71747742a4")
+		)
+		(pin "2"
+			(uuid "b7a5ee2a-5a85-5621-b385-87e69f1e08c5")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "D100")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:LED_0603")
+		(at 140.9700 328.9300 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a9cc8333-e33f-5379-a5df-00a0e4d6fc9c")
+		(property "Reference" "D101"
+			(at 140.9700 323.8500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "LED_0603"
+			(at 140.9700 334.0100 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:LED_0603"
+			(at 140.9700 328.9300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 140.9700 328.9300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type LED_0603"
+			(at 140.9700 328.9300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "3dff98a2-ec1d-5fdd-8edb-1c84f5ae8d8a")
+		)
+		(pin "2"
+			(uuid "72dcff58-70e5-57f0-bfb9-08abe52e8c8b")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "D101")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:LED_0603")
+		(at 163.8300 328.9300 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f7a85f69-726f-5a5f-98de-d87ed3b45d53")
+		(property "Reference" "D102"
+			(at 163.8300 323.8500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "LED_0603"
+			(at 163.8300 334.0100 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:LED_0603"
+			(at 163.8300 328.9300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 163.8300 328.9300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type LED_0603"
+			(at 163.8300 328.9300 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "241b9bdb-85a5-5ef4-9f5b-4d35b1efed77")
+		)
+		(pin "2"
+			(uuid "af259e7e-417b-52cb-9154-1d515f1535d6")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "D102")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:P_0.1__6P_HEADER_DUAL_ENTRY_1241152-6")
+		(at 217.1700 179.0700 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e3798831-cae0-5d15-b697-26b03d78ed5f")
+		(property "Reference" "J153"
+			(at 217.1700 171.4500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "0.1\"_6P_HEADER_DUAL_ENTRY_1241152-6"
+			(at 217.1700 186.6900 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:0_1__6P_HEADER_DUAL_ENTRY_1241152-6"
+			(at 217.1700 179.0700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 217.1700 179.0700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type 0.1\"_6P_HEADER_DUAL_ENTRY_1241152-6"
+			(at 217.1700 179.0700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "00793172-9101-57e5-b561-5159b090b1d0")
+		)
+		(pin "2"
+			(uuid "e6e3df10-722a-5c41-9a66-2e10e77ad7ae")
+		)
+		(pin "3"
+			(uuid "7791c254-e89d-5675-bd88-22b66a2bc2f8")
+		)
+		(pin "4"
+			(uuid "4a464ce4-500e-5ad6-b61c-8e9498d859c9")
+		)
+		(pin "5"
+			(uuid "2495779d-81fd-533d-b62f-dafa5994e44e")
+		)
+		(pin "6"
+			(uuid "1cd1d69b-3c53-53c0-99df-f672dd5ec6cc")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "J153")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:SPI_LCD_BOTTOM_ENTRY")
+		(at 115.5700 140.9700 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3ac8b641-6690-5d28-8b7e-67a15a7b41da")
+		(property "Reference" "J170"
+			(at 115.5700 130.8100 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "SPI_LCD_BOTTOM_ENTRY"
+			(at 115.5700 151.1300 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:SPI_LCD_BOTTOM_ENTRY"
+			(at 115.5700 140.9700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 115.5700 140.9700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type SPI_LCD_BOTTOM_ENTRY"
+			(at 115.5700 140.9700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "ce55ca93-6682-5ee4-9eaa-a18a9221b16a")
+		)
+		(pin "2"
+			(uuid "c1cca09f-f530-530e-b79b-306359b58a87")
+		)
+		(pin "3"
+			(uuid "13780c6a-311b-5939-bed4-3054b8044e66")
+		)
+		(pin "4"
+			(uuid "d506fd45-7b81-5810-9661-5eae24746be0")
+		)
+		(pin "5"
+			(uuid "d0b01b17-bdcc-5d9e-ab16-bdcc2a591b73")
+		)
+		(pin "6"
+			(uuid "d7b43604-b66d-5415-95ac-6ec8f7983c9f")
+		)
+		(pin "7"
+			(uuid "81253359-607d-595f-9e2e-88a5577fc556")
+		)
+		(pin "8"
+			(uuid "a473b37d-6420-5cfe-a157-913456ac2370")
+		)
+		(pin "9"
+			(uuid "ab6875f5-2b25-59eb-8056-b45c3a074706")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "J170")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:PAD_1MM")
+		(at 20.3200 424.1800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bb1a2430-c6ad-503f-b2f9-d2d9c4514cbf")
+		(property "Reference" "LIPO"
+			(at 20.3200 419.1000 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "PAD_1MM"
+			(at 20.3200 429.2600 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:PAD_1MM"
+			(at 20.3200 424.1800 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 20.3200 424.1800 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type PAD_1MM"
+			(at 20.3200 424.1800 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "f5b7f262-3aad-51b2-8fed-28ded05ccd1e")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "LIPO")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:MOSFET_P_SOT23_IRLML6401")
+		(at 53.3400 170.1800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fb492e53-42e4-57cc-afdb-2ca76ede0b84")
+		(property "Reference" "Q178"
+			(at 53.3400 163.8300 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "MOSFET_P_SOT23_IRLML6401"
+			(at 53.3400 176.5300 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:MOSFET_P_SOT23_IRLML6401"
+			(at 53.3400 170.1800 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 53.3400 170.1800 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type MOSFET_P_SOT23_IRLML6401"
+			(at 53.3400 170.1800 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "dd799b54-070e-54cf-bc86-67d4a10420a7")
+		)
+		(pin "2"
+			(uuid "8a8496a8-4525-5726-a3c5-c61532e6daf5")
+		)
+		(pin "3"
+			(uuid "f9821d32-f8c4-5117-91a0-62cae1de6d97")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "Q178")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:RES_0603")
+		(at 40.6400 153.6700 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f010d10f-d2a4-587b-899e-279aba6fedd4")
+		(property "Reference" "R176"
+			(at 40.6400 148.5900 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "RES_0603"
+			(at 40.6400 158.7500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:RES_0603"
+			(at 40.6400 153.6700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 40.6400 153.6700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type RES_0603"
+			(at 40.6400 153.6700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "f588b9c0-80fd-5fbe-a5b3-ec19e046121d")
+		)
+		(pin "2"
+			(uuid "4bc4ced3-c297-575f-9b5b-7fc8857abb80")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "R176")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:RES_0603")
+		(at 48.2600 140.9700 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "eb0c5cf8-fe1a-5336-9706-9b87f9359235")
+		(property "Reference" "R177"
+			(at 48.2600 135.8900 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "RES_0603"
+			(at 48.2600 146.0500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:RES_0603"
+			(at 48.2600 140.9700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 48.2600 140.9700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type RES_0603"
+			(at 48.2600 140.9700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "ba591bb8-4fee-570a-bab7-3e2d0c592db0")
+		)
+		(pin "2"
+			(uuid "9cd3815e-d0f1-5c57-ac37-951e285bfe6e")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "R177")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:RES_0603")
+		(at 116.8400 318.7700 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "adeaa79e-452d-57f5-a236-5cf56b1f49b0")
+		(property "Reference" "R97"
+			(at 116.8400 313.6900 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "RES_0603"
+			(at 116.8400 323.8500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:RES_0603"
+			(at 116.8400 318.7700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 116.8400 318.7700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type RES_0603"
+			(at 116.8400 318.7700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "07d8d6ba-2ecf-535f-a26d-4ecb7171a703")
+		)
+		(pin "2"
+			(uuid "6bb82855-72f6-5bfa-a7a8-720718ec9628")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "R97")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:RES_0603")
+		(at 139.7000 318.7700 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "64fc7812-52d6-53bd-95c2-38ba2f9f31d1")
+		(property "Reference" "R98"
+			(at 139.7000 313.6900 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "RES_0603"
+			(at 139.7000 323.8500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:RES_0603"
+			(at 139.7000 318.7700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 139.7000 318.7700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type RES_0603"
+			(at 139.7000 318.7700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "07cc7f43-9b73-5c6f-8e46-6992da2b1d46")
+		)
+		(pin "2"
+			(uuid "09dad757-e872-5d25-b8a1-1fb1f0c768fd")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "R98")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PSDR_2.6.1:RES_0603")
+		(at 162.5600 318.7700 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a1f65519-ac29-59f6-9573-f8e6f6cb0bdd")
+		(property "Reference" "R99"
+			(at 162.5600 313.6900 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "RES_0603"
+			(at 162.5600 323.8500 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" "PSDR_PADS:RES_0603"
+			(at 162.5600 318.7700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Datasheet" ""
+			(at 162.5600 318.7700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Description" "Reconstructed from PADS part type RES_0603"
+			(at 162.5600 318.7700 0)
+			(hide yes)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1"
+			(uuid "5e31f62f-db09-5103-9448-00a5ecb91c4a")
+		)
+		(pin "2"
+			(uuid "41050075-b26e-56e6-bb4a-e7f9bbe4eb09")
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e/9c22ff7c-1f05-5cc5-a628-f85bdbc658ee"
+					(reference "R99")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(global_label "PADDLE_THUMB_NO"
+		(shape passive)
+		(at 127.0000 229.8700 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "ef774aac-53db-5e05-b8b0-d4c5f61ebdc1")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 127.0000 229.8700 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "PADDLE_THUMB_NC"
+		(shape passive)
+		(at 144.7800 229.8700 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "d518e9bf-b8ff-5af9-9204-3e35c6cdf357")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 144.7800 229.8700 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "PADDLE_INDEX_NO"
+		(shape passive)
+		(at 127.0000 214.6300 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "c91956e8-8a31-5c1c-a3b7-1ebd5a251262")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 127.0000 214.6300 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "PADDLE_INDEX_NC"
+		(shape passive)
+		(at 144.7800 214.6300 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "b7f85e5d-5d3c-51a4-9b37-654a9e788f04")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 144.7800 214.6300 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "$$$16521"
+		(shape passive)
+		(at 109.2200 328.9300 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "672368c7-bfda-5805-bcd1-bfa98f8d5a5f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 109.2200 328.9300 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 127.0000 328.9300 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "dd39d62b-da78-5b5b-809b-402ccf0aa4d4")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 127.0000 328.9300 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "$$$10534"
+		(shape passive)
+		(at 132.0800 328.9300 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "e8cb0bdc-4d55-5547-8651-a3325f2605d3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 132.0800 328.9300 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 149.8600 328.9300 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "8f508e7c-4e29-5e96-8745-4015159e34d1")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 149.8600 328.9300 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "$$$26619"
+		(shape passive)
+		(at 154.9400 328.9300 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "c5cb9a5a-719a-51ec-a4ea-51a94e459da9")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 154.9400 328.9300 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 172.7200 328.9300 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "535261c6-b9cc-5e85-9984-fcee890dbe00")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 172.7200 328.9300 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "ENC_B"
+		(shape passive)
+		(at 209.5500 176.5300 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "7a2fa270-fae3-5729-8e5a-e6d18f7411f6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 209.5500 176.5300 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "ENC_A"
+		(shape passive)
+		(at 209.5500 179.0700 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "9613483e-d362-5dae-bd58-afeffe5522f2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 209.5500 179.0700 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "ENC_SW"
+		(shape passive)
+		(at 209.5500 181.6100 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "ce180fc3-6b77-5f8f-8a10-740d548bb1de")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 209.5500 181.6100 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "LIPO"
+		(shape passive)
+		(at 224.7900 176.5300 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "53116286-7b86-5aea-b029-27308254fe97")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 224.7900 176.5300 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 224.7900 179.0700 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "fd28faa8-7a79-5257-9327-b955bc5dd037")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 224.7900 179.0700 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(no_connect
+		(at 224.7900 181.6100)
+		(uuid "3f326f87-4e97-5487-aff9-8a9440e4a845")
+	)
+	(global_label "+3V3_CPU"
+		(shape passive)
+		(at 102.8700 135.8900 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "1fdaa1db-bb0a-5645-a61c-6f6c0e7531eb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 102.8700 135.8900 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 102.8700 138.4300 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "a5fc6739-0ce0-5e40-a1c2-0d1616fdb908")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 102.8700 138.4300 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "LCD_CS"
+		(shape passive)
+		(at 102.8700 140.9700 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "21030322-404f-57f5-92ec-f1240824335f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 102.8700 140.9700 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "LCD_RESET"
+		(shape passive)
+		(at 102.8700 143.5100 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "a546b9ac-3aa0-5617-b9a7-3717aa3b07e3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 102.8700 143.5100 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "LCD_DC/RS"
+		(shape passive)
+		(at 102.8700 146.0500 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "796fd5e4-271a-532e-864c-90aa718ced05")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 102.8700 146.0500 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "LCD_MOSI"
+		(shape passive)
+		(at 128.2700 137.1600 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "492200e4-db64-597b-8f0e-6a69e92d67df")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 128.2700 137.1600 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "LCD_SCK"
+		(shape passive)
+		(at 128.2700 139.7000 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "26800158-7911-5e01-8cbf-03581e0bc840")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 128.2700 139.7000 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "$$$23052"
+		(shape passive)
+		(at 128.2700 142.2400 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "4a3bfb19-bab5-551c-82d3-7d8cd3011887")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 128.2700 142.2400 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "LCD_MISO"
+		(shape passive)
+		(at 128.2700 144.7800 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "09e96927-3d7f-5e2a-8ee7-617e635cf87d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 128.2700 144.7800 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "LIPO"
+		(shape passive)
+		(at 27.9400 424.1800 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "f1a5fd58-ed82-5158-b1fc-6a384b84dce0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 27.9400 424.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "$$$618"
+		(shape passive)
+		(at 45.7200 168.9100 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "85684bfd-5197-54dc-ab1a-d1c33b6ef65e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 45.7200 168.9100 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "+3V3_CPU"
+		(shape passive)
+		(at 45.7200 171.4500 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "e33dc03c-6849-53f7-9f60-48cddf3dece4")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 45.7200 171.4500 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "$$$23052"
+		(shape passive)
+		(at 60.9600 170.1800 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "910ef7ed-27b7-5c7d-946c-b0da611a10c5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 60.9600 170.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "$$$618"
+		(shape passive)
+		(at 33.0200 153.6700 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "bf5f99b6-c599-53ee-bdb7-c395289431df")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 33.0200 153.6700 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "+3V3_CPU"
+		(shape passive)
+		(at 48.2600 153.6700 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "05de8c9c-fe2a-50fe-9811-01b27ffef48d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 48.2600 153.6700 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "LCD_LED"
+		(shape passive)
+		(at 40.6400 140.9700 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "541b226c-4564-50a6-a860-6c8da44468f0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 40.6400 140.9700 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "$$$618"
+		(shape passive)
+		(at 55.8800 140.9700 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "74a9f22f-8264-59c0-a719-0675d4e45a77")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 55.8800 140.9700 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "$$$16521"
+		(shape passive)
+		(at 109.2200 318.7700 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "f15076e6-755e-58e0-8e0e-5af736981a5d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 109.2200 318.7700 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "LED_WHITE"
+		(shape passive)
+		(at 124.4600 318.7700 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "e3f243f1-26f3-5298-956a-169426741842")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 124.4600 318.7700 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "$$$10534"
+		(shape passive)
+		(at 132.0800 318.7700 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "16d46865-14f0-5f94-9413-3378b34737cb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 132.0800 318.7700 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "LED_2"
+		(shape passive)
+		(at 147.3200 318.7700 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "d3896be0-f479-58c5-b67c-448379054196")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 147.3200 318.7700 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+	(global_label "$$$26619"
+		(shape passive)
+		(at 154.9400 318.7700 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify right))
+		(uuid "72306d96-ed58-5399-bda3-57677fc491e9")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 154.9400 318.7700 0)
+			(effects (font (size 1.27 1.27)) (justify right) (hide yes))
+		)
+	)
+	(global_label "LED_3"
+		(shape passive)
+		(at 170.1800 318.7700 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.0 1.0)) (justify left))
+		(uuid "e37e6d40-67ca-5d55-821b-87009e50367b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 170.1800 318.7700 0)
+			(effects (font (size 1.27 1.27)) (justify left) (hide yes))
+		)
+	)
+)

@@ -1,0 +1,260 @@
+(kicad_sch
+	(version 20250610)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "137b8d2d-efce-5ab6-89b2-aebefbfa805e")
+	(paper "A2")
+	(title_block
+		(title "PSDR 2.6.1 - reconstructed KiCad schematic")
+		(date "2026-10-31")
+		(rev "generated")
+		(comment 1 "Source: PADS Layout ASCII Hardware/PSDR.asc at upstream 468dc41")
+		(comment 2 "Drawing reference: PSDR_2.6.1_Schematic_2016-07-31.pdf, 2016-07-31")
+	)
+	(lib_symbols)
+	(text "PSDR 2.6.1 reconstructed schematic.\nEach sheet mirrors one page of the 2016-07-31 PDF; pins connect through global labels carrying PADS net names.\nThis is a connectivity model, not a redrawn artwork."
+		(exclude_from_sim no)
+		(at 31.5000 14.0000 0)
+		(effects (font (size 2.0 2.0)) (justify left top))
+		(uuid "369557d9-e2b6-5635-b3af-1f3318058145")
+	)
+	(sheet
+		(at 31.5 40.0)
+		(size 165.0 80.0)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke (width 0) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "fb42ae72-6ae5-578c-9380-6a70711a96c2")
+		(property "Sheetname" "p02 MCU / GPS / USB"
+			(at 31.5 39.3 0)
+			(effects (font (size 1.5 1.5)) (justify left bottom))
+		)
+		(property "Sheetfile" "PSDR_2.6.1-p02.kicad_sch"
+			(at 31.5 120.7 0)
+			(effects (font (size 1.5 1.5)) (justify left top))
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 214.5 40.0)
+		(size 165.0 80.0)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke (width 0) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "f313d5ba-2f25-5bcc-8827-06671ef7da1e")
+		(property "Sheetname" "p03 Clock (Si5338)"
+			(at 214.5 39.3 0)
+			(effects (font (size 1.5 1.5)) (justify left bottom))
+		)
+		(property "Sheetfile" "PSDR_2.6.1-p03.kicad_sch"
+			(at 214.5 120.7 0)
+			(effects (font (size 1.5 1.5)) (justify left top))
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 397.5 40.0)
+		(size 165.0 80.0)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke (width 0) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "2b677771-841e-5938-9a44-08f2532f5ac4")
+		(property "Sheetname" "p04 Analog switches / drivers"
+			(at 397.5 39.3 0)
+			(effects (font (size 1.5 1.5)) (justify left bottom))
+		)
+		(property "Sheetfile" "PSDR_2.6.1-p04.kicad_sch"
+			(at 397.5 120.7 0)
+			(effects (font (size 1.5 1.5)) (justify left top))
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 31.5 138.0)
+		(size 165.0 80.0)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke (width 0) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "bc0c3c40-c10c-5f5f-addf-9a885f42c3fa")
+		(property "Sheetname" "p05 RX/TX baseband"
+			(at 31.5 137.3 0)
+			(effects (font (size 1.5 1.5)) (justify left bottom))
+		)
+		(property "Sheetfile" "PSDR_2.6.1-p05.kicad_sch"
+			(at 31.5 218.7 0)
+			(effects (font (size 1.5 1.5)) (justify left top))
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 214.5 138.0)
+		(size 165.0 80.0)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke (width 0) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "c6ba8a02-c8f5-5eac-ac5a-c1b4c090eea5")
+		(property "Sheetname" "p06 Audio / microphone"
+			(at 214.5 137.3 0)
+			(effects (font (size 1.5 1.5)) (justify left bottom))
+		)
+		(property "Sheetfile" "PSDR_2.6.1-p06.kicad_sch"
+			(at 214.5 218.7 0)
+			(effects (font (size 1.5 1.5)) (justify left top))
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 397.5 138.0)
+		(size 165.0 80.0)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke (width 0) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "9c22ff7c-1f05-5cc5-a628-f85bdbc658ee")
+		(property "Sheetname" "p07 UI: paddles / LEDs / LCD"
+			(at 397.5 137.3 0)
+			(effects (font (size 1.5 1.5)) (justify left bottom))
+		)
+		(property "Sheetfile" "PSDR_2.6.1-p07.kicad_sch"
+			(at 397.5 218.7 0)
+			(effects (font (size 1.5 1.5)) (justify left top))
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 31.5 236.0)
+		(size 165.0 80.0)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke (width 0) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "8bbe2059-fa4d-5b65-824d-c7baa51537e6")
+		(property "Sheetname" "p08 Power"
+			(at 31.5 235.3 0)
+			(effects (font (size 1.5 1.5)) (justify left bottom))
+		)
+		(property "Sheetfile" "PSDR_2.6.1-p08.kicad_sch"
+			(at 31.5 316.7 0)
+			(effects (font (size 1.5 1.5)) (justify left top))
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e"
+					(page "8")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 214.5 236.0)
+		(size 165.0 80.0)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke (width 0) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "f80dc095-6269-521f-9418-d2516e9f1a06")
+		(property "Sheetname" "p09 RF front end"
+			(at 214.5 235.3 0)
+			(effects (font (size 1.5 1.5)) (justify left bottom))
+		)
+		(property "Sheetfile" "PSDR_2.6.1-p09.kicad_sch"
+			(at 214.5 316.7 0)
+			(effects (font (size 1.5 1.5)) (justify left top))
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e"
+					(page "9")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 397.5 236.0)
+		(size 165.0 80.0)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke (width 0) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "c7951b88-ac97-527b-bf93-cca697c0f0cf")
+		(property "Sheetname" "p10 Variable filter"
+			(at 397.5 235.3 0)
+			(effects (font (size 1.5 1.5)) (justify left bottom))
+		)
+		(property "Sheetfile" "PSDR_2.6.1-p10.kicad_sch"
+			(at 397.5 316.7 0)
+			(effects (font (size 1.5 1.5)) (justify left top))
+		)
+		(instances
+			(project "PSDR_2.6.1"
+				(path "/137b8d2d-efce-5ab6-89b2-aebefbfa805e"
+					(page "10")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)

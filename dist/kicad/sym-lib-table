@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "PSDR_2.6.1")(type "KiCad")(uri "${KIPRJMOD}/PSDR_2.6.1.kicad_sym")(options "")(descr "PSDR 2.6.1 reconstructed symbols"))
+)
