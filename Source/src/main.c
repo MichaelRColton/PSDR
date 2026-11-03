@@ -742,7 +742,7 @@ volatile uint32_t g_hmc1023_readback = 0xDEADBEEF;  // reg0 presence word (expec
 volatile uint32_t g_hmc1023_reg1     = 0xDEADBEEF;  // reg1 read-back after config
 volatile uint32_t g_hmc1023_reg2     = 0xDEADBEEF;  // reg2 read-back after config
 volatile uint8_t  g_hmc1023_r3       = 0xAA;
-volatile int      g_filter_in        = 1;           // 1 = route RX through HMC1023 (mux B4), 0 = bypass (B2). Poke over SWD to A/B.
+volatile int      g_filter_in        = 0;           // 0 = bypass (B2, stock), 1 = route RX through HMC1023 (mux B4). Toggle over serial.
 
 volatile int      g_amp_in           = 0;           // 1 = power + insert the HMC482 RF gain block in RX
 volatile int      g_amp_pol          = 0;           // AMP_SWITCH sense (flip if "insert" is the wrong way)
@@ -1202,13 +1202,16 @@ setFreq(vfoAFrequency);
 		// Keep the 5V boost enabled: signalPath() turns it off in RX, which would
 		// unpower both the LPF and the RF amp. We need it on for both.
 		HAL_GPIO_WritePin(FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 1);
-		// RF gain block (HMC482): power + insert when g_amp_in. g_amp_pol flips the
-		// (unverified) AMP_SWITCH sense so we can find which way is "insert".
-		{
-			int sw = g_amp_in ? g_amp_pol : !g_amp_pol;
-			HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, g_amp_in ? 0 : 1);  // 0 = supply on
-			HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, sw ? 1 : 0);
-			HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, sw ? 0 : 1);
+		// RF gain block (HMC482). amp OFF -> stock BYPASS (A=0,B=1, exactly as
+		// signalPath sets it) so the signal passes straight through. amp ON ->
+		// insert it; g_amp_pol flips the unverified insert sense.
+		HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, g_amp_in ? 0 : 1);  // 0 = supply on
+		if (g_amp_in) {
+			HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, g_amp_pol ? 0 : 1);
+			HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, g_amp_pol ? 1 : 0);
+		} else {
+			HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0);  // stock bypass
+			HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1);
 		}
 		usb_serial_poll();   // process any serial-console commands
 
