@@ -734,6 +734,54 @@ void setGainPot(uint8_t a, uint8_t b)
 
 }
 
+// --- HMC1023 LPF presence probe (bit-banged on the shared SPI2 lines) -------
+// SCK=FILTER_GAIN_POT_SCLK(PB13), MOSI=FILTER_GAIN_POT_MOSI(PB15),
+// MISO=PB14, CS=FILTER_CS(PB12). Protocol per the UHSDR driver: 32-bit frames,
+// last byte = 0x5 | (regaddr<<3); reading register 0 must return 0x114080.
+volatile uint32_t g_hmc1023_readback = 0xDEADBEEF;
+volatile uint8_t  g_hmc1023_r3       = 0xAA;
+
+static void hmc_sck(int v){ HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, v); }
+static void hmc_mosi(int v){ HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, v); }
+static int  hmc_miso(void){ return HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14) ? 1 : 0; }
+static void hmc_cs(int v){ HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, v); }
+
+static void hmc_tx_byte(uint8_t b){            // CPHA0: latch on SCK rising edge
+	for(int i = 7; i >= 0; i--){ hmc_mosi((b >> i) & 1); hmc_sck(0); hmc_sck(1); }
+}
+static uint8_t hmc_rx_byte(void){              // sample SDO while SCK high
+	uint8_t b = 0;
+	for(int i = 7; i >= 0; i--){ hmc_mosi(0); hmc_sck(1); hmc_sck(0); if(hmc_miso()) b |= (1 << i); }  // CPHA1: sample after the falling edge
+	return b;
+}
+
+void hmc1023_probe(void)
+{
+	GPIO_InitTypeDef g;
+	g_hmc1023_readback = 0x0000B0B0;            // entry marker: proves the probe ran
+	g.Pin = GPIO_PIN_12; g.Mode = GPIO_MODE_OUTPUT_PP; g.Pull = GPIO_NOPULL; g.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(GPIOB, &g);                  // CS output
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, 1);  // idle high
+	g.Pin = GPIO_PIN_14; g.Mode = GPIO_MODE_INPUT; g.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(GPIOB, &g);                  // MISO input
+	hmc_sck(0);
+
+	// Step 1: write register 0 = 0 to set the read pointer. value=0, tag=0x05.
+	hmc_cs(0);
+	hmc_tx_byte(0x00); hmc_tx_byte(0x00); hmc_tx_byte(0x00); hmc_tx_byte(0x05);
+	hmc_cs(1);
+
+	// Step 2: clock out 4 bytes and capture SDO. One dummy clock first: SDO is
+	// valid one bit before our capture window, so align the frame by skipping it.
+	hmc_cs(0);
+	hmc_mosi(0); hmc_sck(1); hmc_sck(0);
+	uint8_t r0 = hmc_rx_byte(), r1 = hmc_rx_byte(), r2 = hmc_rx_byte(), r3 = hmc_rx_byte();
+	hmc_cs(1);
+
+	g_hmc1023_r3 = r3;                          // low 3 bits should read back as 0x5
+	g_hmc1023_readback = ((uint32_t)r0 << 16) | ((uint32_t)r1 << 8) | r2;  // expect 0x114080
+}
+
 //USART1_IRQHandler(void)
 //{
 //    //blink_led_on();
@@ -1087,6 +1135,10 @@ setFreq(vfoAFrequency);
 
 
 	setGainPot(200, 200);
+
+	// Bench bring-up: probe whether the (now-powered) HMC1023 answers on SPI.
+	for(volatile int d = 0; d < 400000; d++) { }   // settle delay, no systick dependency
+	hmc1023_probe();
 
 	//testing Uart
 	configUartPeripheral();
