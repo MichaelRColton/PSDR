@@ -750,6 +750,7 @@ volatile int      g_bench            = 0;           // 0 = stock RX path (no GPI
 volatile int      g_trx              = 0;           // TRX_SWITCH: 0 = receive
 volatile int      g_txrf             = 1;           // TX_RF_SWITCH_A: 1 = antenna/normal, 0 = VNA-out path
 volatile int      g_imp              = 0;           // IMP_BRIDGE_SWITCH_A: 0 = bypass
+volatile int      g_filt_ch          = 1;           // filter mux channel (S1<<1)|S0: 1=bypass(stock), 0=ext filter(DNF), 2/3=through HMC1023 (opposite dirs: RX vs TX)
 
 /* USB CDC serial console (Source/usb/usb_serial.c). */
 void usb_serial_init(void);
@@ -826,6 +827,21 @@ void hmc1023_probe(void)
 /* Public wrappers so the serial console can read/write HMC1023 registers live. */
 void hmc1023_write(uint32_t reg, uint32_t val) { hmc_write_reg(reg, val); }
 uint32_t hmc1023_read(uint32_t reg) { return hmc_read_reg(reg); }
+
+/* Configure only the bit-bang CS (PB12) and MISO (PB14) lines so the serial
+   console can talk to the HMC1023 live. SCK/MOSI are already set up in hal.c.
+   This is NOT the full probe: no register writes, no mux switch, so boot stays
+   on the clean stock RX path. */
+void hmc1023_io_init(void)
+{
+	GPIO_InitTypeDef g;
+	g.Pin = GPIO_PIN_12; g.Mode = GPIO_MODE_OUTPUT_PP; g.Pull = GPIO_NOPULL; g.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(GPIOB, &g);                  // CS output
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, 1);  // idle high
+	g.Pin = GPIO_PIN_14; g.Mode = GPIO_MODE_INPUT; g.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(GPIOB, &g);                  // MISO input
+	hmc_sck(0);
+}
 
 //USART1_IRQHandler(void)
 //{
@@ -1181,9 +1197,10 @@ setFreq(vfoAFrequency);
 
 	setGainPot(200, 200);
 
-	// Bench bring-up: probe whether the (now-powered) HMC1023 answers on SPI.
-	//for(volatile int d = 0; d < 400000; d++) { }   // (HMC probe disabled for the RX bisect)
-	//hmc1023_probe();
+	// Bench bring-up: init the HMC1023 bit-bang IO (CS/MISO) so the serial console
+	// can talk to it live. NOT the full probe -- no reg writes, no mux switch, so
+	// boot stays on the clean stock RX path.
+	hmc1023_io_init();
 
 	usb_serial_init();   // bring up the USB CDC serial console
 
@@ -1202,8 +1219,11 @@ setFreq(vfoAFrequency);
 		if (g_bench) {   // bench overrides OFF by default -> use the stock receive path
 		// Live filter A/B (bench): re-assert the RX mux every loop so signalPath()
 		// can't force bypass. Poke g_filter_in over SWD: 1=HMC1023 in (B4), 0=bypass.
-		HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, 1);
-		HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, g_filter_in ? 1 : 0);
+		// Shared select lines to BOTH muxes (U211+U298). ch = (S1<<1)|S0:
+		// 1=bypass (stock), 0=external filter (DNF), 2 & 3 = through the HMC1023
+		// in opposite directions (one is RX, one is TX).
+		HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, g_filt_ch & 1);
+		HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, (g_filt_ch >> 1) & 1);
 		// 5V boost: enable ONLY when the LPF or amp needs it. Stock RX turns it off
 		// on purpose -- the ADP1613 switcher desensitizes the HF front end -- so
 		// forcing it on was deafening the receiver. Off in plain bypass RX.

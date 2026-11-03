@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -23,6 +24,8 @@ extern volatile int      g_trx;
 extern volatile int      g_txrf;
 extern volatile int      g_imp;
 extern volatile int      g_bench;
+extern volatile int      g_filt_ch;
+extern float             passBandRms;   /* the real S-meter: what drives the red bar (drawSMeter) */
 extern long              vfoAFrequency;
 void     hmc1023_write(uint32_t reg, uint32_t val);
 uint32_t hmc1023_read(uint32_t reg);
@@ -66,8 +69,10 @@ void usb_serial_on_rx(uint8_t *buf, uint32_t len)
 
 static void print_status(void)
 {
-	usb_printf("S=%u vfo=%ld filt=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX\r\n",
-	           (unsigned)maxAmplitude, vfoAFrequency, g_filter_in, g_amp_in, g_amp_pol,
+	unsigned long rms_u = (unsigned long)(passBandRms * 1000000.0f);
+	int bar = (int)(10.0 * log((double)passBandRms * 1000000.0 + 1.0));
+	usb_printf("rms=%lu bar=%d S=%u vfo=%ld filt=%d mux=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX\r\n",
+	           rms_u, bar, (unsigned)maxAmplitude, vfoAFrequency, g_filter_in, g_filt_ch, g_amp_in, g_amp_pol,
 	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2);
 	maxAmplitude = 0;   /* peak since last read */
 }
@@ -77,6 +82,11 @@ static void handle_cmd(char *s)
 	switch (s[0])
 	{
 	case 's': print_status(); break;
+	case 'P': {   /* quick S-meter read: scaled passband RMS + red-bar width */
+		unsigned long rms_u = (unsigned long)(passBandRms * 1000000.0f);
+		int bar = (int)(10.0 * log((double)passBandRms * 1000000.0 + 1.0));
+		usb_printf("rms=%lu bar=%d\r\n", rms_u, bar);
+	} break;
 	case 'f': g_filter_in = (s[1] == '1'); usb_printf("filter %s\r\n", g_filter_in ? "IN (B4)" : "BYPASS (B2)"); break;
 	case 'a': g_amp_in = (s[1] == '1'); usb_printf("amp %s\r\n", g_amp_in ? "ON + inserted" : "off"); break;
 	case 'A': g_amp_pol = (s[1] == '1'); usb_printf("amp switch pol=%d\r\n", g_amp_pol); break;
@@ -85,6 +95,9 @@ static void handle_cmd(char *s)
 	case 'F': { long hz = strtol(s + 1, 0, 10); if (hz >= 2500000L && hz <= 35000000L) vfoAFrequency = hz;
 	            usb_printf("vfo=%ld\r\n", vfoAFrequency); } break;
 	case 'g': g_bench = (s[1] == '1'); usb_printf("bench=%d\r\n", g_bench); break;
+	case 'M': g_filt_ch = (s[1] - '0') & 3; usb_printf("mux ch=%d (S1=%d S0=%d) %s\r\n", g_filt_ch,
+	          (g_filt_ch >> 1) & 1, g_filt_ch & 1,
+	          g_filt_ch==1?"bypass":g_filt_ch==0?"ext(DNF)":"HMC1023"); break;
 	case 't': g_trx  = (s[1] == '1'); usb_printf("trx=%d\r\n", g_trx); break;
 	case 'x': g_txrf = (s[1] == '1'); usb_printf("txrf=%d\r\n", g_txrf); break;
 	case 'b': g_imp  = (s[1] == '1'); usb_printf("imp=%d\r\n", g_imp); break;
