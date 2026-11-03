@@ -17,11 +17,16 @@ extern uint16_t          maxAmplitude;
 extern volatile uint32_t g_hmc1023_readback;
 extern volatile uint32_t g_hmc1023_reg1;
 extern volatile uint32_t g_hmc1023_reg2;
+extern volatile int      g_amp_in;
+extern volatile int      g_amp_pol;
+void     hmc1023_write(uint32_t reg, uint32_t val);
+uint32_t hmc1023_read(uint32_t reg);
 
 #define CMD_MAX 64
 static volatile char     cmdBuf[CMD_MAX];
 static volatile uint16_t cmdLen = 0;
 static volatile uint8_t  cmdReady = 0;
+static volatile uint8_t  g_stream = 0;   /* periodic S-meter streaming */
 
 void usb_serial_init(void)
 {
@@ -54,22 +59,41 @@ void usb_serial_on_rx(uint8_t *buf, uint32_t len)
 	}
 }
 
+static void print_status(void)
+{
+	usb_printf("S=%u filt=%d amp=%d/pol%d reg0=%06lX reg1=%02lX reg2=%03lX\r\n",
+	           (unsigned)maxAmplitude, g_filter_in, g_amp_in, g_amp_pol,
+	           (unsigned long)g_hmc1023_readback,
+	           (unsigned long)g_hmc1023_reg1,
+	           (unsigned long)g_hmc1023_reg2);
+	maxAmplitude = 0;   /* peak since last read */
+}
+
 static void handle_cmd(char *s)
 {
-	if      (s[0] == 'f' && s[1] == '1') { g_filter_in = 1; usb_printf("filter IN (B4)\r\n"); }
-	else if (s[0] == 'f' && s[1] == '0') { g_filter_in = 0; usb_printf("filter BYPASS (B2)\r\n"); }
-	else if (s[0] == 's')
-		usb_printf("S=%u filt=%d reg0=%06lX reg1=%02lX reg2=%03lX\r\n",
-		           (unsigned)maxAmplitude, g_filter_in,
-		           (unsigned long)g_hmc1023_readback,
-		           (unsigned long)g_hmc1023_reg1,
-		           (unsigned long)g_hmc1023_reg2);
-	else if (s[0] == 'v') { afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); }
-	else usb_printf("cmds: f1/f0 filter, s status, v<gain>\r\n");
+	switch (s[0])
+	{
+	case 's': print_status(); break;
+	case 'f': g_filter_in = (s[1] == '1'); usb_printf("filter %s\r\n", g_filter_in ? "IN (B4)" : "BYPASS (B2)"); break;
+	case 'a': g_amp_in = (s[1] == '1'); usb_printf("amp %s\r\n", g_amp_in ? "ON + inserted" : "off"); break;
+	case 'A': g_amp_pol = (s[1] == '1'); usb_printf("amp switch pol=%d\r\n", g_amp_pol); break;
+	case 'm': g_stream = (s[1] == '1'); usb_printf("stream %s\r\n", g_stream ? "on" : "off"); break;
+	case 'v': afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); break;
+	case 'r': { uint32_t reg = (uint32_t)(s[1] - '0'); uint32_t val = strtoul(s + 2, 0, 16);
+	            hmc1023_write(reg, val); usb_printf("wrote reg%lu=%lX\r\n", (unsigned long)reg, (unsigned long)val); } break;
+	case 'R': { uint32_t reg = (uint32_t)(s[1] - '0'); uint32_t val = hmc1023_read(reg);
+	            usb_printf("reg%lu=%06lX\r\n", (unsigned long)reg, (unsigned long)val); } break;
+	default:  usb_printf("cmds: s | f1/f0 filter | a1/a0 amp | A1/A0 ampPol | r<reg> <hex> | R<reg> | m1/m0 stream | v<gain>\r\n"); break;
+	}
 }
 
 void usb_serial_poll(void)
 {
+	if (g_stream)
+	{
+		static uint32_t sc = 0;
+		if (++sc >= 10) { sc = 0; usb_printf("S=%u f=%d a=%d\r\n", (unsigned)maxAmplitude, g_filter_in, g_amp_in); maxAmplitude = 0; }
+	}
 	if (!cmdReady) return;
 	char local[CMD_MAX];
 	uint16_t n = cmdLen;
