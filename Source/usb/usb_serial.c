@@ -29,6 +29,7 @@ extern float             passBandRms;   /* the real S-meter: what drives the red
 extern long              vfoAFrequency;
 void     hmc1023_write(uint32_t reg, uint32_t val);
 uint32_t hmc1023_read(uint32_t reg);
+void     hmc1023_config_rx(void);
 void     lpf_power(int on);
 
 #define CMD_MAX 64
@@ -100,6 +101,9 @@ static void handle_cmd(char *s)
 	          (g_filt_ch >> 1) & 1, g_filt_ch & 1,
 	          g_filt_ch==1?"bypass":g_filt_ch==0?"ext(DNF)":"HMC1023"); break;
 	case 'L': lpf_power(s[1] == '1'); usb_printf("lpf_power %s\r\n", s[1] == '1' ? "ON" : "OFF"); break;
+	case 'H': hmc1023_config_rx();   /* power + enable I/Q channels + 10 dB gain (reg1=1C reg2=115) */
+	          usb_printf("hmc1023 RX cfg: reg1=%06lX reg2=%06lX (then g1+M2 to route through it)\r\n",
+	                     (unsigned long)g_hmc1023_reg1, (unsigned long)g_hmc1023_reg2); break;
 	case 't': g_trx  = (s[1] == '1'); usb_printf("trx=%d\r\n", g_trx); break;
 	case 'x': g_txrf = (s[1] == '1'); usb_printf("txrf=%d\r\n", g_txrf); break;
 	case 'b': g_imp  = (s[1] == '1'); usb_printf("imp=%d\r\n", g_imp); break;

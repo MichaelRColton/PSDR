@@ -808,10 +808,14 @@ void hmc1023_probe(void)
 	// 1) presence check (expect 0x114080)
 	g_hmc1023_readback = hmc_read_reg(0);
 
-	// 2) reg1: use SPI bandwidth settings (bit1) + force cal code (bit4)
-	hmc_write_reg(1, 0x12);
+	// 2) reg1: enable BOTH I/Q channels + apply SPI bandwidth. filter_I_enable (b2)
+	//    and filter_Q_enable (b3) default high and gate the whole analog path (gain
+	//    stage + filter + driver). The old value 0x12 cleared them -- it held both
+	//    channels in reset, which is why the chip passed no signal. force_cal_code
+	//    (b4) tells the chip to use the SPI bandwidth settings.  => 0x1C
+	hmc_write_reg(1, (1u << 2) | (1u << 3) | (1u << 4));
 
-	// 3) reg2: coarse=4, bypass OFF (bit5=0), GAIN ON (bit4=1), drvr=1, opamp=1  => 0x115
+	// 3) reg2: coarse=4 (20 MHz), bypass OFF (bit5=0), GAIN ON (bit4=1), drvr=1, opamp=1  => 0x115
 	hmc_write_reg(2, (4u << 6) | (0u << 5) | (1u << 4) | (1u << 2) | (1u << 0));
 
 	// 4) read config back to prove the writes landed
@@ -847,6 +851,24 @@ void hmc1023_io_init(void)
    0 = off. Lets us re-power the HMC1023 AFTER the Si5338 cal clock (CLK1A) is up,
    so the filter's power-on auto-calibration runs with a valid CALCK present. */
 void lpf_power(int on){ HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, on ? 0 : 1); }
+
+/* One-shot clean RX configuration for the HMC1023: power it, enable both I/Q
+   channels, +10 dB gain, 20 MHz Butterworth corner, filter active, and read the
+   config back. This is the config proven on the bench to pass the RX signal WITH
+   gain (it beats the hardware bypass path). The whole point: reg1 bits 2/3 are the
+   channel enables -- leaving them clear (as the old 0x12 did) keeps the analog path
+   dead. Uncalibrated bandwidth (+/-20%) is fine here: the corner sits far above the
+   QSD baseband, so the filter only anti-aliases and drives the ADC. Switch the chip
+   into the path separately (bench mux ch2, i.e. 'g1' then 'M2'). */
+void hmc1023_config_rx(void)
+{
+	lpf_power(1);                                                   // ensure LPF_5V is up
+	HAL_Delay(2);
+	hmc_write_reg(1, (1u << 2) | (1u << 3) | (1u << 4));            // 0x1C: I_en | Q_en | force_cal
+	hmc_write_reg(2, (4u << 6) | (1u << 4) | (1u << 2) | (1u << 0)); // 0x115: 20MHz | gain10dB | drvr01 | opamp01
+	g_hmc1023_reg1 = hmc_read_reg(1);
+	g_hmc1023_reg2 = hmc_read_reg(2);
+}
 
 //USART1_IRQHandler(void)
 //{
