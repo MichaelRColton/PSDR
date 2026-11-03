@@ -12,11 +12,11 @@ mkdir -p build
 
 CPU="-mcpu=cortex-m7 -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard"
 DEFS="-DSTM32F746xx -DUSE_HAL_DRIVER -DHSE_VALUE=26000000 -DDEBUG -DTRACE -DOS_USE_TRACE_SEMIHOSTING_DEBUG -DOS_INCLUDE_STARTUP_INIT_MULTIPLE_RAM_SECTIONS -DARM_MATH_CM7 -D__FPU_PRESENT=1"
-INCS="-I Source/include -I Source/system/include -I Source/system/include/cmsis -I Source/system/include/stm32f7-hal"
+INCS="-I Source/include -I Source/system/include -I Source/system/include/cmsis -I Source/system/include/stm32f7-hal -I Source/usb"
 CFLAGS="$CPU $DEFS $INCS -O0 -g3 -ffunction-sections -fdata-sections -std=gnu11 -Wno-unused -fcommon"
 LDFLAGS="$CPU -T mem.ld -T libs.ld -T sections.ld -L Source/ldscripts -nostartfiles -Wl,--gc-sections --specs=nano.specs -Wl,-Map,build/PSDR_F7.map -lm"
 
-SRCS=$(find Source/src Source/system/src Source/DSP_Lib/Source -name '*.c' ! -name '*_template.c')
+SRCS=$(find Source/src Source/system/src Source/DSP_Lib/Source Source/usb -name '*.c' ! -name '*_template.c' ! -name '_ref_*')
 echo "source files: $(echo "$SRCS" | wc -l)"
 
 "$CC" $CFLAGS $SRCS $LDFLAGS -o build/PSDR_F7.elf 2> build/build.log

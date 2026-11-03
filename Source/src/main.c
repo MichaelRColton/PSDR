@@ -744,6 +744,11 @@ volatile uint32_t g_hmc1023_reg2     = 0xDEADBEEF;  // reg2 read-back after conf
 volatile uint8_t  g_hmc1023_r3       = 0xAA;
 volatile int      g_filter_in        = 1;           // 1 = route RX through HMC1023 (mux B4), 0 = bypass (B2). Poke over SWD to A/B.
 
+/* USB CDC serial console (Source/usb/usb_serial.c). */
+void usb_serial_init(void);
+void usb_serial_poll(void);
+void usb_printf(const char *fmt, ...);
+
 static void hmc_sck(int v){ HAL_GPIO_WritePin(FILTER_GAIN_POT_SCLK.port, FILTER_GAIN_POT_SCLK.pin, v); }
 static void hmc_mosi(int v){ HAL_GPIO_WritePin(FILTER_GAIN_POT_MOSI.port, FILTER_GAIN_POT_MOSI.pin, v); }
 static int  hmc_miso(void){ return HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14) ? 1 : 0; }
@@ -1169,6 +1174,8 @@ setFreq(vfoAFrequency);
 	for(volatile int d = 0; d < 400000; d++) { }   // settle delay, no systick dependency
 	hmc1023_probe();
 
+	usb_serial_init();   // bring up the USB CDC serial console
+
 	//testing Uart
 	configUartPeripheral();
 //	while(1)
@@ -1185,6 +1192,7 @@ setFreq(vfoAFrequency);
 		// can't force bypass. Poke g_filter_in over SWD: 1=HMC1023 in (B4), 0=bypass.
 		HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, 1);
 		HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, g_filter_in ? 1 : 0);
+		usb_serial_poll();   // process any serial-console commands
 
 		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn't LOOK bad, but maybe it is negatively effecting things.
 		//I could do something where the dial moves around on screen, but if you get too close to the edge, the DDSs start moving the frequency
