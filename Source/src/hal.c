@@ -188,6 +188,9 @@ const Gpio_Pin FILTER_S0 =
 const Gpio_Pin FILTER_S1 =
     { GPIOD, GPIO_PIN_8  }; //2.5
 
+const Gpio_Pin LPF_POWER =
+    { GPIOE, GPIO_PIN_11 }; // HMC1023 LPF 5V switch (Q208 gate); LOW = rail on
+
 const Gpio_Pin TRX_SWITCH =
     { GPIOC, GPIO_PIN_3  }; //2.5
 
@@ -858,6 +861,16 @@ hal_setupPins (void)
   gpioInitStructure.Pull = GPIO_NOPULL;
   HAL_GPIO_Init (FILTER_S1.port, &gpioInitStructure);
   HAL_GPIO_WritePin (FILTER_S1.port, FILTER_S1.pin, 0);
+
+  // Power the HMC1023 LPF/VGA: drive LPF_POWER (PE11) low to turn on Q208 -> LPF_5V.
+  // Needs the VDDBG blue-wire mod (C292 -> LPF_5V) for the chip's bias supply.
+  // (Mux is left on bypass here; filter path + SPI config come next.)
+  gpioInitStructure.Pin = LPF_POWER.pin;
+  gpioInitStructure.Speed = GPIO_SPEED_LOW;
+  gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioInitStructure.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init (LPF_POWER.port, &gpioInitStructure);
+  HAL_GPIO_WritePin (LPF_POWER.port, LPF_POWER.pin, 0);
 
   gpioInitStructure.Pin = TRX_SWITCH.pin;
   gpioInitStructure.Speed = GPIO_SPEED_LOW;
