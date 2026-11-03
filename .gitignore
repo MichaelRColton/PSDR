@@ -72,3 +72,7 @@ Hardware/Enclosure/~$Speaker.SLDPRT
 Hardware/Enclosure/~$USB_Connector.SLDPRT
 Hardware/Enclosure/~$paddle.SLDPRT
 Hardware/Enclosure/~$paddle_Mirrored.SLDPRT
+
+# Headless build outputs
+build/
+*.map
