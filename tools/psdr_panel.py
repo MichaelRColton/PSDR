@@ -60,12 +60,15 @@ def _psdr_audio_name(ffmpeg):
                            capture_output=True, text=True, timeout=10)
     except Exception:
         return None
+    names = []
     for line in (r.stderr or "").splitlines():
-        if "PSDR" in line:
-            m = re.search(r'"([^"]*PSDR[^"]*)"', line)
-            if m:
-                return m.group(1)
-    return None
+        m = re.search(r'"([^"]*PSDR[^"]*)"', line)
+        if m:
+            names.append(m.group(1))
+    for n in names:                 # Listen = the demodulated audio, not raw I/Q
+        if "Demod" in n:
+            return n
+    return names[0] if names else None
 
 
 class AudioListen:
@@ -353,9 +356,15 @@ class Panel(tk.Tk):
                              command=self.set_usbgain)
         self.usbg.set(10)
         self.usbg.grid(row=7, column=0, columnspan=2, sticky="we")
-        self.listen_btn = tk.Button(g, text="Listen on PC speakers", command=self.toggle_listen,
+        tk.Label(g, text="I/Q level (Q)", bg=PANEL, fg=MUTE).grid(row=8, column=0, sticky="w")
+        self.iqg = tk.Scale(g, from_=0, to=50, resolution=1, orient="horizontal", length=180,
+                            bg=PANEL, fg=INK, troughcolor=BG, highlightthickness=0,
+                            command=self.set_iqgain)
+        self.iqg.set(6)
+        self.iqg.grid(row=9, column=0, columnspan=2, sticky="we")
+        self.listen_btn = tk.Button(g, text="Listen on PC speakers (demod)", command=self.toggle_listen,
                                     bg=BG, fg=GOOD)
-        self.listen_btn.grid(row=8, column=0, columnspan=2, sticky="we", pady=(4, 2))
+        self.listen_btn.grid(row=10, column=0, columnspan=2, sticky="we", pady=(4, 2))
 
         # --- TX / switches ---
         g = self._group(col, "T/R & RF switches")
@@ -531,6 +540,9 @@ class Panel(tk.Tk):
     def set_usbgain(self, _=None):
         self.link.write(f"Z{int(float(self.usbg.get()))}")
 
+    def set_iqgain(self, _=None):
+        self.link.write(f"Q{int(float(self.iqg.get()))}")
+
     def _filt_hz_label(self):
         lo, hi = int(self.hpf.get()), int(self.lpf.get())
         self.filt_hz_lbl.config(
@@ -552,7 +564,7 @@ class Panel(tk.Tk):
     def toggle_listen(self):
         if self.audio.alive():
             self.audio.stop()
-            self.listen_btn.config(text="Listen on PC speakers", fg=GOOD)
+            self.listen_btn.config(text="Listen on PC speakers (demod)", fg=GOOD)
             self._log("! audio stopped", "tx")
             return
         try:
@@ -610,7 +622,7 @@ class Panel(tk.Tk):
             self.link.write("s")
         # reflect ffplay exiting on its own
         if self.listen_btn["text"] == "Stop listening" and not self.audio.alive():
-            self.listen_btn.config(text="Listen on PC speakers", fg=GOOD)
+            self.listen_btn.config(text="Listen on PC speakers (demod)", fg=GOOD)
         self.after(120, self._pump)
 
     def _parse(self, line):
