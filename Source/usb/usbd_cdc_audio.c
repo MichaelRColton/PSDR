@@ -37,6 +37,7 @@ typedef struct {
 } CDC_AUDIO_Handle;
 
 static CDC_AUDIO_Handle hcls;        /* single static instance (one device)    */
+static volatile uint8_t iso_armed = 0;  /* an iso IN transfer is queued/in-flight */
 
 /* ---- SWD-readable enumeration trace (temporary diagnostics) ------------- *
  * USB is the thing under test, so the console can't report. Read this struct
@@ -57,6 +58,9 @@ typedef struct {
     uint32_t audio_alt1_opens; /* audio_set_alt(1) -> iso EP opened                    */
     uint32_t sof_count;
     uint32_t setup_other;      /* requests that hit the default/stall path             */
+    uint32_t iso_arm;          /* iso IN transfers armed in SOF (as_alt==1)            */
+    uint32_t iso_datain;       /* iso IN transfers that completed (host read them)      */
+    uint32_t iso_incomplete;   /* IISOIXFR: armed frame missed by the host             */
 } usb_dbg_t;
 volatile usb_dbg_t g_usbdbg = { .magic = 0x0DB00001U };
 
@@ -165,6 +169,17 @@ static uint8_t DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
     return (uint8_t)USBD_OK;
 }
 
+/* Queue one audio frame on the iso IN endpoint. Called from the USB ISR only
+   (SOF kick, DataIn chain, alt-set prime), so no locking is needed here; the
+   sample source is the one producer/consumer boundary with the main loop. */
+static void iso_send(USBD_HandleTypeDef *pdev)
+{
+    g_usbdbg.iso_arm++;
+    iso_armed = 1U;
+    usb_audio_get_samples(hcls.audio_buf, AUDIO_SAMPLES_PER_FRAME);
+    (void)USBD_LL_Transmit(pdev, AUDIO_IN_EP, (uint8_t *)hcls.audio_buf, AUDIO_PKT);
+}
+
 static void audio_set_alt(USBD_HandleTypeDef *pdev, uint8_t alt)
 {
     if (alt == hcls.as_alt) return;
@@ -173,13 +188,12 @@ static void audio_set_alt(USBD_HandleTypeDef *pdev, uint8_t alt)
         USBD_LL_OpenEP(pdev, AUDIO_IN_EP, USBD_EP_TYPE_ISOC, AUDIO_PKT);
         pdev->ep_in[AUDIO_IN_EP & 0x0FU].is_used = 1U;
         hcls.as_alt = 1;
-        /* prime the first frame */
-        usb_audio_get_samples(hcls.audio_buf, AUDIO_SAMPLES_PER_FRAME);
-        USBD_LL_Transmit(pdev, AUDIO_IN_EP, (uint8_t *)hcls.audio_buf, AUDIO_PKT);
+        iso_send(pdev);               /* prime the first frame */
     } else {
         USBD_LL_CloseEP(pdev, AUDIO_IN_EP);
         pdev->ep_in[AUDIO_IN_EP & 0x0FU].is_used = 0U;
         hcls.as_alt = 0;
+        iso_armed = 0U;
     }
 }
 
@@ -250,8 +264,13 @@ static uint8_t EP0_RxReady(USBD_HandleTypeDef *pdev)
 
 static uint8_t DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
-    (void)pdev;
-    if (epnum == (CDC_IN_EP & 0x0FU)) hcls.cdc_tx_state = 0;
+    if (epnum == (CDC_IN_EP & 0x0FU)) {
+        hcls.cdc_tx_state = 0;
+    } else if (epnum == (AUDIO_IN_EP & 0x0FU)) {
+        g_usbdbg.iso_datain++;
+        /* chain the next frame straight off completion -> one clean packet/frame */
+        if (hcls.as_alt == 1U) iso_send(pdev);
+    }
     return (uint8_t)USBD_OK;
 }
 
@@ -268,10 +287,20 @@ static uint8_t DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 static uint8_t SOF(USBD_HandleTypeDef *pdev)
 {
     g_usbdbg.sof_count++;
-    if (hcls.as_alt == 1U) {
-        usb_audio_get_samples(hcls.audio_buf, AUDIO_SAMPLES_PER_FRAME);
-        USBD_LL_Transmit(pdev, AUDIO_IN_EP, (uint8_t *)hcls.audio_buf, AUDIO_PKT);
-    }
+    /* SOF only kicks the stream if the completion chain has stalled (e.g. after
+       an incomplete). Steady state is driven by DataIn. */
+    if (hcls.as_alt == 1U && iso_armed == 0U) iso_send(pdev);
+    return (uint8_t)USBD_OK;
+}
+
+/* iso IN transfer did not go out in its scheduled frame (host missed the poll).
+   Flush the stale packet so it doesn't back up the FIFO, and let SOF re-kick. */
+static uint8_t IsoINIncomplete(USBD_HandleTypeDef *pdev, uint8_t epnum)
+{
+    (void)epnum;
+    g_usbdbg.iso_incomplete++;
+    iso_armed = 0U;
+    (void)USBD_LL_FlushEP(pdev, AUDIO_IN_EP);
     return (uint8_t)USBD_OK;
 }
 
@@ -292,7 +321,7 @@ USBD_ClassTypeDef USBD_CDC_AUDIO = {
     EP0_RxReady,
     DataIn, DataOut,
     SOF,
-    NULL, NULL,           /* IsoINIncomplete / IsoOUTIncomplete */
+    IsoINIncomplete, NULL,  /* IsoINIncomplete / IsoOUTIncomplete */
     GetHSCfgDesc, GetFSCfgDesc, GetOtherCfgDesc, GetDevQualDesc,
 #if (USBD_SUPPORT_USER_STRING_DESC == 1U)
     NULL,

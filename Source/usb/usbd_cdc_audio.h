@@ -16,9 +16,13 @@
  *   reached this class). The stall triggered a re-enumerate loop -> code 10.
  *   Fix: USBD_MAX_NUM_INTERFACES = 4 (usbd_conf.h). The device-qualifier stall
  *   seen in the trace is normal for a full-speed-only device and is harmless.
- *   OPEN: isochronous streaming paces slow (audio flows but not clean real-time
- *   48 kHz yet) - iso IN re-arm/rate still to be tuned. The g_usbdbg counters in
- *   the .c are a left-in SWD side channel, handy for that work.
+ *   Streaming now runs at real-time 48 kHz: the next frame is chained off the
+ *   DataIn completion (one clean packet/frame), SOF only re-kicks if the chain
+ *   stalls, and IsoINIncomplete flushes the EP so a missed frame doesn't back up
+ *   the FIFO. Verified by host capture (~real-time) and the g_usbdbg counters
+ *   (armed ~= completed). Those counters are a left-in SWD side channel.
+ *   OPEN: wire a real sample source (demod audio, or stereo I/Q) in place of the
+ *   weak test-tone usb_audio_get_samples(); give the AS interface its own name.
  */
 #ifndef __USBD_CDC_AUDIO_H
 #define __USBD_CDC_AUDIO_H
