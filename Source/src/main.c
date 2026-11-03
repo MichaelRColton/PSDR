@@ -843,6 +843,11 @@ void hmc1023_io_init(void)
 	hmc_sck(0);
 }
 
+/* Console control of LPF_POWER (PE11): 1 = powered (drive low -> Q208 -> LPF_5V),
+   0 = off. Lets us re-power the HMC1023 AFTER the Si5338 cal clock (CLK1A) is up,
+   so the filter's power-on auto-calibration runs with a valid CALCK present. */
+void lpf_power(int on){ HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, on ? 0 : 1); }
+
 //USART1_IRQHandler(void)
 //{
 //    //blink_led_on();
