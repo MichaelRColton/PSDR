@@ -2175,7 +2175,11 @@ static void CPU_CACHE_Enable(void)
   SCB_EnableICache();
 
   /* Enable D-Cache */
-  SCB_EnableDCache();
+  // DISABLED: SCB_EnableDCache() hard-faults on this rebuild. The Cortex-M7
+  // speculatively prefetches cacheable regions; without an MPU marking the
+  // non-existent memory non-cacheable, that triggers a bus fault at cache
+  // enable. I-cache alone is safe. TODO: add an MPU config, then re-enable.
+  // SCB_EnableDCache();
 }
 
 void shutDown(void)
