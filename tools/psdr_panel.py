@@ -82,7 +82,8 @@ class AudioListen:
             raise RuntimeError("PSDR audio device not found (is the USB mic enabled?)")
         self.proc = subprocess.Popen(
             [ffplay, "-hide_banner", "-nodisp", "-loglevel", "warning",
-             "-f", "dshow", "-i", f"audio={name}"],
+             "-fflags", "nobuffer", "-flags", "low_delay", "-probesize", "32",
+             "-analyzeduration", "0", "-f", "dshow", "-i", f"audio={name}"],
             stdin=subprocess.DEVNULL)
         return name
 

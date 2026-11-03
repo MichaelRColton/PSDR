@@ -182,13 +182,16 @@ static void iso_send(USBD_HandleTypeDef *pdev)
     g_usbdbg.iso_arm++;
     iso_armed = 1U;
     iso_stuck = 0U;
-    uint32_t n = usb_audio_get_samples(hcls.audio_buf, AUDIO_MAX_SAMPLES_PER_FRAME);
-    /* Never send a zero-length packet: the HAL does not raise DataIn for a 0-byte
-       iso IN, which stalls the completion chain. Pad an underrun up to the nominal
-       frame with silence so the stream keeps pacing; send extra when the ring has
-       built up (clock drift) so it drains instead of overflowing. */
+    /* Send EXACTLY one nominal frame (24 samples) every time, so the device's
+       output rate is exactly AUDIO_SAMPLE_RATE and matches the host's playback
+       clock - no drift, no growing latency. The ring (filled at the same nominal
+       rate by the DSP) absorbs jitter; a rare underrun pads a little silence and
+       a rare overrun drops in usb_audio_push(), each a sub-ppm glitch, never lag.
+       Always non-zero, so the DataIn completion chain can't stall on a ZLP. */
+    uint32_t n = usb_audio_get_samples(hcls.audio_buf, AUDIO_SAMPLES_PER_FRAME);
     while (n < AUDIO_SAMPLES_PER_FRAME) hcls.audio_buf[n++] = 0;
-    (void)USBD_LL_Transmit(pdev, AUDIO_IN_EP, (uint8_t *)hcls.audio_buf, (uint16_t)(n * 2U));
+    (void)USBD_LL_Transmit(pdev, AUDIO_IN_EP, (uint8_t *)hcls.audio_buf,
+                           (uint16_t)(AUDIO_SAMPLES_PER_FRAME * 2U));
 }
 
 static void audio_set_alt(USBD_HandleTypeDef *pdev, uint8_t alt)
