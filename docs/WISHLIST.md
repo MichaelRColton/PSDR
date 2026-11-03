@@ -17,6 +17,8 @@ _Captured 2026-11-02 on branch `fix/hmc1023-lpf`. A living list — edit freely.
 - **Low-power field digital modes:** WSPR, FT8/FT4, JS8 — slow weak-signal modes ideal for backpacking. These need an accurate, stable TX frequency → pairs directly with GPS discipline.
 - **RX DSP quality:** AGC, noise blanker/reduction, notch, better filtering.
 
+- **USB audio class (sound-card front end) — bigger project.** Make the USB interface stream RX/TX audio to/from the PC as a standard USB Audio Class device, so the PSDR can front-end existing PC SDR/digital-mode software (WSJT-X, fldigi, etc.). Firmware-only on the F746 (add a UAC interface alongside the CDC console). "Way later" per Michael.
+
 ## Needs hardware (next rev / add-on)
 - **Efficient PA — the big one:** adopt a uSDX-style switching/Class-E PA + a proper output LPF bank for real, efficient QRP output. The PSDR's weakest area (your own note in #16). Keep the PSDR front-end/UI.
 - **Bluetooth:** no BT part on the current board (BOM has GPS, not BT) — a next-rev add (module, or a wireless-class MCU).
