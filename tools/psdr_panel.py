@@ -156,7 +156,9 @@ class SerialLink:
 
     def _writer(self):
         # All serial writes happen here, off the Tk thread, so a stuck CDC OUT
-        # can never freeze the UI.
+        # can never freeze the UI. Also paced: >= 25 ms between commands so a
+        # slider/scroll burst can't flood the device's USB and wedge it.
+        last = 0.0
         while not self._stop.is_set():
             try:
                 cmd = self.tx.get(timeout=0.2)
@@ -165,9 +167,13 @@ class SerialLink:
             ser = self.ser
             if not ser:
                 continue
+            gap = time.time() - last
+            if gap < 0.025:
+                time.sleep(0.025 - gap)
             try:
                 ser.write((cmd + "\r\n").encode())
                 self.rx.put(("tx", cmd))
+                last = time.time()
             except Exception as e:
                 self.rx.put(("err", str(e)))
 
@@ -230,6 +236,7 @@ class Panel(tk.Tk):
         self._filt_sync = False  # suppress echo while syncing sliders from status
         self.vfo_hz = 7032000    # big readout / digit tuner
         self._last_tune = 0.0    # hold status-sync briefly after a manual tune
+        self._freq_after = None  # debounce timer for the F command
         self._flow = []          # signal-flow polyline (canvas coords), set by draw()
         self._dots = []          # animated flow dots
         self._dot_phase = 0.0
@@ -334,9 +341,17 @@ class Panel(tk.Tk):
         hz = max(2500000, min(175000000, hz))
         self.vfo_hz = hz
         self._last_tune = time.time()
-        self._refresh_freq()
+        self._refresh_freq()                       # display updates instantly
         self.vfo_var.set(f"{hz / 1e6:.6f}")
-        self.link.write(f"F{hz}")
+        # debounce the actual F command: one per tuning gesture, never a flood
+        if self._freq_after is not None:
+            try: self.after_cancel(self._freq_after)
+            except Exception: pass
+        self._freq_after = self.after(120, self._send_freq)
+
+    def _send_freq(self):
+        self._freq_after = None
+        self.link.write(f"F{int(self.vfo_hz)}")
 
     def _group(self, parent, title):
         f = tk.LabelFrame(parent, text=title, bg=PANEL, fg=ACCENT,
