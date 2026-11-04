@@ -1433,6 +1433,37 @@ const char *charge_label(void)
 	return " Plug";                                    /* plugged, charge complete / standby */
 }
 
+/* --- Sleep/wake state retention -------------------------------------------
+   "Off" enters STOP then cold-boots on wake, which re-inits the globals, so we
+   stash the user state in the RTC backup registers (backup domain) before
+   sleeping and restore it at boot. These survive the STOP cold-boot AND power
+   cycles (VBAT keeps them), so state also persists across reboots - that's the
+   free bonus Michael was fine with. */
+#define STATE_MAGIC 0x50534431u   /* "PSD1" */
+void state_save(void)
+{
+	RTC->BKP1R = (uint32_t)vfoAFrequency;
+	RTC->BKP2R = ((uint32_t)(mode & 0x3))
+	           | (((uint32_t)(filterLowerLimit & 0xFF)) << 8)
+	           | (((uint32_t)(filterUpperLimit & 0xFF)) << 16)
+	           | (((uint32_t)(g_hmcGainOn & 1)) << 24);
+	RTC->BKP4R = (uint32_t)(afGain * 10.0f + 0.5f);   /* volume, 0..250 */
+	RTC->BKP3R = STATE_MAGIC;
+}
+void state_restore(void)
+{
+	if(RTC->BKP3R != STATE_MAGIC) return;              /* nothing saved yet -> keep defaults */
+	long f = (long)RTC->BKP1R;
+	uint32_t p = RTC->BKP2R;
+	if(f >= 2500000L && f <= 175000000L) { vfoAFrequency = f; setFreq((unsigned long)f); }
+	uint8_t m = (uint8_t)(p & 0x3); if(m <= 2) mode = m;
+	int flo = (int)((p >> 8) & 0xFF), fhi = (int)((p >> 16) & 0xFF);
+	if(fhi > flo && fhi <= 128) { filterLowerLimit = (int16_t)flo; filterUpperLimit = (int16_t)fhi; }
+	populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
+	uint32_t v = RTC->BKP4R; if(v <= 250) afGain = (float)v / 10.0f;   /* volume */
+	if((p >> 24) & 1) hmcGainSet(1);                   /* re-route through the HMC1023 if it was on */
+}
+
 //USART1_IRQHandler(void)
 //{
 //    //blink_led_on();
@@ -1783,20 +1814,22 @@ setFreq(vfoAFrequency);
 
 	//long long timeMeasurement = 0;
 
-	updateDisplay(1);
+	// Bench bring-up: init the HMC1023 bit-bang IO (CS/MISO) so the serial console
+	// can talk to it live, and so a restored +20 dB state can re-route the RX path.
+	// NOT the full probe -- no reg writes, no mux switch unless state_restore asks.
+	hmc1023_io_init();
 
+	// Restore freq/mode/filter/volume/HMC saved before the last sleep BEFORE the
+	// first draw, so the display never flashes the power-on defaults on wake.
+	// rtc_init() runs first: it enables backup-domain access where the state lives.
+	rtc_init();          // LSE + RTC clock (keeps time on battery; set from the Control Panel)
+	state_restore();
 
+	updateDisplay(1);    // first draw now shows the restored state, not defaults
 
 	setGainPot(200, 200);
 
-	// Bench bring-up: init the HMC1023 bit-bang IO (CS/MISO) so the serial console
-	// can talk to it live. NOT the full probe -- no reg writes, no mux switch, so
-	// boot stays on the clean stock RX path.
-	hmc1023_io_init();
-
 	usb_serial_init();   // bring up the USB CDC serial console
-
-	rtc_init();          // LSE + RTC clock (keeps time on battery; set from the Control Panel)
 
 	//testing Uart
 	configUartPeripheral();
@@ -2234,6 +2267,15 @@ void updateDisplay(uint8_t force)
 		}
 
 		afGainLast = afGain;
+	}
+
+	/* Static "Vol" label above the volume number (number is at x=250, y=10). */
+	if(force)
+	{
+		Adafruit_GFX_setTextSize(1);
+		Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
+		Adafruit_GFX_setCursor(259, 1);
+		for(const char *p = "Vol"; *p; p++) Adafruit_GFX_write(*p);
 	}
 
 	if(force || (menuPos != menuLastPos && (menuPos == offMenuItem || menuLastPos == offMenuItem)))
@@ -3005,6 +3047,8 @@ static void CPU_CACHE_Enable(void)
 
 void shutDown(void)
 {
+	state_save();   /* stash freq/mode/filter/HMC so they come back on wake */
+
 	/* Low-power OFF via STOP mode (not STANDBY). STOP keeps the core domain
 	   powered, so GPIO output levels are HELD for the whole sleep - including
 	   the audio-amp shutdown pin (PE14/nSHDN, driven low in
