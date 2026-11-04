@@ -130,6 +130,7 @@ class SerialLink:
     def __init__(self):
         self.ser = None
         self.rx = queue.Queue()
+        self.tx = queue.Queue(maxsize=256)   # commands; drained by a writer thread
         self._stop = threading.Event()
         self._buf = b""
 
@@ -146,9 +147,29 @@ class SerialLink:
 
     def open(self, port):
         self.close()
-        self.ser = serial.Serial(port, BAUD, timeout=0.2)
+        # write_timeout: a stuck CDC OUT (device not draining) must NOT block the
+        # Tk main thread - writes raise SerialTimeoutException instead, caught in write().
+        self.ser = serial.Serial(port, BAUD, timeout=0.2, write_timeout=0.4)
         self._stop.clear()
         threading.Thread(target=self._reader, daemon=True).start()
+        threading.Thread(target=self._writer, daemon=True).start()
+
+    def _writer(self):
+        # All serial writes happen here, off the Tk thread, so a stuck CDC OUT
+        # can never freeze the UI.
+        while not self._stop.is_set():
+            try:
+                cmd = self.tx.get(timeout=0.2)
+            except queue.Empty:
+                continue
+            ser = self.ser
+            if not ser:
+                continue
+            try:
+                ser.write((cmd + "\r\n").encode())
+                self.rx.put(("tx", cmd))
+            except Exception as e:
+                self.rx.put(("err", str(e)))
 
     def _reader(self):
         while not self._stop.is_set() and self.ser:
@@ -164,12 +185,12 @@ class SerialLink:
                     self.rx.put(("line", line.decode(errors="replace").strip()))
 
     def write(self, cmd):
+        # Non-blocking: just enqueue. The writer thread does the actual I/O.
         if self.ser:
             try:
-                self.ser.write((cmd + "\r\n").encode())
-                self.rx.put(("tx", cmd))
-            except Exception as e:
-                self.rx.put(("err", str(e)))
+                self.tx.put_nowait(cmd)
+            except queue.Full:
+                pass            # drop under backpressure rather than block the UI
 
     def close(self):
         self._stop.set()
