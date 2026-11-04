@@ -2231,10 +2231,13 @@ void updateDisplay(uint8_t force)
 	{
 		battery_poll();
 		static float sm = 0.0f;
-		sm = (sm <= 0.01f) ? g_battVolts : (sm * 0.95f + g_battVolts * 0.05f);
+		sm = (sm <= 0.01f) ? g_battVolts : (sm * 0.98f + g_battVolts * 0.02f);  /* low-pass, ~1-2 s */
+		int pct = battery_percent(sm);
+		static int shownPct = -1;              /* +-2% hysteresis so the % doesn't flicker */
+		if(shownPct < 0 || pct >= shownPct + 2 || pct <= shownPct - 2) shownPct = pct;
 		int mv = (int)(sm * 100.0f + 0.5f);
 		static char lastB[40] = ""; static int lastBW = -1;
-		char bb[40]; snprintf(bb, sizeof(bb), "Batt: %d.%02dv (~%d%%)", mv/100, mv%100, battery_percent(sm));
+		char bb[40]; snprintf(bb, sizeof(bb), "Batt: %d.%02dv (~%d%%)", mv/100, mv%100, shownPct);
 		int w = (int)strlen(bb) * 6, cx = 121 + (199 - w)/2, by = 216;
 		Adafruit_GFX_setTextSize(1);
 		Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
