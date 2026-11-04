@@ -83,11 +83,14 @@ class AudioListen:
         name = _psdr_audio_name(ffmpeg) if ffmpeg else None
         if not name:
             raise RuntimeError("PSDR audio device not found (is the USB mic enabled?)")
+        # CREATE_NO_WINDOW hides ffplay's console window (it's a console app, so
+        # -nodisp alone still pops a window on Windows); DEVNULL the streams too.
         self.proc = subprocess.Popen(
             [ffplay, "-hide_banner", "-nodisp", "-loglevel", "warning",
              "-fflags", "nobuffer", "-flags", "low_delay", "-probesize", "32",
              "-analyzeduration", "0", "-f", "dshow", "-i", f"audio={name}"],
-            stdin=subprocess.DEVNULL)
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         return name
 
     def alive(self):
@@ -204,6 +207,11 @@ class Panel(tk.Tk):
         self.flo = 0             # DSP filter HPF edge (bins)
         self.fhi = 68            # DSP filter LPF edge (bins)
         self._filt_sync = False  # suppress echo while syncing sliders from status
+        self.vfo_hz = 7032000    # big readout / digit tuner
+        self._last_tune = 0.0    # hold status-sync briefly after a manual tune
+        self._flow = []          # signal-flow polyline (canvas coords), set by draw()
+        self._dots = []          # animated flow dots
+        self._dot_phase = 0.0
 
         self._build()
         self.after(120, self._pump)
@@ -236,8 +244,11 @@ class Panel(tk.Tk):
         self.status_lbl = tk.Label(top, text="disconnected", bg=BG, fg=HOT)
         self.status_lbl.pack(side="right")
 
-        # canvas diagram
-        self.canvas = tk.Canvas(self, width=1000, height=240, bg=BG,
+        # big frequency readout + digit tuner
+        self._build_freq(self)
+
+        # canvas diagram (RF chain + MCU/DSP chain, with signal-flow dots)
+        self.canvas = tk.Canvas(self, width=1000, height=400, bg=BG,
                                 highlightthickness=0)
         self.canvas.pack(fill="x", padx=10, pady=4)
 
@@ -247,6 +258,64 @@ class Panel(tk.Tk):
         self._build_diag(body)
 
         self.draw()
+        self.after(60, self._animate)
+
+    # ---- big frequency readout + per-digit tuner ----------------------- #
+    def _build_freq(self, parent):
+        bar = tk.Frame(parent, bg=BG)
+        bar.pack(fill="x", padx=10, pady=(2, 2))
+        tk.Label(bar, text="VFO", bg=BG, fg=MUTE, font=("Segoe UI", 10)).pack(side="left", padx=(0, 10))
+        dfont = ("Consolas", 32, "bold")
+        self.digit_lbls = []
+        powers = [10 ** k for k in range(8, -1, -1)]   # 100 MHz .. 1 Hz
+        for idx, p in enumerate(powers):
+            lbl = tk.Label(bar, text="0", bg=BG, fg=INK, font=dfont, width=1, cursor="sb_v_double_arrow")
+            lbl.pack(side="left")
+            lbl._decade = p
+            lbl.bind("<MouseWheel>", self._digit_scroll)
+            lbl.bind("<Button-4>", lambda e: self._tune(e.widget._decade))    # X11 up
+            lbl.bind("<Button-5>", lambda e: self._tune(-e.widget._decade))   # X11 down
+            lbl.bind("<Button-1>", self._digit_click)
+            lbl.bind("<Enter>", self._digit_enter)
+            lbl.bind("<Leave>", lambda e: self._refresh_freq())
+            self.digit_lbls.append(lbl)
+            if idx == 2:   # decimal point after the MHz ones place
+                tk.Label(bar, text=".", bg=BG, fg=ACCENT, font=dfont).pack(side="left")
+            elif idx == 5: # thin gap between kHz and Hz groups
+                tk.Label(bar, text=" ", bg=BG, fg=BG, font=dfont).pack(side="left")
+        tk.Label(bar, text="MHz", bg=BG, fg=MUTE, font=("Segoe UI", 13)).pack(side="left", padx=(8, 0))
+        tk.Label(bar, text="scroll / click a digit to tune",
+                 bg=BG, fg=MUTE, font=("Segoe UI", 8)).pack(side="right")
+        self._refresh_freq()
+
+    def _refresh_freq(self):
+        s = f"{int(self.vfo_hz):09d}"
+        seen = False
+        for i, lbl in enumerate(self.digit_lbls):
+            ch = s[i]
+            if ch != "0":
+                seen = True
+            dim = (not seen) and i < 2        # dim only leading MHz zeros
+            lbl.config(text=ch, fg=MUTE if dim else INK)
+
+    def _digit_enter(self, e):
+        e.widget.config(fg=ACCENT)
+
+    def _digit_scroll(self, e):
+        self._tune(e.widget._decade if e.delta > 0 else -e.widget._decade)
+
+    def _digit_click(self, e):
+        up = e.y < (e.widget.winfo_height() / 2)
+        self._tune(e.widget._decade if up else -e.widget._decade)
+
+    def _tune(self, delta):
+        hz = int(self.vfo_hz) + int(delta)
+        hz = max(2500000, min(175000000, hz))
+        self.vfo_hz = hz
+        self._last_tune = time.time()
+        self._refresh_freq()
+        self.vfo_var.set(f"{hz / 1e6:.6f}")
+        self.link.write(f"F{hz}")
 
     def _group(self, parent, title):
         f = tk.LabelFrame(parent, text=title, bg=PANEL, fg=ACCENT,
@@ -450,8 +519,9 @@ class Panel(tk.Tk):
     def draw(self):
         c = self.canvas
         c.delete("all")
+        self._dots = []
         through = self.mux in (2, 3)          # routed through the HMC1023
-        y = 40; h = 46
+        y = 46; h = 46
         xs = [20, 150, 275, 400, 545, 675, 820]
         w = 110
         labels = [
@@ -470,23 +540,93 @@ class Panel(tk.Tk):
                            active=not (i == 3 and through))
         # HMC1023 branch under the mux
         mx = xs[3]
-        hy = y + 110
-        self.box(mx - 10, hy, w + 20, h + 8,
-                 "HMC1023 U287\nRF preamp +10dB/ch\n(cascade ≈ 20 dB)",
+        hy = y + 104
+        self.box(mx - 10, hy, w + 20, h + 6,
+                 "HMC1023 U287\nRF preamp +10dB/ch\n(≈ 20 dB cascade)",
                  active=through, powered=bool(self.lpf_pwr))
         self.arrow(mx + w / 2 - 14, y + h, mx + w / 2 - 14, hy, active=through)
         self.arrow(mx + w / 2 + 14, hy, mx + w / 2 + 14, y + h, active=through)
-        # LO
-        c.create_text(xs[4] + w / 2, y + h + 16, text="↑ quad LO (Si5338 ÷ SY10EP52)",
+        c.create_text(xs[4] + w / 2, y + h + 14, text="↑ quad LO (Si5338 ÷ SY10EP52)",
                       fill=MUTE, font=("Segoe UI", 7))
+
+        # --- MCU / DSP enclosure + stage row ---
+        en_top = 232
+        c.create_rectangle(14, en_top, 986, 396, outline=WIRE, dash=(3, 3))
+        c.create_text(22, en_top - 10, anchor="w", fill=ACCENT, font=("Segoe UI", 8, "bold"),
+                      text="inside STM32F746  —  DSP")
+        y2 = 252; h2 = 52; w2 = 150
+        xs2 = [30, 210, 390, 570, 760]
+        dlabels = [
+            "ADC → DMA\n15× oversample\navg → 48 kHz",
+            "FFT 256-pt",
+            f"channel filter\nHPF/LPF  {self.flo}‥{self.fhi}",
+            f"demod\n{MODE_NAMES.get(self.mode_i, '?')}",
+            "USB audio\n(demod) → PC",
+        ]
+        for i, (x, lbl) in enumerate(zip(xs2, dlabels)):
+            self.box(x, y2, w2, h2, lbl)
+            if i < len(xs2) - 1:
+                self.arrow(x + w2, y2 + h2 / 2, xs2[i + 1], y2 + h2 / 2)
+        # ADC (RF row) -> DSP b0, elbow connector through the gap
+        ax = xs[6] + w / 2
+        yc = 214
+        self.arrow(ax, y + h, ax, yc, active=True)
+        c.create_line(ax, yc, xs2[0] + w2 / 2, yc, fill=ACCENT, width=3)
+        self.arrow(xs2[0] + w2 / 2, yc, xs2[0] + w2 / 2, y2, active=True)
+        # I/Q tap branch: b0 -> I/Q balance -> USB I/Q
+        by = 324
+        self.box(xs2[0], by, w2, h2, "I/Q balance\n(Gram-Schmidt)\nB / Y / U", active=True)
+        self.arrow(xs2[0] + w2 / 2, y2 + h2, xs2[0] + w2 / 2, by, active=True)
+        self.box(xs2[1] + 40, by, w2, h2, "USB I/Q\n→ HDSDR  (Q)", active=True)
+        self.arrow(xs2[0] + w2, by + h2 / 2, xs2[1] + 40, by + h2 / 2, active=True)
+
         # legend / route
         c.create_text(20, 12, anchor="w", fill=MUTE, font=("Segoe UI", 8),
-                      text=f"RX path   •   mux = {self.mux}: {MUX_NAMES[self.mux]}"
-                           f"   •   {'THROUGH HMC1023' if through else 'straight bypass'}")
+                      text=f"RX  •  mux {self.mux}: {MUX_NAMES[self.mux]}  •  "
+                           f"{'THROUGH HMC1023' if through else 'straight bypass'}")
         c.create_text(980, 12, anchor="e", fill=GOOD if self.lpf_pwr else MUTE,
                       font=("Segoe UI", 8),
                       text=("HMC1023 powered" if self.lpf_pwr else "HMC1023 unpowered"))
+
+        # signal-flow polyline: antenna -> ADC -> (elbow) -> DSP row -> USB audio
+        ry = y + h / 2
+        flow = [(xs[i] + w / 2, ry) for i in range(len(xs))]
+        flow += [(ax, yc), (xs2[0] + w2 / 2, yc), (xs2[0] + w2 / 2, y2 + h2 / 2)]
+        flow += [(xs2[j] + w2 / 2, y2 + h2 / 2) for j in range(1, len(xs2))]
+        self._flow = flow
+
         self.draw_meter()
+
+    def _animate(self):
+        """Little dots flowing along the active RX signal path."""
+        import math
+        try:
+            c = self.canvas
+            for d in self._dots:
+                c.delete(d)
+            self._dots = []
+            pts = self._flow
+            if pts and len(pts) >= 2 and self.link.ser:
+                seg, total = [], 0.0
+                for i in range(len(pts) - 1):
+                    dlen = math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1])
+                    seg.append((total, total + dlen, pts[i], pts[i + 1]))
+                    total += dlen
+                self._dot_phase = (self._dot_phase + 0.006) % 1.0
+                ndots = 6
+                for k in range(ndots):
+                    dist = ((self._dot_phase + k / ndots) % 1.0) * total
+                    for a, b, p0, p1 in seg:
+                        if a <= dist <= b and b > a:
+                            t = (dist - a) / (b - a)
+                            x = p0[0] + (p1[0] - p0[0]) * t
+                            yy = p0[1] + (p1[1] - p0[1]) * t
+                            self._dots.append(
+                                c.create_oval(x - 3, yy - 3, x + 3, yy + 3, fill=GOOD, outline=""))
+                            break
+        except Exception:
+            pass
+        self.after(40, self._animate)
 
     def draw_meter(self):
         m = self.meter
@@ -622,30 +762,40 @@ class Panel(tk.Tk):
         self.log.see("end")
 
     def _pump(self):
-        # drain serial queue
+        # Never let an exception here kill the loop - always reschedule (in finally),
+        # or the whole UI silently freezes (looks like a crash).
         try:
-            while True:
-                kind, payload = self.link.rx.get_nowait()
-                if kind == "line":
-                    self._parse(payload)
-                    if payload:
-                        self._log("  " + payload, "rx")
-                elif kind == "tx":
-                    self._log("> " + payload, "tx")
-                elif kind == "err":
-                    self._log("! " + payload, "err")
-                    self.status_lbl.config(text=payload, fg=HOT)
-        except queue.Empty:
-            pass
-        # periodic poll
-        now = time.time()
-        if self.link.ser and self.poll_var.get() and now - getattr(self, "_last_poll", 0) > 0.7:
-            self._last_poll = now
-            self.link.write("s")
-        # reflect ffplay exiting on its own
-        if self.listen_btn["text"] == "Stop listening" and not self.audio.alive():
-            self.listen_btn.config(text="Listen on PC speakers (demod)", fg=GOOD)
-        self.after(120, self._pump)
+            # drain serial queue
+            try:
+                while True:
+                    kind, payload = self.link.rx.get_nowait()
+                    if kind == "line":
+                        try:
+                            self._parse(payload)
+                        except Exception as e:
+                            self._log("  [parse err] " + str(e), "err")
+                        if payload:
+                            self._log("  " + payload, "rx")
+                    elif kind == "tx":
+                        self._log("> " + payload, "tx")
+                    elif kind == "err":
+                        self._log("! " + payload, "err")
+                        self.status_lbl.config(text=payload, fg=HOT)
+            except queue.Empty:
+                pass
+            # periodic poll
+            now = time.time()
+            if self.link.ser and self.poll_var.get() and now - getattr(self, "_last_poll", 0) > 0.7:
+                self._last_poll = now
+                self.link.write("s")
+            # reflect ffplay exiting on its own
+            if self.listen_btn["text"] == "Stop listening" and not self.audio.alive():
+                self.listen_btn.config(text="Listen on PC speakers (demod)", fg=GOOD)
+        except Exception as e:
+            try: self._log("  [pump err] " + str(e), "err")
+            except Exception: pass
+        finally:
+            self.after(120, self._pump)
 
     def _parse(self, line):
         m = STATUS_RE.search(line)
@@ -654,6 +804,16 @@ class Panel(tk.Tk):
             (rms, bar, s, vfo, filt, mux, amp, pol, trx, txrf, imp, reg2) = g[:12]
             mode, flo, fhi = g[12], g[13], g[14]
             self.bar = int(bar)
+            # sync the big readout from the firmware, unless the user just tuned
+            if time.time() - self._last_tune > 1.0:
+                try:
+                    hz = int(vfo)
+                    if hz != self.vfo_hz and 2000000 <= hz <= 175000000:
+                        self.vfo_hz = hz
+                        self._refresh_freq()
+                        self.vfo_var.set(f"{hz / 1e6:.6f}")
+                except Exception:
+                    pass
             self.diag = dict(rms=rms, bar=bar, S=s, vfo=vfo, filt=filt, mux=mux,
                              amp=amp, pol=pol, trx=trx, txrf=txrf, imp=imp, reg2=reg2)
             mhz = int(vfo) / 1e6
