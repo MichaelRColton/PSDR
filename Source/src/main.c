@@ -79,6 +79,8 @@ int16_t filterLastUpperLimit = 2;
 int16_t filterLowerLimit = 0;
 int16_t filterLastLowerLimit = 2;
 uint8_t mode = 0;
+float amDcBlock = 0.0f;   /* AM: running carrier-level estimate for envelope DC removal */
+float amAudioLp = 0.0f;   /* AM: one-pole audio lowpass on the recovered envelope */
 uint8_t modeLast = 2;
 
 float agcLevel = 0;
@@ -189,11 +191,17 @@ void populateCoeficients(int bandwidth, int sideband, int offset)
 				fftFilterCoeficient[i] = 0;
 			break;
 		case 2:
-			if(((i > FFT_BUFFER_SIZE - (offset + bandwidth)) && (i < FFT_BUFFER_SIZE - offset))
-					|| ((i > offset) && (i < offset + bandwidth)))
-				fftFilterCoeficient[i] = 1;
-			else
-				fftFilterCoeficient[i] = 0;
+			/* AM: envelope detection needs the CARRIER (at DC) plus both
+			   sidebands, so keep a LOWPASS band around DC out to the LPF edge
+			   (offset+bandwidth = filterUpperLimit). The HPF edge is ignored for
+			   AM - notching DC would remove the carrier and break the envelope. */
+			{
+				int bw = offset + bandwidth;          /* = filterUpperLimit, in bins */
+				if((i < bw) || (i > FFT_BUFFER_SIZE - bw))
+					fftFilterCoeficient[i] = 1;
+				else
+					fftFilterCoeficient[i] = 0;
+			}
 			break;
 		}
 	}
@@ -766,12 +774,33 @@ void Encoder(void)
 				   Only push while the host is listening. */
 				if(transmitting == 0 && usb_audio_streaming())
 				{
-					float afOut;
+					/* real part = SSB demod; for AM take the envelope of the complex
+					   output sample (time domain, after the linear filter + overlap),
+					   then DC-block out the carrier level to leave the audio. */
+					float re, im;
 					switch(sampleBank)
 					{
-					case 0:  afOut = samplesB[sampleIndex * 2]; break;
-					case 1:  afOut = samplesC[sampleIndex * 2]; break;
-					default: afOut = samplesA[sampleIndex * 2]; break;
+					case 0:  re = samplesB[sampleIndex * 2]; im = samplesB[sampleIndex * 2 + 1]; break;
+					case 1:  re = samplesC[sampleIndex * 2]; im = samplesC[sampleIndex * 2 + 1]; break;
+					default: re = samplesA[sampleIndex * 2]; im = samplesA[sampleIndex * 2 + 1]; break;
+					}
+					float afOut;
+					if(mode == 2)
+					{
+						/* AM = envelope of the RAW I/Q (ADC2=I, ADC3=Q is a true
+						   quadrature pair; the FFT bank's re/im are not). |I+jQ| of
+						   carrier+sidebands = the modulation; DC-block out the carrier. */
+						float qi = (uhADCxConvertedValue2 - dcOffset2) / 4096.0f;
+						float qq = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
+						float env = sqrtf(qi * qi + qq * qq);
+						amDcBlock += 0.0008f * (env - amDcBlock);   /* ~6 Hz: tracks the carrier */
+						float a = (env - amDcBlock) * 4.0f;         /* lift the small raw-baseband level */
+						amAudioLp += 0.35f * (a - amAudioLp);       /* ~3 kHz one-pole: trim wideband hiss */
+						afOut = amAudioLp;
+					}
+					else
+					{
+						afOut = re;
 					}
 					int32_t v = (int32_t)(afOut * usbAudioGain * 32767.0f);
 					if(v > 32767) v = 32767; else if(v < -32768) v = -32768;
@@ -2024,18 +2053,9 @@ void processStream()
 
 
 
-			if(mode == 2) //Try to demodulate AM
-			{
-				arm_cmplx_mag_f32(samplesA, samplesDemod, FFT_SIZE);
-
-				uint16_t i;
-				for(i = 0; i < FFT_SIZE; i++)
-				{
-					samplesA[i * 2] = samplesDemod[i];
-					samplesA[i * 2 + 1] = /*1.0 -*/ samplesDemod[i]; //invert one of them so they don't cancel
-					//Isn't working yet...
-				}
-			}
+			/* AM is envelope-detected in the time domain at the output tap (not
+			   here): taking |z| per FFT block then overlap-saving is nonlinear and
+			   corrupts the reconstruction. Keep the bank linear (complex). */
 
 			passBandRms = calculateRmsOfSample(samplesA, FFT_BUFFER_SIZE);
 
@@ -2059,17 +2079,7 @@ void processStream()
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesB);
 
-			if(mode == 2) //Try to demodulate AM
-			{
-				arm_cmplx_mag_f32(samplesB, samplesDemod, FFT_SIZE);
-
-				uint16_t i;
-				for(i = 0; i < FFT_SIZE; i++)
-				{
-					samplesB[i * 2] = samplesDemod[i];
-					samplesB[i * 2 + 1] = samplesDemod[i];
-				}
-			}
+			/* AM envelope done at the output tap - keep the bank linear (complex). */
 
 			passBandRms = calculateRmsOfSample(samplesB, FFT_BUFFER_SIZE);
 
@@ -2098,17 +2108,7 @@ void processStream()
 			arm_cfft_radix4_init_f32(&fft_inst, FFT_SIZE, 1, 1);
 			arm_cfft_radix4_f32(&fft_inst, samplesC);
 
-			if(mode == 2) //Try to demodulate AM
-			{
-				arm_cmplx_mag_f32(samplesC, samplesDemod, FFT_SIZE);
-
-				uint16_t i;
-				for(i = 0; i < FFT_SIZE; i++)
-				{
-					samplesC[i * 2] = samplesDemod[i];
-					samplesC[i * 2 + 1] = samplesDemod[i];
-				}
-			}
+			/* AM envelope done at the output tap - keep the bank linear (complex). */
 
 			passBandRms = calculateRmsOfSample(samplesC, FFT_BUFFER_SIZE);
 
