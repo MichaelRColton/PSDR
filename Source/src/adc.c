@@ -303,25 +303,29 @@ void initAdc()
 		HAL_GPIO_Init(GPIOC, &g);                      /* PC0 analog */
 
 		ADC_InjectionConfTypeDef inj = {0};
-		inj.InjectedChannel = ADC_CHANNEL_10;
-		inj.InjectedRank = ADC_INJECTED_RANK_1;
-		inj.InjectedNbrOfConversion = 1;
-		inj.InjectedSamplingTime = ADC_SAMPLETIME_480CYCLES;   /* high-Z divider */
+		inj.InjectedNbrOfConversion = 2;                       /* rank1 = LIPO_V, rank2 = VREFINT */
+		inj.InjectedSamplingTime = ADC_SAMPLETIME_480CYCLES;   /* high-Z divider / internal ref */
 		inj.ExternalTrigInjecConv = ADC_INJECTED_SOFTWARE_START;
 		inj.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_NONE;
 		inj.AutoInjectedConv = DISABLE;
 		inj.InjectedDiscontinuousConvMode = DISABLE;
 		inj.InjectedOffset = 0;
+		inj.InjectedChannel = ADC_CHANNEL_10;      inj.InjectedRank = ADC_INJECTED_RANK_1;
 		HAL_ADCEx_InjectedConfigChannel(&AdcHandle1, &inj);
+		inj.InjectedChannel = ADC_CHANNEL_VREFINT; inj.InjectedRank = ADC_INJECTED_RANK_2;
+		HAL_ADCEx_InjectedConfigChannel(&AdcHandle1, &inj);    /* also enables TSVREFE */
 	}
 
-	uint16_t battery_read_raw(void)
+	/* One injected sequence: LIPO_V (rank1) and VREFINT (rank2). VREFINT lets the
+	   caller compute the real VDDA, so the battery reading self-calibrates. */
+	void battery_read_raw2(uint16_t *batt, uint16_t *vref)
 	{
-		if(HAL_ADCEx_InjectedStart(&AdcHandle1) != HAL_OK) return 0;
+		*batt = 0; *vref = 0;
+		if(HAL_ADCEx_InjectedStart(&AdcHandle1) != HAL_OK) return;
 		HAL_ADCEx_InjectedPollForConversion(&AdcHandle1, 5);
-		uint16_t v = (uint16_t)HAL_ADCEx_InjectedGetValue(&AdcHandle1, ADC_INJECTED_RANK_1);
+		*batt = (uint16_t)HAL_ADCEx_InjectedGetValue(&AdcHandle1, ADC_INJECTED_RANK_1);
+		*vref = (uint16_t)HAL_ADCEx_InjectedGetValue(&AdcHandle1, ADC_INJECTED_RANK_2);
 		HAL_ADCEx_InjectedStop(&AdcHandle1);
-		return v;
 	}
 
 

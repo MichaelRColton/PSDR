@@ -1373,12 +1373,15 @@ void rtc_format(char *buf, int buflen)
 }
 
 /* --- Battery (LIPO_V on ADC1 injected channel; see adc.c) ------------------ */
-uint16_t battery_read_raw(void);          /* adc.c */
+void     battery_read_raw2(uint16_t *batt, uint16_t *vref);   /* adc.c */
 void     battery_adc_init(void);          /* adc.c */
-/* volts per ADC count. LIPO -> R174/R175 divider -> PC0, Vref ~3.3 V. The
-   divider ratio isn't known yet, so this is provisional (assumes ~1/2) and is
-   tuned once from a known battery voltage via the 'V' console command. */
+/* volts per ADC count = VDDA/4095 * 2 (R174/R175 = 100K/100K -> /2 divider,
+   from the schematic). VDDA is measured per-unit each sample from the MCU's
+   internal VREFINT (so it self-calibrates on any board - no baked constant);
+   this nominal is only used before the first sample. */
 float    g_battScale = 3.3f * 2.0f / 4095.0f;
+uint16_t g_vrefRaw = 0;                       /* VREFINT raw, for VDDA measurement */
+#define  VREFINT_CAL_ADDR  ((uint16_t*)0x1FF0F44C)   /* factory VREFINT @ 3.3V (F74x/75x) */
 uint16_t g_battRaw = 0;
 float    g_battVolts = 0.0f;
 
@@ -1399,7 +1402,12 @@ int battery_percent(float v)
 /* Sample the battery and update the globals. */
 void battery_poll(void)
 {
-	g_battRaw = battery_read_raw();
+	uint16_t vref = 0;
+	battery_read_raw2(&g_battRaw, &vref);
+	g_vrefRaw = vref;
+	uint16_t cal = *VREFINT_CAL_ADDR;                 /* factory VREFINT reading @ 3.3 V */
+	if(vref > 100 && cal > 100 && cal < 4096)
+		g_battScale = (3.3f * (float)cal / (float)vref) * 2.0f / 4095.0f;   /* real VDDA / unit */
 	g_battVolts = g_battRaw * g_battScale;
 }
 
