@@ -642,7 +642,7 @@ void Encoder(void)
 					   AM radio's AGC). A floor stops weak/absent carriers blowing up
 					   the noise. 0.3 maps ~100% modulation toward full scale. */
 					float carrier = amDcBlock;
-					if(carrier < 0.0008f) carrier = 0.0008f;
+					if(carrier < 0.004f) carrier = 0.004f;   /* floor: don't over-amplify a weak carrier's noise */
 					float a = (env - amDcBlock) / carrier * 0.08f;   /* ~50% mod -> ~0.04 */
 					float khp = filterLowerLimit * 0.012272f;   /* 2*pi*bin*93.75/48000 */
 					float klp = filterUpperLimit * 0.012272f;
@@ -652,6 +652,9 @@ void Encoder(void)
 					a = a - amHpState;                          /* audio HPF (flo edge) */
 					amAudioLp += klp * (a - amAudioLp);         /* audio LPF (fhi edge) */
 					amAudio = amAudioLp;
+					/* hard clamp: a weak-carrier AGC spike must never deafen / clip hard */
+					if(amAudio >  0.10f) amAudio =  0.10f;
+					else if(amAudio < -0.10f) amAudio = -0.10f;
 				}
 				switch (sampleBank)
 				{
@@ -680,8 +683,8 @@ void Encoder(void)
 
 					/* speaker is bridge-tied (DAC1-DAC2); AM must drive the two DACs
 					   anti-phase or they cancel to silence. SSB uses real/imag as-is. */
-					dac1OutVal = (mode==2 ? amAudio *  3.0f : samplesB[(sampleIndex)*2]) * 4096 * afGain + 2048;
-					dac2OutVal = (mode==2 ? amAudio * -3.0f : samplesB[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+					dac1OutVal = (mode==2 ? amAudio *  0.5f : samplesB[(sampleIndex)*2]) * 4096 * afGain + 2048;
+					dac2OutVal = (mode==2 ? amAudio * -0.5f : samplesB[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 					if(transmitting == 1)
 					{
@@ -729,8 +732,8 @@ void Encoder(void)
 						//dac1SetValue(samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = (mode==2 ? amAudio *  3.0f : samplesC[(sampleIndex)*2]) * 4096 * afGain + 2048;
-						dac2OutVal = (mode==2 ? amAudio * -3.0f : samplesC[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+						dac1OutVal = (mode==2 ? amAudio *  0.5f : samplesC[(sampleIndex)*2]) * 4096 * afGain + 2048;
+						dac2OutVal = (mode==2 ? amAudio * -0.5f : samplesC[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 						if(transmitting == 1)
 						{
@@ -776,8 +779,8 @@ void Encoder(void)
 						//dac1SetValue(samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = (mode==2 ? amAudio *  3.0f : samplesA[(sampleIndex)*2]) * 4096 * afGain + 2048;
-						dac2OutVal = (mode==2 ? amAudio * -3.0f : samplesA[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+						dac1OutVal = (mode==2 ? amAudio *  0.5f : samplesA[(sampleIndex)*2]) * 4096 * afGain + 2048;
+						dac2OutVal = (mode==2 ? amAudio * -0.5f : samplesA[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 						if(transmitting == 1)
 						{
