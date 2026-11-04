@@ -33,6 +33,8 @@ extern float             usbAudioGain;     /* gain on the USB demod-mic feed    
 extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed     */
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
 extern int               g_hmcGainOn;       /* HMC1023 RX-preamp path on/off (menu) */
+extern void              lcd_read_regs(uint8_t cmd, uint8_t *out, int n);   /* bit-bang LCD readback */
+extern void              lcd_screenshot(void);                              /* stream the framebuffer */
 extern volatile float    g_testTone;        /* audio self-test: sine freq Hz (0=off) */
 extern volatile float    g_testAmp;         /* audio self-test: amplitude pre-afGain  */
 extern int16_t           filterUpperLimit; /* DSP filter LPF edge, FFT-bin index  */
@@ -110,6 +112,16 @@ static void handle_cmd(char *s)
 	case 'A': g_amp_pol = (s[1] == '1'); usb_printf("amp switch pol=%d\r\n", g_amp_pol); break;
 	case 'm': g_stream = (s[1] == '1'); usb_printf("stream %s\r\n", g_stream ? "on" : "off"); break;
 	case 'v': afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); break;
+	case 'p':     /* screenshot: header line then 320*240 RGB565 big-endian bytes */
+	            usb_printf("IMG 320 240 565\r\n");
+	            lcd_screenshot();
+	            break;
+	case 'i': {   /* probe the LCD read path (MISO/PB4) across a few read registers */
+	            uint8_t b[6];
+	            lcd_read_regs(0xD3, b, 4); usb_printf("D3(id): %02X %02X %02X %02X\r\n", b[0],b[1],b[2],b[3]);
+	            lcd_read_regs(0x04, b, 4); usb_printf("04(did): %02X %02X %02X %02X\r\n", b[0],b[1],b[2],b[3]);
+	            lcd_read_regs(0x09, b, 5); usb_printf("09(stat): %02X %02X %02X %02X %02X\r\n", b[0],b[1],b[2],b[3],b[4]);
+	            lcd_read_regs(0x0A, b, 2); usb_printf("0A(pwr): %02X %02X\r\n", b[0],b[1]); } break;
 	case 'T': {   /* audio self-test tone: T<hz> (0 = off), pure sine to the speaker DACs; volume via v */
 	            float hz = (float)atof(s + 1); if (hz < 0.0f) hz = 0.0f; if (hz > 20000.0f) hz = 20000.0f;
 	            g_testTone = hz;

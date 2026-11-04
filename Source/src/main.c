@@ -1196,6 +1196,105 @@ void hmcGainSet(int on)
 	g_hmcGainOn = on ? 1 : 0;
 }
 
+/* --- Display readback (bit-bang) ------------------------------------------
+   The LCD writes go over HW SPI1 (SCK/MOSI as AF, fast); MISO/PB4 is a plain
+   GPIO input. To READ the ILI9340 we bit-bang: make SCK/MOSI GPIO outputs,
+   clock the transaction by hand (slow enough for the panel's read timing,
+   SCK idle-high / sample-on-rising to match CPOL=1,CPHA=1), read MISO, then
+   restore SCK/MOSI to SPI1 AF. lcd_read_regs reads `cmd` then `n` bytes
+   (first byte is usually a dummy). Proof: lcd_read_id() should contain the
+   0x93 0x40 ILI9340 signature. */
+static void lcd_bb_begin(void)
+{
+	GPIO_InitTypeDef g = {0};
+	g.Mode = GPIO_MODE_OUTPUT_PP; g.Pull = GPIO_NOPULL; g.Speed = GPIO_SPEED_FAST;
+	g.Pin = LCD_SCK.pin;  HAL_GPIO_Init(LCD_SCK.port, &g);
+	g.Pin = LCD_MOSI.pin; HAL_GPIO_Init(LCD_MOSI.port, &g);
+	HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 1);   /* idle high (CPOL=1) */
+}
+static void lcd_bb_end(void)
+{
+	GPIO_InitTypeDef g = {0};
+	g.Mode = GPIO_MODE_AF_PP; g.Alternate = GPIO_AF5_SPI1; g.Pull = GPIO_NOPULL; g.Speed = GPIO_SPEED_FAST;
+	g.Pin = LCD_SCK.pin;  HAL_GPIO_Init(LCD_SCK.port, &g);
+	g.Pin = LCD_MOSI.pin; HAL_GPIO_Init(LCD_MOSI.port, &g);
+}
+static uint8_t lcd_bb_rdbyte(void)
+{
+	uint8_t r = 0;
+	for(int i = 0; i < 8; i++){
+		HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 0);
+		HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 1);   /* rising edge -> sample */
+		r = (uint8_t)((r << 1) | (HAL_GPIO_ReadPin(LCD_MISO.port, LCD_MISO.pin) ? 1 : 0));
+	}
+	return r;
+}
+static void lcd_bb_wrbyte(uint8_t c)
+{
+	for(int i = 7; i >= 0; i--){
+		HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 0);                 /* falling -> set data */
+		HAL_GPIO_WritePin(LCD_MOSI.port, LCD_MOSI.pin, (c >> i) & 1);
+		HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 1);                 /* rising -> slave samples */
+	}
+}
+/* read `cmd` then n (<=8) bytes into out; returns via out[] */
+void lcd_read_regs(uint8_t cmd, uint8_t *out, int n)
+{
+	lcd_bb_begin();
+	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);    /* CS low */
+	HAL_GPIO_WritePin(LCD_DC.port,  LCD_DC.pin, 0);     /* command */
+	lcd_bb_wrbyte(cmd);
+	HAL_GPIO_WritePin(LCD_DC.port,  LCD_DC.pin, 1);     /* data */
+	/* one dummy clock: ILI9340 read commands shift the first real bit out
+	   only after a dummy cycle following the command byte */
+	HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 0);
+	HAL_GPIO_WritePin(LCD_SCK.port, LCD_SCK.pin, 1);
+	for(int i = 0; i < n; i++) out[i] = lcd_bb_rdbyte();
+	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);    /* CS high */
+	lcd_bb_end();
+}
+
+static void lcd_bb_cmd(uint8_t c){ HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 0); lcd_bb_wrbyte(c); HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1); }
+static void lcd_bb_dat(uint8_t d){ HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1); lcd_bb_wrbyte(d); }
+extern uint8_t usb_cdc_tx(uint8_t *buf, uint16_t len);
+
+/* Stream the whole 320x240 screen as RGB565 (big-endian, 2 bytes/pixel) over
+   the CDC console. Bit-bangs CASET/PASET + RAMRD with CS held low for the
+   whole frame; sends it a row at a time in 64-byte CDC packets. The caller
+   prints an "IMG 320 240 565" header first so the host can sync. Runs in the
+   main loop (usb_serial_poll), so updateDisplay is paused meanwhile. */
+void lcd_screenshot(void)
+{
+	static uint8_t row[320 * 2];
+	lcd_bb_begin();
+	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);          /* CS low for the whole read */
+	lcd_bb_cmd(0x2A); lcd_bb_dat(0); lcd_bb_dat(0); lcd_bb_dat((319)>>8); lcd_bb_dat((319)&0xFF); /* CASET 0..319 */
+	lcd_bb_cmd(0x2B); lcd_bb_dat(0); lcd_bb_dat(0); lcd_bb_dat((239)>>8); lcd_bb_dat((239)&0xFF); /* PASET 0..239 */
+	lcd_bb_cmd(0x2E);                                        /* RAMRD */
+	(void)lcd_bb_rdbyte();                                   /* 1 dummy byte */
+	for(int y = 0; y < 240; y++)
+	{
+		for(int x = 0; x < 320; x++)
+		{
+			uint8_t r6 = (uint8_t)(lcd_bb_rdbyte() >> 2);   /* 6-bit R in the high bits */
+			uint8_t g6 = (uint8_t)(lcd_bb_rdbyte() >> 2);
+			uint8_t b6 = (uint8_t)(lcd_bb_rdbyte() >> 2);
+			uint16_t px = (uint16_t)(((r6 >> 1) << 11) | (g6 << 5) | (b6 >> 1));
+			row[x*2] = (uint8_t)(px >> 8); row[x*2+1] = (uint8_t)(px & 0xFF);
+		}
+		int off = 0;
+		while(off < 640)
+		{
+			int chunk = (640 - off > 64) ? 64 : (640 - off);
+			long tries = 0;
+			while(usb_cdc_tx(row + off, (uint16_t)chunk) != 0 && ++tries < 2000000L) { }
+			off += chunk;
+		}
+	}
+	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);          /* CS high */
+	lcd_bb_end();
+}
+
 //USART1_IRQHandler(void)
 //{
 //    //blink_led_on();
