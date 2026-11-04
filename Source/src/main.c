@@ -636,8 +636,14 @@ void Encoder(void)
 					amDcQ += 0.0008f * (qq - amDcQ);
 					float ii = qi - amDcI, qa = qq - amDcQ;
 					float env = sqrtf(ii * ii + qa * qa);
-					amDcBlock += 0.0008f * (env - amDcBlock);   /* carrier level -> remove */
-					float a = (env - amDcBlock) * 4.0f;
+					amDcBlock += 0.0008f * (env - amDcBlock);   /* carrier level estimate */
+					/* AGC: normalize the envelope AC by the carrier level -> the
+					   modulation index (independent of signal strength, like a real
+					   AM radio's AGC). A floor stops weak/absent carriers blowing up
+					   the noise. 0.3 maps ~100% modulation toward full scale. */
+					float carrier = amDcBlock;
+					if(carrier < 0.0008f) carrier = 0.0008f;
+					float a = (env - amDcBlock) / carrier * 0.08f;   /* ~50% mod -> ~0.04 */
 					float khp = filterLowerLimit * 0.012272f;   /* 2*pi*bin*93.75/48000 */
 					float klp = filterUpperLimit * 0.012272f;
 					if(khp > 1.0f) khp = 1.0f; else if(khp < 0.0f) khp = 0.0f;
@@ -1907,9 +1913,11 @@ void updateDisplay(uint8_t force)
 				Adafruit_GFX_fillRect(121, 120 - (filterUpperLimit/2), 3, (filterUpperLimit/2 - filterLowerLimit/2), ILI9340_WHITE);
 				break;
 			case AM:
+				/* AM: one bar CENTERED on the dial = the channel (carrier +/- the
+				   audio bandwidth, filterUpperLimit). The HPF/LPF are audio filters
+				   on the envelope now, so there's no two-sided FFT passband. */
 				Adafruit_GFX_fillRect(121, 0, 3, 240 , ILI9340_BLACK);
-				Adafruit_GFX_fillRect(121, filterLowerLimit/2 + 120, 3, (filterUpperLimit/2 - filterLowerLimit/2), ILI9340_WHITE);
-				Adafruit_GFX_fillRect(121, 120 - (filterUpperLimit/2), 3, (filterUpperLimit/2 - filterLowerLimit/2), ILI9340_WHITE);
+				Adafruit_GFX_fillRect(121, 120 - (filterUpperLimit/2), 3, filterUpperLimit, ILI9340_WHITE);
 				break;
 		}
 		redrawFilterBar = 0;
