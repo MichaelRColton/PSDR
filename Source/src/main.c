@@ -678,8 +678,10 @@ void Encoder(void)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
 
-					dac1OutVal = (mode==2 ? amAudio * 6.0f : samplesB[(sampleIndex)*2]) * 4096 * afGain + 2048;
-					dac2OutVal = (mode==2 ? amAudio * 6.0f : samplesB[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+					/* speaker is bridge-tied (DAC1-DAC2); AM must drive the two DACs
+					   anti-phase or they cancel to silence. SSB uses real/imag as-is. */
+					dac1OutVal = (mode==2 ? amAudio *  3.0f : samplesB[(sampleIndex)*2]) * 4096 * afGain + 2048;
+					dac2OutVal = (mode==2 ? amAudio * -3.0f : samplesB[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 					if(transmitting == 1)
 					{
@@ -727,8 +729,8 @@ void Encoder(void)
 						//dac1SetValue(samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = (mode==2 ? amAudio * 6.0f : samplesC[(sampleIndex)*2]) * 4096 * afGain + 2048;
-						dac2OutVal = (mode==2 ? amAudio * 6.0f : samplesC[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+						dac1OutVal = (mode==2 ? amAudio *  3.0f : samplesC[(sampleIndex)*2]) * 4096 * afGain + 2048;
+						dac2OutVal = (mode==2 ? amAudio * -3.0f : samplesC[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 						if(transmitting == 1)
 						{
@@ -774,8 +776,8 @@ void Encoder(void)
 						//dac1SetValue(samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = (mode==2 ? amAudio * 6.0f : samplesA[(sampleIndex)*2]) * 4096 * afGain + 2048;
-						dac2OutVal = (mode==2 ? amAudio * 6.0f : samplesA[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+						dac1OutVal = (mode==2 ? amAudio *  3.0f : samplesA[(sampleIndex)*2]) * 4096 * afGain + 2048;
+						dac2OutVal = (mode==2 ? amAudio * -3.0f : samplesA[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 						if(transmitting == 1)
 						{
