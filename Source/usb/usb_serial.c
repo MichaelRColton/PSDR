@@ -35,6 +35,8 @@ extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM           
 extern int               g_hmcGainOn;       /* HMC1023 RX-preamp path on/off (menu) */
 extern void              lcd_read_regs(uint8_t cmd, uint8_t *out, int n);   /* bit-bang LCD readback */
 extern void              lcd_screenshot(int y0, int y1);                    /* stream framebuffer rows [y0,y1) */
+extern void              rtc_set(int y, int mo, int d, int h, int mi, int s);
+extern void              rtc_format(char *buf, int buflen);
 extern volatile float    g_testTone;        /* audio self-test: sine freq Hz (0=off) */
 extern volatile float    g_testAmp;         /* audio self-test: amplitude pre-afGain  */
 extern int16_t           filterUpperLimit; /* DSP filter LPF edge, FFT-bin index  */
@@ -112,6 +114,12 @@ static void handle_cmd(char *s)
 	case 'A': g_amp_pol = (s[1] == '1'); usb_printf("amp switch pol=%d\r\n", g_amp_pol); break;
 	case 'm': g_stream = (s[1] == '1'); usb_printf("stream %s\r\n", g_stream ? "on" : "off"); break;
 	case 'v': afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); break;
+	case 'C': {   /* set the clock: C <year> <month> <day> <hour> <min> <sec> */
+	            char *p = s + 1; long y = strtol(p,&p,10), mo = strtol(p,&p,10), d = strtol(p,&p,10);
+	            long h = strtol(p,&p,10), mi = strtol(p,&p,10), se = strtol(p,&p,10);
+	            rtc_set((int)y,(int)mo,(int)d,(int)h,(int)mi,(int)se);
+	            char tb[40]; rtc_format(tb, sizeof(tb)); usb_printf("rtc set: %s\r\n", tb); } break;
+	case 'c': { char tb[40]; rtc_format(tb, sizeof(tb)); usb_printf("rtc: %s\r\n", tb); } break;
 	case 'p': {   /* screenshot band: p<0-3> = a 60-row band (CDC bulk stalls past
 	                 ~148KB, so the host pulls 4 bands and stitches); 'p' = full */
 	            int band = (s[1] >= '0' && s[1] <= '3') ? (s[1] - '0') : -1;

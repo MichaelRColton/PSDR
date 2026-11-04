@@ -1305,6 +1305,73 @@ void lcd_screenshot(int y0, int y1)
 	lcd_bb_end();
 }
 
+/* --- RTC clock (LSE 32.768kHz crystal Y183 on PC14/PC15) -------------------
+   Keeps time on battery across STOP/off (backup domain). The Control Panel
+   sets it over the console until GPS can; the time shows along the bottom. */
+RTC_HandleTypeDef hrtc;
+#define RTC_MAGIC 0x50534401u    /* "PSD\1" - marks the RTC as already set */
+
+void rtc_init(void)
+{
+	__HAL_RCC_PWR_CLK_ENABLE();
+	HAL_PWR_EnableBkUpAccess();
+
+	RCC_OscInitTypeDef osc = {0};
+	osc.OscillatorType = RCC_OSCILLATORTYPE_LSE;
+	osc.LSEState = RCC_LSE_ON;
+	osc.PLL.PLLState = RCC_PLL_NONE;        /* leave the system PLL alone */
+	HAL_RCC_OscConfig(&osc);
+
+	RCC_PeriphCLKInitTypeDef pclk = {0};
+	pclk.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+	pclk.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+	HAL_RCCEx_PeriphCLKConfig(&pclk);
+	__HAL_RCC_RTC_ENABLE();
+
+	hrtc.Instance = RTC;
+	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	hrtc.Init.AsynchPrediv = 127;
+	hrtc.Init.SynchPrediv = 255;            /* 32768 / 128 / 256 = 1 Hz */
+	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	HAL_RTC_Init(&hrtc);                     /* sets prescalers; preserves a running calendar */
+
+	if(RTC->BKP0R != RTC_MAGIC)              /* first ever boot / VBAT lost -> default, mark set */
+	{
+		RTC_TimeTypeDef tm = {0}; RTC_DateTypeDef dt = {0};
+		tm.Hours = 12; tm.Minutes = 0; tm.Seconds = 0;
+		dt.Year = 25; dt.Month = RTC_MONTH_JANUARY; dt.Date = 1; dt.WeekDay = RTC_WEEKDAY_WEDNESDAY;
+		HAL_RTC_SetTime(&hrtc, &tm, RTC_FORMAT_BIN);
+		HAL_RTC_SetDate(&hrtc, &dt, RTC_FORMAT_BIN);
+		RTC->BKP0R = RTC_MAGIC;
+	}
+}
+
+/* Set the clock from the console: y=full year, mo=1..12, d=1..31, h=0..23. */
+void rtc_set(int y, int mo, int d, int h, int mi, int s)
+{
+	RTC_TimeTypeDef tm = {0}; RTC_DateTypeDef dt = {0};
+	tm.Hours = (uint8_t)h; tm.Minutes = (uint8_t)mi; tm.Seconds = (uint8_t)s;
+	dt.Year = (uint8_t)(y % 100); dt.Month = (uint8_t)mo; dt.Date = (uint8_t)d; dt.WeekDay = RTC_WEEKDAY_MONDAY;
+	HAL_RTC_SetTime(&hrtc, &tm, RTC_FORMAT_BIN);
+	HAL_RTC_SetDate(&hrtc, &dt, RTC_FORMAT_BIN);
+	RTC->BKP0R = RTC_MAGIC;
+}
+
+/* Fill buf with "H:MM:SS A - M/D/YYYY". Must read time then date (unlocks the
+   shadow regs). Returns the 20xx year via *yrOut for callers that want it. */
+void rtc_format(char *buf, int buflen)
+{
+	RTC_TimeTypeDef tm; RTC_DateTypeDef dt;
+	HAL_RTC_GetTime(&hrtc, &tm, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &dt, RTC_FORMAT_BIN);
+	int h = tm.Hours; char ap = (h < 12) ? 'A' : 'P';
+	int h12 = h % 12; if(h12 == 0) h12 = 12;
+	snprintf(buf, buflen, "%d:%02d:%02d %c - %d/%d/20%02d",
+	         h12, tm.Minutes, tm.Seconds, ap, dt.Month, dt.Date, dt.Year);
+}
+
 //USART1_IRQHandler(void)
 //{
 //    //blink_led_on();
@@ -1665,6 +1732,8 @@ setFreq(vfoAFrequency);
 	hmc1023_io_init();
 
 	usb_serial_init();   // bring up the USB CDC serial console
+
+	rtc_init();          // LSE + RTC clock (keeps time on battery; set from the Control Panel)
 
 	//testing Uart
 	configUartPeripheral();
@@ -2122,6 +2191,22 @@ void updateDisplay(uint8_t force)
 		const char *hs = g_hmcGainOn ? "+20dB ON " : "+20dB OFF";
 		for(const char *p = hs; *p; p++) Adafruit_GFX_write(*p);
 		hmcGainLast = g_hmcGainOn;
+	}
+
+	/* Clock along the bottom: "H:MM:SS A - M/D/YYYY". Reads the RTC each frame,
+	   redraws only when the text changes (once a second); black bg self-erases. */
+	{
+		static char lastClk[40] = "";
+		char tb[40]; rtc_format(tb, sizeof(tb));
+		if(force || strcmp(tb, lastClk) != 0)
+		{
+			Adafruit_GFX_fillRect(128, 227, 150, 11, ILI9340_BLACK);  /* clear field; right of the waterfall (x<121) */
+			Adafruit_GFX_setTextSize(1);
+			Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
+			Adafruit_GFX_setCursor(130, 229);
+			for(char *p = tb; *p; p++) Adafruit_GFX_write(*p);
+			strcpy(lastClk, tb);
+		}
 	}
 
 	//I think I want to make this more like the Draw S Meter, where it only draws the parts that have changed. Also, I think I want to do gray pixels when half
