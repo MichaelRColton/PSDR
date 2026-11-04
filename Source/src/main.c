@@ -536,9 +536,17 @@ void Encoder(void)
 	static volatile uint16_t usbIqHead = 0;
 	static volatile uint16_t usbIqTail = 0;
 	float usbIqGain = 6.0f;        /* gain on the raw I/Q USB feed (console 'Q') */
+	volatile uint32_t g_iq_push = 0;    /* SWD diag: I/Q pairs pushed (producer)  */
+	volatile uint32_t g_iq_drop = 0;    /* SWD diag: I/Q pairs dropped (ring full) */
+	volatile int32_t  g_iq_i16max = 0;  /* SWD diag: max |int16| pushed (post-scale) */
+	volatile int32_t  g_iq_rawmax = 0;  /* SWD diag: max |ADC-dcOffset| at the tap   */
 
 	void usb_iq_push(int16_t i_samp, int16_t q_samp)
 	{
+		int32_t ai = (i_samp < 0) ? -i_samp : i_samp;   /* SWD diag: track magnitude */
+		int32_t aq = (q_samp < 0) ? -q_samp : q_samp;
+		if(ai > g_iq_i16max) g_iq_i16max = ai;
+		if(aq > g_iq_i16max) g_iq_i16max = aq;
 		uint16_t h  = usbIqHead;
 		uint16_t nh = (uint16_t)((h + 1U) & (USB_IQ_RING - 1U));
 		if(nh != usbIqTail)
@@ -547,6 +555,11 @@ void Encoder(void)
 			usbIqRing[h * 2U + 1U] = q_samp;   /* R = Q */
 			__DMB();
 			usbIqHead = nh;
+			g_iq_push++;
+		}
+		else
+		{
+			g_iq_drop++;
 		}
 	}
 
@@ -748,6 +761,12 @@ void Encoder(void)
 				   L = I (ADC2), R = Q (ADC3), same DC removal as the DSP input. */
 				if(transmitting == 0 && usb_iq_streaming())
 				{
+					int32_t ri = uhADCxConvertedValue2 - dcOffset2;   /* SWD diag */
+					int32_t rq = uhADCxConvertedValue3 - dcOffset3;
+					int32_t rabs = (ri < 0 ? -ri : ri);
+					int32_t rqa  = (rq < 0 ? -rq : rq);
+					if(rabs > g_iq_rawmax) g_iq_rawmax = rabs;
+					if(rqa  > g_iq_rawmax) g_iq_rawmax = rqa;
 					float fi = (uhADCxConvertedValue2 - dcOffset2) / 4096.0f;
 					float fq = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
 					int32_t li = (int32_t)(fi * usbIqGain * 32767.0f);
@@ -2277,7 +2296,7 @@ void TIM_Try(void)
 
 	TimHandle.Instance = TIM3;
 	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
-	TimHandle.Init.Period = 899; //24.000 kHz exactly: 21.6MHz/(899+1). Was 1050 (~20.55 kHz). Raised to a standard rate for the USB sound-card output.
+	TimHandle.Init.Period = 449; //48.000 kHz exactly: 21.6MHz/(449+1). TIM3 alone now drives captureSamples (TIM4 only runs processStream), so sampling is uniform. Was 899 (24 kHz) while BOTH timers fired captureSamples -> an effective but jittery ~48 kHz.
 	TimHandle.Init.Prescaler = uwPrescalerValue;
 	TimHandle.Init.ClockDivision = 0;
 	HAL_TIM_Base_Init(&TimHandle);
@@ -2337,6 +2356,12 @@ void TIM4_IRQHandler(void)
 int ledState = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+	/* Only TIM3 (48 kHz) samples the ADC. TIM4 shares this callback but must NOT
+	   also call captureSamples - two unsynchronized timers made the sampling
+	   non-uniform (pairs of samples bunched together), adding spurs. TIM4 still
+	   runs processStream() directly in TIM4_IRQHandler. */
+	if (htim->Instance != TIM3)
+		return;
 	captureSamples();
 //	doNothing();
 //	if(ledState)

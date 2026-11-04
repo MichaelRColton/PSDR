@@ -109,7 +109,7 @@ STATUS_RE = re.compile(
     r"(?:\s+mode=(\d+)\s+flo=(-?\d+)\s+fhi=(-?\d+))?"
 )
 MODE_NAMES = {0: "LSB", 1: "USB", 2: "AM"}
-HZ_PER_BIN = 46.875                      # 24 kHz Fs over the 512-wide filter array
+HZ_PER_BIN = 93.75                       # 48 kHz Fs over the 512-wide filter array
 QUICK_RE = re.compile(r"rms=(\d+)\s+bar=(-?\d+)")
 
 MUX_NAMES = {0: "ext filter (DNF)", 1: "bypass (stock)",

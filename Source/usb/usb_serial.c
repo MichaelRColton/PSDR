@@ -128,7 +128,7 @@ static void handle_cmd(char *s)
 	case 'D': { int m = atoi(s + 1); if (m < 0) m = 0; if (m > 2) m = 2; mode = (uint8_t)m;
 	            populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 	            usb_printf("mode=%d (%s)\r\n", mode, mode==0?"LSB":mode==1?"USB":"AM"); } break;
-	case 'K': {   /* K <lo> <hi> : DSP filter edges in FFT bins (HPF, LPF); ~46.875 Hz/bin @ 24k */
+	case 'K': {   /* K <lo> <hi> : DSP filter edges in FFT bins (HPF, LPF); ~93.75 Hz/bin @ 48k */
 	            char *p = s + 1; long lo = strtol(p, &p, 10); long hi = strtol(p, &p, 10);
 	            if (lo < 0) lo = 0; if (hi > 128) hi = 128; if (hi <= lo) hi = lo + 1;
 	            filterLowerLimit = (int16_t)lo; filterUpperLimit = (int16_t)hi;
