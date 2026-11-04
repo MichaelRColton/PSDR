@@ -64,9 +64,14 @@ float fftFilterCoeficient[FFT_BUFFER_SIZE];
 float filterTemp[FFT_BUFFER_SIZE];
 uint16_t filterKernelLength = 100; //what's a good value? How does it relate to the FFT size?
 
-uint16_t menuPos = 0;
-uint16_t menuEncoderTicks = 0;
-uint16_t menuLastPos = 1;
+/* Shared with Tick() in the SysTick ISR. MUST be volatile: without it, -Os
+   dead-store-eliminates the `displayUpdating = 1` guard in updateDisplay (it has
+   no read between =1 and =0 in that function), which lets the encoder change
+   menuPos mid-redraw - the item drawn red never gets redrawn white and stays
+   red when you move off it. (The stale-red menu-highlight bug.) */
+volatile uint16_t menuPos = 0;
+volatile uint16_t menuEncoderTicks = 0;
+volatile uint16_t menuLastPos = 1;
 uint16_t menuCount = 12;
 uint32_t frequencyDialMultiplier = 1;
 
@@ -84,6 +89,13 @@ float amAudioLp = 0.0f;   /* AM: one-pole audio lowpass on the recovered envelop
 float amDcI = 0.0f;       /* AM: per-channel DC blockers (kill LO self-mix offset so the */
 float amDcQ = 0.0f;       /*     carrier can sit anywhere in the passband - mistune-tolerant) */
 float amHpState = 0.0f;   /* AM: audio high-pass state (filterLowerLimit edge) */
+/* Audio-path self-test: a pure sine driven straight to the speaker DACs through
+   the SAME anti-phase x1.5 path AM uses, bypassing all demod/AGC. Lets us prove
+   whether the DAC->mux->amp->speaker chain is clean independent of the demod.
+   g_testTone = tone frequency in Hz (0 = off); volume via the normal 'v'/afGain. */
+volatile float g_testTone = 0.0f;   /* console 'T<hz>' (0 = off) */
+volatile float g_testAmp  = 0.08f;  /* pre-afGain amplitude, ~the AM envelope level */
+float g_tonePhase = 0.0f;
 uint8_t modeLast = 2;
 
 float agcLevel = 0;
@@ -99,7 +111,7 @@ float fftMaxMaxMin = 0.2;
 int transmitting = 0;
 unsigned int tone = 0;
 
-uint8_t displayUpdating = 0;
+volatile uint8_t displayUpdating = 0;   /* ISR/main handshake - see menuPos note above; must be volatile */
 
 ///** System Clock Configuration
 //*/
@@ -304,6 +316,31 @@ void setupPeripheralPower()
 
 void teardownPeripheralPower()
 {
+	/* Audio amp OFF before we drop the GPIO clocks. Driven here while the GPIOE
+	   clock is still on; the level then HOLDS through STOP mode (see shutDown),
+	   so once U199 (TPA0253) is fed from the battery (LIPO) instead of
+	   +3V3_CPU it can't drain the pack while the radio is "off". nSHDN low =
+	   shutdown (<1 uA). */
+	HAL_GPIO_WritePin(AUDIO_AMP_NSHTDWN.port, AUDIO_AMP_NSHTDWN.pin, 0);
+
+	/* Blank the display + indicator LEDs for low-power sleep. Like the amp line
+	   above, these levels are driven while the GPIO clocks are still on and then
+	   HOLD through STOP mode. The LCD backlight is a P-FET high-side switch on
+	   PC13 (LCD_LED): 0 = on, so driving it HIGH cuts the backlight and its
+	   supply to the panel (J170.8). The panel's logic VCC (J170.1) is hardwired
+	   to +3V3_CPU and can't be switched in firmware - small load. The indicator
+	   LEDs are GPIO -> R -> LED -> GND, so LOW = off. */
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, 1);          /* LCD_LED: backlight + panel feed OFF */
+	HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, 0);   /* red status LED OFF */
+	{   /* LED_WHITE (PE12) and LED_3/orange (PE15, U121.45) aren't configured in
+	       normal run (no CubeMX label), so force them to outputs driven low = off. */
+		GPIO_InitTypeDef led = {0};
+		led.Pin = GPIO_PIN_12 | GPIO_PIN_15; led.Mode = GPIO_MODE_OUTPUT_PP;
+		led.Pull = GPIO_NOPULL; led.Speed = GPIO_SPEED_LOW;
+		HAL_GPIO_Init(GPIOE, &led);
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12 | GPIO_PIN_15, 0);
+	}
+
 	__GPIOA_CLK_DISABLE();
 	__GPIOB_CLK_DISABLE();
 	__GPIOC_CLK_DISABLE();
@@ -656,6 +693,17 @@ void Encoder(void)
 					if(amAudio >  0.10f) amAudio =  0.10f;
 					else if(amAudio < -0.10f) amAudio = -0.10f;
 				}
+
+				/* audio self-test tone: overrides the demod, pure sine @ g_testTone Hz
+				   straight into the AM output path (anti-phase DACs). Volume = afGain. */
+				if(g_testTone > 0.0f && transmitting == 0)
+				{
+					g_tonePhase += 6.2831853f * g_testTone / 48000.0f;
+					if(g_tonePhase >= 6.2831853f) g_tonePhase -= 6.2831853f;
+					amAudio = g_testAmp * sinf(g_tonePhase);
+				}
+				int amPath = (mode == 2 || g_testTone > 0.0f);   /* use the anti-phase amAudio DAC path */
+
 				switch (sampleBank)
 				{
 				case 0:
@@ -683,8 +731,8 @@ void Encoder(void)
 
 					/* speaker is bridge-tied (DAC1-DAC2); AM must drive the two DACs
 					   anti-phase or they cancel to silence. SSB uses real/imag as-is. */
-					dac1OutVal = (mode==2 ? amAudio *  1.5f : samplesB[(sampleIndex)*2]) * 4096 * afGain + 2048;
-					dac2OutVal = (mode==2 ? amAudio * -1.5f : samplesB[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+					dac1OutVal = (amPath ? amAudio *  1.5f : samplesB[(sampleIndex)*2]) * 4096 * afGain + 2048;
+					dac2OutVal = (amPath ? amAudio * -1.5f : samplesB[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 					if(transmitting == 1)
 					{
@@ -732,8 +780,8 @@ void Encoder(void)
 						//dac1SetValue(samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = (mode==2 ? amAudio *  1.5f : samplesC[(sampleIndex)*2]) * 4096 * afGain + 2048;
-						dac2OutVal = (mode==2 ? amAudio * -1.5f : samplesC[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+						dac1OutVal = (amPath ? amAudio *  1.5f : samplesC[(sampleIndex)*2]) * 4096 * afGain + 2048;
+						dac2OutVal = (amPath ? amAudio * -1.5f : samplesC[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 						if(transmitting == 1)
 						{
@@ -779,8 +827,8 @@ void Encoder(void)
 						//dac1SetValue(samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = (mode==2 ? amAudio *  1.5f : samplesA[(sampleIndex)*2]) * 4096 * afGain + 2048;
-						dac2OutVal = (mode==2 ? amAudio * -1.5f : samplesA[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+						dac1OutVal = (amPath ? amAudio *  1.5f : samplesA[(sampleIndex)*2]) * 4096 * afGain + 2048;
+						dac2OutVal = (amPath ? amAudio * -1.5f : samplesA[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 						if(transmitting == 1)
 						{
@@ -1759,6 +1807,16 @@ enum modes
 void updateDisplay(uint8_t force)
 {
 	displayUpdating = 1;
+	/* Snapshot menuPos ONCE for the whole redraw. The encoder ISR (Tick) can
+	   move menuPos, and this redraw reads it many times (every item's red/white
+	   guard) and latches it to menuLastPos at the end. If menuPos changes
+	   partway through, different items compare against different values and the
+	   latch can skip the transition -> items drawn red never get redrawn white
+	   = the stale-red bug (all items stuck red). Using a single frame-local
+	   value makes the whole frame self-consistent regardless of the ISR. The
+	   macro just guarantees every menuPos reference below uses the snapshot. */
+	uint16_t mp = menuPos;
+	#define menuPos mp
 	static char freqChar[15];
 	static char lastFreqChar[] = {'$','$','$','$','$','$','$','$','$','$','$','$','$','$','$',};
 
@@ -1951,9 +2009,13 @@ void updateDisplay(uint8_t force)
 
 	}
 
-	if(afGain * 0.99 )
-
+	/* Latch the highlight position EVERY frame. This used to be gated by a stray
+	   `if(afGain * 0.99)` (no braces), so menuLastPos only updated when the
+	   volume was non-zero; with it stale, the "redraw the item you left back to
+	   white" guard never fired and items got stuck red. That was the real
+	   stale-red bug. */
 	menuLastPos = menuPos;
+	#undef menuPos
 	displayUpdating = 0;
 }
 
@@ -2588,7 +2650,41 @@ static void CPU_CACHE_Enable(void)
 
 void shutDown(void)
 {
-	HAL_PWR_EnterSTANDBYMode();
+	/* Low-power OFF via STOP mode (not STANDBY). STOP keeps the core domain
+	   powered, so GPIO output levels are HELD for the whole sleep - including
+	   the audio-amp shutdown pin (PE14/nSHDN, driven low in
+	   teardownPeripheralPower) - which stops the amp draining the battery once
+	   it is fed from LIPO instead of +3V3_CPU. Wake on the encoder push-button
+	   (PB9, idle-high / press-low) and cold-boot. STANDBY could not do this: it
+	   floats PE14. Sleep current is higher than STANDBY (~100 uA vs ~3 uA) but
+	   still far below the amp's ~3 mA, and it needs no extra hardware.
+	   NOTE: verify sleep current + button-wake on the bench before relying on it. */
+
+	/* Make the encoder button the ONLY wake source: disable + clear every NVIC
+	   IRQ (USB SOF, ADC DMA, timers would otherwise bounce us straight out of
+	   STOP). We cold-boot on wake, so throwing away the IRQ config is fine. */
+	for (int i = 0; i < 8; i++) { NVIC->ICER[i] = 0xFFFFFFFFu; NVIC->ICPR[i] = 0xFFFFFFFFu; }
+	__DSB(); __ISB();
+
+	/* Arm PB9 (encoder button) as a falling-edge EXTI wake. */
+	__HAL_RCC_SYSCFG_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	GPIO_InitTypeDef w = {0};
+	w.Pin  = encoderP.pin;             /* PB9 */
+	w.Mode = GPIO_MODE_IT_FALLING;     /* press pulls the line low */
+	w.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(encoderP.port, &w);
+	__HAL_GPIO_EXTI_CLEAR_IT(encoderP.pin);
+	HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+	HAL_SuspendTick();
+	HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+
+	/* Woken by the button. PLL is off (HSI running); a clean cold boot
+	   re-inits clocks + peripherals and re-enables the amp. */
+	HAL_NVIC_SystemReset();
 }
 
 #pragma GCC diagnostic pop

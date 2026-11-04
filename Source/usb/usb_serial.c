@@ -32,6 +32,8 @@ extern void              setFreq(unsigned long frequency);   /* reprogram the Si
 extern float             usbAudioGain;     /* gain on the USB demod-mic feed      */
 extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed     */
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
+extern volatile float    g_testTone;        /* audio self-test: sine freq Hz (0=off) */
+extern volatile float    g_testAmp;         /* audio self-test: amplitude pre-afGain  */
 extern int16_t           filterUpperLimit; /* DSP filter LPF edge, FFT-bin index  */
 extern int16_t           filterLowerLimit; /* DSP filter HPF edge, FFT-bin index  */
 extern volatile int      iqCorrEnable;     /* adaptive I/Q imbalance correction on/off */
@@ -107,6 +109,14 @@ static void handle_cmd(char *s)
 	case 'A': g_amp_pol = (s[1] == '1'); usb_printf("amp switch pol=%d\r\n", g_amp_pol); break;
 	case 'm': g_stream = (s[1] == '1'); usb_printf("stream %s\r\n", g_stream ? "on" : "off"); break;
 	case 'v': afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); break;
+	case 'T': {   /* audio self-test tone: T<hz> (0 = off), pure sine to the speaker DACs; volume via v */
+	            float hz = (float)atof(s + 1); if (hz < 0.0f) hz = 0.0f; if (hz > 20000.0f) hz = 20000.0f;
+	            g_testTone = hz;
+	            usb_printf("testtone=%dHz amp=%d/1000 (0=off; set volume with v)\r\n",
+	                       (int)g_testTone, (int)(g_testAmp * 1000.0f)); } break;
+	case 'W': {   /* audio self-test amplitude W<x1000> (pre-afGain) */
+	            float a = (float)atof(s + 1) / 1000.0f; if (a < 0.0f) a = 0.0f; if (a > 0.5f) a = 0.5f;
+	            g_testAmp = a; usb_printf("testamp=%d/1000\r\n", (int)(g_testAmp * 1000.0f)); } break;
 	case 'F': { long hz = strtol(s + 1, 0, 10);
 	            if (hz >= 2500000L && hz <= 175000000L) {
 	                vfoAFrequency = hz;

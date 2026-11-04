@@ -37,6 +37,14 @@
 
 /* USER CODE BEGIN 0 */
 
+/* Encoder push-button (PB9) EXTI. Used only to wake from STOP mode in the
+   "off" state (shutDown): just clear the line - shutDown() resets the MCU
+   once STOP exits, so there is nothing else to do here. */
+void EXTI9_5_IRQHandler(void)
+{
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_9);
+}
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
