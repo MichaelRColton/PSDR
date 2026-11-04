@@ -1381,7 +1381,7 @@ void     battery_adc_init(void);          /* adc.c */
    this nominal is only used before the first sample. */
 float    g_battScale = 3.3f * 2.0f / 4095.0f;
 uint16_t g_vrefRaw = 0;                       /* VREFINT raw, for VDDA measurement */
-#define  VREFINT_CAL_ADDR  ((uint16_t*)0x1FF0F44C)   /* factory VREFINT @ 3.3V (F74x/75x) */
+#define  VREFINT_CAL_ADDR  ((uint16_t*)0x1FF0F44A)   /* factory VREFINT @ 3.3V (F74x/75x) */
 uint16_t g_battRaw = 0;
 float    g_battVolts = 0.0f;
 

@@ -34,6 +34,7 @@ extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed   
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
 extern int               g_hmcGainOn;       /* HMC1023 RX-preamp path on/off (menu) */
 extern uint16_t          g_battRaw;          /* battery ADC raw (LIPO_V) */
+extern uint16_t          g_vrefRaw;          /* VREFINT raw (for VDDA calc) */
 extern float             g_battVolts;        /* battery volts (g_battRaw * g_battScale) */
 extern float             g_battScale;        /* volts per ADC count (calibratable) */
 extern void              lcd_read_regs(uint8_t cmd, uint8_t *out, int n);   /* bit-bang LCD readback */
@@ -99,8 +100,9 @@ static void print_status(void)
 	           rms_u, bar, (unsigned)maxAmplitude, vfoAFrequency, g_filter_in, g_filt_ch, g_amp_in, g_amp_pol,
 	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2, mode, filterLowerLimit, filterUpperLimit,
 	           iqCorrEnable, (int)(iq_c1 * 1000.0f), (int)(iq_c2 * 1000.0f), g_hmcGainOn);
-	usb_printf("battRaw=%u battV=%d/100 scale=%d/1e6\r\n",
-	           (unsigned)g_battRaw, (int)(g_battVolts * 100.0f), (int)(g_battScale * 1000000.0f));
+	usb_printf("battRaw=%u battV=%d/100 scale=%d/1e6 vref=%u cal=%u\r\n",
+	           (unsigned)g_battRaw, (int)(g_battVolts * 100.0f), (int)(g_battScale * 1000000.0f),
+	           (unsigned)g_vrefRaw, (unsigned)(*((uint16_t*)0x1FF0F44A)));
 	maxAmplitude = 0;   /* peak since last read */
 }
 

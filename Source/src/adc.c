@@ -301,31 +301,36 @@ void initAdc()
 		GPIO_InitTypeDef g = {0};
 		g.Pin = GPIO_PIN_0; g.Mode = GPIO_MODE_ANALOG; g.Pull = GPIO_NOPULL;
 		HAL_GPIO_Init(GPIOC, &g);                      /* PC0 analog */
+		ADC->CCR |= ADC_CCR_TSVREFE;                   /* enable the internal VREFINT path */
+	}
 
+	/* read one channel on ADC1's injected group (single rank) */
+	static uint16_t inj_read(uint32_t ch)
+	{
 		ADC_InjectionConfTypeDef inj = {0};
-		inj.InjectedNbrOfConversion = 2;                       /* rank1 = LIPO_V, rank2 = VREFINT */
-		inj.InjectedSamplingTime = ADC_SAMPLETIME_480CYCLES;   /* high-Z divider / internal ref */
+		inj.InjectedChannel = ch;
+		inj.InjectedRank = ADC_INJECTED_RANK_1;
+		inj.InjectedNbrOfConversion = 1;
+		inj.InjectedSamplingTime = ADC_SAMPLETIME_480CYCLES;
 		inj.ExternalTrigInjecConv = ADC_INJECTED_SOFTWARE_START;
 		inj.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_NONE;
 		inj.AutoInjectedConv = DISABLE;
 		inj.InjectedDiscontinuousConvMode = DISABLE;
 		inj.InjectedOffset = 0;
-		inj.InjectedChannel = ADC_CHANNEL_10;      inj.InjectedRank = ADC_INJECTED_RANK_1;
 		HAL_ADCEx_InjectedConfigChannel(&AdcHandle1, &inj);
-		inj.InjectedChannel = ADC_CHANNEL_VREFINT; inj.InjectedRank = ADC_INJECTED_RANK_2;
-		HAL_ADCEx_InjectedConfigChannel(&AdcHandle1, &inj);    /* also enables TSVREFE */
+		if(HAL_ADCEx_InjectedStart(&AdcHandle1) != HAL_OK) return 0;
+		HAL_ADCEx_InjectedPollForConversion(&AdcHandle1, 5);
+		uint16_t v = (uint16_t)HAL_ADCEx_InjectedGetValue(&AdcHandle1, ADC_INJECTED_RANK_1);
+		HAL_ADCEx_InjectedStop(&AdcHandle1);
+		return v;
 	}
 
-	/* One injected sequence: LIPO_V (rank1) and VREFINT (rank2). VREFINT lets the
-	   caller compute the real VDDA, so the battery reading self-calibrates. */
+	/* LIPO_V and VREFINT as two separate single-channel injected reads. VREFINT
+	   gives the real VDDA so the battery reading self-calibrates per unit. */
 	void battery_read_raw2(uint16_t *batt, uint16_t *vref)
 	{
-		*batt = 0; *vref = 0;
-		if(HAL_ADCEx_InjectedStart(&AdcHandle1) != HAL_OK) return;
-		HAL_ADCEx_InjectedPollForConversion(&AdcHandle1, 5);
-		*batt = (uint16_t)HAL_ADCEx_InjectedGetValue(&AdcHandle1, ADC_INJECTED_RANK_1);
-		*vref = (uint16_t)HAL_ADCEx_InjectedGetValue(&AdcHandle1, ADC_INJECTED_RANK_2);
-		HAL_ADCEx_InjectedStop(&AdcHandle1);
+		*batt = inj_read(ADC_CHANNEL_10);
+		*vref = inj_read(ADC_CHANNEL_VREFINT);
 	}
 
 
