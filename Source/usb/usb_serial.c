@@ -34,7 +34,7 @@ extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed   
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
 extern int               g_hmcGainOn;       /* HMC1023 RX-preamp path on/off (menu) */
 extern void              lcd_read_regs(uint8_t cmd, uint8_t *out, int n);   /* bit-bang LCD readback */
-extern void              lcd_screenshot(void);                              /* stream the framebuffer */
+extern void              lcd_screenshot(int y0, int y1);                    /* stream framebuffer rows [y0,y1) */
 extern volatile float    g_testTone;        /* audio self-test: sine freq Hz (0=off) */
 extern volatile float    g_testAmp;         /* audio self-test: amplitude pre-afGain  */
 extern int16_t           filterUpperLimit; /* DSP filter LPF edge, FFT-bin index  */
@@ -112,10 +112,13 @@ static void handle_cmd(char *s)
 	case 'A': g_amp_pol = (s[1] == '1'); usb_printf("amp switch pol=%d\r\n", g_amp_pol); break;
 	case 'm': g_stream = (s[1] == '1'); usb_printf("stream %s\r\n", g_stream ? "on" : "off"); break;
 	case 'v': afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); break;
-	case 'p':     /* screenshot: header line then 320*240 RGB565 big-endian bytes */
-	            usb_printf("IMG 320 240 565\r\n");
-	            lcd_screenshot();
-	            break;
+	case 'p': {   /* screenshot band: p<0-3> = a 60-row band (CDC bulk stalls past
+	                 ~148KB, so the host pulls 4 bands and stitches); 'p' = full */
+	            int band = (s[1] >= '0' && s[1] <= '3') ? (s[1] - '0') : -1;
+	            int y0 = (band < 0) ? 0 : band * 60;
+	            int y1 = (band < 0) ? 240 : y0 + 60;
+	            usb_printf("IMG 320 %d 565 %d\r\n", y1 - y0, y0);
+	            lcd_screenshot(y0, y1); } break;
 	case 'i': {   /* probe the LCD read path (MISO/PB4) across a few read registers */
 	            uint8_t b[6];
 	            lcd_read_regs(0xD3, b, 4); usb_printf("D3(id): %02X %02X %02X %02X\r\n", b[0],b[1],b[2],b[3]);

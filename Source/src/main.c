@@ -1263,16 +1263,20 @@ extern uint8_t usb_cdc_tx(uint8_t *buf, uint16_t len);
    whole frame; sends it a row at a time in 64-byte CDC packets. The caller
    prints an "IMG 320 240 565" header first so the host can sync. Runs in the
    main loop (usb_serial_poll), so updateDisplay is paused meanwhile. */
-void lcd_screenshot(void)
+/* Read rows [y0, y1) of the 320-wide screen. The CDC bulk IN stalls after
+   ~148 KB in one go, so the host pulls the frame in bands (each < that) and
+   stitches them; each call is a fresh, short transfer. */
+void lcd_screenshot(int y0, int y1)
 {
 	static uint8_t row[320 * 2];
+	if(y0 < 0) y0 = 0; if(y1 > 240) y1 = 240; if(y1 <= y0) return;
 	lcd_bb_begin();
 	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);          /* CS low for the whole read */
 	lcd_bb_cmd(0x2A); lcd_bb_dat(0); lcd_bb_dat(0); lcd_bb_dat((319)>>8); lcd_bb_dat((319)&0xFF); /* CASET 0..319 */
-	lcd_bb_cmd(0x2B); lcd_bb_dat(0); lcd_bb_dat(0); lcd_bb_dat((239)>>8); lcd_bb_dat((239)&0xFF); /* PASET 0..239 */
+	lcd_bb_cmd(0x2B); lcd_bb_dat((uint8_t)(y0>>8)); lcd_bb_dat((uint8_t)(y0&0xFF)); lcd_bb_dat((uint8_t)((y1-1)>>8)); lcd_bb_dat((uint8_t)((y1-1)&0xFF)); /* PASET y0..y1-1 */
 	lcd_bb_cmd(0x2E);                                        /* RAMRD */
 	(void)lcd_bb_rdbyte();                                   /* 1 dummy byte */
-	for(int y = 0; y < 240; y++)
+	for(int y = y0; y < y1; y++)
 	{
 		for(int x = 0; x < 320; x++)
 		{
@@ -1286,11 +1290,17 @@ void lcd_screenshot(void)
 		while(off < 640)
 		{
 			int chunk = (640 - off > 64) ? 64 : (640 - off);
+			/* wait (bounded, so a dead host can't hang us) for this chunk to be
+			   accepted before advancing, so the frame isn't truncated. */
 			long tries = 0;
-			while(usb_cdc_tx(row + off, (uint16_t)chunk) != 0 && ++tries < 2000000L) { }
+			while(usb_cdc_tx(row + off, (uint16_t)chunk) != 0 && ++tries < 20000000L) { }
 			off += chunk;
 		}
 	}
+	/* The band length is a multiple of 64, so the host holds the last buffered
+	   packets until it sees a SHORT packet. Send a 2-byte flush so the whole
+	   band is delivered. (The host reads exactly nrows*640 and drops this.) */
+	{ uint8_t fin[2] = {0, 0}; long tr = 0; while(usb_cdc_tx(fin, 2) != 0 && ++tr < 20000000L) { } }
 	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);          /* CS high */
 	lcd_bb_end();
 }
