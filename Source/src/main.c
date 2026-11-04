@@ -2198,15 +2198,19 @@ void updateDisplay(uint8_t force)
 	{
 		static char lastClk[40] = "";
 		char tb[40]; rtc_format(tb, sizeof(tb));
-		if(force || strcmp(tb, lastClk) != 0)
-		{
-			Adafruit_GFX_fillRect(128, 227, 150, 11, ILI9340_BLACK);  /* clear field; right of the waterfall (x<121) */
-			Adafruit_GFX_setTextSize(1);
-			Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
-			Adafruit_GFX_setCursor(130, 229);
-			for(char *p = tb; *p; p++) Adafruit_GFX_write(*p);
-			strcpy(lastClk, tb);
-		}
+		const int bx = 130, by = 229;      /* right of the waterfall (x<121) */
+		Adafruit_GFX_setTextSize(1);
+		Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);   /* bg = black -> each glyph self-erases its cell */
+		for(int i = 0; tb[i]; i++)
+			if(force || tb[i] != lastClk[i])   /* redraw only the characters that changed (no full-field clear -> no blink) */
+			{
+				Adafruit_GFX_setCursor(bx + i*6, by);
+				Adafruit_GFX_write((uint8_t)tb[i]);
+			}
+		int nl = (int)strlen(tb), ol = (int)strlen(lastClk);
+		for(int i = nl; i < ol; i++)           /* erase any trailing cells a shorter string left behind */
+			Adafruit_GFX_fillRect(bx + i*6, by, 6, 8, ILI9340_BLACK);
+		strcpy(lastClk, tb);
 	}
 
 	//I think I want to make this more like the Draw S Meter, where it only draws the parts that have changed. Also, I think I want to do gray pixels when half

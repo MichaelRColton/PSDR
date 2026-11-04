@@ -505,6 +505,14 @@ class Panel(tk.Tk):
                        command=lambda: self.send_flag("b", self.imp_var),
                        bg=PANEL, fg=INK, selectcolor=BG).grid(row=1, column=1, sticky="w")
 
+        # --- clock ---
+        g = self._group(col, "Clock (RTC)")
+        g.pack(fill="x", pady=3)
+        tk.Button(g, text="Set from PC time  (C)", command=self.set_clock_from_pc,
+                  bg=BG, fg=GOOD).grid(row=0, column=0, columnspan=2, sticky="we", pady=2)
+        self.clock_lbl = tk.Label(g, text="(sends the PC date/time to the RTC)", bg=PANEL, fg=MUTE)
+        self.clock_lbl.grid(row=1, column=0, columnspan=2, sticky="w")
+
         # --- raw console ---
         g = self._group(col, "Raw console")
         g.pack(fill="x", pady=3)
@@ -514,6 +522,12 @@ class Panel(tk.Tk):
         re_.grid(row=0, column=0, sticky="we")
         re_.bind("<Return>", lambda ev: self.send_raw())
         tk.Button(g, text="Send", command=self.send_raw, bg=BG, fg=INK).grid(row=0, column=1)
+
+    def set_clock_from_pc(self):
+        import datetime
+        n = datetime.datetime.now()
+        self.link.write(f"C {n.year} {n.month} {n.day} {n.hour} {n.minute} {n.second}")
+        self.clock_lbl.config(text=n.strftime("set to %H:%M:%S  %m/%d/%Y"))
 
     def _build_diag(self, parent):
         col = tk.Frame(parent, bg=BG)
