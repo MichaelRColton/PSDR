@@ -81,6 +81,9 @@ int16_t filterLastLowerLimit = 2;
 uint8_t mode = 0;
 float amDcBlock = 0.0f;   /* AM: running carrier-level estimate for envelope DC removal */
 float amAudioLp = 0.0f;   /* AM: one-pole audio lowpass on the recovered envelope */
+float amDcI = 0.0f;       /* AM: per-channel DC blockers (kill LO self-mix offset so the */
+float amDcQ = 0.0f;       /*     carrier can sit anywhere in the passband - mistune-tolerant) */
+float amHpState = 0.0f;   /* AM: audio high-pass state (filterLowerLimit edge) */
 uint8_t modeLast = 2;
 
 float agcLevel = 0;
@@ -618,6 +621,32 @@ void Encoder(void)
 				if(sampleIndex == 100)
 							blink_led_on();
 				adcGetConversion();
+
+				/* AM audio, computed once per sample (used by both the speaker DAC
+				   and the USB demod): envelope of the RAW I/Q with per-channel DC
+				   blocking (kills the LO self-mix offset, so the carrier can sit
+				   anywhere in the passband - no precise tuning needed), then the
+				   HPF/LPF edges applied as AUDIO filters (bins x 93.75 Hz). */
+				float amAudio = 0.0f;
+				if(mode == 2 && transmitting == 0)
+				{
+					float qi = (uhADCxConvertedValue2 - dcOffset2) / 4096.0f;
+					float qq = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
+					amDcI += 0.0008f * (qi - amDcI);
+					amDcQ += 0.0008f * (qq - amDcQ);
+					float ii = qi - amDcI, qa = qq - amDcQ;
+					float env = sqrtf(ii * ii + qa * qa);
+					amDcBlock += 0.0008f * (env - amDcBlock);   /* carrier level -> remove */
+					float a = (env - amDcBlock) * 4.0f;
+					float khp = filterLowerLimit * 0.012272f;   /* 2*pi*bin*93.75/48000 */
+					float klp = filterUpperLimit * 0.012272f;
+					if(khp > 1.0f) khp = 1.0f; else if(khp < 0.0f) khp = 0.0f;
+					if(klp > 1.0f) klp = 1.0f; else if(klp < 0.02f) klp = 0.02f;
+					amHpState += khp * (a - amHpState);
+					a = a - amHpState;                          /* audio HPF (flo edge) */
+					amAudioLp += klp * (a - amAudioLp);         /* audio LPF (fhi edge) */
+					amAudio = amAudioLp;
+				}
 				switch (sampleBank)
 				{
 				case 0:
@@ -643,8 +672,8 @@ void Encoder(void)
 //						        + sampleIndex * 2] /*/ (agcLevel * agcScale)*/ * 4096 * gain + 2048);
 //					} else {
 
-					dac1OutVal = samplesB[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
-					dac2OutVal = samplesB[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
+					dac1OutVal = (mode==2 ? amAudio : samplesB[(sampleIndex)*2]) * 4096 * afGain + 2048;
+					dac2OutVal = (mode==2 ? amAudio : samplesB[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 					if(transmitting == 1)
 					{
@@ -692,8 +721,8 @@ void Encoder(void)
 						//dac1SetValue(samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
-						dac2OutVal = samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
+						dac1OutVal = (mode==2 ? amAudio : samplesC[(sampleIndex)*2]) * 4096 * afGain + 2048;
+						dac2OutVal = (mode==2 ? amAudio : samplesC[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 						if(transmitting == 1)
 						{
@@ -739,8 +768,8 @@ void Encoder(void)
 						//dac1SetValue(samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
-						dac2OutVal = samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048;
+						dac1OutVal = (mode==2 ? amAudio : samplesA[(sampleIndex)*2]) * 4096 * afGain + 2048;
+						dac2OutVal = (mode==2 ? amAudio : samplesA[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
 
 						if(transmitting == 1)
 						{
@@ -777,30 +806,19 @@ void Encoder(void)
 					/* real part = SSB demod; for AM take the envelope of the complex
 					   output sample (time domain, after the linear filter + overlap),
 					   then DC-block out the carrier level to leave the audio. */
-					float re, im;
-					switch(sampleBank)
-					{
-					case 0:  re = samplesB[sampleIndex * 2]; im = samplesB[sampleIndex * 2 + 1]; break;
-					case 1:  re = samplesC[sampleIndex * 2]; im = samplesC[sampleIndex * 2 + 1]; break;
-					default: re = samplesA[sampleIndex * 2]; im = samplesA[sampleIndex * 2 + 1]; break;
-					}
 					float afOut;
 					if(mode == 2)
 					{
-						/* AM = envelope of the RAW I/Q (ADC2=I, ADC3=Q is a true
-						   quadrature pair; the FFT bank's re/im are not). |I+jQ| of
-						   carrier+sidebands = the modulation; DC-block out the carrier. */
-						float qi = (uhADCxConvertedValue2 - dcOffset2) / 4096.0f;
-						float qq = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
-						float env = sqrtf(qi * qi + qq * qq);
-						amDcBlock += 0.0008f * (env - amDcBlock);   /* ~6 Hz: tracks the carrier */
-						float a = (env - amDcBlock) * 4.0f;         /* lift the small raw-baseband level */
-						amAudioLp += 0.35f * (a - amAudioLp);       /* ~3 kHz one-pole: trim wideband hiss */
-						afOut = amAudioLp;
+						afOut = amAudio;                 /* AM envelope (computed once, above) */
 					}
 					else
 					{
-						afOut = re;
+						switch(sampleBank)               /* SSB: real part of the FFT-filtered bank */
+						{
+						case 0:  afOut = samplesB[sampleIndex * 2]; break;
+						case 1:  afOut = samplesC[sampleIndex * 2]; break;
+						default: afOut = samplesA[sampleIndex * 2]; break;
+						}
 					}
 					int32_t v = (int32_t)(afOut * usbAudioGain * 32767.0f);
 					if(v > 32767) v = 32767; else if(v < -32768) v = -32768;
