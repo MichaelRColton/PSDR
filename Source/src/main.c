@@ -536,6 +536,27 @@ void Encoder(void)
 	static volatile uint16_t usbIqHead = 0;
 	static volatile uint16_t usbIqTail = 0;
 	float usbIqGain = 6.0f;        /* gain on the raw I/Q USB feed (console 'Q') */
+
+	/* ---- adaptive (blind) I/Q imbalance correction on the USB feed -------- *
+	 * Gram-Schmidt: continuously de-correlate and power-match I and Q. For a
+	 * genuinely balanced signal I and Q are already uncorrelated with equal
+	 * power, so c1->0, c2->1 and nothing changes; only imbalance-induced
+	 * correlation/gain-mismatch is removed. Leaky-integrator stats adapt over
+	 * ~0.2 s. Console 'B<0/1>' toggles it. Applied to the USB I/Q only (the
+	 * device demod path is untouched). */
+	volatile int iqCorrEnable = 0;   /* default OFF: native rejection ~38 dB is good; the
+	                                    adaptive correction over-corrected a single tone
+	                                    (converged ~11x high) - needs rework before default-on.
+	                                    Toggle with console 'B1' to experiment. */
+	#define IQ_MU   1.0e-4f                 /* correction adaptation rate (~0.2s TC) */
+	#define IQ_DCMU 2.0e-4f                 /* DC-blocker rate (must precede the stats) */
+	static float iq_dci = 0.0f, iq_dcq = 0.0f;   /* adaptive DC estimate, I and Q   */
+	static float iq_pii = 1.0e-3f;          /* <I*I>  (on DC-free signal) */
+	static float iq_piq = 0.0f;             /* <I*Q>  */
+	static float iq_pqq = 1.0e-3f;          /* <Q*Q>  */
+	float iq_c1 = 0.0f;                      /* correlation (phase) correction, clamp +-0.5 */
+	float iq_c2 = 1.0f;                      /* amplitude normalization, clamp 0.7..1.4     */
+
 	volatile uint32_t g_iq_push = 0;    /* SWD diag: I/Q pairs pushed (producer)  */
 	volatile uint32_t g_iq_drop = 0;    /* SWD diag: I/Q pairs dropped (ring full) */
 	volatile int32_t  g_iq_i16max = 0;  /* SWD diag: max |int16| pushed (post-scale) */
@@ -769,6 +790,39 @@ void Encoder(void)
 					if(rqa  > g_iq_rawmax) g_iq_rawmax = rqa;
 					float fi = (uhADCxConvertedValue2 - dcOffset2) / 4096.0f;
 					float fq = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
+					/* iqCorrEnable: 0=off, 1=adaptive, 2=manual (c1/c2 set over console Y/U) */
+					if(iqCorrEnable)
+					{
+						/* DC blocker FIRST (both modes) - residual DC otherwise dominates
+						   <I*Q> on weak signals and the estimate runs away; also removes the
+						   LO-leakage center spike from the feed. */
+						iq_dci += IQ_DCMU * (fi - iq_dci);
+						iq_dcq += IQ_DCMU * (fq - iq_dcq);
+						float ai = fi - iq_dci;
+						float aq = fq - iq_dcq;
+						if(iqCorrEnable == 1)
+						{
+							/* adaptive: Gram-Schmidt from slow-adapted 2nd-order stats */
+							iq_pii += IQ_MU * (ai * ai - iq_pii);
+							iq_piq += IQ_MU * (ai * aq - iq_piq);
+							iq_pqq += IQ_MU * (aq * aq - iq_pqq);
+							if(iq_pii > 1.0e-7f)
+							{
+								float c1 = iq_piq / iq_pii;              /* orthogonalize Q against I */
+								float v  = iq_pqq - iq_piq * iq_piq / iq_pii;  /* var of corrected Q */
+								if(v > 1.0e-10f)
+								{
+									float c2 = sqrtf(iq_pii / v);        /* match Q power to I power */
+									if(c1 >  0.5f) c1 =  0.5f; else if(c1 < -0.5f) c1 = -0.5f;
+									if(c2 >  1.4f) c2 =  1.4f; else if(c2 <  0.7f) c2 =  0.7f;
+									iq_c1 = c1; iq_c2 = c2;
+								}
+							}
+						}
+						/* mode 2 keeps the manual iq_c1/iq_c2. Apply + output DC-free pair. */
+						fi = ai;
+						fq = (aq - iq_c1 * ai) * iq_c2;
+					}
 					int32_t li = (int32_t)(fi * usbIqGain * 32767.0f);
 					int32_t lq = (int32_t)(fq * usbIqGain * 32767.0f);
 					if(li > 32767) li = 32767; else if(li < -32768) li = -32768;

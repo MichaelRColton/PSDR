@@ -362,9 +362,23 @@ class Panel(tk.Tk):
                             command=self.set_iqgain)
         self.iqg.set(6)
         self.iqg.grid(row=9, column=0, columnspan=2, sticky="we")
+        # --- I/Q imbalance correction (B / Y / U) ---
+        tk.Label(g, text="I/Q balance (B)", bg=PANEL, fg=MUTE).grid(row=10, column=0, sticky="w")
+        bf = tk.Frame(g, bg=PANEL); bf.grid(row=10, column=1, sticky="e")
+        for txt, m in (("off", 0), ("auto", 1), ("man", 2)):
+            tk.Button(bf, text=txt, width=4, bg=BG, fg=INK,
+                      command=lambda mm=m: self.link.write(f"B{mm}")).pack(side="left", padx=1)
+        tk.Label(g, text="phase  c1 (×1000)", bg=PANEL, fg=MUTE).grid(row=11, column=0, sticky="w")
+        self.iqc1 = tk.Scale(g, from_=-150, to=150, resolution=1, orient="horizontal", length=180,
+                             bg=PANEL, fg=INK, troughcolor=BG, highlightthickness=0, command=self.set_iqc1)
+        self.iqc1.set(0); self.iqc1.grid(row=12, column=0, columnspan=2, sticky="we")
+        tk.Label(g, text="amplitude  c2 (×1000)", bg=PANEL, fg=MUTE).grid(row=13, column=0, sticky="w")
+        self.iqc2 = tk.Scale(g, from_=900, to=1100, resolution=1, orient="horizontal", length=180,
+                             bg=PANEL, fg=INK, troughcolor=BG, highlightthickness=0, command=self.set_iqc2)
+        self.iqc2.set(1000); self.iqc2.grid(row=14, column=0, columnspan=2, sticky="we")
         self.listen_btn = tk.Button(g, text="Listen on PC speakers (demod)", command=self.toggle_listen,
                                     bg=BG, fg=GOOD)
-        self.listen_btn.grid(row=10, column=0, columnspan=2, sticky="we", pady=(4, 2))
+        self.listen_btn.grid(row=15, column=0, columnspan=2, sticky="we", pady=(4, 2))
 
         # --- TX / switches ---
         g = self._group(col, "T/R & RF switches")
@@ -542,6 +556,14 @@ class Panel(tk.Tk):
 
     def set_iqgain(self, _=None):
         self.link.write(f"Q{int(float(self.iqg.get()))}")
+
+    def set_iqc1(self, _=None):
+        self.link.write("B2")                                  # moving a knob = manual mode
+        self.link.write(f"Y{int(float(self.iqc1.get()))}")
+
+    def set_iqc2(self, _=None):
+        self.link.write("B2")
+        self.link.write(f"U{int(float(self.iqc2.get()))}")
 
     def _filt_hz_label(self):
         lo, hi = int(self.hpf.get()), int(self.lpf.get())

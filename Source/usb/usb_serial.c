@@ -33,6 +33,9 @@ extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed   
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
 extern int16_t           filterUpperLimit; /* DSP filter LPF edge, FFT-bin index  */
 extern int16_t           filterLowerLimit; /* DSP filter HPF edge, FFT-bin index  */
+extern volatile int      iqCorrEnable;     /* adaptive I/Q imbalance correction on/off */
+extern float             iq_c1;            /* I/Q correction: correlation (phase) term  */
+extern float             iq_c2;            /* I/Q correction: amplitude normalization   */
 void     populateCoeficients(int bandwidth, int sideband, int offset);
 void     hmc1023_write(uint32_t reg, uint32_t val);
 uint32_t hmc1023_read(uint32_t reg);
@@ -81,9 +84,10 @@ static void print_status(void)
 {
 	unsigned long rms_u = (unsigned long)(passBandRms * 1000000.0f);
 	int bar = (int)(10.0 * log((double)passBandRms * 1000000.0 + 1.0));
-	usb_printf("rms=%lu bar=%d S=%u vfo=%ld filt=%d mux=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX mode=%d flo=%d fhi=%d\r\n",
+	usb_printf("rms=%lu bar=%d S=%u vfo=%ld filt=%d mux=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX mode=%d flo=%d fhi=%d iqc=%d c1=%d c2=%d\r\n",
 	           rms_u, bar, (unsigned)maxAmplitude, vfoAFrequency, g_filter_in, g_filt_ch, g_amp_in, g_amp_pol,
-	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2, mode, filterLowerLimit, filterUpperLimit);
+	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2, mode, filterLowerLimit, filterUpperLimit,
+	           iqCorrEnable, (int)(iq_c1 * 1000.0f), (int)(iq_c2 * 1000.0f));
 	maxAmplitude = 0;   /* peak since last read */
 }
 
@@ -125,6 +129,14 @@ static void handle_cmd(char *s)
 	            usbAudioGain = gz; usb_printf("usbAudioGain=%d/100\r\n", (int)(usbAudioGain * 100.0f)); } break;
 	case 'Q': { float gq = (float)atof(s + 1); if (gq < 0.0f) gq = 0.0f; if (gq > 256.0f) gq = 256.0f;
 	            usbIqGain = gq; usb_printf("usbIqGain=%d/100\r\n", (int)(usbIqGain * 100.0f)); } break;
+	case 'B': { int b = atoi(s + 1); if (b < 0) b = 0; if (b > 2) b = 2; iqCorrEnable = b;
+	            usb_printf("iqCorr=%d (%s) c1=%d/1000 c2=%d/1000\r\n", iqCorrEnable,
+	                       iqCorrEnable==0?"off":iqCorrEnable==1?"adaptive":"manual",
+	                       (int)(iq_c1 * 1000.0f), (int)(iq_c2 * 1000.0f)); } break;
+	case 'Y': { iq_c1 = (float)atof(s + 1) / 1000.0f;   /* manual phase/correlation term x1000 */
+	            usb_printf("iq_c1=%d/1000\r\n", (int)(iq_c1 * 1000.0f)); } break;
+	case 'U': { iq_c2 = (float)atof(s + 1) / 1000.0f;   /* manual amplitude term x1000 */
+	            usb_printf("iq_c2=%d/1000\r\n", (int)(iq_c2 * 1000.0f)); } break;
 	case 'D': { int m = atoi(s + 1); if (m < 0) m = 0; if (m > 2) m = 2; mode = (uint8_t)m;
 	            populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 	            usb_printf("mode=%d (%s)\r\n", mode, mode==0?"LSB":mode==1?"USB":"AM"); } break;
