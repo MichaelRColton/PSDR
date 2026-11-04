@@ -28,6 +28,7 @@ extern volatile int      g_bench;
 extern volatile int      g_filt_ch;
 extern float             passBandRms;   /* the real S-meter: what drives the red bar (drawSMeter) */
 extern long              vfoAFrequency;
+extern void              setFreq(unsigned long frequency);   /* reprogram the Si5338 LO (i2c.c) */
 extern float             usbAudioGain;     /* gain on the USB demod-mic feed      */
 extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed     */
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
@@ -106,7 +107,11 @@ static void handle_cmd(char *s)
 	case 'A': g_amp_pol = (s[1] == '1'); usb_printf("amp switch pol=%d\r\n", g_amp_pol); break;
 	case 'm': g_stream = (s[1] == '1'); usb_printf("stream %s\r\n", g_stream ? "on" : "off"); break;
 	case 'v': afGain = (float)atof(s + 1); usb_printf("afGain=%d/1000\r\n", (int)(afGain * 1000.0f)); break;
-	case 'F': { long hz = strtol(s + 1, 0, 10); if (hz >= 2500000L && hz <= 175000000L) vfoAFrequency = hz;
+	case 'F': { long hz = strtol(s + 1, 0, 10);
+	            if (hz >= 2500000L && hz <= 175000000L) {
+	                vfoAFrequency = hz;
+	                setFreq((unsigned long)vfoAFrequency);   /* actually retune the LO, not just the display */
+	            }
 	            usb_printf("vfo=%ld\r\n", vfoAFrequency); } break;
 	case 'G': { int v = atoi(s + 1); if (v < 0) v = 0; if (v > 255) v = 255; g_gain_pot = (uint16_t)v;
 	            setGainPot((uint8_t)v, (uint8_t)v); usb_printf("gainpot=%u\r\n", g_gain_pot); } break;
