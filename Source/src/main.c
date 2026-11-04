@@ -1372,6 +1372,37 @@ void rtc_format(char *buf, int buflen)
 	         h12, tm.Minutes, tm.Seconds, ap, dt.Month, dt.Date, dt.Year);
 }
 
+/* --- Battery (LIPO_V on ADC1 injected channel; see adc.c) ------------------ */
+uint16_t battery_read_raw(void);          /* adc.c */
+void     battery_adc_init(void);          /* adc.c */
+/* volts per ADC count. LIPO -> R174/R175 divider -> PC0, Vref ~3.3 V. The
+   divider ratio isn't known yet, so this is provisional (assumes ~1/2) and is
+   tuned once from a known battery voltage via the 'V' console command. */
+float    g_battScale = 3.3f * 2.0f / 4095.0f;
+uint16_t g_battRaw = 0;
+float    g_battVolts = 0.0f;
+
+/* 1S LiPo resting discharge curve -> percent (piecewise-linear interpolation). */
+int battery_percent(float v)
+{
+	static const float vt[] = {3.30f,3.50f,3.68f,3.73f,3.78f,3.82f,3.86f,3.92f,3.98f,4.08f,4.20f};
+	static const int   pt[] = {   0,    5,   10,   20,   30,   40,   50,   60,   70,   80,  100};
+	const int n = 11;
+	if(v <= vt[0]) return 0;
+	if(v >= vt[n-1]) return 100;
+	for(int i = 1; i < n; i++)
+		if(v < vt[i])
+			return pt[i-1] + (int)((v - vt[i-1]) / (vt[i] - vt[i-1]) * (pt[i] - pt[i-1]));
+	return 100;
+}
+
+/* Sample the battery and update the globals. */
+void battery_poll(void)
+{
+	g_battRaw = battery_read_raw();
+	g_battVolts = g_battRaw * g_battScale;
+}
+
 //USART1_IRQHandler(void)
 //{
 //    //blink_led_on();
@@ -1713,6 +1744,7 @@ setFreq(vfoAFrequency);
 	initAdcDMA();            /* DMA-driven oversampling capture; TIM6 paces, DMA ISR drives captureSamples */
 	adcConfigured = 1;
 	adcStartConversion();
+	battery_adc_init();      /* ADC1 injected channel on LIPO_V (PC0) for battery voltage */
 
 	//TIM_setup();
 	//TIM_Config();
@@ -2193,24 +2225,49 @@ void updateDisplay(uint8_t force)
 		hmcGainLast = g_hmcGainOn;
 	}
 
+	/* Battery line, centered in the right panel (right of the waterfall, x>=121):
+	   "Batt: X.XXv (~Y%)". Samples ADC1's injected LIPO_V channel, smoothed.
+	   Integer formatting (newlib-nano printf has no %f). */
+	{
+		battery_poll();
+		static float sm = 0.0f;
+		sm = (sm <= 0.01f) ? g_battVolts : (sm * 0.95f + g_battVolts * 0.05f);
+		int mv = (int)(sm * 100.0f + 0.5f);
+		static char lastB[40] = ""; static int lastBW = -1;
+		char bb[40]; snprintf(bb, sizeof(bb), "Batt: %d.%02dv (~%d%%)", mv/100, mv%100, battery_percent(sm));
+		int w = (int)strlen(bb) * 6, cx = 121 + (199 - w)/2, by = 216;
+		Adafruit_GFX_setTextSize(1);
+		Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
+		if(force || w != lastBW)   /* width/center changed -> clear the row and redraw centered */
+		{
+			Adafruit_GFX_fillRect(121, by, 199, 8, ILI9340_BLACK);
+			Adafruit_GFX_setCursor(cx, by);
+			for(char *p = bb; *p; p++) Adafruit_GFX_write((uint8_t)*p);
+		}
+		else   /* same width -> per-character update only (no blink) */
+			for(int i = 0; bb[i]; i++)
+				if(bb[i] != lastB[i]) { Adafruit_GFX_setCursor(cx + i*6, by); Adafruit_GFX_write((uint8_t)bb[i]); }
+		strcpy(lastB, bb); lastBW = w;
+	}
+
 	/* Clock along the bottom: "H:MM:SS A - M/D/YYYY". Reads the RTC each frame,
 	   redraws only when the text changes (once a second); black bg self-erases. */
 	{
-		static char lastClk[40] = "";
+		static char lastClk[40] = ""; static int lastCW = -1;
 		char tb[40]; rtc_format(tb, sizeof(tb));
-		const int bx = 130, by = 229;      /* right of the waterfall (x<121) */
+		int w = (int)strlen(tb) * 6, cx = 121 + (199 - w)/2, by = 229;   /* centered in the right panel */
 		Adafruit_GFX_setTextSize(1);
-		Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);   /* bg = black -> each glyph self-erases its cell */
-		for(int i = 0; tb[i]; i++)
-			if(force || tb[i] != lastClk[i])   /* redraw only the characters that changed (no full-field clear -> no blink) */
-			{
-				Adafruit_GFX_setCursor(bx + i*6, by);
-				Adafruit_GFX_write((uint8_t)tb[i]);
-			}
-		int nl = (int)strlen(tb), ol = (int)strlen(lastClk);
-		for(int i = nl; i < ol; i++)           /* erase any trailing cells a shorter string left behind */
-			Adafruit_GFX_fillRect(bx + i*6, by, 6, 8, ILI9340_BLACK);
-		strcpy(lastClk, tb);
+		Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
+		if(force || w != lastCW)   /* width/center changed (hour or date digits) -> clear + redraw centered */
+		{
+			Adafruit_GFX_fillRect(121, by, 199, 8, ILI9340_BLACK);
+			Adafruit_GFX_setCursor(cx, by);
+			for(char *p = tb; *p; p++) Adafruit_GFX_write((uint8_t)*p);
+		}
+		else   /* same width -> redraw only the characters that changed (no blink) */
+			for(int i = 0; tb[i]; i++)
+				if(tb[i] != lastClk[i]) { Adafruit_GFX_setCursor(cx + i*6, by); Adafruit_GFX_write((uint8_t)tb[i]); }
+		strcpy(lastClk, tb); lastCW = w;
 	}
 
 	//I think I want to make this more like the Draw S Meter, where it only draws the parts that have changed. Also, I think I want to do gray pixels when half

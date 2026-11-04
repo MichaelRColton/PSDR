@@ -33,6 +33,9 @@ extern float             usbAudioGain;     /* gain on the USB demod-mic feed    
 extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed     */
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
 extern int               g_hmcGainOn;       /* HMC1023 RX-preamp path on/off (menu) */
+extern uint16_t          g_battRaw;          /* battery ADC raw (LIPO_V) */
+extern float             g_battVolts;        /* battery volts (g_battRaw * g_battScale) */
+extern float             g_battScale;        /* volts per ADC count (calibratable) */
 extern void              lcd_read_regs(uint8_t cmd, uint8_t *out, int n);   /* bit-bang LCD readback */
 extern void              lcd_screenshot(int y0, int y1);                    /* stream framebuffer rows [y0,y1) */
 extern void              rtc_set(int y, int mo, int d, int h, int mi, int s);
@@ -96,6 +99,8 @@ static void print_status(void)
 	           rms_u, bar, (unsigned)maxAmplitude, vfoAFrequency, g_filter_in, g_filt_ch, g_amp_in, g_amp_pol,
 	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2, mode, filterLowerLimit, filterUpperLimit,
 	           iqCorrEnable, (int)(iq_c1 * 1000.0f), (int)(iq_c2 * 1000.0f), g_hmcGainOn);
+	usb_printf("battRaw=%u battV=%d/100 scale=%d/1e6\r\n",
+	           (unsigned)g_battRaw, (int)(g_battVolts * 100.0f), (int)(g_battScale * 1000000.0f));
 	maxAmplitude = 0;   /* peak since last read */
 }
 
@@ -120,6 +125,12 @@ static void handle_cmd(char *s)
 	            rtc_set((int)y,(int)mo,(int)d,(int)h,(int)mi,(int)se);
 	            char tb[40]; rtc_format(tb, sizeof(tb)); usb_printf("rtc set: %s\r\n", tb); } break;
 	case 'c': { char tb[40]; rtc_format(tb, sizeof(tb)); usb_printf("rtc: %s\r\n", tb); } break;
+	case 'V': {   /* calibrate battery: V<volts x100> sets scale from the current raw reading */
+	            int cv = atoi(s + 1);
+	            if(cv > 0 && g_battRaw > 0) { g_battScale = (cv / 100.0f) / (float)g_battRaw;
+	                usb_printf("batt cal: %d/100 V at raw %u -> scale=%d/1e6\r\n",
+	                           cv, (unsigned)g_battRaw, (int)(g_battScale * 1000000.0f)); }
+	            else usb_printf("batt cal needs V>0 and a nonzero raw\r\n"); } break;
 	case 'p': {   /* screenshot band: p<0-3> = a 60-row band (CDC bulk stalls past
 	                 ~148KB, so the host pulls 4 bands and stitches); 'p' = full */
 	            int band = (s[1] >= '0' && s[1] <= '3') ? (s[1] - '0') : -1;

@@ -292,6 +292,36 @@ void initAdc()
 		/* TIM6 is released in adcStartConversion(), after the ADCs are armed. */
 	}
 
+	/* Battery voltage on LIPO_V = PC0 = ADC1_IN10. The mic (ADC1 regular/DMA
+	   group) is idle during RX, so we read the battery on ADC1's INJECTED group
+	   - it inserts a single conversion between the regular ones without
+	   disturbing the mic/demod and works in TX too. */
+	void battery_adc_init(void)
+	{
+		GPIO_InitTypeDef g = {0};
+		g.Pin = GPIO_PIN_0; g.Mode = GPIO_MODE_ANALOG; g.Pull = GPIO_NOPULL;
+		HAL_GPIO_Init(GPIOC, &g);                      /* PC0 analog */
 
+		ADC_InjectionConfTypeDef inj = {0};
+		inj.InjectedChannel = ADC_CHANNEL_10;
+		inj.InjectedRank = ADC_INJECTED_RANK_1;
+		inj.InjectedNbrOfConversion = 1;
+		inj.InjectedSamplingTime = ADC_SAMPLETIME_480CYCLES;   /* high-Z divider */
+		inj.ExternalTrigInjecConv = ADC_INJECTED_SOFTWARE_START;
+		inj.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_NONE;
+		inj.AutoInjectedConv = DISABLE;
+		inj.InjectedDiscontinuousConvMode = DISABLE;
+		inj.InjectedOffset = 0;
+		HAL_ADCEx_InjectedConfigChannel(&AdcHandle1, &inj);
+	}
+
+	uint16_t battery_read_raw(void)
+	{
+		if(HAL_ADCEx_InjectedStart(&AdcHandle1) != HAL_OK) return 0;
+		HAL_ADCEx_InjectedPollForConversion(&AdcHandle1, 5);
+		uint16_t v = (uint16_t)HAL_ADCEx_InjectedGetValue(&AdcHandle1, ADC_INJECTED_RANK_1);
+		HAL_ADCEx_InjectedStop(&AdcHandle1);
+		return v;
+	}
 
 
