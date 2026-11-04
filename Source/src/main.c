@@ -1403,6 +1403,28 @@ void battery_poll(void)
 	g_battVolts = g_battRaw * g_battScale;
 }
 
+/* MCP73871 (U161) charge status. Pins from the netlist: PG=PD0, STAT2=PD1,
+   STAT1/LBO=PD4 (all open-drain, active-low). PG low = input power present. */
+void charge_init(void)
+{
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	GPIO_InitTypeDef g = {0};
+	g.Mode = GPIO_MODE_INPUT; g.Pull = GPIO_PULLUP; g.Speed = GPIO_SPEED_LOW;
+	g.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4;
+	HAL_GPIO_Init(GPIOD, &g);
+}
+
+const char *charge_label(void)
+{
+	int pg    = HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_0);   /* 0 = input power present (plugged in) */
+	int stat2 = HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1);   /* 0 = charge complete */
+	int stat1 = HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_4);   /* 0 = charging */
+	if(pg)                 return "";                  /* no input -> running on battery */
+	if(!stat1 &&  stat2)   return " Charge";           /* charging */
+	if(!stat1 && !stat2)   return " Fault";            /* fault (both low) */
+	return " Plug";                                    /* plugged, charge complete / standby */
+}
+
 //USART1_IRQHandler(void)
 //{
 //    //blink_led_on();
@@ -1745,6 +1767,7 @@ setFreq(vfoAFrequency);
 	adcConfigured = 1;
 	adcStartConversion();
 	battery_adc_init();      /* ADC1 injected channel on LIPO_V (PC0) for battery voltage */
+	charge_init();           /* MCP73871 charge-status GPIOs (PD0/PD1/PD4) */
 
 	//TIM_setup();
 	//TIM_Config();
@@ -2236,8 +2259,8 @@ void updateDisplay(uint8_t force)
 		static int shownPct = -1;              /* +-2% hysteresis so the % doesn't flicker */
 		if(shownPct < 0 || pct >= shownPct + 2 || pct <= shownPct - 2) shownPct = pct;
 		int mv = (int)(sm * 100.0f + 0.5f);
-		static char lastB[40] = ""; static int lastBW = -1;
-		char bb[40]; snprintf(bb, sizeof(bb), "Batt: %d.%02dv (~%d%%)", mv/100, mv%100, shownPct);
+		static char lastB[48] = ""; static int lastBW = -1;
+		char bb[48]; snprintf(bb, sizeof(bb), "Batt: %d.%02dv (~%d%%)%s", mv/100, mv%100, shownPct, charge_label());
 		int w = (int)strlen(bb) * 6, cx = 121 + (199 - w)/2, by = 216;
 		Adafruit_GFX_setTextSize(1);
 		Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
