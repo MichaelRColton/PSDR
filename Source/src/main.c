@@ -72,7 +72,7 @@ uint16_t filterKernelLength = 100; //what's a good value? How does it relate to 
 volatile uint16_t menuPos = 0;
 volatile uint16_t menuEncoderTicks = 0;
 volatile uint16_t menuLastPos = 1;
-uint16_t menuCount = 12;
+uint16_t menuCount = 13;   /* number of menu items (see enum menuItems) */
 uint32_t frequencyDialMultiplier = 1;
 
 long vfoAFrequency = 7030000;
@@ -1168,6 +1168,34 @@ void hmc1023_config_rx(void)
 	g_hmc1023_reg2 = hmc_read_reg(2);
 }
 
+int g_hmcGainOn = 0;     /* on-device HMC1023 RX-preamp state (menu toggle) */
+int hmcGainLast = -1;    /* last drawn state, so the display redraws on change */
+
+/* Toggle the whole RX-through-HMC1023 path as one on-device control.
+   ON  = configure the chip (I/Q channels + ~20 dB gain), route RX through it
+         (mux ch2), pin the RF switches to plain antenna RX, and enable the
+         bench overrides so the routing holds. OFF = back to the stock bypass
+         RX path and power the LPF down. Matches the console H + M2 + g1 combo
+         that measured a clean ~66 dB on the bench. */
+void hmcGainSet(int on)
+{
+	if(on)
+	{
+		hmc1023_config_rx();                 /* reg1=0x1C, reg2=0x115, LPF powered */
+		g_filt_ch = 2;                       /* filter mux -> RX direction through the HMC1023 */
+		g_amp_in  = 0;                       /* keep the HMC482 TX amp out of RX */
+		g_trx = 0; g_txrf = 1; g_imp = 0;    /* plain antenna receive (not TX / not VNA) */
+		g_bench = 1;                         /* apply the RX-path GPIO overrides each loop */
+	}
+	else
+	{
+		g_bench   = 0;                       /* stock bypass RX path (signalPath owns the mux) */
+		g_filt_ch = 1;                       /* bypass */
+		lpf_power(0);                        /* power the HMC1023 LPF down */
+	}
+	g_hmcGainOn = on ? 1 : 0;
+}
+
 //USART1_IRQHandler(void)
 //{
 //    //blink_led_on();
@@ -1663,6 +1691,7 @@ enum menuItems
   hertzMenuItem,
   filterLowMenuItem,
   filterHighMenuItem,
+  hmcGainMenuItem,
   offMenuItem
 };
 
@@ -1756,6 +1785,16 @@ void updateMenu()
 			afGain += afGainStep * (encoderLastPos - encoderPos);
 			if(afGain > afGainMax) afGain = afGainMax;
 			if(afGain <= 0) afGain = 0;
+			encoderLastPos = encoderPos;
+		}
+		break;
+	case hmcGainMenuItem:
+		encoderPos = getPos();
+		if(encoderPos != encoderLastPos)
+		{
+			/* turn one way = HMC RX gain ON (routed through the HMC1023),
+			   the other way = OFF (stock bypass). */
+			hmcGainSet((encoderLastPos - encoderPos) > 0 ? 1 : 0);
 			encoderLastPos = encoderPos;
 		}
 		break;
@@ -1959,6 +1998,21 @@ void updateDisplay(uint8_t force)
 	if(force || (menuPos != menuLastPos && (menuPos == offMenuItem || menuLastPos == offMenuItem)))
 	{
 		Adafruit_GFX_drawColorBitmap(220, 10, bitmapOff, 20, 9, menuPos == offMenuItem ? MASKRED : MASKWHITE);
+	}
+
+	/* HMC1023 RX-preamp on/off indicator (text, self-erasing via black bg).
+	   Redraws on selection change or when the state toggles. Placement is a
+	   first guess between the Mode and Filter labels - adjust once we can read
+	   the display back. */
+	if(force || g_hmcGainOn != hmcGainLast
+	    || (menuPos != menuLastPos && (menuPos == hmcGainMenuItem || menuLastPos == hmcGainMenuItem)))
+	{
+		Adafruit_GFX_setTextSize(1);
+		Adafruit_GFX_setTextColor(menuPos == hmcGainMenuItem ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
+		Adafruit_GFX_setCursor(220, 30);   /* under the "Off" label (x=220, y=10) */
+		const char *hs = g_hmcGainOn ? "+20dB ON " : "+20dB OFF";
+		for(const char *p = hs; *p; p++) Adafruit_GFX_write(*p);
+		hmcGainLast = g_hmcGainOn;
 	}
 
 	//I think I want to make this more like the Draw S Meter, where it only draws the parts that have changed. Also, I think I want to do gray pixels when half

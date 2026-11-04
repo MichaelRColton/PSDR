@@ -32,6 +32,7 @@ extern void              setFreq(unsigned long frequency);   /* reprogram the Si
 extern float             usbAudioGain;     /* gain on the USB demod-mic feed      */
 extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed     */
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
+extern int               g_hmcGainOn;       /* HMC1023 RX-preamp path on/off (menu) */
 extern volatile float    g_testTone;        /* audio self-test: sine freq Hz (0=off) */
 extern volatile float    g_testAmp;         /* audio self-test: amplitude pre-afGain  */
 extern int16_t           filterUpperLimit; /* DSP filter LPF edge, FFT-bin index  */
@@ -87,10 +88,10 @@ static void print_status(void)
 {
 	unsigned long rms_u = (unsigned long)(passBandRms * 1000000.0f);
 	int bar = (int)(10.0 * log((double)passBandRms * 1000000.0 + 1.0));
-	usb_printf("rms=%lu bar=%d S=%u vfo=%ld filt=%d mux=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX mode=%d flo=%d fhi=%d iqc=%d c1=%d c2=%d\r\n",
+	usb_printf("rms=%lu bar=%d S=%u vfo=%ld filt=%d mux=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX mode=%d flo=%d fhi=%d iqc=%d c1=%d c2=%d hmc=%d\r\n",
 	           rms_u, bar, (unsigned)maxAmplitude, vfoAFrequency, g_filter_in, g_filt_ch, g_amp_in, g_amp_pol,
 	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2, mode, filterLowerLimit, filterUpperLimit,
-	           iqCorrEnable, (int)(iq_c1 * 1000.0f), (int)(iq_c2 * 1000.0f));
+	           iqCorrEnable, (int)(iq_c1 * 1000.0f), (int)(iq_c2 * 1000.0f), g_hmcGainOn);
 	maxAmplitude = 0;   /* peak since last read */
 }
 
