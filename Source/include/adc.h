@@ -70,6 +70,7 @@ volatile uint8_t sampleRun;
 
 
 	void initAdc(void);
+	void initAdcDMA(void);   /* DMA-driven oversampling capture (replaces initAdc) */
 
 
 #endif /* ADC_H_ */

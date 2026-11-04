@@ -1346,7 +1346,7 @@ setFreq(vfoAFrequency);
 	Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);
 	Adafruit_ILI9340_setVerticalScrollDefinition(0,120,200);
 
-	initAdc();
+	initAdcDMA();            /* DMA-driven oversampling capture; TIM6 paces, DMA ISR drives captureSamples */
 	adcConfigured = 1;
 	adcStartConversion();
 
@@ -2356,13 +2356,11 @@ void TIM4_IRQHandler(void)
 int ledState = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	/* Only TIM3 (48 kHz) samples the ADC. TIM4 shares this callback but must NOT
-	   also call captureSamples - two unsynchronized timers made the sampling
-	   non-uniform (pairs of samples bunched together), adding spurs. TIM4 still
-	   runs processStream() directly in TIM4_IRQHandler. */
-	if (htim->Instance != TIM3)
-		return;
-	captureSamples();
+	/* captureSamples() is now driven by the ADC DMA half/full-complete ISR at a
+	   hardware-paced 48 kHz (see adc.c initAdcDMA). Neither TIM3 nor TIM4 calls
+	   it here anymore. TIM4 still runs processStream() in TIM4_IRQHandler; TIM3
+	   is now idle (left started, harmless) - its period no longer sets Fs. */
+	(void)htim;
 //	doNothing();
 //	if(ledState)
 //	{
