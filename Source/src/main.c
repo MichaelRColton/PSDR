@@ -2260,15 +2260,27 @@ void updateDisplay(uint8_t force)
 	   "Batt: X.XXv (~Y%)". Samples ADC1's injected LIPO_V channel, smoothed.
 	   Integer formatting (newlib-nano printf has no %f). */
 	{
-		battery_poll();
+		/* Throttle to ~1 Hz: the two injected ADC reads are slow, and the text
+		   redraw (esp. a width change) stutters the waterfall. Debounce the
+		   charge state so a toggling charger doesn't thrash that redraw. */
 		static float sm = 0.0f;
-		sm = (sm <= 0.01f) ? g_battVolts : (sm * 0.98f + g_battVolts * 0.02f);  /* low-pass, ~1-2 s */
-		int pct = battery_percent(sm);
-		static int shownPct = -1;              /* +-2% hysteresis so the % doesn't flicker */
-		if(shownPct < 0 || pct >= shownPct + 2 || pct <= shownPct - 2) shownPct = pct;
+		static int shownPct = -1;
+		static char chg[10] = "", chgCand[10] = ""; static int chgCnt = 0;
+		static int bpc = 0;
+		if(force || ++bpc >= 24)
+		{
+			bpc = 0;
+			battery_poll();
+			sm = (sm <= 0.01f) ? g_battVolts : (sm * 0.85f + g_battVolts * 0.15f);  /* ~6 s low-pass */
+			int pct = battery_percent(sm);
+			if(shownPct < 0 || pct >= shownPct + 2 || pct <= shownPct - 2) shownPct = pct;
+			const char *cl = charge_label();
+			if(strcmp(cl, chgCand) != 0) { strcpy(chgCand, cl); chgCnt = 0; }  /* candidate changed */
+			else if(++chgCnt >= 3) strcpy(chg, cl);                           /* adopt only when stable */
+		}
 		int mv = (int)(sm * 100.0f + 0.5f);
 		static char lastB[48] = ""; static int lastBW = -1;
-		char bb[48]; snprintf(bb, sizeof(bb), "Batt: %d.%02dv (~%d%%)%s", mv/100, mv%100, shownPct, charge_label());
+		char bb[48]; snprintf(bb, sizeof(bb), "Batt: %d.%02dv (~%d%%)%s", mv/100, mv%100, shownPct, chg);
 		int w = (int)strlen(bb) * 6, cx = 121 + (199 - w)/2, by = 216;
 		Adafruit_GFX_setTextSize(1);
 		Adafruit_GFX_setTextColor(ILI9340_WHITE, ILI9340_BLACK);

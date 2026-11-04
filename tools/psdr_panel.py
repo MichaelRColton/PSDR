@@ -243,6 +243,11 @@ class Panel(tk.Tk):
 
         self._build()
         self.after(120, self._pump)
+        self.after(400, self._autoconnect)   # connect on launch so you don't have to hit Connect
+
+    def _autoconnect(self):
+        if not self.link.ser and self.port_var.get().strip():
+            self.toggle_conn()
 
     # ---- layout -------------------------------------------------------- #
     def _build(self):
@@ -525,9 +530,12 @@ class Panel(tk.Tk):
 
     def set_clock_from_pc(self):
         import datetime
+        if not self.link.ser:
+            self.clock_lbl.config(text="not connected - click Connect first")
+            return
         n = datetime.datetime.now()
         self.link.write(f"C {n.year} {n.month} {n.day} {n.hour} {n.minute} {n.second}")
-        self.clock_lbl.config(text=n.strftime("set to %H:%M:%S  %m/%d/%Y"))
+        self.clock_lbl.config(text=n.strftime("sent %H:%M:%S %m/%d/%Y - verifying..."))
 
     def _build_diag(self, parent):
         col = tk.Frame(parent, bg=BG)
@@ -838,6 +846,9 @@ class Panel(tk.Tk):
             if self.link.ser and self.poll_var.get() and now - getattr(self, "_last_poll", 0) > 0.7:
                 self._last_poll = now
                 self.link.write("s")
+            if self.link.ser and now - getattr(self, "_last_cpoll", 0) > 1.5:
+                self._last_cpoll = now
+                self.link.write("c")          # poll the device RTC for the live clock display
             # reflect ffplay exiting on its own
             if self.listen_btn["text"] == "Stop listening" and not self.audio.alive():
                 self.listen_btn.config(text="Listen on PC speakers (demod)", fg=GOOD)
@@ -848,6 +859,9 @@ class Panel(tk.Tk):
             self.after(120, self._pump)
 
     def _parse(self, line):
+        if line.startswith("rtc:"):          # live device clock (from the 'c' poll)
+            self.clock_lbl.config(text="device: " + line[4:].strip())
+            return
         m = STATUS_RE.search(line)
         if m:
             g = m.groups()
