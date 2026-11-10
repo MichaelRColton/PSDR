@@ -13,6 +13,8 @@ _Captured 2026-11-02 on branch `fix/hmc1023-lpf`. A living list — edit freely.
 - **GPS bring-up (U185 RXM-GPS):** NMEA time/position; then **discipline the reference** — use GPS 1PPS to steady the Si5338 (a GPSDO-lite). This underpins accurate TX frequency for the digital modes below.
 - **SD card:** record raw IQ samples and/or decoded audio; band-scope captures and logs. (F746 SDMMC — watch sustained write rate for raw IQ; decimate/compress as needed.)
 - **Smart CW (Morse) decoder:** Goertzel / narrow band-pass + adaptive threshold + WPM tracking; decoded text under the waterfall.
+- **Band overlays on the waterfall (idea, 2026-11-09).** Like the white bars that show the part of the waterfall being listened to, draw bars in other colours marking the ham bands and shortwave broadcast bands as you tune through them. Read the band list from a text file on the MicroSD so people can edit what is shown. Popular stations could carry a short note that appears when you are tuned near them. Needs the SD card working first; a built-in default table would do until then.
+- **Frequency memories (idea, 2026-11-09).** Save and recall frequency + mode + filter. Michael rarely operates, so features like this (and multiple VFOs) were never on his list, but people who use the radio to communicate will expect them. Store in flash (or on the SD card) rather than the battery-backed registers. Low priority.
 - **Beacon / automatic modes:** scheduled CW idents, band-hop beaconing.
 - **Low-power field digital modes:** WSPR, FT8/FT4, JS8 — slow weak-signal modes ideal for backpacking. These need an accurate, stable TX frequency → pairs directly with GPS discipline.
 - **RX DSP quality:** AGC, noise blanker/reduction, notch, better filtering.
