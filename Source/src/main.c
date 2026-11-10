@@ -341,6 +341,28 @@ void teardownPeripheralPower()
 		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12 | GPIO_PIN_15, 0);
 	}
 
+	/* Power down every RF/analog rail the firmware can reach, before STOP. These
+	   levels (like the amp/backlight/LED lines above) are driven while the GPIO +
+	   I2C2 clocks are still on and then HOLD through STOP mode. We cold-boot on
+	   wake (shutDown -> SystemReset), which re-runs hal init + i2cSetup + setFreq
+	   and brings everything back, so it's safe to be aggressive here. Polarities
+	   are from hal.c. NOTE: this only reaches chips with a firmware enable line;
+	   the Si5338 input/PLL, the DDS 75 MHz oscillator and the SY10EP52 ECL LO
+	   dividers sit on always-on +3V3_CPU and need a hardware power switch (next
+	   rev) to get below the resulting floor. FLIP_FLOP_ENABLE (PE8) is left alone:
+	   its init write targets the wrong pin (hal.c) so its polarity is unverified. */
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, 1);                                      /* LPF_POWER off  (PE11 high = Q208 off -> HMC1023 LPF_5V down) */
+	HAL_GPIO_WritePin(FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 0); /* ADP1613 5V boost off (PE2 0 = off) */
+	HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 1);                           /* HMC482 RF amp off (PE3 1 = off) */
+	HAL_GPIO_WritePin(PREAMP_POWER.port, PREAMP_POWER.pin, 0);                     /* mic preamp off (PD14 0 = off) */
+	HAL_GPIO_WritePin(IN_AMP_ENABLE.port, IN_AMP_ENABLE.pin, 0);                   /* MCP6N11 baseband in-amps off (PC2 0 = off) */
+
+	/* Si5338 (U241): disable all clock outputs (reg 230 OEB_ALL = 1). Stops the LO
+	   feeding the ECL dividers + mixers and the CLK1A cal clock, dropping both the
+	   Si5338 output-driver current and the dividers' switching current. I2C2 is
+	   still clocked here; i2cSetup() has run. Fully reversed by i2cSetup() on wake. */
+	write_Si5338(230, 0x10);
+
 	__GPIOA_CLK_DISABLE();
 	__GPIOB_CLK_DISABLE();
 	__GPIOC_CLK_DISABLE();

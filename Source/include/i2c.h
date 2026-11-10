@@ -13,4 +13,5 @@ I2C_HandleTypeDef handleI2C;
 void clearStuckBusyFlag(void);
 void i2cSetup(void);
 void setFreq(unsigned long frequency);
+void write_Si5338(unsigned char address, unsigned char value);
 
