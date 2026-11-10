@@ -36,6 +36,34 @@ _Captured 2026-11-02 on branch `fix/hmc1023-lpf`. A living list — edit freely.
   | 4 | +3.7 dBm | 3rd -37 dBc | driver compressing: close-in products -13 dBc (yellow) |
 
   For comparison, the bypass path has the 3rd harmonic at -9 dBc. The chip adds about 4 dB with its gain off and 23.5 dB with it on. It is powered and configured on key-down and receive is restored on key-up, so it works with the receive LPF setting on Bypass too. Remaining: check other bands (each corner), carrier leak is about -34 dBc and opposite sideband about -30 dBc (I/Q balance), and 1 mW still wants a real PA after it.
+- **RECEIVE SENSITIVITY MEASURED, AND WHY IT IS DEAF (2026-11-10).** Modified unit, LibreVNA generator through 40 dB, -80 dBm at the antenna port, LSB with a 0.3-2.7 kHz filter. "Noise-equivalent input" is the signal level that would equal the noise in that bandwidth.
+
+  | Frequency | Bypass | Through HMC1023, +20 dB, filter off | Same, auto corner |
+  |---|---|---|---|
+  | 2.6 MHz | -84 dBm | -107 dBm | -110 dBm |
+  | 3.6 | -84 | -109 | -104 |
+  | 7.1 | -86 | -109 | -106 |
+  | 10.1 | -84 | -109 | -106 |
+  | 14.2 | -87 | -106 | -105 |
+  | 18.1 | -88 | -109 | -108 |
+  | 21.3 | -84 | -109 | -103 |
+  | 24.9 | -86 | -105 | -106 |
+  | 28.5 | -85 | -107 | -104 |
+  | 35 | -84 | -108 | -105 |
+  | 50.1 | -85 | -110 | -106 |
+  | 70 | -85 | -108 | -109 |
+  | 100 | -86 | -104 | -102 |
+  | 120 | -84 | -98 | -98 |
+  | 144.2 | -83 | -104 | -105 |
+  | 160 | -84 | -100 | -101 |
+  | 174 | -85 | -105 | -104 |
+
+  - **Receive works across the whole tuning range, 2.5 to 175 MHz**, including 2 m. In bypass it is flat; through the chip it loses 4 to 10 dB above 100 MHz.
+  - **The HMC1023's +20 dB improves sensitivity by about 22 dB**, i.e. by its whole gain. On a board with the VDDBG fix, receive should be run on "+20 dB".
+  - **Root cause of the deafness: not enough gain ahead of the ADC.** At 7.1 MHz, stepping the baseband gain pot from 20 to 255 raised the signal 11x while the noise stayed put (135 to 326 in the meter's units, about 0.5 to 1.3 ADC counts rms in the passband), in bypass and through the chip alike. So the noise floor is set at or after the ADC (its own noise and quantisation, and possibly the reference-rail noise found on transmit), not by the mixers or the front end. Every dB of clean gain added before the ADC is a dB of sensitivity until front-end noise finally shows. The gain pot is already near its maximum (255 is only about 2 dB better than the default 200).
+  - **What to do about it:** (1) hardware: raise the baseband in-amp gain by 20 to 30 dB (the MCP6N11 gain-setting resistors), keeping the pot for strong signals - with the chip's +20 dB as well that could approach -125 dBm or better; (2) firmware: default the gain pot to maximum and add an automatic gain control that backs it off on strong signals; sample the ADCs faster and average more (a few dB); (3) check whether the noise is quantisation or the reference rail by looking at its spectrum with the in-amps off.
+  - The auto filter corner costs 0 to 6 dB of sensitivity against filter-off at several frequencies, so filter-off stays the receive default; a more generous rule (corner at least 2x the dial frequency) or the chip's calibration might remove that.
+  - Frequency calibration of this unit against the LibreVNA: -71,995 ppb (stored with `J`).
 - **Transmit sideband trim: DONE 2026-11-10.** Console `z` holds a per-unit phase and gain correction for the transmit I/Q pair (plus DC offsets), and `tools/tx_trim_cal.py` finds the values with an RSA306. On the modified unit at 7.1 MHz the opposite sideband went from -33 dBc to about -55 dBc. The DC-offset half does nothing on this hardware: stepping it +/-100 counts did not move the carrier, so the DAC-to-mixer path is AC-coupled. The carrier is about -50 dBc as it is. To do: per-band values (the best phase/gain will drift with frequency).
 - **Transmit noise comes from the DAC reference rail (found 2026-11-10) - hardware item.** With the transmitter on and no modulation at all, the radio put out broadband noise only about 79 dB/Hz below the carrier (signal-to-noise about 45 dB in an SSB bandwidth), on every path. It is not the receive in-amps or the mic preamp (switching them off changed nothing). It scales exactly with the DAC's resting code (-6 dB at half, -10 dB at 600/2048), so it is noise on the 3.3 V analog rail that the DACs use as their reference. Firmware now parks the DACs just above the signal's peak instead of at mid-scale, which lowers the noise between CW elements and speech by about 8 dB and by less at full drive. The real fix is hardware: filter VDDA/VREF+ (LC or RC) or give the DACs and ADCs a quiet reference. **Worth checking for receive too:** the ADCs use the same reference, and the receive DC offset is a few percent of full scale, so the same rail noise may be part of the receive noise floor. Put a scope / spectrum analyzer on VDDA.
 - **12-bit DAC limits transmit level.** With the test tone, drive 25 is about half scale and drive 50 clips, which is what the old "driver compressing at drive 80" really was. The top steps are now drive 45. Through the HMC1023 that gives about +3 dBm with 3rd-order products at -23 dBc (yellow), so +0 dBm at drive 25 remains the clean setting.
