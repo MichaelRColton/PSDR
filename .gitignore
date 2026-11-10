@@ -76,3 +76,6 @@ Hardware/Enclosure/~$paddle_Mirrored.SLDPRT
 # Headless build outputs
 build/
 *.map
+
+# Python bytecode
+__pycache__/
