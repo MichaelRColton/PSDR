@@ -6,6 +6,7 @@
 #include "usbd_cdc_if.h"
 #include "usbd_cdc_audio.h"
 #include <stdarg.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -209,6 +210,17 @@ static void handle_cmd(char *s)
 	            usb_printf("disp: fill4=%lu ms (%lu ms/frame) redraw=%lu ms dmaerr=%lu\r\n",
 	                       (unsigned long)(t1 - t0), (unsigned long)((t1 - t0) / 4), (unsigned long)(t3 - t2),
 	                       (unsigned long)g_lcdDmaErr); } break;
+	case 'q': {   /* CW: q<wpm> <text> sends text; qk1 / qk0 = paddle keyer on / off; q0 = stop; q = status */
+	            extern void cw_send_text(int wpm, const char *text); extern void cw_stop(void); extern int cw_busy(void);
+	            extern volatile int g_cwKeyerOn, g_cwWpm;
+	            if (s[1] == 'k' && (s[2] == '0' || s[2] == '1')) g_cwKeyerOn = s[2] - '0';
+	            else if (s[1] == '0' && !s[2]) cw_stop();
+	            else if (s[1] >= '1' && s[1] <= '9') {
+	                char *sp = strchr(s, ' ');
+	                int wpm = atoi(s + 1);
+	                if (sp) cw_send_text(wpm, sp + 1); else if (wpm >= 5 && wpm <= 40) g_cwWpm = wpm;
+	            }
+	            usb_printf("cw: wpm=%d keyer=%d busy=%d\r\n", g_cwWpm, g_cwKeyerOn, cw_busy()); } break;
 	case 'N': {   /* GPS: N = report; Np0 / Np1 = power pin level; Nr = reset pulse; Nb<baud> = serial speed */
 	            extern void gps_report(void); extern void gps_power(int level); extern void gps_reset_pulse(void);
 	            extern void gps_set_baud(uint32_t baud);

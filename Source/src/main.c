@@ -180,6 +180,11 @@ int transmitting = 0;
 volatile uint32_t g_txKeyUntil = 0;
 volatile int      g_txKeyTone  = 0;
 volatile int      g_txToneOn   = 0;      /* set by the main loop while console-keyed with a tone */
+volatile int      g_cwTx       = 0;      /* set by the main loop while the CW engine has the transmitter (cw.c) */
+int   cw_tx_request(void);
+float cw_envelope(void);
+int   cw_tone_hz(void);
+extern volatile int g_cwKeyerOn;
 float             g_txTonePhase = 0.0f;
 #define TX_TONE_AMPLITUDE 0.01f           /* as a fraction of ADC full scale, like a quiet microphone */
 volatile int      g_txKeyAmp   = 0;   /* 0 = no amp, 1 = through the HMC482 (transmit_with_amp_no_filter) */
@@ -741,8 +746,10 @@ void Encoder(void)
 	clickMultiply = 100;
 }
 
+	void cw_tick_1ms(void);
 	void Tick(void)
 	{
+		cw_tick_1ms();   /* CW keyer / text sender timing (cw.c) */
 		if(!displayUpdating)
 		{
 			Position2 = (HAL_GPIO_ReadPin(encoderB.port, encoderB.pin) * 2) + HAL_GPIO_ReadPin(encoderBee.port, encoderBee.pin);;
@@ -1016,6 +1023,13 @@ void Encoder(void)
 					g_txTonePhase += 6.2831853f * (float)g_txKeyTone / 48000.0f;
 					if(g_txTonePhase >= 6.2831853f) g_txTonePhase -= 6.2831853f;
 					micIn = TX_TONE_AMPLITUDE * sinf(g_txTonePhase);
+				}
+				else if(g_cwTx)
+				{
+					/* CW: a 700 Hz tone keyed with a shaped envelope (cw.c) replaces the microphone */
+					g_txTonePhase += 6.2831853f * (float)cw_tone_hz() / 48000.0f;
+					if(g_txTonePhase >= 6.2831853f) g_txTonePhase -= 6.2831853f;
+					micIn = TX_TONE_AMPLITUDE * cw_envelope() * sinf(g_txTonePhase);
 				}
 
 				switch (sampleBank)
@@ -2379,7 +2393,9 @@ setFreq(vfoAFrequency);
 		HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, HAL_GPIO_ReadPin(GPS_PPS.port, GPS_PPS.pin));
 
 		int consoleKey = ((int32_t)(g_txKeyUntil - HAL_GetTick()) > 0);   /* console 'X' timed key-down */
-		if(consoleKey || (!HAL_GPIO_ReadPin(PADDLE_THUMB_NO.port, PADDLE_THUMB_NO.pin) && !HAL_GPIO_ReadPin(PADDLE_INDEX_NO.port, PADDLE_INDEX_NO.pin)))
+		int cwKey = cw_tx_request();                                     /* CW text or paddle keyer wants the transmitter */
+		int pttSqueeze = !g_cwKeyerOn && !HAL_GPIO_ReadPin(PADDLE_THUMB_NO.port, PADDLE_THUMB_NO.pin) && !HAL_GPIO_ReadPin(PADDLE_INDEX_NO.port, PADDLE_INDEX_NO.pin);
+		if(consoleKey || cwKey || pttSqueeze)
 		//if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
@@ -2406,9 +2422,11 @@ setFreq(vfoAFrequency);
 //	        //tone = 200;
 	        tone = 0;
 	        g_txToneOn = (consoleKey && g_txKeyTone > 0);
+	        g_cwTx = (cwKey && !consoleKey);
 		} else {
 			transmitting = 0;
 			g_txToneOn = 0;
+			g_cwTx = 0;
 			if(txWasKeyed)
 			{
 				txWasKeyed = 0;
