@@ -192,13 +192,35 @@ void initAdc()
 	   each, publish, and run exactly one captureSamples(). */
 	extern uint8_t mode;
 	void wfm_block(const volatile uint16_t *ibuf, const volatile uint16_t *qbuf, int n);
+	/* How long the per-sample interrupt work takes, in CPU cycles (console P prints
+	   it). It has to finish inside one 48 kHz sample period (4500 cycles at 216 MHz)
+	   or samples are dropped. [0] = wideband FM part, [1] = the whole thing;
+	   smoothed average and the worst case since the last P. */
+	volatile uint32_t g_isrCycAvg[2] = { 0, 0 }, g_isrCycMax[2] = { 0, 0 };
 	static void adc_block(uint32_t s)
 	{
-		if(mode == 3) wfm_block(&adcIBuf[s], &adcQBuf[s], ADC_OS);   /* wideband FM works on the raw 720 kHz samples (wfm.c) */
+		static int dwtOn = 0;
+		if(!dwtOn)
+		{
+			CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+			DWT->LAR = 0xC5ACCE55;                 /* Cortex-M7: unlock the cycle counter */
+			DWT->CYCCNT = 0;
+			DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+			dwtOn = 1;
+		}
+		uint32_t t0 = DWT->CYCCNT, t1 = t0;
+		if(mode == 3) { wfm_block(&adcIBuf[s], &adcQBuf[s], ADC_OS);   /* wideband FM works on the raw 720 kHz samples (wfm.c) */
+		                t1 = DWT->CYCCNT; }
 		uhADCxConvertedValue1 = adc_avg(adcMicBuf, s);
 		uhADCxConvertedValue2 = adc_avg(adcIBuf,   s);
 		uhADCxConvertedValue3 = adc_avg(adcQBuf,   s);
 		captureSamples();
+		uint32_t t2 = DWT->CYCCNT;
+		uint32_t d0 = t1 - t0, d1 = t2 - t0;
+		g_isrCycAvg[0] += ((int32_t)d0 - (int32_t)g_isrCycAvg[0]) / 64;
+		g_isrCycAvg[1] += ((int32_t)d1 - (int32_t)g_isrCycAvg[1]) / 64;
+		if(d0 > g_isrCycMax[0]) g_isrCycMax[0] = d0;
+		if(d1 > g_isrCycMax[1]) g_isrCycMax[1] = d1;
 	}
 
 	/* Only ADC2 (I) carries the NVIC IRQ, so only its callbacks fire. */

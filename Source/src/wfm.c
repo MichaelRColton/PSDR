@@ -68,8 +68,9 @@ volatile float g_wfmRipple = 0.0f;         /* how much the signal's power wobble
    15.9 kHz, lowest of everything tried, which agrees with the schematic.
    Console: j<corner Hz> [second corner Hz], 0 = off; P shows the ripple. */
 volatile float g_wfmEqHz[2] = { 15900.0f, 15900.0f };   /* 0 = that stage off */
-static float wfmEqA[2] = { 0.0f, 0.0f }, wfmEqFor[2] = { -1.0f, -1.0f };
-static float wfmEqI[2], wfmEqQ[2];
+static float wfmEqFor[2] = { -1.0f, -1.0f };
+static float wfmEqC[3] = { 1.0f, 0.0f, 0.0f };     /* the two stages multiplied out into one 3-tap filter */
+static float wfmEqI[2], wfmEqQ[2];                 /* the previous two input samples */
 static float wfmEp = 0.0f, wfmEp2 = 0.0f;
 
 static float wfmPrevI = 0.0f, wfmPrevQ = 1.0f;
@@ -119,7 +120,7 @@ static inline float wfm_lp_run(float x)
 }
 
 /* atan2 good to about 0.005 rad: plenty for FM audio, and far cheaper than atan2f */
-static inline float wfm_atan2(float y, float x)
+static inline __attribute__((always_inline)) float wfm_atan2(float y, float x)
 {
 	float ax = x < 0 ? -x : x, ay = y < 0 ? -y : y;
 	float a;
@@ -139,49 +140,77 @@ static inline float wfm_atan2(float y, float x)
 }
 
 /* Called from the ADC DMA interrupt, once per 48 kHz audio sample, with the n
-   (= 15) raw I and Q samples that just arrived. */
+   (= 15) raw I and Q samples that just arrived.
+
+   This runs 240,000 times a second inside an interrupt, so it is written for
+   speed: everything it needs is copied into local variables first (the
+   compiler can then keep them in registers), the helper functions are inlined,
+   and this one function is compiled for speed rather than size. The first
+   version took about 2500 CPU cycles per call out of the 4500 available per
+   audio sample, on top of the ~1500 the normal receive path uses; the main
+   loop (which feeds the speaker and USB audio) was starved and dropped more
+   than half the audio. */
+__attribute__((optimize("O3"), section(".data.wfm_block"), noinline))   /* in .data, so it is copied to RAM at start-up and runs from there: slightly faster than from flash */
 void wfm_block(const volatile uint16_t *ibuf, const volatile uint16_t *qbuf, int n)
 {
 	if(!wfmLpReady) wfm_lp_design();
-	float offI = (float)dcOffset2 + rxDcI * 4096.0f;
-	float offQ = (float)dcOffset3 + rxDcQ * 4096.0f;
-	float sum = 0.0f, pw = 0.0f, nz = 0.0f, lp = 0.0f, ep = 0.0f, ep2 = 0.0f;
-	for(int e = 0; e < 2; e++)
-		if(wfmEqFor[e] != g_wfmEqHz[e])
+	if(wfmEqFor[0] != g_wfmEqHz[0] || wfmEqFor[1] != g_wfmEqHz[1])
+	{
+		float b[2], g[2];
+		for(int e = 0; e < 2; e++)
 		{
 			wfmEqFor[e] = g_wfmEqHz[e];
-			wfmEqA[e] = wfmEqFor[e] > 0.0f ? 1.0f - expf(-6.2831853f * wfmEqFor[e] / WFM_FS) : 0.0f;
+			float a = wfmEqFor[e] > 0.0f ? 1.0f - expf(-6.2831853f * wfmEqFor[e] / WFM_FS) : 1.0f;   /* a = 1: stage does nothing */
+			b[e] = 1.0f - a; g[e] = 1.0f / a;
 		}
+		/* (1 - b0 z^-1) g0 * (1 - b1 z^-1) g1 */
+		wfmEqC[0] = g[0] * g[1];
+		wfmEqC[1] = -(b[0] + b[1]) * g[0] * g[1];
+		wfmEqC[2] = b[0] * b[1] * g[0] * g[1];
+	}
+	const float offI = 3.0f * ((float)dcOffset2 + rxDcI * 4096.0f);   /* x3: the three samples are summed, not averaged */
+	const float offQ = 3.0f * ((float)dcOffset3 + rxDcQ * 4096.0f);
+	const float c0 = wfmEqC[0], c1 = wfmEqC[1], c2 = wfmEqC[2];
+	float xi1 = wfmEqI[0], xi2 = wfmEqI[1], xq1 = wfmEqQ[0], xq2 = wfmEqQ[1];
+	float prevI = wfmPrevI, prevQ = wfmPrevQ, d1 = wfmD1, d2 = wfmD2;
+	const wfm_bq_t fa = wfmLp[0], fb = wfmLp[1];
+	float as1 = wfmLp[0].s1, as2 = wfmLp[0].s2, bs1 = wfmLp[1].s1, bs2 = wfmLp[1].s2;
+	float sum = 0.0f, pw = 0.0f, nz = 0.0f, lp = 0.0f, ep = 0.0f, ep2 = 0.0f;
 	int groups = n / 3;
 	for(int g = 0; g < groups; g++)
 	{
 		const volatile uint16_t *pi = ibuf + g * 3, *pq = qbuf + g * 3;
-		float i = ((float)(pi[0] + pi[1] + pi[2])) * (1.0f / 3.0f) - offI;
-		float q = ((float)(pq[0] + pq[1] + pq[2])) * (1.0f / 3.0f) - offQ;
-		pw += i * i + q * q;                       /* level at the ADC, before the equaliser (for the gain control) */
-		for(int e = 0; e < 2; e++)
-			if(wfmEqA[e] > 0.0f)
-			{
-				float b = 1.0f - wfmEqA[e], g = 1.0f / wfmEqA[e];
-				float yi = (i - b * wfmEqI[e]) * g, yq = (q - b * wfmEqQ[e]) * g;
-				wfmEqI[e] = i; wfmEqQ[e] = q;
-				i = yi; q = yq;
-			}
+		float xi = (float)(int)(pi[0] + pi[1] + pi[2]) - offI;     /* 3x the ADC value; the scale only matters for the two power sums */
+		float xq = (float)(int)(pq[0] + pq[1] + pq[2]) - offQ;
+		pw += xi * xi + xq * xq;                   /* level at the ADC, before the equaliser (for the gain control) */
+		float i = c0 * xi + c1 * xi1 + c2 * xi2;   /* equaliser */
+		float q = c0 * xq + c1 * xq1 + c2 * xq2;
+		xi2 = xi1; xi1 = xi; xq2 = xq1; xq1 = xq;
 		{ float pe = i * i + q * q; ep += pe; ep2 += pe * pe; }
 		/* z[n] * conj(z[n-1]): its angle is the phase step, i.e. the instantaneous frequency */
-		float re = i * wfmPrevI + q * wfmPrevQ;
-		float im = i * wfmPrevQ - q * wfmPrevI;   /* sign chosen so a carrier above the dial reads positive (measured) */
+		float re = i * prevI + q * prevQ;
+		float im = i * prevQ - q * prevI;          /* sign chosen so a carrier above the dial reads positive (measured) */
+		prevI = i; prevQ = q;
 		float d = wfm_atan2(im, re);
 		sum += d;
-		lp = wfm_lp_run(d);                        /* audio band only; the last of the 5 values is the 48 kHz sample */
+		/* audio low-pass (two biquads); the last of the 5 values is the 48 kHz sample */
+		float y = fa.b0 * d + as1;
+		as1 = fa.b1 * d - fa.a1 * y + as2;
+		as2 = fa.b2 * d - fa.a2 * y;
+		lp = fb.b0 * y + bs1;
+		bs1 = fb.b1 * y - fb.a1 * lp + bs2;
+		bs2 = fb.b2 * y - fb.a2 * lp;
 		/* noise measure: second difference of the detector output, which weights the
 		   top of the 0-120 kHz range (above everything a station transmits) by more
 		   than 10 dB over the stereo band. Low = clean signal, high = noise. */
-		float dd = d - 2.0f * wfmD1 + wfmD2;
+		float dd = d - 2.0f * d1 + d2;
 		nz += dd * dd;
-		wfmD2 = wfmD1; wfmD1 = d;
-		wfmPrevI = i; wfmPrevQ = q;
+		d2 = d1; d1 = d;
 	}
+	wfmEqI[0] = xi1; wfmEqI[1] = xi2; wfmEqQ[0] = xq1; wfmEqQ[1] = xq2;
+	wfmPrevI = prevI; wfmPrevQ = prevQ; wfmD1 = d1; wfmD2 = d2;
+	wfmLp[0].s1 = as1; wfmLp[0].s2 = as2; wfmLp[1].s1 = bs1; wfmLp[1].s2 = bs2;
+	pw *= (1.0f / 9.0f);                                           /* back to plain ADC counts squared */
 	float k = WFM_FS / 6.2831853f;                                 /* radians per sample -> Hz */
 	g_wfmDiscHz += 0.002f * ((sum / (float)groups) * k - g_wfmDiscHz);
 	g_wfmNoise += 0.0005f * (sqrtf(nz / (float)groups) * k * 0.001f - g_wfmNoise);

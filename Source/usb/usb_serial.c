@@ -116,6 +116,11 @@ static void handle_cmd(char *s)
 		unsigned long rms_u = (unsigned long)(passBandRms * 1000000.0f);
 		int bar = (int)(10.0 * log((double)passBandRms * 1000000.0 + 1.0));
 		usb_printf("rms=%lu bar=%d\r\n", rms_u, bar);
+		{ extern volatile uint32_t g_isrCycAvg[2], g_isrCycMax[2]; extern uint32_t SystemCoreClock;
+		  usb_printf("isr cycles: wfm avg %lu max %lu, total avg %lu max %lu, budget %lu\r\n",
+		             (unsigned long)g_isrCycAvg[0], (unsigned long)g_isrCycMax[0], (unsigned long)g_isrCycAvg[1], (unsigned long)g_isrCycMax[1],
+		             (unsigned long)(SystemCoreClock / 48000u));
+		  g_isrCycMax[0] = g_isrCycMax[1] = 0; }
 		if (mode == 3) { extern volatile float g_wfmDiscHz, g_wfmAudio;   /* wideband FM: where the carrier sits */
 		                 extern volatile float g_wfmNoise; extern int g_wfmPot;
 		                 extern volatile float g_wfmRipple;
