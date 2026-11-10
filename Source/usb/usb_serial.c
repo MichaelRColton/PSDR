@@ -235,6 +235,15 @@ static void handle_cmd(char *s)
 	            if (s[1] && (v == 0 || (v >= 64 && v <= 2048))) g_txDacMidFixed = v;
 	            usb_printf("txdacmid: fixed=%d now=%d\r\n", g_txDacMidFixed, g_txDacMid); } break;
 	case 'S': { extern void sd_probe(void); sd_probe(); } break;   /* microSD: identify the card and read sector 0 (read-only) */
+	case 'h': {   /* VNA experiments: h = read AD8302 magnitude/phase; hb0/hb1 = bridge switch; hx0/hx1 = RF port switch (applied while transmitting) */
+	            extern volatile int g_vnaBridge, g_vnaPort; extern void vna_read_raw(int n, uint16_t *mag, uint16_t *phase);
+	            extern int transmitting;
+	            if (s[1] == 'b' && (s[2] == '0' || s[2] == '1')) g_vnaBridge = s[2] - '0';
+	            if (s[1] == 'x' && (s[2] == '0' || s[2] == '1')) g_vnaPort = s[2] - '0';
+	            uint16_t m, ph; vna_read_raw(32, &m, &ph);
+	            /* counts -> millivolts assuming a 3.3 V reference */
+	            usb_printf("vna: mag=%u (%d mV) phase=%u (%d mV) bridge=%d port=%d tx=%d\r\n", m, (int)(m * 3300L / 4095L),
+	                       ph, (int)(ph * 3300L / 4095L), g_vnaBridge, g_vnaPort, transmitting); } break;
 	case 'N': {   /* GPS: N = report; Np0 / Np1 = power pin level; Nr = reset pulse; Nb<baud> = serial speed */
 	            extern void gps_report(void); extern void gps_power(int level); extern void gps_reset_pulse(void);
 	            extern void gps_set_baud(uint32_t baud);

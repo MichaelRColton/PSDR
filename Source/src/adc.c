@@ -327,6 +327,27 @@ void initAdc()
 
 	/* LIPO_V and VREFINT as two separate single-channel injected reads. VREFINT
 	   gives the real VDDA so the battery reading self-calibrates per unit. */
+	/* AD8302 gain/phase detector (U314) outputs, from the 2.6.1 netlist:
+	   MAGNITUDE = U121.34 = PB0 = ADC channel 8, PHASE = U121.33 = PC5 = ADC channel 15.
+	   Each call averages n conversions on ADC1's injected group. Values are raw
+	   12-bit counts; the AD8302 gives 30 mV/dB (0.9 V at 0 dB) and 10 mV/degree
+	   (1.8 V at 0 degrees falling to 0 V at 180). */
+	void vna_adc_init(void)
+	{
+		GPIO_InitTypeDef g = {0};
+		g.Mode = GPIO_MODE_ANALOG; g.Pull = GPIO_NOPULL;
+		g.Pin = GPIO_PIN_0; HAL_GPIO_Init(GPIOB, &g);   /* PB0 = MAGNITUDE */
+		g.Pin = GPIO_PIN_5; HAL_GPIO_Init(GPIOC, &g);   /* PC5 = PHASE */
+	}
+	void vna_read_raw(int n, uint16_t *mag, uint16_t *phase)
+	{
+		uint32_t m = 0, p = 0;
+		if(n < 1) n = 1;
+		for(int i = 0; i < n; i++) { m += inj_read(ADC_CHANNEL_8); p += inj_read(ADC_CHANNEL_15); }
+		*mag = (uint16_t)(m / (uint32_t)n);
+		*phase = (uint16_t)(p / (uint32_t)n);
+	}
+
 	void battery_read_raw2(uint16_t *batt, uint16_t *vref)
 	{
 		*batt = inj_read(ADC_CHANNEL_10);

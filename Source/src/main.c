@@ -1715,6 +1715,12 @@ void lpfCornerFollow(void)
    corner - because removing harmonics is the point. Gain follows the TX power
    step. Receive settings are restored by rx_path_default() on key-up. */
 int txWasKeyed = 0;
+/* VNA experiments (console 'h'): while transmitting, optionally switch the
+   impedance bridge into the path and/or route the transmit signal to the other
+   RF port, so the AD8302 sees the reference and reflected signals. The switch
+   senses are not verified yet - this is here to find them. */
+volatile int g_vnaBridge = 0;   /* 1 = IMP_BRIDGE_SWITCH flipped from the transmit default */
+volatile int g_vnaPort   = 0;   /* 1 = TX_RF_SWITCH flipped from the transmit default */
 void tx_chip_config(void)
 {
 	int coarse = -1;
@@ -2395,6 +2401,7 @@ setFreq(vfoAFrequency);
 	// rtc_init() runs first: it enables backup-domain access where the state lives.
 	rtc_init();          // LSE + RTC clock (keeps time on battery; set from the Control Panel)
 	{ extern void gps_init(void); gps_init(); }   // GPS serial port (USART6); the module's power is left as hal.c set it
+	{ extern void vna_adc_init(void); vna_adc_init(); }   // AD8302 magnitude / phase inputs
 	lpfcorner_restore(); // LPF corner setting (before state_restore applies the LPF mode)
 	txcal_restore();     // per-unit transmit power calibration
 	txtrim_restore();    // per-unit transmit carrier / sideband trim
@@ -2470,6 +2477,16 @@ setFreq(vfoAFrequency);
 				HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, 1);
 				HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, 1);
 				HAL_GPIO_WritePin(FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 1);
+			}
+			if(g_vnaBridge)
+			{
+				HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, 1);
+				HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, 0);
+			}
+			if(g_vnaPort)
+			{
+				HAL_GPIO_WritePin(TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, 0);
+				HAL_GPIO_WritePin(TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, 1);
 			}
 			txWasKeyed = 1;
 			/* Speaker off while transmitting: the DACs carry the TX signal, and it
