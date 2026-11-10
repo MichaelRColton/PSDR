@@ -89,6 +89,59 @@ float amAudioLp = 0.0f;   /* AM: one-pole audio lowpass on the recovered envelop
 float amDcI = 0.0f;       /* AM: per-channel DC blockers (kill LO self-mix offset so the */
 float amDcQ = 0.0f;       /*     carrier can sit anywhere in the passband - mistune-tolerant) */
 float amHpState = 0.0f;   /* AM: audio high-pass state (filterLowerLimit edge) */
+
+/* AM pre-detection channel filter ("IF filter"). The envelope detector used to
+   see the whole raw baseband (about +/-24 kHz), so it demodulated any carrier on
+   screen and all of that band's noise. I and Q now each pass through a 6th-order
+   Butterworth low-pass first (three biquads), with its corner at the filter's
+   upper edge (filterUpperLimit bins x 93.75 Hz). On the complex baseband that
+   is a band-pass of +/- that width around the dial frequency - exactly what the
+   white filter bar shows in AM. A carrier outside the bar is rejected
+   (-36 dB at twice the corner, -60 dB at about 3x). */
+#define AM_CH_STAGES 3
+typedef struct { float b0, b1, b2, a1, a2; } am_biquad_t;
+am_biquad_t amCh[AM_CH_STAGES];
+float amChI[AM_CH_STAGES][2];        /* per-stage state, I channel (transposed direct form II) */
+float amChQ[AM_CH_STAGES][2];        /* per-stage state, Q channel */
+int   amChBins = -1;                 /* filterUpperLimit the coefficients were designed for */
+float amChPower = 0.0f;              /* smoothed I^2+Q^2 inside the channel -> the AM S-meter */
+/* Scale from sqrt(channel power) to the units the SSB meter uses (rms of the
+   FFT filter-bank output). Checked on the bench: the same -60 dBm carrier reads
+   within about 1 dB in LSB and AM with a scale of 1. */
+#define AM_METER_SCALE 1.0f
+
+static void am_channel_design(int bins)
+{
+	static const float q[AM_CH_STAGES] = { 0.51763809f, 0.70710678f, 1.93185165f };  /* Butterworth, order 6 */
+	float fc = bins * 93.75f;
+	if(fc < 300.0f)   fc = 300.0f;
+	if(fc > 20000.0f) fc = 20000.0f;
+	float w0 = 6.2831853f * fc / 48000.0f;
+	float cs = cosf(w0), sn = sinf(w0);
+	for(int k = 0; k < AM_CH_STAGES; k++)
+	{
+		float alpha = sn / (2.0f * q[k]);
+		float a0 = 1.0f + alpha;
+		amCh[k].b0 = (1.0f - cs) * 0.5f / a0;
+		amCh[k].b1 = (1.0f - cs) / a0;
+		amCh[k].b2 = amCh[k].b0;
+		amCh[k].a1 = -2.0f * cs / a0;
+		amCh[k].a2 = (1.0f - alpha) / a0;
+	}
+	amChBins = bins;
+}
+
+static inline float am_channel_run(float x, float st[AM_CH_STAGES][2])
+{
+	for(int k = 0; k < AM_CH_STAGES; k++)
+	{
+		float y = amCh[k].b0 * x + st[k][0];
+		st[k][0] = amCh[k].b1 * x - amCh[k].a1 * y + st[k][1];
+		st[k][1] = amCh[k].b2 * x - amCh[k].a2 * y;
+		x = y;
+	}
+	return x;
+}
 /* Audio-path self-test: a pure sine driven straight to the speaker DACs through
    the SAME anti-phase x1.5 path AM uses, bypassing all demod/AGC. Lets us prove
    whether the DAC->mux->amp->speaker chain is clean independent of the demod.
@@ -168,6 +221,8 @@ void polarToRect(float m, float a, float32_t* x, float32_t* y)
 	*y = m * arm_sin_f32(a);
 	*x = m * arm_cos_f32(a);
 }
+
+float am_meter_rms(void);
 
 void populateCoeficients(int bandwidth, int sideband, int offset)
 {
@@ -694,7 +749,13 @@ void Encoder(void)
 					amDcI += 0.0008f * (qi - amDcI);
 					amDcQ += 0.0008f * (qq - amDcQ);
 					float ii = qi - amDcI, qa = qq - amDcQ;
-					float env = sqrtf(ii * ii + qa * qa);
+					/* channel filter BEFORE detection (see am_channel_design) */
+					if(filterUpperLimit != amChBins) am_channel_design(filterUpperLimit);
+					ii = am_channel_run(ii, amChI);
+					qa = am_channel_run(qa, amChQ);
+					float pw = ii * ii + qa * qa;
+					amChPower += 0.0005f * (pw - amChPower);    /* ~0.1 s average, for the S-meter */
+					float env = sqrtf(pw);
 					amDcBlock += 0.0008f * (env - amDcBlock);   /* carrier level estimate */
 					/* AGC: normalize the envelope AC by the carrier level -> the
 					   modulation index (independent of signal strength, like a real
@@ -2147,6 +2208,16 @@ void updateMenu()
 }
 
 
+/* AM S-meter: signal level inside the AM channel (after the channel filter and
+   the per-channel DC blockers), so it follows the carrier you are tuned to and
+   ignores the receiver's own DC offset and anything outside the filter bar. */
+float am_meter_rms(void)
+{
+	float32_t r;
+	arm_sqrt_f32(amChPower, &r);
+	return r * AM_METER_SCALE;
+}
+
 float calculateRmsOfSample(float* samples, int length)
 {
 	int i;
@@ -2619,7 +2690,7 @@ void processStream()
 			   here): taking |z| per FFT block then overlap-saving is nonlinear and
 			   corrupts the reconstruction. Keep the bank linear (complex). */
 
-			passBandRms = calculateRmsOfSample(samplesA, FFT_BUFFER_SIZE);
+			passBandRms = (mode == 2) ? am_meter_rms() : calculateRmsOfSample(samplesA, FFT_BUFFER_SIZE);
 
 			sampleBankAReady = 0;
 		}
@@ -2643,7 +2714,7 @@ void processStream()
 
 			/* AM envelope done at the output tap - keep the bank linear (complex). */
 
-			passBandRms = calculateRmsOfSample(samplesB, FFT_BUFFER_SIZE);
+			passBandRms = (mode == 2) ? am_meter_rms() : calculateRmsOfSample(samplesB, FFT_BUFFER_SIZE);
 
 			sampleBankBReady = 0;
 
@@ -2672,7 +2743,7 @@ void processStream()
 
 			/* AM envelope done at the output tap - keep the bank linear (complex). */
 
-			passBandRms = calculateRmsOfSample(samplesC, FFT_BUFFER_SIZE);
+			passBandRms = (mode == 2) ? am_meter_rms() : calculateRmsOfSample(samplesC, FFT_BUFFER_SIZE);
 
 			sampleBankCReady = 0;
 
