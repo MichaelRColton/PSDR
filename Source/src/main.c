@@ -193,6 +193,64 @@ volatile int      g_txKeyAmp   = 0;   /* 0 = no amp, 1 = through the HMC482 (tra
    power. Now independent: console 'O<drive>'. */
 volatile float txDrive = 25.0f;
 
+/* Transmit trim, per unit (console 'z', tools/tx_trim_cal.py).
+   The two DACs are the I and Q inputs of the transmit mixers. Two analog
+   imperfections show up on the air:
+     - carrier leak: a little of the LO gets through even with no audio. A small
+       DC offset added to I and Q cancels it (txDcI, txDcQ, in DAC counts).
+     - opposite sideband: I and Q are not exactly equal in gain or exactly 90
+       degrees apart. Replacing Q with  c1*I + c2*Q  corrects both (c1 = phase,
+       c2 = gain; 0 and 1 mean "no correction").
+   Stored in backup registers BKP15R/BKP16R. Defaults do nothing. */
+volatile float txDcI = 0.0f, txDcQ = 0.0f, txIqC1 = 0.0f, txIqC2 = 1.0f;
+#define TXTRIM_MAGIC 0x5400u
+void txtrim_save(void)
+{
+	RTC->BKP15R = ((uint32_t)(uint16_t)(int16_t)(txDcI * 10.0f)) | ((uint32_t)(uint16_t)(int16_t)(txDcQ * 10.0f) << 16);
+	RTC->BKP16R = ((uint32_t)(uint16_t)(int16_t)(txIqC1 * 10000.0f)) | ((uint32_t)(uint16_t)(int16_t)((txIqC2 - 1.0f) * 10000.0f) << 16);
+	RTC->BKP17R = TXTRIM_MAGIC;
+}
+void txtrim_restore(void)
+{
+	if(RTC->BKP17R != TXTRIM_MAGIC) return;
+	txDcI  = (float)(int16_t)(uint16_t)(RTC->BKP15R & 0xFFFF) / 10.0f;
+	txDcQ  = (float)(int16_t)(uint16_t)(RTC->BKP15R >> 16) / 10.0f;
+	txIqC1 = (float)(int16_t)(uint16_t)(RTC->BKP16R & 0xFFFF) / 10000.0f;
+	txIqC2 = 1.0f + (float)(int16_t)(uint16_t)(RTC->BKP16R >> 16) / 10000.0f;
+}
+/* DAC centre while transmitting.
+   The DACs' output is (code / 4096) x the 3.3 V analog rail, so any noise on
+   that rail comes out multiplied by code/4096. Parked at mid-scale (2048) the
+   transmitter put out broadband noise only about 79 dB/Hz below the carrier,
+   even with no modulation. The path from the DACs to the mixers is AC-coupled,
+   so the centre value itself does not matter: keeping it just above the signal's
+   peak passes proportionally less rail noise (measured: -6 dB at 1024, -10 dB
+   at 600). In auto (g_txDacMidFixed = 0) the centre follows the signal peak:
+   up at once, down slowly, so it never clips and it falls to almost nothing
+   between CW elements and speech. Console 'e<code>' fixes it for tests.
+   The real cure is a quieter analog rail / DAC reference (hardware). */
+volatile int g_txDacMid = 2048;        /* centre in use right now */
+volatile int g_txDacMidFixed = 0;      /* 0 = auto, otherwise a fixed centre code */
+/* apply the trim to one I/Q sample pair (DAC counts centred on 2048 on entry) */
+static inline void tx_trim(int *dacI, int *dacQ)
+{
+	static float peak = 0.0f;
+	float i = (float)(*dacI - 2048), q = (float)(*dacQ - 2048);
+	q = txIqC1 * i + txIqC2 * q;
+	float ai = i < 0 ? -i : i, aq = q < 0 ? -q : q;
+	float a = ai > aq ? ai : aq;
+	if(a > peak) peak = a; else peak *= 0.99997f;          /* falls to about 1/4 in one second */
+	int mid = g_txDacMidFixed;
+	if(!mid)
+	{
+		mid = (int)(peak * 1.05f) + 300;                   /* headroom, and stay off the bottom ~0.2 V where the DAC buffer is not linear (at +40 the tone lost 1.4 dB and grew -35 dBc products) */
+		if(mid > 2048) mid = 2048;
+	}
+	g_txDacMid = mid;
+	*dacI = (int)(i + txDcI + (float)mid + 0.5f);
+	*dacQ = (int)(q + txDcQ + (float)mid + 0.5f);
+}
+
 /* Transmit power setting (menu item "TX"). Each step is a drive value, with or
    without the HMC482 amplifier. The dBm / mW shown for a step is that radio's
    own calibration value (txPowerCal[], tenths of a dBm), measured into 50 ohms
@@ -221,9 +279,9 @@ typedef struct { float drive; uint8_t amp; uint8_t chipGain; uint16_t color; } t
 const tx_power_step_t txPowerTableStd[TX_POWER_STEPS] = {
 	{  8.0f, 0, 0, ILI9340_WHITE  },   /* no amp, clean */
 	{ 25.0f, 0, 0, ILI9340_WHITE  },   /* no amp, clean */
-	{ 80.0f, 0, 0, ILI9340_YELLOW },   /* no amp, mixer/driver starting to compress */
+	{ 45.0f, 0, 0, ILI9340_WHITE  },   /* no amp, close to DAC full scale (drive ~50 clips) */
 	{ 25.0f, 1, 0, ILI9340_RED    },   /* HMC482: see warning */
-	{ 50.0f, 1, 0, ILI9340_RED    },   /* HMC482 saturated: see warning. The dial stops here. */
+	{ 45.0f, 1, 0, ILI9340_RED    },   /* HMC482 saturated: see warning. The dial stops here. */
 };
 /* Table used when "LPF on transmit" is enabled (g_lpfOnTx, boards with the
    VDDBG fix). Transmit goes mixers -> HMC1023 (TX direction, mux channel 3) ->
@@ -237,10 +295,10 @@ const tx_power_step_t txPowerTableLpf[TX_POWER_STEPS] = {
 	{ 25.0f, 0, 0, ILI9340_WHITE  },   /* through the chip, 0 dB */
 	{  8.0f, 0, 1, ILI9340_WHITE  },   /* through the chip, +20 dB */
 	{ 25.0f, 0, 1, ILI9340_WHITE  },   /* through the chip, +20 dB: about 1 mW, clean and filtered */
-	{ 80.0f, 0, 1, ILI9340_YELLOW },   /* driver compressing. The dial stops here. */
+	{ 45.0f, 0, 1, ILI9340_YELLOW },   /* close to DAC full scale; 3rd-order products about -23 dBc. The dial stops here. */
 };
-int16_t txPowerCalStd[6] = { -310, -213, -178, 85, 120, 0 };   /* per-unit, tenths of a dBm (6 slots stored, 5 used) */
-int16_t txPowerCalLpf[6] = { -293, -195,  -96,  3,  38, 0 };
+int16_t txPowerCalStd[6] = { -310, -213, -160, 85, 120, 0 };   /* per-unit, tenths of a dBm (6 slots stored, 5 used) */
+int16_t txPowerCalLpf[6] = { -293, -195,  -96,  3,  55, 0 };
 extern int g_lpfOnTx;
 #define TXTAB (g_lpfOnTx ? txPowerTableLpf : txPowerTableStd)
 #define TXCAL (g_lpfOnTx ? txPowerCalLpf : txPowerCalStd)
@@ -265,7 +323,7 @@ void txPowerLabel(int idx, char *out)
 
 /* Per-unit TX power calibration lives in backup registers BKP7R..BKP9R (two
    int16 each) with a magic in BKP10R; same lifetime as the frequency cal. */
-#define TXCAL_MAGIC 0x54584334u   /* "TXC4": BKP7-9R = stock table, BKP12-14R = LPF-on-transmit table */
+#define TXCAL_MAGIC 0x54584335u   /* "TXC4": BKP7-9R = stock table, BKP12-14R = LPF-on-transmit table */
 static void txcal_pack(int16_t *c, volatile uint32_t *r0, volatile uint32_t *r1, volatile uint32_t *r2)
 {
 	*r0 = ((uint32_t)(uint16_t)c[0]) | ((uint32_t)(uint16_t)c[1] << 16);
@@ -1068,6 +1126,7 @@ void Encoder(void)
 						if(dac2OutVal > txDacOutValMax) txDacOutValMax = dac2OutVal;
 					}
 
+						if(transmitting) tx_trim(&dac1OutVal, &dac2OutVal);
 						dac1SetValue(transmitting ? dac2OutVal : dac1OutVal);   /* TX: I/Q swapped so LSB/USB come out on the labelled side (measured 2026-11-09) */
 						dac2SetValue(transmitting ? dac1OutVal : dac2OutVal);
 //					}
@@ -1117,7 +1176,8 @@ void Encoder(void)
 							if(dac2OutVal > txDacOutValMax) txDacOutValMax = dac2OutVal;
 						}
 
-							dac1SetValue(transmitting ? dac2OutVal : dac1OutVal);   /* TX: I/Q swapped so LSB/USB come out on the labelled side (measured 2026-11-09) */
+							if(transmitting) tx_trim(&dac1OutVal, &dac2OutVal);
+						dac1SetValue(transmitting ? dac2OutVal : dac1OutVal);   /* TX: I/Q swapped so LSB/USB come out on the labelled side (measured 2026-11-09) */
 							dac2SetValue(transmitting ? dac1OutVal : dac2OutVal);
 
 //					}
@@ -1164,7 +1224,8 @@ void Encoder(void)
 							if(dac2OutVal > txDacOutValMax) txDacOutValMax = dac2OutVal;
 						}
 
-							dac1SetValue(transmitting ? dac2OutVal : dac1OutVal);   /* TX: I/Q swapped so LSB/USB come out on the labelled side (measured 2026-11-09) */
+							if(transmitting) tx_trim(&dac1OutVal, &dac2OutVal);
+						dac1SetValue(transmitting ? dac2OutVal : dac1OutVal);   /* TX: I/Q swapped so LSB/USB come out on the labelled side (measured 2026-11-09) */
 							dac2SetValue(transmitting ? dac1OutVal : dac2OutVal);
 
 
@@ -2336,6 +2397,7 @@ setFreq(vfoAFrequency);
 	{ extern void gps_init(void); gps_init(); }   // GPS serial port (USART6); the module's power is left as hal.c set it
 	lpfcorner_restore(); // LPF corner setting (before state_restore applies the LPF mode)
 	txcal_restore();     // per-unit transmit power calibration
+	txtrim_restore();    // per-unit transmit carrier / sideband trim
 	freqcal_restore();   // before state_restore, so the restored frequency is tuned with the calibration
 	state_restore();
 

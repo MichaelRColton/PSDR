@@ -221,6 +221,19 @@ static void handle_cmd(char *s)
 	                if (sp) cw_send_text(wpm, sp + 1); else if (wpm >= 5 && wpm <= 40) g_cwWpm = wpm;
 	            }
 	            usb_printf("cw: wpm=%d keyer=%d busy=%d\r\n", g_cwWpm, g_cwKeyerOn, cw_busy()); } break;
+	case 'z': {   /* transmit trim: z <dcI x10> <dcQ x10> <c1 x10000> <c2 x10000>; zs = save; z alone reports */
+	            extern volatile float txDcI, txDcQ, txIqC1, txIqC2; extern void txtrim_save(void);
+	            int a, b, c, d;
+	            if (s[1] == 's') txtrim_save();
+	            else if (sscanf(s + 1, "%d %d %d %d", &a, &b, &c, &d) == 4) {
+	                txDcI = a / 10.0f; txDcQ = b / 10.0f; txIqC1 = c / 10000.0f; txIqC2 = d / 10000.0f;
+	            }
+	            usb_printf("txtrim: dcI=%d dcQ=%d (x10 counts) c1=%d c2=%d (x10000)\r\n", (int)(txDcI * 10.0f), (int)(txDcQ * 10.0f),
+	                       (int)(txIqC1 * 10000.0f), (int)(txIqC2 * 10000.0f)); } break;
+	case 'e': {   /* DAC centre while transmitting: e0 = follow the signal (default), e<64..2048> = fixed; e = report */
+	            extern volatile int g_txDacMid, g_txDacMidFixed; int v = atoi(s + 1);
+	            if (s[1] && (v == 0 || (v >= 64 && v <= 2048))) g_txDacMidFixed = v;
+	            usb_printf("txdacmid: fixed=%d now=%d\r\n", g_txDacMidFixed, g_txDacMid); } break;
 	case 'N': {   /* GPS: N = report; Np0 / Np1 = power pin level; Nr = reset pulse; Nb<baud> = serial speed */
 	            extern void gps_report(void); extern void gps_power(int level); extern void gps_reset_pulse(void);
 	            extern void gps_set_baud(uint32_t baud);
