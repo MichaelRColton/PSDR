@@ -89,6 +89,13 @@ float amAudioLp = 0.0f;   /* AM: one-pole audio lowpass on the recovered envelop
 float amDcI = 0.0f;       /* AM: per-channel DC blockers (kill LO self-mix offset so the */
 float amDcQ = 0.0f;       /*     carrier can sit anywhere in the passband - mistune-tolerant) */
 float amHpState = 0.0f;   /* AM: audio high-pass state (filterLowerLimit edge) */
+/* Receive DC blockers ahead of the FFT filter. The ADC inputs carry a DC offset
+   (LO self-mixing) of several percent of full scale. The old brick-wall mask
+   happened to exclude the DC bin exactly; the windowed kernel has a finite
+   slope at a filter edge of 0, so that offset would leak into the SSB passband
+   and pin the S-meter. Tracking it out (~6 Hz corner) removes it at the source,
+   and takes the bright line out of the centre of the waterfall. */
+float rxDcI = 0.0f, rxDcQ = 0.0f;
 
 /* AM pre-detection channel filter ("IF filter"). The envelope detector used to
    see the whole raw baseband (about +/-24 kHz), so it demodulated any carrier on
@@ -873,6 +880,16 @@ void Encoder(void)
 				}
 				int amPath = (mode == 2 || g_testTone > 0.0f) && (transmitting == 0);   /* anti-phase amAudio DAC path (receive only) */
 				float dacGain = transmitting ? txDrive : afGain;   /* TX drive is not the volume knob */
+				/* receive input with the DC offset tracked out (see rxDcI/rxDcQ) */
+				float rxQ = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
+				float rxI = (uhADCxConvertedValue2 - dcOffset2) / 4096.0f;
+				if(transmitting == 0)
+				{
+					rxDcQ += 0.0008f * (rxQ - rxDcQ);
+					rxDcI += 0.0008f * (rxI - rxDcI);
+				}
+				rxQ -= rxDcQ;
+				rxI -= rxDcI;
 				/* transmit input: the microphone, or the console test tone */
 				float micIn = (uhADCxConvertedValue1 - dcOffset1) / 4096.0f;
 				if(g_txToneOn)
@@ -887,8 +904,8 @@ void Encoder(void)
 				case 0:
 					if(transmitting == 0)
 					{
-						samplesA[sampleIndex*2] = ((uhADCxConvertedValue3 - dcOffset3)/4096.0); // - 2048;
-						samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
+						samplesA[sampleIndex*2] = rxQ;
+						samplesA[sampleIndex*2 + 1] = rxI;
 					} else {
 						samplesA[sampleIndex*2] = micIn;
 						samplesA[sampleIndex*2 + 1] = micIn;
@@ -936,8 +953,8 @@ void Encoder(void)
 				case 1:
 					if(transmitting == 0)
 					{
-						samplesB[sampleIndex*2] = ((uhADCxConvertedValue3 - dcOffset3)/4096.0); // - 2048;
-						samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
+						samplesB[sampleIndex*2] = rxQ;
+						samplesB[sampleIndex*2 + 1] = rxI;
 					} else {
 						samplesB[sampleIndex*2] = micIn;
 						samplesB[sampleIndex*2 + 1] = micIn;
@@ -983,8 +1000,8 @@ void Encoder(void)
 				case 2:
 					if(transmitting == 0)
 					{
-						samplesC[sampleIndex*2] = ((uhADCxConvertedValue3 - dcOffset3)/4096.0); // - 2048;
-						samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
+						samplesC[sampleIndex*2] = rxQ;
+						samplesC[sampleIndex*2 + 1] = rxI;
 					} else {
 						samplesC[sampleIndex*2] = micIn;
 						samplesC[sampleIndex*2 + 1] = micIn;
