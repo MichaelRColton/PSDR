@@ -154,6 +154,14 @@ static void handle_cmd(char *s)
 	case 'W': {   /* audio self-test amplitude W<x1000> (pre-afGain) */
 	            float a = (float)atof(s + 1) / 1000.0f; if (a < 0.0f) a = 0.0f; if (a > 0.5f) a = 0.5f;
 	            g_testAmp = a; usb_printf("testamp=%d/1000\r\n", (int)(g_testAmp * 1000.0f)); } break;
+	case 'J': {   /* frequency calibration: J<ppb> sets + saves the reference error, J alone reports it */
+	            extern long g_freqCalPpb; extern void freqCalSet(long ppb); extern void freqcal_save(void);
+	            if (s[1] == '-' || (s[1] >= '0' && s[1] <= '9')) {
+	                freqCalSet(strtol(s + 1, 0, 10));
+	                freqcal_save();
+	                setFreq((unsigned long)vfoAFrequency);
+	            }
+	            usb_printf("freqcal=%ld ppb\r\n", g_freqCalPpb); } break;
 	case 'F': { long hz = strtol(s + 1, 0, 10);
 	            if (hz >= 2500000L && hz <= 175000000L) {
 	                vfoAFrequency = hz;

@@ -1586,6 +1586,23 @@ const char *charge_label(void)
    free bonus Michael was fine with. */
 #define STATE_MAGIC     0x50534432u   /* "PSD2": bits 24-25 of BKP2R = LPF mode (0..2) */
 #define STATE_MAGIC_OLD 0x50534431u   /* "PSD1": bit 24 = +20 dB on, RX always through the chip */
+/* Frequency calibration (reference error, ppb) lives in its own backup
+   registers so it survives sleep and power cycles independently of the user
+   state above. It is lost only if the battery is fully removed/flat; then the
+   radio falls back to 0 (uncalibrated) until 'J' is sent again. */
+#define FREQCAL_MAGIC 0x43414C31u   /* "CAL1" */
+void freqcal_save(void)
+{
+	RTC->BKP5R = (uint32_t)g_freqCalPpb;
+	RTC->BKP6R = FREQCAL_MAGIC;
+}
+void freqcal_restore(void)
+{
+	if(RTC->BKP6R != FREQCAL_MAGIC) return;
+	freqCalSet((long)(int32_t)RTC->BKP5R);
+	setFreq((unsigned long)vfoAFrequency);   /* the boot-time tune used the uncalibrated value */
+}
+
 void state_save(void)
 {
 	RTC->BKP1R = (uint32_t)vfoAFrequency;
@@ -1977,6 +1994,7 @@ setFreq(vfoAFrequency);
 	// first draw, so the display never flashes the power-on defaults on wake.
 	// rtc_init() runs first: it enables backup-domain access where the state lives.
 	rtc_init();          // LSE + RTC clock (keeps time on battery; set from the Control Panel)
+	freqcal_restore();   // before state_restore, so the restored frequency is tuned with the calibration
 	state_restore();
 
 	updateDisplay(1);    // first draw now shows the restored state, not defaults

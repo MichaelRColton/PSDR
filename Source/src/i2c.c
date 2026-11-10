@@ -724,7 +724,25 @@ write_Si5338(31, 0xC0); //output driver off?
 }
 
 
-unsigned long long vcoFreq = 2840000000;
+/* Si5338 VCO frequency used to compute the output dividers. The nominal value
+   assumes a perfect reference; freqCalSet() scales it by the measured reference
+   error so the dial reads true. */
+#define VCO_NOMINAL 2840000000ULL
+unsigned long long vcoFreq = VCO_NOMINAL;
+long g_freqCalPpb = 0;   /* reference error in parts per billion; negative = the radio's reference runs slow */
+
+/* Frequency calibration. ppb is how far the radio's reference is off:
+     ppb = (true frequency - dial reading) / dial reading * 1e9
+   measured by tuning for zero-beat on a known carrier. Example: a 10.000000 MHz
+   standard that zero-beats at 10.000757 MHz on the dial gives about -75700 ppb.
+   Call setFreq() afterwards to retune with the new value. */
+void freqCalSet(long ppb)
+{
+	if(ppb >  500000L) ppb =  500000L;     /* +/-500 ppm is far beyond any sane crystal error */
+	if(ppb < -500000L) ppb = -500000L;
+	g_freqCalPpb = ppb;
+	vcoFreq = (unsigned long long)((long long)VCO_NOMINAL + ((long long)VCO_NOMINAL * (long long)ppb) / 1000000000LL);
+}
 double correctionFactor = 1;
 void setFreq(unsigned long frequency)
 {
