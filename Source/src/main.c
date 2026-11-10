@@ -1525,7 +1525,7 @@ int lpfCoarseFor(long hz)
 	if(g_lpfCorner == LPF_CORNER_OFF) return -1;
 	if(g_lpfCorner >= 0 && g_lpfCorner <= 8) return g_lpfCorner;
 	for(int c = 0; c < 9; c++)                         /* auto */
-		if((long)lpfCornerMHz[c] * 1000000L * 10L >= hz * 13L) return c;
+		if((long long)lpfCornerMHz[c] * 10000000LL >= (long long)hz * 13LL) return c;   /* 64-bit: hz*13 overflows 32 bits above 165 MHz */
 	return -1;                                         /* above the 72 MHz corner: no filter fits */
 }
 
@@ -1645,7 +1645,7 @@ void tx_chip_config(void)
 	if(g_lpfCorner >= 0 && g_lpfCorner <= 8) coarse = g_lpfCorner;
 	else
 		for(int c = 0; c < 9; c++)
-			if((long)lpfCornerMHz[c] * 1000000L * 10L >= vfoAFrequency * 13L) { coarse = c; break; }
+			if((long long)lpfCornerMHz[c] * 10000000LL >= (long long)vfoAFrequency * 13LL) { coarse = c; break; }
 	if(g_lpfMode == LPF_BYPASS) { lpf_power(1); HAL_Delay(3); }   /* chip was off in receive */
 	hmc_write_reg(1, (1u << 2) | (1u << 3) | (1u << 4));         /* 0x1C: I_en | Q_en | force_cal */
 	uint32_t gain = TXTAB[g_txPower].chipGain ? (1u << 4) : 0u;
