@@ -2977,9 +2977,29 @@ extern void lcd_stream_begin(void);
 extern void lcd_stream_px(uint16_t color);
 extern void lcd_stream_end(void);
 
+/* The waterfall used to add one line per pass of the main loop that had a new
+   FFT, so its speed followed whatever else the loop was doing (it sped up in
+   transmit and between CW elements) and any FFT that arrived between two drawn
+   lines was simply dropped, which made short signals flicker. Now every FFT is
+   folded into a per-bin peak hold, and one line is drawn from that hold every
+   WATERFALL_LINE_MS, so the scroll rate is steady and nothing is missed. */
+#define WATERFALL_LINE_MS 50
 void drawWaterfall(void)
 {
+  static float wfHold[FFT_SIZE];
+  static uint32_t wfLastLine = 0;
+  static uint8_t wfHave = 0;
   if(newWaterFallData == 1)
+    {
+      static float wfMag[FFT_SIZE];
+      arm_cmplx_mag_f32(samplesDisplay, wfMag, FFT_SIZE);
+      for(int k = 0; k < FFT_SIZE; k++) if(wfMag[k] > wfHold[k]) wfHold[k] = wfMag[k];
+      wfHave = 1;
+      newWaterFallData = 0;
+    }
+  if(!wfHave || (HAL_GetTick() - wfLastLine) < WATERFALL_LINE_MS) return;
+  wfLastLine = HAL_GetTick();
+  wfHave = 0;
     {
       static float magnitudes[FFT_SIZE];
       static float mags;
@@ -2992,8 +3012,7 @@ void drawWaterfall(void)
       else
         gradient = bitmapWebSdrGradient;
 
-      //arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
-      arm_cmplx_mag_f32(samplesDisplay, magnitudes, FFT_SIZE);
+      for(int k = 0; k < FFT_SIZE; k++) { magnitudes[k] = wfHold[k]; wfHold[k] = 0.0f; }   /* peak since the last line */
 
       float fftMax = 0; //AH! These are being reset each time! Static makes them persistant right? Does it also ensure they are
       float fftMin = 100; //only initialized once? Have to try it when I get home. It would certainly be nice if the waterfall
