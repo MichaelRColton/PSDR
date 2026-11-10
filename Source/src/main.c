@@ -72,7 +72,7 @@ uint16_t filterKernelLength = 100; //what's a good value? How does it relate to 
 volatile uint16_t menuPos = 0;
 volatile uint16_t menuEncoderTicks = 0;
 volatile uint16_t menuLastPos = 1;
-uint16_t menuCount = 13;   /* number of menu items (see enum menuItems) */
+uint16_t menuCount = 14;   /* number of menu items (see enum menuItems) */
 uint32_t frequencyDialMultiplier = 1;
 
 long vfoAFrequency = 7030000;
@@ -187,6 +187,97 @@ volatile int      g_txKeyAmp   = 0;   /* 0 = no amp, 1 = through the HMC482 (tra
    used to be the speaker volume (afGain), so the volume knob set the output
    power. Now independent: console 'O<drive>'. */
 volatile float txDrive = 8.0f;
+
+/* Transmit power setting (menu item "TX"). Each step is a drive value with the
+   HMC482 in the path. The dBm / mW shown for a step is that radio's own
+   calibration value (txPowerCal[], tenths of a dBm), measured into 50 ohms with
+   a full-level 1 kHz test tone. Output power depends on the unit (amp gain,
+   mixer drive) and on the band, so each radio should be calibrated: console
+   'y<step> <dBm x10>' stores a measured value, and tools/tx_power_cal.py does
+   all six steps with a spectrum analyzer. The defaults below are one 2.6.1
+   unit at 7.1 MHz (2026-11-09). Speech peaks also depend on the microphone
+   level (there is no ALC yet), so treat the number as nominal.
+   Colour shows how clean the signal is at that drive:
+     white  - unwanted products 25-30 dB down
+     yellow - products about 20 dB down
+     red    - the amplifier is saturated. Emergency / CW only.
+   Above the last step the output collapses, so the dial stops there.
+   There is NO output low-pass filter on this board: the 3rd harmonic is only
+   about 8 dB below the fundamental at every setting. */
+/* WARNING - the drive values skip a window on purpose. On the unit measured,
+   drive 12 and 16 (about -9 to +3 dBm out) made the HMC482 break into a
+   parasitic oscillation at 2.546 GHz, at +7 to +8 dBm - stronger than the wanted
+   signal - and the 7 MHz gain dropped about 11 dB while it did. Drive 1, 4, 8
+   and 25 showed no oscillation; drive 50 showed a weak line near 2.29 GHz.
+   This is a hardware stability problem (bias network / layout), seen on one
+   unit at 7.1 MHz only, so the window may sit elsewhere on other units and
+   bands. Until the amplifier is stabilised, check the 2-3 GHz range on a
+   spectrum analyzer before trusting any amp setting on the air. */
+typedef struct { float drive; uint16_t color; int16_t defaultDbmX10; } tx_power_step_t;
+#define TX_POWER_STEPS 5
+#define TX_POWER_DEFAULT 2
+const tx_power_step_t txPowerTable[TX_POWER_STEPS] = {
+	{  1.0f, ILI9340_WHITE,  -218 },
+	{  4.0f, ILI9340_WHITE,   -99 },
+	{  8.0f, ILI9340_WHITE,   -38 },
+	{ 25.0f, ILI9340_YELLOW,   85 },
+	{ 50.0f, ILI9340_RED,     120 },
+};
+int16_t txPowerCal[6] = { -218, -99, -38, 85, 120, 0 };   /* per-unit, tenths of a dBm (6 slots stored, 5 used) */
+int g_txPower = TX_POWER_DEFAULT;
+int txPowerLast = -1;
+int txPowerCalDirty = 1;   /* redraw the label when a calibration value changes */
+
+/* "+3.7dBm 2.3mW " (always 14 characters, so it overwrites the previous one) */
+void txPowerLabel(int idx, char *out)
+{
+	int d = txPowerCal[idx];
+	int ad = d < 0 ? -d : d;
+	float mw = powf(10.0f, (float)d / 100.0f);
+	char pw[10];
+	if(mw < 0.095f)      snprintf(pw, sizeof(pw), "%duW", (int)(mw * 1000.0f + 0.5f));
+	else if(mw < 9.95f)  { int t = (int)(mw * 10.0f + 0.5f); snprintf(pw, sizeof(pw), "%d.%dmW", t / 10, t % 10); }
+	else                 snprintf(pw, sizeof(pw), "%dmW", (int)(mw + 0.5f));
+	char tmp[24];
+	snprintf(tmp, sizeof(tmp), "%c%d.%ddBm %s", d < 0 ? '-' : '+', ad / 10, ad % 10, pw);
+	snprintf(out, 15, "%-14s", tmp);
+}
+
+/* Per-unit TX power calibration lives in backup registers BKP7R..BKP9R (two
+   int16 each) with a magic in BKP10R; same lifetime as the frequency cal. */
+#define TXCAL_MAGIC 0x54584332u   /* "TXC2" (5-step table) */
+void txcal_save(void)
+{
+	RTC->BKP7R = ((uint32_t)(uint16_t)txPowerCal[0]) | ((uint32_t)(uint16_t)txPowerCal[1] << 16);
+	RTC->BKP8R = ((uint32_t)(uint16_t)txPowerCal[2]) | ((uint32_t)(uint16_t)txPowerCal[3] << 16);
+	RTC->BKP9R = ((uint32_t)(uint16_t)txPowerCal[4]) | ((uint32_t)(uint16_t)txPowerCal[5] << 16);
+	RTC->BKP10R = TXCAL_MAGIC;
+}
+void txcal_restore(void)
+{
+	if(RTC->BKP10R != TXCAL_MAGIC) return;
+	uint32_t r[3] = { RTC->BKP7R, RTC->BKP8R, RTC->BKP9R };
+	for(int i = 0; i < 6; i++)
+		txPowerCal[i] = (int16_t)(uint16_t)(r[i / 2] >> ((i & 1) * 16));
+	txPowerCalDirty = 1;
+}
+void txPowerCalSet(int idx, int dbmX10)
+{
+	if(idx < 0 || idx >= TX_POWER_STEPS) return;
+	if(dbmX10 < -600) dbmX10 = -600;
+	if(dbmX10 >  300) dbmX10 =  300;
+	txPowerCal[idx] = (int16_t)dbmX10;
+	txPowerCalDirty = 1;
+	txcal_save();
+}
+
+void txPowerSet(int idx)
+{
+	if(idx < 0) idx = 0;
+	if(idx >= TX_POWER_STEPS) idx = TX_POWER_STEPS - 1;
+	g_txPower = idx;
+	txDrive = txPowerTable[idx].drive;
+}
 unsigned int tone = 0;
 
 volatile uint8_t displayUpdating = 0;   /* ISR/main handshake - see menuPos note above; must be volatile */
@@ -1721,7 +1812,8 @@ void state_save(void)
 	RTC->BKP2R = ((uint32_t)(mode & 0x3))
 	           | (((uint32_t)(filterLowerLimit & 0xFF)) << 8)
 	           | (((uint32_t)(filterUpperLimit & 0xFF)) << 16)
-	           | (((uint32_t)(g_lpfMode & 0x3)) << 24);
+	           | (((uint32_t)(g_lpfMode & 0x3)) << 24)
+	           | (((uint32_t)((g_txPower + 1) & 0x7)) << 26);
 	RTC->BKP4R = (uint32_t)(afGain * 10.0f + 0.5f);   /* volume, 0..250 */
 	RTC->BKP3R = STATE_MAGIC;
 }
@@ -1737,6 +1829,7 @@ void state_restore(void)
 	if(fhi > flo && fhi <= 128) { filterLowerLimit = (int16_t)flo; filterUpperLimit = (int16_t)fhi; }
 	populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 	uint32_t v = RTC->BKP4R; if(v <= 250) afGain = (float)v / 10.0f;   /* volume */
+	{ int tp = (int)((p >> 26) & 0x7); txPowerSet(tp ? tp - 1 : TX_POWER_DEFAULT); }
 	if(magic == STATE_MAGIC) lpfModeSet((int)((p >> 24) & 0x3));
 	else lpfModeSet(((p >> 24) & 1) ? LPF_20DB : LPF_0DB);   /* old layout: that build always ran through the chip */
 }
@@ -2106,6 +2199,7 @@ setFreq(vfoAFrequency);
 	// first draw, so the display never flashes the power-on defaults on wake.
 	// rtc_init() runs first: it enables backup-domain access where the state lives.
 	rtc_init();          // LSE + RTC clock (keeps time on battery; set from the Control Panel)
+	txcal_restore();     // per-unit transmit power calibration
 	freqcal_restore();   // before state_restore, so the restored frequency is tuned with the calibration
 	state_restore();
 
@@ -2166,7 +2260,7 @@ setFreq(vfoAFrequency);
 		//if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
-			signalPath((consoleKey && g_txKeyAmp) ? transmit_with_amp_no_filter : transmit_no_amp_no_filter);
+			signalPath((!consoleKey || g_txKeyAmp) ? transmit_with_amp_no_filter : transmit_no_amp_no_filter);
 			/* Speaker off while transmitting: the DACs carry the TX signal, and it
 			   was coming out of the speaker too. (A CW sidetone can re-enable it.) */
 			HAL_GPIO_WritePin(AUDIO_AMP_NSHTDWN.port, AUDIO_AMP_NSHTDWN.pin, 0);
@@ -2225,6 +2319,7 @@ enum menuItems
   filterLowMenuItem,
   filterHighMenuItem,
   hmcGainMenuItem,
+  txPowerMenuItem,
   offMenuItem
 };
 
@@ -2318,6 +2413,14 @@ void updateMenu()
 			afGain += afGainStep * (encoderLastPos - encoderPos);
 			if(afGain > afGainMax) afGain = afGainMax;
 			if(afGain <= 0) afGain = 0;
+			encoderLastPos = encoderPos;
+		}
+		break;
+	case txPowerMenuItem:
+		encoderPos = getPos();
+		if(encoderPos != encoderLastPos)
+		{
+			txPowerSet(g_txPower + ((encoderLastPos - encoderPos) > 0 ? 1 : -1));
 			encoderLastPos = encoderPos;
 		}
 		break;
@@ -2568,6 +2671,23 @@ void updateDisplay(uint8_t force)
 		const char *hs = (g_lpfMode == LPF_20DB) ? "LPF +20dB " : (g_lpfMode == LPF_0DB) ? "LPF 0dB   " : "LPF Bypass";
 		for(const char *p = hs; *p; p++) Adafruit_GFX_write(*p);
 		lpfModeLast = g_lpfMode;
+	}
+
+	/* Transmit power: "TX" is red when selected (like every menu item); the value
+	   is coloured by how clean the signal is at that level (see txPowerTable). */
+	if(force || g_txPower != txPowerLast || txPowerCalDirty
+	    || (menuPos != menuLastPos && (menuPos == txPowerMenuItem || menuLastPos == txPowerMenuItem)))
+	{
+		char lbl[16];
+		txPowerLabel(g_txPower, lbl);
+		Adafruit_GFX_setTextSize(1);
+		Adafruit_GFX_setCursor(216, 42);   /* under the LPF line */
+		Adafruit_GFX_setTextColor(menuPos == txPowerMenuItem ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
+		for(const char *p = "TX "; *p; p++) Adafruit_GFX_write(*p);
+		Adafruit_GFX_setTextColor(txPowerTable[g_txPower].color, ILI9340_BLACK);
+		for(const char *p = lbl; *p; p++) Adafruit_GFX_write(*p);
+		txPowerLast = g_txPower;
+		txPowerCalDirty = 0;
 	}
 
 	/* Battery line, centered in the right panel (right of the waterfall, x>=121):

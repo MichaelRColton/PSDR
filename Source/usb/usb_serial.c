@@ -164,6 +164,17 @@ static void handle_cmd(char *s)
 	            g_txKeyTone = tb; g_txKeyAmp = amp ? 1 : 0;
 	            g_txKeyUntil = HAL_GetTick() + (uint32_t)ms;
 	            usb_printf("tx key %d ms tone=%d Hz amp=%d\r\n", ms, tb, g_txKeyAmp); } break;
+	case 'w': {   /* transmit power step, same as the on-device "TX" menu item: w<0-4>; w alone reports */
+	            extern int g_txPower; extern void txPowerSet(int idx); extern volatile float txDrive;
+	            if (s[1] >= '0' && s[1] <= '9') txPowerSet(s[1] - '0');
+	            usb_printf("txpower=%d drive=%d/100\r\n", g_txPower, (int)(txDrive * 100.0f)); } break;
+	case 'y': {   /* TX power calibration: y<step> <dBm x10> stores this unit's measured output for a step;
+	                 y alone lists them (tenths of a dBm) */
+	            extern int16_t txPowerCal[]; extern void txPowerCalSet(int idx, int dbmX10);
+	            int idx = -1, v = 0;
+	            if (sscanf(s + 1, "%d %d", &idx, &v) == 2) txPowerCalSet(idx, v);
+	            usb_printf("txcal(dBm x10): %d %d %d %d %d\r\n", txPowerCal[0], txPowerCal[1], txPowerCal[2],
+	                       txPowerCal[3], txPowerCal[4]); } break;
 	case 'O': {   /* transmit drive (DAC scale while transmitting); O alone reports it */
 	            extern volatile float txDrive;
 	            if (s[1]) { float d = (float)atof(s + 1); if (d < 0.0f) d = 0.0f; if (d > 500.0f) d = 500.0f; txDrive = d; }
