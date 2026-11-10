@@ -369,12 +369,8 @@ class Panel(tk.Tk):
         col.pack(side="left", fill="y")
 
         # --- front end / path ---
-        g = self._group(col, "Front end  (bench override)")
+        g = self._group(col, "Front end")
         g.pack(fill="x", pady=3)
-        self.bench_var = tk.BooleanVar()
-        tk.Checkbutton(g, text="bench override (g)", variable=self.bench_var,
-                       command=lambda: self.send_flag("g", self.bench_var, "bench"),
-                       bg=PANEL, fg=INK, selectcolor=BG).grid(row=0, column=0, columnspan=2, sticky="w")
         tk.Label(g, text="mux route (M)", bg=PANEL, fg=MUTE).grid(row=1, column=0, sticky="w")
         self.mux_var = tk.IntVar(value=self.mux)
         for i, name in MUX_NAMES.items():

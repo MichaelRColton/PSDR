@@ -1062,15 +1062,14 @@ volatile uint32_t g_hmc1023_readback = 0xDEADBEEF;  // reg0 presence word (expec
 volatile uint32_t g_hmc1023_reg1     = 0xDEADBEEF;  // reg1 read-back after config
 volatile uint32_t g_hmc1023_reg2     = 0xDEADBEEF;  // reg2 read-back after config
 volatile uint8_t  g_hmc1023_r3       = 0xAA;
-volatile int      g_filter_in        = 0;           // 0 = bypass (B2, stock), 1 = route RX through HMC1023 (mux B4). Toggle over serial.
+volatile int      g_filter_in        = 1;           // 1 = filter in -> 5V boost on (default RX path; see rx_path_default). 0 = bypass (B2, stock).
 
 volatile int      g_amp_in           = 0;           // 1 = power + insert the HMC482 RF gain block in RX
 volatile int      g_amp_pol          = 0;           // AMP_SWITCH sense (flip if "insert" is the wrong way)
-volatile int      g_bench            = 0;           // 0 = stock RX path (no GPIO overrides); 1 = apply bench forcing
 volatile int      g_trx              = 0;           // TRX_SWITCH: 0 = receive
 volatile int      g_txrf             = 1;           // TX_RF_SWITCH_A: 1 = antenna/normal, 0 = VNA-out path
 volatile int      g_imp              = 0;           // IMP_BRIDGE_SWITCH_A: 0 = bypass
-volatile int      g_filt_ch          = 1;           // filter mux channel (S1<<1)|S0: 1=bypass(stock), 0=ext filter(DNF), 2/3=through HMC1023 (opposite dirs: RX vs TX)
+volatile int      g_filt_ch          = 2;           // filter mux channel (S1<<1)|S0: 2=through HMC1023 RX (default; see rx_path_default), 1=bypass(stock), 0=ext filter(DNF), 3=HMC1023 TX dir
 
 /* USB CDC serial console (Source/usb/usb_serial.c). */
 void usb_serial_init(void);
@@ -1190,32 +1189,75 @@ void hmc1023_config_rx(void)
 	g_hmc1023_reg2 = hmc_read_reg(2);
 }
 
-int g_hmcGainOn = 0;     /* on-device HMC1023 RX-preamp state (menu toggle) */
+int g_hmcGainOn = 0;     /* on-device HMC1023 RX-preamp (+20 dB) state (menu toggle) */
 int hmcGainLast = -1;    /* last drawn state, so the display redraws on change */
 
-/* Toggle the whole RX-through-HMC1023 path as one on-device control.
-   ON  = configure the chip (I/Q channels + ~20 dB gain), route RX through it
-         (mux ch2), pin the RF switches to plain antenna RX, and enable the
-         bench overrides so the routing holds. OFF = back to the stock bypass
-         RX path and power the LPF down. Matches the console H + M2 + g1 combo
-         that measured a clean ~66 dB on the bench. */
+/* Drive the RX routing GPIOs from the live routing state. Called each receive
+   pass (after signalPath(recieve_*), which would otherwise force the mux to
+   bypass) and once from rx_path_default() at boot. Transmit is owned by
+   signalPath(transmit_*), so this only runs while receiving. */
+void rx_route_apply(void)
+{
+	// Filter mux select lines to BOTH muxes (U211+U298). ch = (S1<<1)|S0:
+	// 2 = through the HMC1023 (RX), 1 = bypass (stock), 0 = external filter (DNF),
+	// 3 = through the HMC1023 (TX direction).
+	HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, g_filt_ch & 1);
+	HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, (g_filt_ch >> 1) & 1);
+	// 5V boost: on only when the LPF or amp needs it. The ADP1613 switcher
+	// desensitizes the HF front end, so stock bypass RX leaves it off.
+	HAL_GPIO_WritePin(FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin,
+	                  (g_filter_in || g_amp_in) ? 1 : 0);
+	// RF gain block (HMC482). amp OFF -> stock bypass (A=0,B=1); amp ON -> insert
+	// it (g_amp_pol flips the unverified insert sense).
+	HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, g_amp_in ? 0 : 1);  // 0 = supply on
+	if (g_amp_in) {
+		HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, g_amp_pol ? 0 : 1);
+		HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, g_amp_pol ? 1 : 0);
+	} else {
+		HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0);  // stock bypass
+		HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1);
+	}
+	// T/R switch, TX/antenna RF switch, imp-bridge switch.
+	HAL_GPIO_WritePin(TRX_SWITCH.port, TRX_SWITCH.pin, g_trx ? 1 : 0);
+	HAL_GPIO_WritePin(TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, g_txrf ? 1 : 0);
+	HAL_GPIO_WritePin(TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, g_txrf ? 0 : 1);
+	HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, g_imp ? 1 : 0);
+	HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, g_imp ? 0 : 1);
+}
+
+/* Default RX front end -- the combination proven on the air (WWV in AM; other
+   routings were weaker or passed no audio):
+     - mux route 2       : signal through the HMC1023 (RX direction)
+     - LPF rail powered  : the HMC1023 needs its analog rail up
+     - filter in / boost : 5V boost on  (g_filter_in -> FIVE_VOLT_REGULATOR_ENABLE)
+     - filter BYPASS on  : HMC1023 internal LPF out of circuit (gain/buffer only)
+     - TX-RF switch on   : antenna to the receiver (not the VNA-out path)
+     - TRX / imp-bridge / HMC482 amp all off (plain antenna receive)
+   The HMC1023's +20 dB gain stage follows the on-device toggle (g_hmcGainOn). */
+void rx_path_default(void)
+{
+	lpf_power(1);                                        /* HMC1023 LPF rail up */
+	HAL_Delay(2);
+	hmc_write_reg(1, (1u << 2) | (1u << 3) | (1u << 4)); /* 0x1C: I_en | Q_en | force_cal */
+	uint32_t gain = g_hmcGainOn ? (1u << 4) : 0u;        /* reg2 bit4 = +10 dB/ch (+20 dB total) */
+	/* reg2: 20 MHz corner | filter BYPASS (bit5) | gain | drvr01 | opamp01 */
+	hmc_write_reg(2, (4u << 6) | (1u << 5) | gain | (1u << 2) | (1u << 0));
+	g_hmc1023_reg1 = hmc_read_reg(1);
+	g_hmc1023_reg2 = hmc_read_reg(2);
+	g_filt_ch = 2;                       /* mux -> through the HMC1023 (RX) */
+	g_filter_in = 1;                     /* filter in -> 5V boost on */
+	g_amp_in = 0;                        /* HMC482 TX amp out of RX */
+	g_trx = 0; g_txrf = 1; g_imp = 0;    /* plain antenna receive (not TX / not VNA) */
+	rx_route_apply();                    /* drive the routing GPIOs now */
+}
+
+/* On-device +20 dB toggle: flip only the HMC1023 gain stage, keeping the default
+   RX routing in place (OFF no longer tears down to the stock bypass path, which
+   passed weak/no audio). */
 void hmcGainSet(int on)
 {
-	if(on)
-	{
-		hmc1023_config_rx();                 /* reg1=0x1C, reg2=0x115, LPF powered */
-		g_filt_ch = 2;                       /* filter mux -> RX direction through the HMC1023 */
-		g_amp_in  = 0;                       /* keep the HMC482 TX amp out of RX */
-		g_trx = 0; g_txrf = 1; g_imp = 0;    /* plain antenna receive (not TX / not VNA) */
-		g_bench = 1;                         /* apply the RX-path GPIO overrides each loop */
-	}
-	else
-	{
-		g_bench   = 0;                       /* stock bypass RX path (signalPath owns the mux) */
-		g_filt_ch = 1;                       /* bypass */
-		lpf_power(0);                        /* power the HMC1023 LPF down */
-	}
 	g_hmcGainOn = on ? 1 : 0;
+	rx_path_default();                   /* re-push reg2 with the new gain bit */
 }
 
 /* --- Display readback (bit-bang) ------------------------------------------
@@ -1841,6 +1883,11 @@ setFreq(vfoAFrequency);
 	// NOT the full probe -- no reg writes, no mux switch unless state_restore asks.
 	hmc1023_io_init();
 
+	// Establish the default RX front end (mux2 through the HMC1023, LPF powered,
+	// filter bypassed, 5V boost on, antenna via the TX-RF switch). Proven on the
+	// air; the +20 dB gain stage follows the on-device toggle.
+	rx_path_default();
+
 	// Restore freq/mode/filter/volume/HMC saved before the last sleep BEFORE the
 	// first draw, so the display never flashes the power-on defaults on wake.
 	// rtc_init() runs first: it enables backup-domain access where the state lives.
@@ -1865,38 +1912,6 @@ setFreq(vfoAFrequency);
 	//MAIN LOOP - Lowest Priority
 	while(1)
 	{
-		if (g_bench) {   // bench overrides OFF by default -> use the stock receive path
-		// Live filter A/B (bench): re-assert the RX mux every loop so signalPath()
-		// can't force bypass. Poke g_filter_in over SWD: 1=HMC1023 in (B4), 0=bypass.
-		// Shared select lines to BOTH muxes (U211+U298). ch = (S1<<1)|S0:
-		// 1=bypass (stock), 0=external filter (DNF), 2 & 3 = through the HMC1023
-		// in opposite directions (one is RX, one is TX).
-		HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, g_filt_ch & 1);
-		HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, (g_filt_ch >> 1) & 1);
-		// 5V boost: enable ONLY when the LPF or amp needs it. Stock RX turns it off
-		// on purpose -- the ADP1613 switcher desensitizes the HF front end -- so
-		// forcing it on was deafening the receiver. Off in plain bypass RX.
-		HAL_GPIO_WritePin(FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin,
-		                  (g_filter_in || g_amp_in) ? 1 : 0);
-		// RF gain block (HMC482). amp OFF -> stock BYPASS (A=0,B=1, exactly as
-		// signalPath sets it) so the signal passes straight through. amp ON ->
-		// insert it; g_amp_pol flips the unverified insert sense.
-		HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, g_amp_in ? 0 : 1);  // 0 = supply on
-		if (g_amp_in) {
-			HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, g_amp_pol ? 0 : 1);
-			HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, g_amp_pol ? 1 : 0);
-		} else {
-			HAL_GPIO_WritePin(AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0);  // stock bypass
-			HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1);
-		}
-		// Force the rest of the RX path deterministically (don't depend on signalPath
-		// having run): T/R switch, the TX/antenna RF switch, and the imp-bridge switch.
-		HAL_GPIO_WritePin(TRX_SWITCH.port, TRX_SWITCH.pin, g_trx ? 1 : 0);
-		HAL_GPIO_WritePin(TX_RF_SWITCH_A.port, TX_RF_SWITCH_A.pin, g_txrf ? 1 : 0);
-		HAL_GPIO_WritePin(TX_RF_SWITCH_B.port, TX_RF_SWITCH_B.pin, g_txrf ? 0 : 1);
-		HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, g_imp ? 1 : 0);
-		HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, g_imp ? 0 : 1);
-		}   // end bench overrides (g_bench)
 		usb_serial_poll();   // process any serial-console commands
 
 		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn't LOOK bad, but maybe it is negatively effecting things.
@@ -1948,6 +1963,7 @@ setFreq(vfoAFrequency);
 		} else {
 			transmitting = 0;
 			signalPath(recieve_no_filter);
+			rx_route_apply();   // force the HMC1023 RX routing on top of signalPath's bypass
 //	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
 ////	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
 ////	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low

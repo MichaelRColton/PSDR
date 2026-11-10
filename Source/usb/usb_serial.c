@@ -24,7 +24,6 @@ extern volatile int      g_amp_pol;
 extern volatile int      g_trx;
 extern volatile int      g_txrf;
 extern volatile int      g_imp;
-extern volatile int      g_bench;
 extern volatile int      g_filt_ch;
 extern float             passBandRms;   /* the real S-meter: what drives the red bar (drawSMeter) */
 extern long              vfoAFrequency;
@@ -162,7 +161,6 @@ static void handle_cmd(char *s)
 	            usb_printf("vfo=%ld\r\n", vfoAFrequency); } break;
 	case 'G': { int v = atoi(s + 1); if (v < 0) v = 0; if (v > 255) v = 255; g_gain_pot = (uint16_t)v;
 	            setGainPot((uint8_t)v, (uint8_t)v); usb_printf("gainpot=%u\r\n", g_gain_pot); } break;
-	case 'g': g_bench = (s[1] == '1'); usb_printf("bench=%d\r\n", g_bench); break;
 	case 'M': g_filt_ch = (s[1] - '0') & 3; usb_printf("mux ch=%d (S1=%d S0=%d) %s\r\n", g_filt_ch,
 	          (g_filt_ch >> 1) & 1, g_filt_ch & 1,
 	          g_filt_ch==1?"bypass":g_filt_ch==0?"ext(DNF)":"HMC1023"); break;
