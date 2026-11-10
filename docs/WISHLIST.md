@@ -14,15 +14,26 @@ _Captured 2026-11-02 on branch `fix/hmc1023-lpf`. A living list — edit freely.
 - **SD card:** record raw IQ samples and/or decoded audio; band-scope captures and logs. (F746 SDMMC — watch sustained write rate for raw IQ; decimate/compress as needed.)
 - **Smart CW (Morse) decoder:** Goertzel / narrow band-pass + adaptive threshold + WPM tracking; decoded text under the waterfall.
 - **Transmit: first bench numbers (2026-11-09) and what to fix.** Unmodified 2.6.1 unit, 7.1 MHz, test tone, 40 dB attenuator into an RSA-306, console `X<ms> <tone bin> <amp>` and `O<drive>`:
-  - Without the HMC482: output follows the drive linearly, -55.6 dBm at drive 1 and -27.8 dBm at drive 25. Opposite sideband about -29 dBc. LO leakage at the antenna port is about -66 dBm, in receive as well.
-  - With the HMC482 (after fixing its switch polarity in `transmit_with_amp_no_filter`: `AMP_SWITCH_A=1/B=0` is "through the amp"; the old `0/1` lost 10 dB): about +27.5 dB of gain at low level. Measured output: -28 dBm at drive 1, -10 dBm at drive 8, -15 dBm at drive 16, -11 dBm at drive 25, +8 dBm at drive 50 (about 6 mW, heavily distorted). The level is steady at each setting, but the curve is NOT monotonic: gain drops about 11 dB between drive 8 and drive 16-25 and comes back by drive 50. Cause unknown.
-  - **No output filter:** odd harmonics are those of a square wave (3rd about -9 dBc, 5th about -16, 7th about -18). A low-pass filter is needed before this goes near an antenna.
+  - Re-measured after the DSP fixes (1000 Hz time-domain tone, LSB, levels at the antenna port):
+
+    | Drive (`O`) | No amp | With HMC482 |
+    |---|---|---|
+    | 1 | -49.0 dBm | -21.7 dBm |
+    | 4 | | -9.7 dBm |
+    | 8 | -31.2 dBm | -3.5 dBm |
+    | 16 | | +3.6 dBm |
+    | 25 | -21.3 dBm | +8.6 dBm |
+    | 50 | | +12.0 dBm (saturated) |
+    | 80 | -17.8 dBm (compressing) | |
+    | 100 | | +5.9 dBm (collapses, overdriven) |
+
+    Amp gain is about 27 dB. Without the amp the chain compresses near -18 dBm. With it, output is reasonably clean up to about +3 dBm (2 mW): opposite sideband about -30 dBc, close-in products below -25 dBc. At +8.6 dBm products are about -20 dBc, and it saturates near +12 dBm (16 mW). The earlier "gain dip at mid drive" did not reproduce after the fixes. LO leakage at the antenna port is about -66 dBm, in receive as well.
+  - **No output filter:** odd harmonics are those of a square wave (3rd about -7 to -10 dBc at every level, 2nd rising to about -8 dBc near saturation). A low-pass filter is needed before this goes near an antenna.
   - **DSP block glitch: FIXED 2026-11-09.** The FFT filter multiplied by a raw 0/1 mask, whose impulse response is as long as the whole 256-sample block, so its tail wrapped around into the samples that are kept; the error differs per block, giving a step at every block seam (every 156 samples = 308 Hz). `kernelFromMask()` now turns the mask into a 101-tap Kaiser-windowed kernel that fits the 100-sample overlap. Measured on transmit with a 1000 Hz tone: 308 Hz comb -32 dBc -> -64 dBc, envelope ripple 4.6 dB -> 0.8 dB. Filter edges are a little softer (about -5 dB at 300 Hz with the edge at 0). Receive uses the same filter, so the faint 308 Hz buzz there should be gone too - not yet checked by ear.
   - **Transmit sideband was inverted: FIXED.** LSB mode transmitted above the carrier. I and Q are now swapped on transmit; LSB measures 986 Hz below and USB 1014 Hz above for a 1000 Hz tone.
   - **Opposite sideband is about -30 dBc** with a 1000 Hz tone. That is the analog I/Q balance of the transmit chain, not the filter; a transmit I/Q calibration (gain/phase trim in the DSP) would improve it.
   - **Transmit audio response tilts upward:** with the filter wide open, 937 Hz came out 3 dB below 1500 Hz and 5 dB below 2500 Hz. Probably AC coupling in the DAC-to-mixer path; measure and equalise.
   - The console test tone is now given in Hz and generated in the time domain, so it exercises the real microphone path: `X<ms> <tone Hz> <amp>`.
-  - **Amp gain dip at mid drive:** find out why the with-amp output drops 11 dB between drive 8 and 16-25 (RF switch compression with the ~3.2 V control level, the 5 V boost sagging, or amp bias). Scope the +5V_AMP rail and the switch control pins while keyed; check the amp's temperature.
   - Still to do: microphone SSB (only the test tone was measured), a sensible default drive and an ALC, drive calibration per band, a transmit indicator on screen, CW keying with sidetone, USB audio/I-Q *input* for digital modes (add playback endpoints to the two existing sound cards rather than new devices).
 - **Band overlays on the waterfall (idea, 2026-11-09).** Like the white bars that show the part of the waterfall being listened to, draw bars in other colours marking the ham bands and shortwave broadcast bands as you tune through them. Read the band list from a text file on the MicroSD so people can edit what is shown. Popular stations could carry a short note that appears when you are tuned near them. Needs the SD card working first; a built-in default table would do until then.
 - **Frequency memories (idea, 2026-11-09).** Save and recall frequency + mode + filter. Michael rarely operates, so features like this (and multiple VFOs) were never on his list, but people who use the radio to communicate will expect them. Store in flash (or on the SD card) rather than the battery-backed registers. Low priority.
