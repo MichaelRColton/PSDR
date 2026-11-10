@@ -116,6 +116,9 @@ STATUS_RE = re.compile(
     r"(?:\s+mode=(\d+)\s+flo=(-?\d+)\s+fhi=(-?\d+))?"
 )
 MODE_NAMES = {0: "LSB", 1: "USB", 2: "AM"}
+LPF_MODES = ["Bypass", "0 dB", "+20 dB"]
+LPF_CORNERS = ["auto", "5 MHz", "7 MHz", "10 MHz", "14 MHz", "20 MHz", "28 MHz", "40 MHz", "50 MHz", "72 MHz", "off"]
+LPFC_RE = re.compile(r"lpfcorner=(-?\d+) coarse=(-?\d+) ontx=(\d)")
 HZ_PER_BIN = 93.75                       # 48 kHz Fs over the 512-wide filter array
 QUICK_RE = re.compile(r"rms=(\d+)\s+bar=(-?\d+)")
 
@@ -418,6 +421,26 @@ class Panel(tk.Tk):
         tk.Checkbutton(g, text="filter_in / 5V boost (f)", variable=self.filt_var,
                        command=lambda: self.send_flag("f", self.filt_var, "filt"),
                        bg=PANEL, fg=INK, selectcolor=BG).grid(row=7, column=0, columnspan=2, sticky="w")
+
+        # --- LPF (the on-device "LPF" setting, plus the corner override) ---
+        g = self._group(col, "LPF  (l / k / n)")
+        g.pack(fill="x", pady=3)
+        tk.Label(g, text="path", bg=PANEL, fg=MUTE).grid(row=0, column=0, sticky="w")
+        self.lpfmode_var = tk.StringVar(value="Bypass")
+        cb = ttk.Combobox(g, textvariable=self.lpfmode_var, values=LPF_MODES, width=8, state="readonly")
+        cb.grid(row=0, column=1, sticky="e")
+        cb.bind("<<ComboboxSelected>>", lambda e: self.link.write(f"l{LPF_MODES.index(self.lpfmode_var.get())}"))
+        tk.Label(g, text="corner", bg=PANEL, fg=MUTE).grid(row=1, column=0, sticky="w")
+        self.lpfcorner_var = tk.StringVar(value="off")
+        cb = ttk.Combobox(g, textvariable=self.lpfcorner_var, values=LPF_CORNERS, width=8, state="readonly")
+        cb.grid(row=1, column=1, sticky="e")
+        cb.bind("<<ComboboxSelected>>", lambda e: self.set_lpf_corner())
+        self.lpftx_var = tk.BooleanVar()
+        tk.Checkbutton(g, text="transmit through the LPF (needs VDDBG fix)", variable=self.lpftx_var,
+                       command=lambda: self.link.write("n1" if self.lpftx_var.get() else "n0"),
+                       bg=PANEL, fg=INK, selectcolor=BG).grid(row=2, column=0, columnspan=2, sticky="w")
+        self.lpf_lbl = tk.Label(g, text="", bg=PANEL, fg=MUTE)
+        self.lpf_lbl.grid(row=3, column=0, columnspan=2, sticky="w")
 
         # --- HMC1023 ---
         g = self._group(col, "HMC1023  (RF preamp, pre-mixer)")
@@ -823,6 +846,10 @@ class Panel(tk.Tk):
         self.link.write(f"M{self.mux}")
         self.draw()
 
+    def set_lpf_corner(self):
+        i = LPF_CORNERS.index(self.lpfcorner_var.get())
+        self.link.write("ka" if i == 0 else f"k{i - 1}")
+
     def hmc_config(self):
         self.link.write("H")
         self.lpf_pwr = 1; self.lpf_var.set(True)
@@ -972,6 +999,7 @@ class Panel(tk.Tk):
             if self.link.ser and now - getattr(self, "_last_cpoll", 0) > 1.5:
                 self._last_cpoll = now
                 self.link.write("c")          # poll the device RTC for the live clock display
+                self.link.write("k")          # and the LPF corner actually in use (auto follows the dial)
             # reflect ffplay exiting on its own
             if self.listen_btn["text"] == "Stop listening" and not self.audio.alive():
                 self.listen_btn.config(text="Listen on PC speakers (demod)", fg=GOOD)
@@ -984,6 +1012,19 @@ class Panel(tk.Tk):
     def _parse(self, line):
         if line.startswith("rtc:"):          # live device clock (from the 'c' poll)
             self.clock_lbl.config(text="device: " + line[4:].strip())
+            return
+        m = LPFC_RE.search(line)             # reply to k / the periodic k poll
+        if m:
+            setting, coarse, ontx = int(m.group(1)), int(m.group(2)), int(m.group(3))
+            self.lpfcorner_var.set(LPF_CORNERS[setting + 1] if -1 <= setting <= 9 else "off")
+            self.lpftx_var.set(bool(ontx))
+            self.lpf_lbl.config(text="in use: " + (LPF_CORNERS[coarse + 1] if 0 <= coarse <= 8 else "no filter"))
+            return
+        if line.startswith("lpf="):
+            try:
+                self.lpfmode_var.set(LPF_MODES[int(line[4:].split()[0])])
+            except Exception:
+                pass
             return
         m = STATUS_RE.search(line)
         if m:

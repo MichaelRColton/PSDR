@@ -99,7 +99,7 @@ def main():
                 rise = w - baseline                  # anything that appears only while keyed
                 i = int(np.argmax(rise))
                 osc = w[i] + args.att
-                warn = "   ** %+.1f dBm at %.0f MHz while keyed (amp oscillating?) **" % (osc, f[i] / 1e6) if rise[i] > 15.0 else ""   # 15 dB: peak-detected noise alone wanders by up to ~10 dB
+                warn = "   ** %+.1f dBm at %.0f MHz while keyed (amp oscillating?) **" % (osc, f[i] / 1e6) if rise[i] > 20.0 else ""   # 20 dB: ignores peak-detected noise and nearby Wi-Fi pickup
                 print("step %d (%s): %+6.1f dBm  (%.4f mW)%s" % (step, "amp" if amp else "no amp", dbm, 10 ** (dbm / 10), warn))
                 if not args.dry_run:
                     cmd(ser, "y%d %d" % (step, round(dbm * 10)))

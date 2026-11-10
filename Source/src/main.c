@@ -209,17 +209,36 @@ volatile float txDrive = 25.0f;
 
    There is also NO output low-pass filter: the 3rd harmonic is only about 8 dB
    below the fundamental at every setting. */
-typedef struct { float drive; uint8_t amp; uint16_t color; } tx_power_step_t;
+typedef struct { float drive; uint8_t amp; uint8_t chipGain; uint16_t color; } tx_power_step_t;
 #define TX_POWER_STEPS 5
 #define TX_POWER_DEFAULT 1
-const tx_power_step_t txPowerTable[TX_POWER_STEPS] = {
-	{  8.0f, 0, ILI9340_WHITE  },   /* no amp, clean */
-	{ 25.0f, 0, ILI9340_WHITE  },   /* no amp, clean */
-	{ 80.0f, 0, ILI9340_YELLOW },   /* no amp, mixer/driver starting to compress */
-	{ 25.0f, 1, ILI9340_RED    },   /* HMC482: see warning */
-	{ 50.0f, 1, ILI9340_RED    },   /* HMC482 saturated: see warning. The dial stops here. */
+/* Table used on a stock board (transmit does not go through the HMC1023). */
+const tx_power_step_t txPowerTableStd[TX_POWER_STEPS] = {
+	{  8.0f, 0, 0, ILI9340_WHITE  },   /* no amp, clean */
+	{ 25.0f, 0, 0, ILI9340_WHITE  },   /* no amp, clean */
+	{ 80.0f, 0, 0, ILI9340_YELLOW },   /* no amp, mixer/driver starting to compress */
+	{ 25.0f, 1, 0, ILI9340_RED    },   /* HMC482: see warning */
+	{ 50.0f, 1, 0, ILI9340_RED    },   /* HMC482 saturated: see warning. The dial stops here. */
 };
-int16_t txPowerCal[6] = { -310, -213, -178, 85, 120, 0 };   /* per-unit, tenths of a dBm (6 slots stored, 5 used) */
+/* Table used when "LPF on transmit" is enabled (g_lpfOnTx, boards with the
+   VDDBG fix). Transmit goes mixers -> HMC1023 (TX direction, mux channel 3) ->
+   antenna, and the HMC482 is NOT used. The chip's low-pass corner removes the
+   harmonics and its gain stage gives about +23 dB. Measured on one unit at
+   7.1 MHz with the 10 MHz corner: +0.3 dBm at drive 25 with every harmonic 46 dB
+   or more below the carrier (3rd -69 dBc). Drive 80 reaches +3.8 dBm but
+   close-in products rise to -13 dBc, hence yellow. */
+const tx_power_step_t txPowerTableLpf[TX_POWER_STEPS] = {
+	{  8.0f, 0, 0, ILI9340_WHITE  },   /* through the chip, 0 dB */
+	{ 25.0f, 0, 0, ILI9340_WHITE  },   /* through the chip, 0 dB */
+	{  8.0f, 0, 1, ILI9340_WHITE  },   /* through the chip, +20 dB */
+	{ 25.0f, 0, 1, ILI9340_WHITE  },   /* through the chip, +20 dB: about 1 mW, clean and filtered */
+	{ 80.0f, 0, 1, ILI9340_YELLOW },   /* driver compressing. The dial stops here. */
+};
+int16_t txPowerCalStd[6] = { -310, -213, -178, 85, 120, 0 };   /* per-unit, tenths of a dBm (6 slots stored, 5 used) */
+int16_t txPowerCalLpf[6] = { -293, -195,  -96,  3,  38, 0 };
+extern int g_lpfOnTx;
+#define TXTAB (g_lpfOnTx ? txPowerTableLpf : txPowerTableStd)
+#define TXCAL (g_lpfOnTx ? txPowerCalLpf : txPowerCalStd)
 int g_txPower = TX_POWER_DEFAULT;
 int txPowerLast = -1;
 int txPowerCalDirty = 1;   /* redraw the label when a calibration value changes */
@@ -227,7 +246,7 @@ int txPowerCalDirty = 1;   /* redraw the label when a calibration value changes 
 /* "+3.7dBm 2.3mW " (always 14 characters, so it overwrites the previous one) */
 void txPowerLabel(int idx, char *out)
 {
-	int d = txPowerCal[idx];
+	int d = TXCAL[idx];
 	int ad = d < 0 ? -d : d;
 	float mw = powf(10.0f, (float)d / 100.0f);
 	char pw[10];
@@ -241,40 +260,50 @@ void txPowerLabel(int idx, char *out)
 
 /* Per-unit TX power calibration lives in backup registers BKP7R..BKP9R (two
    int16 each) with a magic in BKP10R; same lifetime as the frequency cal. */
-#define TXCAL_MAGIC 0x54584333u   /* "TXC3" (5-step table: 3 without the amp, 2 with) */
+#define TXCAL_MAGIC 0x54584334u   /* "TXC4": BKP7-9R = stock table, BKP12-14R = LPF-on-transmit table */
+static void txcal_pack(int16_t *c, volatile uint32_t *r0, volatile uint32_t *r1, volatile uint32_t *r2)
+{
+	*r0 = ((uint32_t)(uint16_t)c[0]) | ((uint32_t)(uint16_t)c[1] << 16);
+	*r1 = ((uint32_t)(uint16_t)c[2]) | ((uint32_t)(uint16_t)c[3] << 16);
+	*r2 = ((uint32_t)(uint16_t)c[4]) | ((uint32_t)(uint16_t)c[5] << 16);
+}
+static void txcal_unpack(int16_t *c, uint32_t r0, uint32_t r1, uint32_t r2)
+{
+	uint32_t r[3] = { r0, r1, r2 };
+	for(int i = 0; i < 6; i++) c[i] = (int16_t)(uint16_t)(r[i / 2] >> ((i & 1) * 16));
+}
 void txcal_save(void)
 {
-	RTC->BKP7R = ((uint32_t)(uint16_t)txPowerCal[0]) | ((uint32_t)(uint16_t)txPowerCal[1] << 16);
-	RTC->BKP8R = ((uint32_t)(uint16_t)txPowerCal[2]) | ((uint32_t)(uint16_t)txPowerCal[3] << 16);
-	RTC->BKP9R = ((uint32_t)(uint16_t)txPowerCal[4]) | ((uint32_t)(uint16_t)txPowerCal[5] << 16);
+	txcal_pack(txPowerCalStd, &RTC->BKP7R,  &RTC->BKP8R,  &RTC->BKP9R);
+	txcal_pack(txPowerCalLpf, &RTC->BKP12R, &RTC->BKP13R, &RTC->BKP14R);
 	RTC->BKP10R = TXCAL_MAGIC;
 }
 void txcal_restore(void)
 {
 	if(RTC->BKP10R != TXCAL_MAGIC) return;
-	uint32_t r[3] = { RTC->BKP7R, RTC->BKP8R, RTC->BKP9R };
-	for(int i = 0; i < 6; i++)
-		txPowerCal[i] = (int16_t)(uint16_t)(r[i / 2] >> ((i & 1) * 16));
+	txcal_unpack(txPowerCalStd, RTC->BKP7R,  RTC->BKP8R,  RTC->BKP9R);
+	txcal_unpack(txPowerCalLpf, RTC->BKP12R, RTC->BKP13R, RTC->BKP14R);
 	txPowerCalDirty = 1;
 }
-void txPowerCalSet(int idx, int dbmX10)
+void txPowerCalSet(int idx, int dbmX10)   /* sets the table that is active right now */
 {
 	if(idx < 0 || idx >= TX_POWER_STEPS) return;
 	if(dbmX10 < -600) dbmX10 = -600;
 	if(dbmX10 >  300) dbmX10 =  300;
-	txPowerCal[idx] = (int16_t)dbmX10;
+	TXCAL[idx] = (int16_t)dbmX10;
 	txPowerCalDirty = 1;
 	txcal_save();
 }
+int txPowerCalGet(int idx) { return (idx >= 0 && idx < TX_POWER_STEPS) ? TXCAL[idx] : 0; }
 
-int txPowerStepAmp(int idx) { return (idx >= 0 && idx < TX_POWER_STEPS) ? txPowerTable[idx].amp : 0; }
+int txPowerStepAmp(int idx) { return (idx >= 0 && idx < TX_POWER_STEPS) ? TXTAB[idx].amp : 0; }
 
 void txPowerSet(int idx)
 {
 	if(idx < 0) idx = 0;
 	if(idx >= TX_POWER_STEPS) idx = TX_POWER_STEPS - 1;
 	g_txPower = idx;
-	txDrive = txPowerTable[idx].drive;
+	txDrive = TXTAB[idx].drive;
 }
 unsigned int tone = 0;
 
@@ -1466,6 +1495,40 @@ void hmc1023_config_rx(void)
 int g_lpfMode = LPF_BYPASS;
 int lpfModeLast = -1;    /* last drawn state, so the display redraws on change */
 
+/* HMC1023 low-pass corner. The chip's coarse steps are 5, 7, 10, 14, 20, 28,
+   40, 50 and 72 MHz (codes 0..8). g_lpfCorner chooses how the corner is set
+   whenever RX goes through the chip (LPF mode 0 dB / +20 dB):
+     LPF_CORNER_AUTO  - the lowest corner that still passes the tuned frequency,
+                        re-chosen as you tune. Uncalibrated corners are only
+                        good to about +/-20%, so "passes" means corner >= 1.3 x
+                        the dial frequency.
+     0..8             - that fixed corner.
+     LPF_CORNER_OFF   - internal filter bypassed (gain/buffer only). This is how
+                        the path was first proven on the air, so it stays the
+                        default until auto has been checked with real signals.
+   g_lpfOnTx = 1 also routes TRANSMIT through the chip (mux channel 3, the TX
+   direction), after the mixers, so the same corner cuts the transmit harmonics
+   and its gain stage adds drive. Not yet verified on the bench: off by default.
+   Console 'k' and 'n'; saved in backup register BKP11R. */
+#define LPF_CORNER_AUTO (-1)
+#define LPF_CORNER_OFF  9
+static const uint8_t lpfCornerMHz[9] = { 5, 7, 10, 14, 20, 28, 40, 50, 72 };
+int g_lpfCorner = LPF_CORNER_OFF;
+int g_lpfOnTx   = 0;
+int g_lpfCoarseNow = -1;       /* coarse code currently written (-1 = filter bypassed / chip off) */
+long lpfFreqApplied = 0;       /* dial frequency the corner was last chosen for */
+int lpfCornerLast = -99;       /* redraw tracking */
+
+/* coarse code to use at this frequency, or -1 for "filter bypassed" */
+int lpfCoarseFor(long hz)
+{
+	if(g_lpfCorner == LPF_CORNER_OFF) return -1;
+	if(g_lpfCorner >= 0 && g_lpfCorner <= 8) return g_lpfCorner;
+	for(int c = 0; c < 9; c++)                         /* auto */
+		if((long)lpfCornerMHz[c] * 1000000L * 10L >= hz * 13L) return c;
+	return -1;                                         /* above the 72 MHz corner: no filter fits */
+}
+
 /* Drive the RX routing GPIOs from the live routing state. Called each receive
    pass (after signalPath(recieve_*), which would otherwise force the mux to
    bypass) and once from rx_path_default() at boot. Transmit is owned by
@@ -1515,6 +1578,8 @@ void rx_path_default(void)
 	if(g_lpfMode == LPF_BYPASS)
 	{
 		lpf_power(0);                    /* HMC1023 rail off */
+		g_lpfCoarseNow = -1;
+		lpfFreqApplied = vfoAFrequency;
 		g_filt_ch = 1;                   /* mux -> stock bypass */
 		g_filter_in = 0;                 /* 5V boost off (the switcher only adds noise here) */
 		rx_route_apply();
@@ -1524,13 +1589,69 @@ void rx_path_default(void)
 	HAL_Delay(2);
 	hmc_write_reg(1, (1u << 2) | (1u << 3) | (1u << 4)); /* 0x1C: I_en | Q_en | force_cal */
 	uint32_t gain = (g_lpfMode == LPF_20DB) ? (1u << 4) : 0u;  /* reg2 bit4 = +10 dB/ch (+20 dB total) */
-	/* reg2: 20 MHz corner | filter BYPASS (bit5) | gain | drvr01 | opamp01 */
-	hmc_write_reg(2, (4u << 6) | (1u << 5) | gain | (1u << 2) | (1u << 0));
+	/* reg2: coarse corner | filter BYPASS (bit5) | gain | drvr01 | opamp01 */
+	int coarse = lpfCoarseFor(vfoAFrequency);
+	lpfFreqApplied = vfoAFrequency;
+	g_lpfCoarseNow = coarse;
+	if(coarse < 0) hmc_write_reg(2, (4u << 6) | (1u << 5) | gain | (1u << 2) | (1u << 0));
+	else           hmc_write_reg(2, ((uint32_t)coarse << 6) | gain | (1u << 2) | (1u << 0));
 	g_hmc1023_reg1 = hmc_read_reg(1);
 	g_hmc1023_reg2 = hmc_read_reg(2);
 	g_filt_ch = 2;                       /* mux -> through the HMC1023 (RX) */
 	g_filter_in = 1;                     /* filter in -> 5V boost on */
 	rx_route_apply();                    /* drive the routing GPIOs now */
+}
+
+/* Corner setting lives in BKP11R: magic in the top 16 bits, corner+1 in bits
+   0-7 (0 = auto), TX flag in bit 8. */
+#define LPFC_MAGIC 0x4C500000u
+void lpfcorner_save(void)
+{
+	RTC->BKP11R = LPFC_MAGIC | (uint32_t)((g_lpfCorner + 1) & 0xFF) | ((uint32_t)(g_lpfOnTx & 1) << 8);
+}
+void lpfcorner_restore(void)
+{
+	uint32_t v = RTC->BKP11R;
+	if((v & 0xFFFF0000u) != LPFC_MAGIC) return;
+	int c = (int)(v & 0xFF) - 1;
+	if(c >= LPF_CORNER_AUTO && c <= LPF_CORNER_OFF) g_lpfCorner = c;
+	g_lpfOnTx = (int)((v >> 8) & 1);
+}
+void rx_path_default(void);
+void lpfCornerSet(int c)
+{
+	if(c < LPF_CORNER_AUTO || c > LPF_CORNER_OFF) return;
+	g_lpfCorner = c;
+	lpfcorner_save();
+	rx_path_default();
+}
+/* Called from the main loop: in auto, follow the dial. Only rewrites the chip
+   when the chosen corner actually changes. */
+void lpfCornerFollow(void)
+{
+	if(g_lpfMode == LPF_BYPASS || vfoAFrequency == lpfFreqApplied) return;
+	lpfFreqApplied = vfoAFrequency;
+	if(lpfCoarseFor(vfoAFrequency) != g_lpfCoarseNow) rx_path_default();
+}
+
+/* Key-down setup of the HMC1023 for transmit (g_lpfOnTx). Always uses a real
+   corner on transmit - if the receive setting is "filter off", pick the auto
+   corner - because removing harmonics is the point. Gain follows the TX power
+   step. Receive settings are restored by rx_path_default() on key-up. */
+int txWasKeyed = 0;
+void tx_chip_config(void)
+{
+	int coarse = -1;
+	if(g_lpfCorner >= 0 && g_lpfCorner <= 8) coarse = g_lpfCorner;
+	else
+		for(int c = 0; c < 9; c++)
+			if((long)lpfCornerMHz[c] * 1000000L * 10L >= vfoAFrequency * 13L) { coarse = c; break; }
+	if(g_lpfMode == LPF_BYPASS) { lpf_power(1); HAL_Delay(3); }   /* chip was off in receive */
+	hmc_write_reg(1, (1u << 2) | (1u << 3) | (1u << 4));         /* 0x1C: I_en | Q_en | force_cal */
+	uint32_t gain = TXTAB[g_txPower].chipGain ? (1u << 4) : 0u;
+	if(coarse < 0) hmc_write_reg(2, (4u << 6) | (1u << 5) | gain | (1u << 2) | (1u << 0));
+	else           hmc_write_reg(2, ((uint32_t)coarse << 6) | gain | (1u << 2) | (1u << 0));
+	g_lpfCoarseNow = coarse;
 }
 
 /* Set the LPF mode (menu item / console 'l'): clamp to 0..2 and re-apply. */
@@ -2197,6 +2318,7 @@ setFreq(vfoAFrequency);
 	// first draw, so the display never flashes the power-on defaults on wake.
 	// rtc_init() runs first: it enables backup-domain access where the state lives.
 	rtc_init();          // LSE + RTC clock (keeps time on battery; set from the Control Panel)
+	lpfcorner_restore(); // LPF corner setting (before state_restore applies the LPF mode)
 	txcal_restore();     // per-unit transmit power calibration
 	freqcal_restore();   // before state_restore, so the restored frequency is tuned with the calibration
 	state_restore();
@@ -2258,7 +2380,17 @@ setFreq(vfoAFrequency);
 		//if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
-			signalPath((consoleKey ? g_txKeyAmp : txPowerTable[g_txPower].amp) ? transmit_with_amp_no_filter : transmit_no_amp_no_filter);
+			signalPath((consoleKey ? g_txKeyAmp : TXTAB[g_txPower].amp) ? transmit_with_amp_no_filter : transmit_no_amp_no_filter);
+			if(g_lpfOnTx)
+			{
+				/* transmit THROUGH the HMC1023: mux channel 3 is the TX direction (after
+				   the mixers). Configure the chip once on key-down, then hold the mux. */
+				if(!txWasKeyed) tx_chip_config();
+				HAL_GPIO_WritePin(FILTER_S0.port, FILTER_S0.pin, 1);
+				HAL_GPIO_WritePin(FILTER_S1.port, FILTER_S1.pin, 1);
+				HAL_GPIO_WritePin(FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 1);
+			}
+			txWasKeyed = 1;
 			/* Speaker off while transmitting: the DACs carry the TX signal, and it
 			   was coming out of the speaker too. (A CW sidetone can re-enable it.) */
 			HAL_GPIO_WritePin(AUDIO_AMP_NSHTDWN.port, AUDIO_AMP_NSHTDWN.pin, 0);
@@ -2274,9 +2406,15 @@ setFreq(vfoAFrequency);
 		} else {
 			transmitting = 0;
 			g_txToneOn = 0;
+			if(txWasKeyed)
+			{
+				txWasKeyed = 0;
+				if(g_lpfOnTx) rx_path_default();   /* put the chip back the way receive wants it */
+			}
 			HAL_GPIO_WritePin(AUDIO_AMP_NSHTDWN.port, AUDIO_AMP_NSHTDWN.pin, 1);   /* speaker back on */
 			signalPath(recieve_no_filter);
 			rx_route_apply();   // force the HMC1023 RX routing on top of signalPath's bypass
+			lpfCornerFollow();  // auto corner: re-pick when the dial has moved
 //	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
 ////	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
 ////	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
@@ -2660,15 +2798,21 @@ void updateDisplay(uint8_t force)
 	   Redraws on selection change or when the state toggles. Placement is a
 	   first guess between the Mode and Filter labels - adjust once we can read
 	   the display back. */
-	if(force || g_lpfMode != lpfModeLast
+	if(force || g_lpfMode != lpfModeLast || g_lpfCoarseNow != lpfCornerLast
 	    || (menuPos != menuLastPos && (menuPos == hmcGainMenuItem || menuLastPos == hmcGainMenuItem)))
 	{
 		Adafruit_GFX_setTextSize(1);
 		Adafruit_GFX_setTextColor(menuPos == hmcGainMenuItem ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
 		Adafruit_GFX_setCursor(220, 30);   /* under the "Off" label (x=220, y=10) */
-		const char *hs = (g_lpfMode == LPF_20DB) ? "LPF +20dB " : (g_lpfMode == LPF_0DB) ? "LPF 0dB   " : "LPF Bypass";
+		char hb[20], hs[20];
+		if(g_lpfMode == LPF_BYPASS) snprintf(hb, sizeof(hb), "LPF Bypass");
+		else if(g_lpfCoarseNow < 0)  snprintf(hb, sizeof(hb), "LPF %s", g_lpfMode == LPF_20DB ? "+20dB" : "0dB");
+		else snprintf(hb, sizeof(hb), "LPF %s %s%dM", g_lpfMode == LPF_20DB ? "+20dB" : "0dB",
+		              g_lpfCorner == LPF_CORNER_AUTO ? "a" : "", (int)lpfCornerMHz[g_lpfCoarseNow]);
+		snprintf(hs, sizeof(hs), "%-15s", hb);          /* fixed width so it erases the old text */
 		for(const char *p = hs; *p; p++) Adafruit_GFX_write(*p);
 		lpfModeLast = g_lpfMode;
+		lpfCornerLast = g_lpfCoarseNow;
 	}
 
 	/* Transmit power: "TX" is red when selected (like every menu item); the value
@@ -2682,7 +2826,7 @@ void updateDisplay(uint8_t force)
 		Adafruit_GFX_setCursor(216, 42);   /* under the LPF line */
 		Adafruit_GFX_setTextColor(menuPos == txPowerMenuItem ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
 		for(const char *p = "TX "; *p; p++) Adafruit_GFX_write(*p);
-		Adafruit_GFX_setTextColor(txPowerTable[g_txPower].color, ILI9340_BLACK);
+		Adafruit_GFX_setTextColor(TXTAB[g_txPower].color, ILI9340_BLACK);
 		for(const char *p = lbl; *p; p++) Adafruit_GFX_write(*p);
 		txPowerLast = g_txPower;
 		txPowerCalDirty = 0;

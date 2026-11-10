@@ -170,11 +170,11 @@ static void handle_cmd(char *s)
 	            usb_printf("txpower=%d drive=%d/100 amp=%d\r\n", g_txPower, (int)(txDrive * 100.0f), txPowerStepAmp(g_txPower)); } break;
 	case 'y': {   /* TX power calibration: y<step> <dBm x10> stores this unit's measured output for a step;
 	                 y alone lists them (tenths of a dBm) */
-	            extern int16_t txPowerCal[]; extern void txPowerCalSet(int idx, int dbmX10);
+	            extern int txPowerCalGet(int idx); extern void txPowerCalSet(int idx, int dbmX10);
 	            int idx = -1, v = 0;
 	            if (sscanf(s + 1, "%d %d", &idx, &v) == 2) txPowerCalSet(idx, v);
-	            usb_printf("txcal(dBm x10): %d %d %d %d %d\r\n", txPowerCal[0], txPowerCal[1], txPowerCal[2],
-	                       txPowerCal[3], txPowerCal[4]); } break;
+	            usb_printf("txcal(dBm x10): %d %d %d %d %d\r\n", txPowerCalGet(0), txPowerCalGet(1), txPowerCalGet(2),
+	                       txPowerCalGet(3), txPowerCalGet(4)); } break;
 	case 'O': {   /* transmit drive (DAC scale while transmitting); O alone reports it */
 	            extern volatile float txDrive;
 	            if (s[1]) { float d = (float)atof(s + 1); if (d < 0.0f) d = 0.0f; if (d > 500.0f) d = 500.0f; txDrive = d; }
@@ -209,6 +209,16 @@ static void handle_cmd(char *s)
 	            usb_printf("disp: fill4=%lu ms (%lu ms/frame) redraw=%lu ms dmaerr=%lu\r\n",
 	                       (unsigned long)(t1 - t0), (unsigned long)((t1 - t0) / 4), (unsigned long)(t3 - t2),
 	                       (unsigned long)g_lcdDmaErr); } break;
+	case 'k': {   /* LPF corner: ka = auto, k0..k8 = 5/7/10/14/20/28/40/50/72 MHz, k9 = filter off; k alone reports */
+	            extern int g_lpfCorner, g_lpfCoarseNow, g_lpfOnTx; extern void lpfCornerSet(int c);
+	            if (s[1] == 'a') lpfCornerSet(-1);
+	            else if (s[1] >= '0' && s[1] <= '9') lpfCornerSet(s[1] - '0');
+	            usb_printf("lpfcorner=%d coarse=%d ontx=%d\r\n", g_lpfCorner, g_lpfCoarseNow, g_lpfOnTx); } break;
+	case 'n': {   /* route transmit through the HMC1023 too: n1 / n0 */
+	            extern int g_lpfOnTx; extern void lpfcorner_save(void);
+	            extern int txPowerCalDirty, g_txPower; extern void txPowerSet(int idx);
+	            if (s[1] == '0' || s[1] == '1') { g_lpfOnTx = s[1] - '0'; lpfcorner_save(); txPowerSet(g_txPower); txPowerCalDirty = 1; }
+	            usb_printf("lpfontx=%d\r\n", g_lpfOnTx); } break;
 	case 'l': lpfModeSet(atoi(s + 1));   /* LPF mode: l0 = bypass, l1 = 0 dB, l2 = +20 dB (same as the menu) */
 	          usb_printf("lpf=%d\r\n", g_lpfMode); break;
 	case 'M': g_filt_ch = (s[1] - '0') & 3; usb_printf("mux ch=%d (S1=%d S0=%d) %s\r\n", g_filt_ch,
