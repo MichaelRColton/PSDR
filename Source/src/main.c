@@ -186,44 +186,40 @@ volatile int      g_txKeyAmp   = 0;   /* 0 = no amp, 1 = through the HMC482 (tra
 /* Transmit drive: scale from DSP samples to DAC counts while transmitting. It
    used to be the speaker volume (afGain), so the volume knob set the output
    power. Now independent: console 'O<drive>'. */
-volatile float txDrive = 8.0f;
+volatile float txDrive = 25.0f;
 
-/* Transmit power setting (menu item "TX"). Each step is a drive value with the
-   HMC482 in the path. The dBm / mW shown for a step is that radio's own
-   calibration value (txPowerCal[], tenths of a dBm), measured into 50 ohms with
-   a full-level 1 kHz test tone. Output power depends on the unit (amp gain,
-   mixer drive) and on the band, so each radio should be calibrated: console
-   'y<step> <dBm x10>' stores a measured value, and tools/tx_power_cal.py does
-   all six steps with a spectrum analyzer. The defaults below are one 2.6.1
-   unit at 7.1 MHz (2026-11-09). Speech peaks also depend on the microphone
-   level (there is no ALC yet), so treat the number as nominal.
-   Colour shows how clean the signal is at that drive:
-     white  - unwanted products 25-30 dB down
-     yellow - products about 20 dB down
-     red    - the amplifier is saturated. Emergency / CW only.
-   Above the last step the output collapses, so the dial stops there.
-   There is NO output low-pass filter on this board: the 3rd harmonic is only
-   about 8 dB below the fundamental at every setting. */
-/* WARNING - the drive values skip a window on purpose. On the unit measured,
-   drive 12 and 16 (about -9 to +3 dBm out) made the HMC482 break into a
-   parasitic oscillation at 2.546 GHz, at +7 to +8 dBm - stronger than the wanted
-   signal - and the 7 MHz gain dropped about 11 dB while it did. Drive 1, 4, 8
-   and 25 showed no oscillation; drive 50 showed a weak line near 2.29 GHz.
-   This is a hardware stability problem (bias network / layout), seen on one
-   unit at 7.1 MHz only, so the window may sit elsewhere on other units and
-   bands. Until the amplifier is stabilised, check the 2-3 GHz range on a
-   spectrum analyzer before trusting any amp setting on the air. */
-typedef struct { float drive; uint16_t color; int16_t defaultDbmX10; } tx_power_step_t;
+/* Transmit power setting (menu item "TX"). Each step is a drive value, with or
+   without the HMC482 amplifier. The dBm / mW shown for a step is that radio's
+   own calibration value (txPowerCal[], tenths of a dBm), measured into 50 ohms
+   with a full-level 1 kHz test tone. Output power depends on the unit and the
+   band, so each radio should be calibrated: console 'y<step> <dBm x10>' stores
+   a measured value and tools/tx_power_cal.py does every step with a spectrum
+   analyzer. The defaults are one 2.6.1 unit at 7.1 MHz. Speech peaks also
+   depend on the microphone level (no ALC yet), so treat the number as nominal.
+
+   WARNING - THE HMC482 IS NOT STABLE ON THIS BOARD. On the unit measured it
+   breaks into a parasitic oscillation at about 2.547 GHz, +8 to +10 dBm at the
+   antenna port (stronger than the wanted signal), and the 7 MHz gain drops
+   11-17 dB while it does. Whether it oscillates depends on the drive level AND
+   on the load: into a 40 dB pad it happened at drive 12-16 only; into a 10 dB
+   pad it happened at drive 0-2 and 8-14, including with no drive at all. So no
+   amp setting can be called clean. The first three steps therefore do NOT use
+   the amp (white/yellow); the two amp steps are marked red and exist for bench
+   work and emergencies only. This needs a hardware fix.
+
+   There is also NO output low-pass filter: the 3rd harmonic is only about 8 dB
+   below the fundamental at every setting. */
+typedef struct { float drive; uint8_t amp; uint16_t color; } tx_power_step_t;
 #define TX_POWER_STEPS 5
-#define TX_POWER_DEFAULT 2
+#define TX_POWER_DEFAULT 1
 const tx_power_step_t txPowerTable[TX_POWER_STEPS] = {
-	{  1.0f, ILI9340_WHITE,  -218 },
-	{  4.0f, ILI9340_WHITE,   -99 },
-	{  8.0f, ILI9340_WHITE,   -38 },
-	{ 25.0f, ILI9340_YELLOW,   85 },
-	{ 50.0f, ILI9340_RED,     120 },
+	{  8.0f, 0, ILI9340_WHITE  },   /* no amp, clean */
+	{ 25.0f, 0, ILI9340_WHITE  },   /* no amp, clean */
+	{ 80.0f, 0, ILI9340_YELLOW },   /* no amp, mixer/driver starting to compress */
+	{ 25.0f, 1, ILI9340_RED    },   /* HMC482: see warning */
+	{ 50.0f, 1, ILI9340_RED    },   /* HMC482 saturated: see warning. The dial stops here. */
 };
-int16_t txPowerCal[6] = { -218, -99, -38, 85, 120, 0 };   /* per-unit, tenths of a dBm (6 slots stored, 5 used) */
+int16_t txPowerCal[6] = { -310, -213, -178, 85, 120, 0 };   /* per-unit, tenths of a dBm (6 slots stored, 5 used) */
 int g_txPower = TX_POWER_DEFAULT;
 int txPowerLast = -1;
 int txPowerCalDirty = 1;   /* redraw the label when a calibration value changes */
@@ -245,7 +241,7 @@ void txPowerLabel(int idx, char *out)
 
 /* Per-unit TX power calibration lives in backup registers BKP7R..BKP9R (two
    int16 each) with a magic in BKP10R; same lifetime as the frequency cal. */
-#define TXCAL_MAGIC 0x54584332u   /* "TXC2" (5-step table) */
+#define TXCAL_MAGIC 0x54584333u   /* "TXC3" (5-step table: 3 without the amp, 2 with) */
 void txcal_save(void)
 {
 	RTC->BKP7R = ((uint32_t)(uint16_t)txPowerCal[0]) | ((uint32_t)(uint16_t)txPowerCal[1] << 16);
@@ -270,6 +266,8 @@ void txPowerCalSet(int idx, int dbmX10)
 	txPowerCalDirty = 1;
 	txcal_save();
 }
+
+int txPowerStepAmp(int idx) { return (idx >= 0 && idx < TX_POWER_STEPS) ? txPowerTable[idx].amp : 0; }
 
 void txPowerSet(int idx)
 {
@@ -2260,7 +2258,7 @@ setFreq(vfoAFrequency);
 		//if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
-			signalPath((!consoleKey || g_txKeyAmp) ? transmit_with_amp_no_filter : transmit_no_amp_no_filter);
+			signalPath((consoleKey ? g_txKeyAmp : txPowerTable[g_txPower].amp) ? transmit_with_amp_no_filter : transmit_no_amp_no_filter);
 			/* Speaker off while transmitting: the DACs carry the TX signal, and it
 			   was coming out of the speaker too. (A CW sidetone can re-enable it.) */
 			HAL_GPIO_WritePin(AUDIO_AMP_NSHTDWN.port, AUDIO_AMP_NSHTDWN.pin, 0);

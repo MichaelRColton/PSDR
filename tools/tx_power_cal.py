@@ -82,15 +82,16 @@ def main():
             # 2-3 GHz with the radio in receive, as the reference for the oscillation check
             _, baseline, _ = rsa.sweep(2.0e9, 3.0e9, rbw_hz=1e6, ref_level_dbm=args.ref, max_hold=4)
             for step in range(STEPS):
-                cmd(ser, "w%d" % step)
-                cmd(ser, "X3500 1000 1", 0.2)        # key 3.5 s, 1 kHz tone, through the amp
+                reply = cmd(ser, "w%d" % step)       # e.g. "txpower=3 drive=2500/100 amp=1"
+                amp = 1 if "amp=1" in reply else 0   # the step says whether it uses the amplifier
+                cmd(ser, "X3500 1000 %d" % amp, 0.2)  # key 3.5 s with a 1 kHz tone
                 time.sleep(0.7)
                 iq, fs, _ = rsa.iq_capture(args.freq, bandwidth_hz=40e3, duration_s=0.3, ref_level_dbm=args.ref)
                 cmd(ser, "X0", 0.3)
                 time.sleep(0.4)
                 dbm = 10 * np.log10((10 * np.abs(iq) ** 2).mean()) + args.att
                 results.append(dbm)
-                cmd(ser, "X3500 1000 1", 0.2)        # key again and look for a parasitic oscillation
+                cmd(ser, "X3500 1000 %d" % amp, 0.2)  # key again and look for a parasitic oscillation
                 time.sleep(0.7)
                 f, w, _ = rsa.sweep(2.0e9, 3.0e9, rbw_hz=1e6, ref_level_dbm=args.ref, max_hold=2)
                 cmd(ser, "X0", 0.3)
@@ -98,8 +99,8 @@ def main():
                 rise = w - baseline                  # anything that appears only while keyed
                 i = int(np.argmax(rise))
                 osc = w[i] + args.att
-                warn = "   ** %+.1f dBm at %.0f MHz while keyed (amp oscillating?) **" % (osc, f[i] / 1e6) if rise[i] > 8.0 else ""
-                print("step %d: %+6.1f dBm  (%.3f mW)%s" % (step, dbm, 10 ** (dbm / 10), warn))
+                warn = "   ** %+.1f dBm at %.0f MHz while keyed (amp oscillating?) **" % (osc, f[i] / 1e6) if rise[i] > 15.0 else ""   # 15 dB: peak-detected noise alone wanders by up to ~10 dB
+                print("step %d (%s): %+6.1f dBm  (%.4f mW)%s" % (step, "amp" if amp else "no amp", dbm, 10 ** (dbm / 10), warn))
                 if not args.dry_run:
                     cmd(ser, "y%d %d" % (step, round(dbm * 10)))
     finally:

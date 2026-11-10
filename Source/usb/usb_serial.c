@@ -165,9 +165,9 @@ static void handle_cmd(char *s)
 	            g_txKeyUntil = HAL_GetTick() + (uint32_t)ms;
 	            usb_printf("tx key %d ms tone=%d Hz amp=%d\r\n", ms, tb, g_txKeyAmp); } break;
 	case 'w': {   /* transmit power step, same as the on-device "TX" menu item: w<0-4>; w alone reports */
-	            extern int g_txPower; extern void txPowerSet(int idx); extern volatile float txDrive;
+	            extern int g_txPower; extern void txPowerSet(int idx); extern volatile float txDrive; extern int txPowerStepAmp(int idx);
 	            if (s[1] >= '0' && s[1] <= '9') txPowerSet(s[1] - '0');
-	            usb_printf("txpower=%d drive=%d/100\r\n", g_txPower, (int)(txDrive * 100.0f)); } break;
+	            usb_printf("txpower=%d drive=%d/100 amp=%d\r\n", g_txPower, (int)(txDrive * 100.0f), txPowerStepAmp(g_txPower)); } break;
 	case 'y': {   /* TX power calibration: y<step> <dBm x10> stores this unit's measured output for a step;
 	                 y alone lists them (tenths of a dBm) */
 	            extern int16_t txPowerCal[]; extern void txPowerCalSet(int idx, int dbmX10);
