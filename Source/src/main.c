@@ -2181,6 +2181,10 @@ enum modes
 void updateDisplay(uint8_t force)
 {
 	displayUpdating = 1;
+	/* The S-meter bar is drawn incrementally (only the part that changed). After
+	   a forced full redraw onto a cleared screen, start it from zero again so the
+	   whole bar is repainted instead of leaving its left part blank. */
+	if(force) lastSMeterBarWidth = 0;
 	/* Snapshot menuPos ONCE for the whole redraw. The encoder ISR (Tick) can
 	   move menuPos, and this redraw reads it many times (every item's red/white
 	   guard) and latches it to menuLastPos at the end. If menuPos changes
