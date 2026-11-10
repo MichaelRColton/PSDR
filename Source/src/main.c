@@ -442,6 +442,7 @@ void setGainPot(uint8_t a, uint8_t b);
    own noise) and back off only when the ADCs get close to clipping. Called from
    the main loop. */
 int g_wfmPot = 255;
+float g_wfmHi = 0.25f, g_wfmLo = 0.08f;   /* gain control window, fraction of ADC full scale (rms) */
 void wfmGainFollow(void)
 {
 	static uint32_t last = 0;
@@ -450,8 +451,8 @@ void wfmGainFollow(void)
 	last = HAL_GetTick();
 	float32_t rms; arm_sqrt_f32(g_wfmPower, &rms);          /* fraction of ADC full scale */
 	int pot = g_wfmPot;
-	if(rms > 0.25f) pot -= 25;                              /* a sine clips at 0.35 */
-	else if(rms < 0.08f && pot < 255) pot += 10;
+	if(rms > g_wfmHi) pot -= 25;
+	else if(rms < g_wfmLo && pot < 255) pot += 10;
 	if(pot < 20) pot = 20;
 	if(pot > 255) pot = 255;
 	if(pot != g_wfmPot) { g_wfmPot = pot; setGainPot((uint8_t)pot, (uint8_t)pot); }
@@ -1298,7 +1299,7 @@ void Encoder(void)
 				}
 				//dac1SetValue(outputSamplesA[sampleIndex*2]);
 
-				agcLevel = agcLevel * (1 - 0.0001);
+				agcLevel = agcLevel * 0.9999f;   /* was (1 - 0.0001): a double, so a software multiply every sample */
 
 				/* feed the USB sound-card mic: demod audio, RX only. Output bank
 				   is B/C/A for sampleBank 0/1/2; real part [*2] = mono demod.
@@ -3577,16 +3578,15 @@ void TIM_Try(void)
 	TimHandle.Init.ClockDivision = 0;
 	HAL_TIM_Base_Init(&TimHandle);
 
-
-
-	HAL_TIM_Base_Start_IT(&TimHandle);
+	/* TIM3 used to pace the sampling. The ADCs are paced by TIM6 + DMA now, and
+	   TIM3's interrupt did nothing, but it was still firing 48,000 times a second
+	   at the highest priority, interrupting the sample processing each time. It
+	   is no longer started. */
 
 	  /*##-2- Configure the NVIC for TIMx #########################################*/
 	  /* Set the TIMx priority */
 	  HAL_NVIC_SetPriority(TIMx_IRQn, 0, 1);
-
-	  /* Enable the TIMx global Interrupt */
-HAL_NVIC_EnableIRQ(TIMx_IRQn);
+	  /* (interrupt not enabled: see above) */
 
 
 
@@ -3625,8 +3625,8 @@ void TIM3_IRQHandler(void)
 
 void TIM4_IRQHandler(void)
 {
+  TIM4->SR = ~TIM_SR_UIF;     /* acknowledge the update interrupt (the HAL's handler did only this, slowly) */
   processStream();
-  HAL_TIM_IRQHandler(&TimHandle4);
 }
 
 int ledState = 0;
@@ -3760,14 +3760,12 @@ static uint16_t dacClamp(uint16_t value)
 
 void dac1SetValue(uint16_t value)
 {
-	value = dacClamp(value);
-	HAL_DAC_SetValue(&DacHandle, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
+	DAC->DHR12R1 = dacClamp(value);   /* straight to the data register: this runs 48,000 times a second */
 }
 
 void dac2SetValue(uint16_t value)
 {
-	value = dacClamp(value);
-	HAL_DAC_SetValue(&DacHandle, DAC_CHANNEL_2, DAC_ALIGN_12B_R, value);
+	DAC->DHR12R2 = dacClamp(value);   /* straight to the data register: this runs 48,000 times a second */
 }
 
 /**

@@ -120,6 +120,7 @@ static void handle_cmd(char *s)
 		  usb_printf("isr cycles: wfm avg %lu max %lu, total avg %lu max %lu, budget %lu\r\n",
 		             (unsigned long)g_isrCycAvg[0], (unsigned long)g_isrCycMax[0], (unsigned long)g_isrCycAvg[1], (unsigned long)g_isrCycMax[1],
 		             (unsigned long)(SystemCoreClock / 48000u));
+		  usb_printf("cache: I=%d D=%d\r\n", (int)((SCB->CCR >> 17) & 1), (int)((SCB->CCR >> 16) & 1));
 		  g_isrCycMax[0] = g_isrCycMax[1] = 0; }
 		if (mode == 3) { extern volatile float g_wfmDiscHz, g_wfmAudio;   /* wideband FM: where the carrier sits */
 		                 extern volatile float g_wfmNoise; extern int g_wfmPot;
@@ -130,6 +131,11 @@ static void handle_cmd(char *s)
 		extern volatile float g_wfmEqHz[2];
 		if (s[1]) { char *e; g_wfmEqHz[0] = (float)strtol(s + 1, &e, 10); g_wfmEqHz[1] = (float)strtol(e, 0, 10); }
 		usb_printf("wfm eq %ld %ld Hz\r\n", (long)g_wfmEqHz[0], (long)g_wfmEqHz[1]);
+	} break;
+	case 'g': {   /* wideband FM gain window: g<back off above, x1000 of full scale rms> <raise below, x1000>; g alone reports */
+		extern float g_wfmHi, g_wfmLo; extern int g_wfmPot;
+		if (s[1]) { char *e; long hi = strtol(s + 1, &e, 10), lo = strtol(e, 0, 10); if (hi > lo && lo > 0) { g_wfmHi = hi / 1000.0f; g_wfmLo = lo / 1000.0f; } }
+		usb_printf("wfm gain window %d..%d /1000, pot %d\r\n", (int)(g_wfmLo * 1000.0f), (int)(g_wfmHi * 1000.0f), g_wfmPot);
 	} break;
 	case 'u': {   /* narrow FM squelch: u<noise level, Hz rms> mutes above it, u0 = open; u alone reports */
 		extern volatile float g_nfmSquelch, g_nfmNoise, g_nfmDiscHz; extern volatile int g_nfmOpen;
