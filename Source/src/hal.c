@@ -167,7 +167,7 @@ const Gpio_Pin PADDLE_INDEX_NC =
 //const Gpio_Pin POWER_SWITCH         = { GPIOC, GPIO_Pin_15 };
 //const Gpio_Pin ACCEL_NSS            = { GPIOD, GPIO_Pin_2  };   // currently labeled SPI2_NSS on schem
 const Gpio_Pin GPS_RESET =
-  { GPIOE, GPIO_PIN_15 }; //2.5
+  { GPIOD, GPIO_PIN_15 }; //2.6.1 netlist: GPS_RESET = U121.62 = PD15 (was PE15, which is an LED)
 //const Gpio_Pin GPS_FIX_LED =
 //  { GPIOE, GPIO_PIN_15 }; //2.5
 const Gpio_Pin GPS_PPS =

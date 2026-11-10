@@ -622,6 +622,7 @@ void teardownPeripheralPower()
 	HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 1);                           /* HMC482 RF amp off (PE3 1 = off) */
 	HAL_GPIO_WritePin(PREAMP_POWER.port, PREAMP_POWER.pin, 0);                     /* mic preamp off (PD14 0 = off) */
 	HAL_GPIO_WritePin(IN_AMP_ENABLE.port, IN_AMP_ENABLE.pin, 0);                   /* MCP6N11 baseband in-amps off (PC2 0 = off) */
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 1);                                       /* GPS module off (GPS_POWER PA8: 0 = on, 1 = off; it is on from boot) */
 
 	/* Si5338 (U241): disable all clock outputs (reg 230 OEB_ALL = 1). Stops the LO
 	   feeding the ECL dividers + mixers and the CLK1A cal clock, dropping both the
@@ -2318,6 +2319,7 @@ setFreq(vfoAFrequency);
 	// first draw, so the display never flashes the power-on defaults on wake.
 	// rtc_init() runs first: it enables backup-domain access where the state lives.
 	rtc_init();          // LSE + RTC clock (keeps time on battery; set from the Control Panel)
+	{ extern void gps_init(void); gps_init(); }   // GPS serial port (USART6); the module's power is left as hal.c set it
 	lpfcorner_restore(); // LPF corner setting (before state_restore applies the LPF mode)
 	txcal_restore();     // per-unit transmit power calibration
 	freqcal_restore();   // before state_restore, so the restored frequency is tuned with the calibration
@@ -2342,6 +2344,7 @@ setFreq(vfoAFrequency);
 	while(1)
 	{
 		usb_serial_poll();   // process any serial-console commands
+		{ extern void gps_poll(void); gps_poll(); }   // split incoming GPS bytes into NMEA sentences
 
 		//TODO: Should I shift away from 0Hz? to get away from 1/f noise? It didn't LOOK bad, but maybe it is negatively effecting things.
 		//I could do something where the dial moves around on screen, but if you get too close to the edge, the DDSs start moving the frequency

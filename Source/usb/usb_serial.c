@@ -209,6 +209,13 @@ static void handle_cmd(char *s)
 	            usb_printf("disp: fill4=%lu ms (%lu ms/frame) redraw=%lu ms dmaerr=%lu\r\n",
 	                       (unsigned long)(t1 - t0), (unsigned long)((t1 - t0) / 4), (unsigned long)(t3 - t2),
 	                       (unsigned long)g_lcdDmaErr); } break;
+	case 'N': {   /* GPS: N = report; Np0 / Np1 = power pin level; Nr = reset pulse; Nb<baud> = serial speed */
+	            extern void gps_report(void); extern void gps_power(int level); extern void gps_reset_pulse(void);
+	            extern void gps_set_baud(uint32_t baud);
+	            if (s[1] == 'p' && (s[2] == '0' || s[2] == '1')) gps_power(s[2] - '0');
+	            else if (s[1] == 'r') gps_reset_pulse();
+	            else if (s[1] == 'b') { long b = strtol(s + 2, 0, 10); if (b >= 1200 && b <= 230400) gps_set_baud((uint32_t)b); }
+	            gps_report(); } break;
 	case 'k': {   /* LPF corner: ka = auto, k0..k8 = 5/7/10/14/20/28/40/50/72 MHz, k9 = filter off; k alone reports */
 	            extern int g_lpfCorner, g_lpfCoarseNow, g_lpfOnTx; extern void lpfCornerSet(int c);
 	            if (s[1] == 'a') lpfCornerSet(-1);
