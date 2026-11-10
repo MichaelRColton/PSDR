@@ -1189,8 +1189,20 @@ void hmc1023_config_rx(void)
 	g_hmc1023_reg2 = hmc_read_reg(2);
 }
 
-int g_hmcGainOn = 0;     /* on-device HMC1023 RX-preamp (+20 dB) state (menu toggle) */
-int hmcGainLast = -1;    /* last drawn state, so the display redraws on change */
+/* On-device "LPF" setting (menu item): how RX uses the HMC1023 (U287).
+     0 = Bypass : stock path around the chip (mux ch 1, LPF rail + 5V boost off)
+     1 = 0 dB   : through the chip, gain stage off
+     2 = +20 dB : through the chip, gain stage on (~10 dB per cascaded channel)
+   Bypass is the power-on default because a stock 2.6.1 board has no 5 V on
+   U287 pin 28 (VDDBG): the chip still answers on SPI but passes no signal, so
+   routing through it leaves the radio deaf (measured: -60 dBm carrier 20 dB out
+   of the noise on bypass, buried through the chip). Boards with the VDDBG wire
+   can use 0 dB / +20 dB; the choice is saved across sleep and power cycles. */
+#define LPF_BYPASS 0
+#define LPF_0DB    1
+#define LPF_20DB   2
+int g_lpfMode = LPF_BYPASS;
+int lpfModeLast = -1;    /* last drawn state, so the display redraws on change */
 
 /* Drive the RX routing GPIOs from the live routing state. Called each receive
    pass (after signalPath(recieve_*), which would otherwise force the mux to
@@ -1225,39 +1237,47 @@ void rx_route_apply(void)
 	HAL_GPIO_WritePin(IMP_BRIDGE_SWITCH_B.port, IMP_BRIDGE_SWITCH_B.pin, g_imp ? 0 : 1);
 }
 
-/* Default RX front end -- the combination proven on the air (WWV in AM; other
-   routings were weaker or passed no audio):
+/* Apply the LPF setting to the RX front end.
+   Through the chip (0 dB / +20 dB) is the combination proven on the air on a
+   board with the VDDBG wire (WWV in AM):
      - mux route 2       : signal through the HMC1023 (RX direction)
      - LPF rail powered  : the HMC1023 needs its analog rail up
      - filter in / boost : 5V boost on  (g_filter_in -> FIVE_VOLT_REGULATOR_ENABLE)
      - filter BYPASS on  : HMC1023 internal LPF out of circuit (gain/buffer only)
-     - TX-RF switch on   : antenna to the receiver (not the VNA-out path)
-     - TRX / imp-bridge / HMC482 amp all off (plain antenna receive)
-   The HMC1023's +20 dB gain stage follows the on-device toggle (g_hmcGainOn). */
+   Bypass is the stock path: mux route 1, LPF rail off, 5V boost off.
+   Either way: TX-RF switch to the antenna, TRX / imp-bridge / HMC482 amp off. */
 void rx_path_default(void)
 {
+	g_amp_in = 0;                        /* HMC482 TX amp out of RX */
+	g_trx = 0; g_txrf = 1; g_imp = 0;    /* plain antenna receive (not TX / not VNA) */
+	if(g_lpfMode == LPF_BYPASS)
+	{
+		lpf_power(0);                    /* HMC1023 rail off */
+		g_filt_ch = 1;                   /* mux -> stock bypass */
+		g_filter_in = 0;                 /* 5V boost off (the switcher only adds noise here) */
+		rx_route_apply();
+		return;
+	}
 	lpf_power(1);                                        /* HMC1023 LPF rail up */
 	HAL_Delay(2);
 	hmc_write_reg(1, (1u << 2) | (1u << 3) | (1u << 4)); /* 0x1C: I_en | Q_en | force_cal */
-	uint32_t gain = g_hmcGainOn ? (1u << 4) : 0u;        /* reg2 bit4 = +10 dB/ch (+20 dB total) */
+	uint32_t gain = (g_lpfMode == LPF_20DB) ? (1u << 4) : 0u;  /* reg2 bit4 = +10 dB/ch (+20 dB total) */
 	/* reg2: 20 MHz corner | filter BYPASS (bit5) | gain | drvr01 | opamp01 */
 	hmc_write_reg(2, (4u << 6) | (1u << 5) | gain | (1u << 2) | (1u << 0));
 	g_hmc1023_reg1 = hmc_read_reg(1);
 	g_hmc1023_reg2 = hmc_read_reg(2);
 	g_filt_ch = 2;                       /* mux -> through the HMC1023 (RX) */
 	g_filter_in = 1;                     /* filter in -> 5V boost on */
-	g_amp_in = 0;                        /* HMC482 TX amp out of RX */
-	g_trx = 0; g_txrf = 1; g_imp = 0;    /* plain antenna receive (not TX / not VNA) */
 	rx_route_apply();                    /* drive the routing GPIOs now */
 }
 
-/* On-device +20 dB toggle: flip only the HMC1023 gain stage, keeping the default
-   RX routing in place (OFF no longer tears down to the stock bypass path, which
-   passed weak/no audio). */
-void hmcGainSet(int on)
+/* Set the LPF mode (menu item / console 'l'): clamp to 0..2 and re-apply. */
+void lpfModeSet(int m)
 {
-	g_hmcGainOn = on ? 1 : 0;
-	rx_path_default();                   /* re-push reg2 with the new gain bit */
+	if(m < LPF_BYPASS) m = LPF_BYPASS;
+	if(m > LPF_20DB)   m = LPF_20DB;
+	g_lpfMode = m;
+	rx_path_default();
 }
 
 /* --- Display readback (bit-bang) ------------------------------------------
@@ -1503,20 +1523,22 @@ const char *charge_label(void)
    sleeping and restore it at boot. These survive the STOP cold-boot AND power
    cycles (VBAT keeps them), so state also persists across reboots - that's the
    free bonus Michael was fine with. */
-#define STATE_MAGIC 0x50534431u   /* "PSD1" */
+#define STATE_MAGIC     0x50534432u   /* "PSD2": bits 24-25 of BKP2R = LPF mode (0..2) */
+#define STATE_MAGIC_OLD 0x50534431u   /* "PSD1": bit 24 = +20 dB on, RX always through the chip */
 void state_save(void)
 {
 	RTC->BKP1R = (uint32_t)vfoAFrequency;
 	RTC->BKP2R = ((uint32_t)(mode & 0x3))
 	           | (((uint32_t)(filterLowerLimit & 0xFF)) << 8)
 	           | (((uint32_t)(filterUpperLimit & 0xFF)) << 16)
-	           | (((uint32_t)(g_hmcGainOn & 1)) << 24);
+	           | (((uint32_t)(g_lpfMode & 0x3)) << 24);
 	RTC->BKP4R = (uint32_t)(afGain * 10.0f + 0.5f);   /* volume, 0..250 */
 	RTC->BKP3R = STATE_MAGIC;
 }
 void state_restore(void)
 {
-	if(RTC->BKP3R != STATE_MAGIC) return;              /* nothing saved yet -> keep defaults */
+	uint32_t magic = RTC->BKP3R;
+	if(magic != STATE_MAGIC && magic != STATE_MAGIC_OLD) return;   /* nothing saved yet -> keep defaults */
 	long f = (long)RTC->BKP1R;
 	uint32_t p = RTC->BKP2R;
 	if(f >= 2500000L && f <= 175000000L) { vfoAFrequency = f; setFreq((unsigned long)f); }
@@ -1525,7 +1547,8 @@ void state_restore(void)
 	if(fhi > flo && fhi <= 128) { filterLowerLimit = (int16_t)flo; filterUpperLimit = (int16_t)fhi; }
 	populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 	uint32_t v = RTC->BKP4R; if(v <= 250) afGain = (float)v / 10.0f;   /* volume */
-	if((p >> 24) & 1) hmcGainSet(1);                   /* re-route through the HMC1023 if it was on */
+	if(magic == STATE_MAGIC) lpfModeSet((int)((p >> 24) & 0x3));
+	else lpfModeSet(((p >> 24) & 1) ? LPF_20DB : LPF_0DB);   /* old layout: that build always ran through the chip */
 }
 
 //USART1_IRQHandler(void)
@@ -2104,9 +2127,8 @@ void updateMenu()
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
-			/* turn one way = HMC RX gain ON (routed through the HMC1023),
-			   the other way = OFF (stock bypass). */
-			hmcGainSet((encoderLastPos - encoderPos) > 0 ? 1 : 0);
+			/* step Bypass <-> 0 dB <-> +20 dB (stops at the ends) */
+			lpfModeSet(g_lpfMode + ((encoderLastPos - encoderPos) > 0 ? 1 : -1));
 			encoderLastPos = encoderPos;
 		}
 		break;
@@ -2321,19 +2343,19 @@ void updateDisplay(uint8_t force)
 		Adafruit_GFX_drawColorBitmap(220, 10, bitmapOff, 20, 9, menuPos == offMenuItem ? MASKRED : MASKWHITE);
 	}
 
-	/* HMC1023 RX-preamp on/off indicator (text, self-erasing via black bg).
+	/* LPF (HMC1023) mode indicator (text, self-erasing via black bg).
 	   Redraws on selection change or when the state toggles. Placement is a
 	   first guess between the Mode and Filter labels - adjust once we can read
 	   the display back. */
-	if(force || g_hmcGainOn != hmcGainLast
+	if(force || g_lpfMode != lpfModeLast
 	    || (menuPos != menuLastPos && (menuPos == hmcGainMenuItem || menuLastPos == hmcGainMenuItem)))
 	{
 		Adafruit_GFX_setTextSize(1);
 		Adafruit_GFX_setTextColor(menuPos == hmcGainMenuItem ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
 		Adafruit_GFX_setCursor(220, 30);   /* under the "Off" label (x=220, y=10) */
-		const char *hs = g_hmcGainOn ? "+20dB ON " : "+20dB OFF";
+		const char *hs = (g_lpfMode == LPF_20DB) ? "LPF +20dB " : (g_lpfMode == LPF_0DB) ? "LPF 0dB   " : "LPF Bypass";
 		for(const char *p = hs; *p; p++) Adafruit_GFX_write(*p);
-		hmcGainLast = g_hmcGainOn;
+		lpfModeLast = g_lpfMode;
 	}
 
 	/* Battery line, centered in the right panel (right of the waterfall, x>=121):

@@ -31,7 +31,8 @@ extern void              setFreq(unsigned long frequency);   /* reprogram the Si
 extern float             usbAudioGain;     /* gain on the USB demod-mic feed      */
 extern float             usbIqGain;        /* gain on the USB stereo-I/Q feed     */
 extern uint8_t           mode;             /* demod: 0=LSB 1=USB 2=AM             */
-extern int               g_hmcGainOn;       /* HMC1023 RX-preamp path on/off (menu) */
+extern int               g_lpfMode;         /* LPF menu setting: 0 = bypass, 1 = 0 dB, 2 = +20 dB */
+extern void              lpfModeSet(int m);
 extern uint16_t          g_battRaw;          /* battery ADC raw (LIPO_V) */
 extern uint16_t          g_vrefRaw;          /* VREFINT raw (for VDDA calc) */
 extern float             g_battVolts;        /* battery volts (g_battRaw * g_battScale) */
@@ -95,10 +96,10 @@ static void print_status(void)
 {
 	unsigned long rms_u = (unsigned long)(passBandRms * 1000000.0f);
 	int bar = (int)(10.0 * log((double)passBandRms * 1000000.0 + 1.0));
-	usb_printf("rms=%lu bar=%d S=%u vfo=%ld filt=%d mux=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX mode=%d flo=%d fhi=%d iqc=%d c1=%d c2=%d hmc=%d\r\n",
+	usb_printf("rms=%lu bar=%d S=%u vfo=%ld filt=%d mux=%d amp=%d/pol%d trx=%d txrf=%d imp=%d reg2=%03lX mode=%d flo=%d fhi=%d iqc=%d c1=%d c2=%d lpf=%d\r\n",
 	           rms_u, bar, (unsigned)maxAmplitude, vfoAFrequency, g_filter_in, g_filt_ch, g_amp_in, g_amp_pol,
 	           g_trx, g_txrf, g_imp, (unsigned long)g_hmc1023_reg2, mode, filterLowerLimit, filterUpperLimit,
-	           iqCorrEnable, (int)(iq_c1 * 1000.0f), (int)(iq_c2 * 1000.0f), g_hmcGainOn);
+	           iqCorrEnable, (int)(iq_c1 * 1000.0f), (int)(iq_c2 * 1000.0f), g_lpfMode);
 	usb_printf("battRaw=%u battV=%d/100 scale=%d/1e6 vref=%u cal=%u\r\n",
 	           (unsigned)g_battRaw, (int)(g_battVolts * 100.0f), (int)(g_battScale * 1000000.0f),
 	           (unsigned)g_vrefRaw, (unsigned)(*((uint16_t*)0x1FF0F44A)));
@@ -161,6 +162,8 @@ static void handle_cmd(char *s)
 	            usb_printf("vfo=%ld\r\n", vfoAFrequency); } break;
 	case 'G': { int v = atoi(s + 1); if (v < 0) v = 0; if (v > 255) v = 255; g_gain_pot = (uint16_t)v;
 	            setGainPot((uint8_t)v, (uint8_t)v); usb_printf("gainpot=%u\r\n", g_gain_pot); } break;
+	case 'l': lpfModeSet(atoi(s + 1));   /* LPF mode: l0 = bypass, l1 = 0 dB, l2 = +20 dB (same as the menu) */
+	          usb_printf("lpf=%d\r\n", g_lpfMode); break;
 	case 'M': g_filt_ch = (s[1] - '0') & 3; usb_printf("mux ch=%d (S1=%d S0=%d) %s\r\n", g_filt_ch,
 	          (g_filt_ch >> 1) & 1, g_filt_ch & 1,
 	          g_filt_ch==1?"bypass":g_filt_ch==0?"ext(DNF)":"HMC1023"); break;
