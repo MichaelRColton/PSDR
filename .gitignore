@@ -79,3 +79,6 @@ build/
 
 # Python bytecode
 __pycache__/
+
+# Vendor datasheet kept locally, not redistributed
+docs/hmc1023.pdf

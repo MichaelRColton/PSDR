@@ -8,12 +8,14 @@ diagnostics the firmware streams back (the real S-meter bar, VFO, mux/switch
 state, HMC1023 reg2).
 
 Pairs with the `fix/hmc1023-lpf` console build (commands: s P f a A m v F g M L H
-t x b r R G D K). Talk is 115200 8N1 over the CDC port (VID 0483 / PID 5740).
+t x b r R G D K p). Talk is 115200 8N1 over the CDC port (VID 0483 / PID 5740).
 "Listen on PC speakers" plays the PSDR USB audio mic out the default output via
 ffplay (install ffmpeg for that button; everything else needs only pyserial).
 
 Run:  python tools/psdr_panel.py
 Deps: pyserial (stdlib tkinter); ffmpeg/ffplay for the Listen button.
+The Screenshot button reads the device's LCD back (console p) and shows it in
+a window; it uses tools/shot.py, which also works standalone.
 Only one program can hold the COM port at once (audio is a separate USB function).
 """
 import glob
@@ -29,6 +31,8 @@ from tkinter import ttk
 
 import serial
 import serial.tools.list_ports
+
+import shot   # tools/shot.py: screen readback decode + PNG writer
 
 
 # --------------------------------------------------------------------------- #
@@ -187,8 +191,35 @@ class SerialLink:
             if data:
                 self._buf += data
                 while b"\n" in self._buf:
+                    # a screenshot band ends with a 2-byte zero flush; drop it
+                    self._buf = self._buf.lstrip(b"\x00")
+                    if b"\n" not in self._buf:
+                        break
                     line, self._buf = self._buf.split(b"\n", 1)
-                    self.rx.put(("line", line.decode(errors="replace").strip()))
+                    text = line.decode(errors="replace").strip()
+                    m = shot.IMG_HEADER.match(text)
+                    if m:
+                        self._read_band(int(m.group(2)), int(m.group(3)))
+                        continue
+                    self.rx.put(("line", text))
+
+    def _read_band(self, rows, y0):
+        # Binary screenshot band follows its "IMG ..." header: take exactly
+        # rows*640 bytes so pixel data is never mistaken for console text.
+        need = rows * shot.ROW_BYTES
+        deadline = time.time() + 6.0
+        while len(self._buf) < need and time.time() < deadline and not self._stop.is_set():
+            try:
+                self._buf += self.ser.read(need - len(self._buf))
+            except Exception as e:
+                self.rx.put(("err", str(e)))
+                return
+        if len(self._buf) < need:
+            got, self._buf = len(self._buf), b""
+            self.rx.put(("imgerr", f"band at row {y0}: got {got} of {need} bytes"))
+            return
+        data, self._buf = self._buf[:need], self._buf[need:]
+        self.rx.put(("img", (y0, data)))
 
     def write(self, cmd):
         # Non-blocking: just enqueue. The writer thread does the actual I/O.
@@ -240,6 +271,12 @@ class Panel(tk.Tk):
         self._flow = []          # signal-flow polyline (canvas coords), set by draw()
         self._dots = []          # animated flow dots
         self._dot_phase = 0.0
+        self._shot_bands = None  # {y0: rgb565 bytes} while a screenshot is in progress
+        self._shot_next = 0      # next band index to request
+        self._shot_t0 = 0.0      # when the current band was requested (timeout)
+        self._shot_rgb = None    # last complete frame (RGB bytes)
+        self._shot_win = None    # viewer window
+        self._shot_img = None    # tk.PhotoImage shown in the viewer (keep a reference)
 
         self._build()
         self.after(120, self._pump)
@@ -514,6 +551,15 @@ class Panel(tk.Tk):
         self.clock_lbl = tk.Label(g, text="(sends the PC date/time to the RTC)", bg=PANEL, fg=MUTE)
         self.clock_lbl.grid(row=1, column=0, columnspan=2, sticky="w")
 
+        # --- screenshot ---
+        g = self._group(col, "Device screen")
+        g.pack(fill="x", pady=3)
+        self.shot_btn = tk.Button(g, text="Screenshot  (p)", command=self.take_screenshot,
+                                  bg=BG, fg=GOOD)
+        self.shot_btn.grid(row=0, column=0, columnspan=2, sticky="we", pady=2)
+        self.shot_lbl = tk.Label(g, text="(reads the LCD back and shows it)", bg=PANEL, fg=MUTE)
+        self.shot_lbl.grid(row=1, column=0, columnspan=2, sticky="w")
+
         # --- raw console ---
         g = self._group(col, "Raw console")
         g.pack(fill="x", pady=3)
@@ -532,6 +578,77 @@ class Panel(tk.Tk):
         n = datetime.datetime.now()
         self.link.write(f"C {n.year} {n.month} {n.day} {n.hour} {n.minute} {n.second}")
         self.clock_lbl.config(text=n.strftime("sent %H:%M:%S %m/%d/%Y - verifying..."))
+
+    # ---- screenshot ---------------------------------------------------- #
+    def take_screenshot(self):
+        if not self.link.ser:
+            self.shot_lbl.config(text="not connected - click Connect first")
+            return
+        if self._shot_bands is not None:
+            return                               # one already in progress
+        self._shot_bands = {}
+        self._shot_next = 0
+        self.shot_btn.config(state="disabled")
+        self._shot_request()
+
+    def _shot_request(self):
+        self.shot_lbl.config(text=f"reading band {self._shot_next + 1} of {shot.BANDS}...")
+        self._shot_t0 = time.time()
+        self.link.write(f"p{self._shot_next}")
+
+    def _shot_band(self, y0, data):
+        if self._shot_bands is None:
+            return                               # a stray band (typed in the raw console)
+        self._shot_bands[y0] = data
+        self._shot_next += 1
+        if self._shot_next < shot.BANDS:
+            self._shot_request()
+            return
+        self._shot_rgb = shot.stitch(self._shot_bands)
+        self._shot_end(time.strftime("captured %H:%M:%S"))
+        self._shot_show()
+
+    def _shot_end(self, text):
+        self._shot_bands = None
+        self.shot_btn.config(state="normal")
+        self.shot_lbl.config(text=text)
+
+    def _shot_show(self):
+        # Viewer window: the frame at 2x, with Capture again / Save PNG.
+        if self._shot_win is None or not self._shot_win.winfo_exists():
+            w = self._shot_win = tk.Toplevel(self)
+            w.title("PSDR screen")
+            w.configure(bg=BG)
+            self._shot_view = tk.Label(w, bg=BG)
+            self._shot_view.pack(padx=10, pady=(10, 6))
+            bar = tk.Frame(w, bg=BG)
+            bar.pack(fill="x", padx=10, pady=(0, 10))
+            tk.Button(bar, text="Capture again", command=self.take_screenshot,
+                      bg=PANEL, fg=INK).pack(side="left")
+            tk.Button(bar, text="Save PNG...", command=self.save_screenshot,
+                      bg=PANEL, fg=GOOD).pack(side="left", padx=6)
+            self._shot_saved = tk.Label(bar, text="", bg=BG, fg=MUTE)
+            self._shot_saved.pack(side="left", padx=6)
+        self._shot_img = tk.PhotoImage(data=shot.ppm_bytes(self._shot_rgb), format="ppm").zoom(2)
+        self._shot_view.config(image=self._shot_img)
+        self._shot_saved.config(text="")
+        self._shot_win.lift()
+
+    def save_screenshot(self):
+        from tkinter import filedialog
+        if self._shot_rgb is None:
+            return
+        path = filedialog.asksaveasfilename(
+            parent=self._shot_win, defaultextension=".png",
+            initialfile=time.strftime("psdr-%Y%m%d-%H%M%S.png"),
+            filetypes=[("PNG image", "*.png")])
+        if not path:
+            return
+        try:
+            shot.write_png(path, self._shot_rgb)
+            self._shot_saved.config(text="saved " + os.path.basename(path))
+        except Exception as e:
+            self._shot_saved.config(text=f"save failed: {e}")
 
     def _build_diag(self, parent):
         col = tk.Frame(parent, bg=BG)
@@ -830,6 +947,12 @@ class Panel(tk.Tk):
                             self._log("  [parse err] " + str(e), "err")
                         if payload:
                             self._log("  " + payload, "rx")
+                    elif kind == "img":
+                        self._shot_band(*payload)
+                    elif kind == "imgerr":
+                        self._log("! screenshot: " + payload, "err")
+                        if self._shot_bands is not None:
+                            self._shot_end("screenshot failed - try again")
                     elif kind == "tx":
                         self._log("> " + payload, "tx")
                     elif kind == "err":
@@ -837,8 +960,12 @@ class Panel(tk.Tk):
                         self.status_lbl.config(text=payload, fg=HOT)
             except queue.Empty:
                 pass
-            # periodic poll
+            # periodic poll (held off while a screenshot is streaming)
             now = time.time()
+            if self._shot_bands is not None:
+                if now - self._shot_t0 > 8.0:
+                    self._shot_end("screenshot timed out - try again")
+                return
             if self.link.ser and self.poll_var.get() and now - getattr(self, "_last_poll", 0) > 0.7:
                 self._last_poll = now
                 self.link.write("s")
