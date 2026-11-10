@@ -521,8 +521,10 @@ void write_Si5338(unsigned char address, unsigned char value)
 #define MULTISYNTH0 53
 void writeMultiSynthParameters(int multisynth, unsigned long a, unsigned long b, unsigned long c)
 {
-  unsigned long long msx_p1 = ((a * c + b) * 128) / c - 512;
-  unsigned long long msx_p2 = (b * 128) % c;
+  /* 64-bit on purpose: (a*c+b)*128 is about vco/64*128 and overflowed 32 bits whenever the LO was 6.4 MHz or
+     lower, so nothing came out at or below 3.2 MHz on the dial. */
+  unsigned long long msx_p1 = (((unsigned long long)a * c + b) * 128ULL) / c - 512ULL;
+  unsigned long long msx_p2 = ((unsigned long long)b * 128ULL) % c;
   unsigned long long msx_p3 = c;
 
   write_Si5338(multisynth,     ( msx_p1 & 0xFF));
