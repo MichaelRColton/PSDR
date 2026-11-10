@@ -190,8 +190,11 @@ void initAdc()
 	/* One 48 kHz output sample from the ADC_OS-sample half starting at `s`.
 	   All three buffers filled the same half (shared TIM6 trigger), so average
 	   each, publish, and run exactly one captureSamples(). */
+	extern uint8_t mode;
+	void wfm_block(const volatile uint16_t *ibuf, const volatile uint16_t *qbuf, int n);
 	static void adc_block(uint32_t s)
 	{
+		if(mode == 3) wfm_block(&adcIBuf[s], &adcQBuf[s], ADC_OS);   /* wideband FM works on the raw 720 kHz samples (wfm.c) */
 		uhADCxConvertedValue1 = adc_avg(adcMicBuf, s);
 		uhADCxConvertedValue2 = adc_avg(adcIBuf,   s);
 		uhADCxConvertedValue3 = adc_avg(adcQBuf,   s);

@@ -429,6 +429,27 @@ void polarToRect(float m, float a, float32_t* x, float32_t* y)
 }
 
 float am_meter_rms(void);
+extern volatile float g_wfmAudio, g_wfmPower, g_wfmDiscHz;   /* wideband FM (wfm.c) */
+void setGainPot(uint8_t a, uint8_t b);
+
+/* Change the receive mode: 0 LSB, 1 USB, 2 AM, 3 wideband FM.
+   Wideband FM needs the baseband in-amps to pass +/-75 kHz or more. Their
+   bandwidth is 5 MHz divided by their gain, so the gain pot is turned down
+   (80 -> gain about 32 -> about 150 kHz) in that mode and put back to the
+   normal 200 otherwise. Broadcast signals are strong, so the lost gain does
+   not matter. */
+void populateCoeficients(int bandwidth, int sideband, int offset);
+void modeSet(uint8_t m)
+{
+	extern uint8_t mode;
+	extern int16_t filterUpperLimit, filterLowerLimit;
+	if(m > 3) m = 0;
+	uint8_t was = mode;
+	mode = m;
+	populateCoeficients(filterUpperLimit - filterLowerLimit, m > 2 ? 2 : m, filterLowerLimit);
+	if(m == 3 && was != 3) setGainPot(80, 80);
+	if(m != 3 && was == 3) setGainPot(200, 200);
+}
 
 /* Turn the 0/1 pass-band mask in fftFilterCoeficient[] into the spectrum of a
    SHORT filter kernel.
@@ -1062,7 +1083,8 @@ void Encoder(void)
 					if(g_tonePhase >= 6.2831853f) g_tonePhase -= 6.2831853f;
 					amAudio = g_testAmp * sinf(g_tonePhase);
 				}
-				int amPath = (mode == 2 || g_testTone > 0.0f) && (transmitting == 0);   /* anti-phase amAudio DAC path (receive only) */
+				if(mode == 3 && transmitting == 0) amAudio = g_wfmAudio;   /* wideband FM audio comes from wfm.c */
+				int amPath = (mode == 2 || mode == 3 || g_testTone > 0.0f) && (transmitting == 0);   /* anti-phase amAudio DAC path (receive only) */
 				float dacGain = transmitting ? txDrive : afGain;   /* TX drive is not the volume knob */
 				/* receive input with the DC offset tracked out (see rxDcI/rxDcQ) */
 				float rxQ = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
@@ -1255,9 +1277,9 @@ void Encoder(void)
 					   output sample (time domain, after the linear filter + overlap),
 					   then DC-block out the carrier level to leave the audio. */
 					float afOut;
-					if(mode == 2)
+					if(mode >= 2)
 					{
-						afOut = amAudio;                 /* AM envelope (computed once, above) */
+						afOut = amAudio;                 /* AM envelope or wideband FM audio (computed once, above) */
 					}
 					else
 					{
@@ -2025,7 +2047,7 @@ void state_restore(void)
 	long f = (long)RTC->BKP1R;
 	uint32_t p = RTC->BKP2R;
 	if(f >= 2500000L && f <= 175000000L) { vfoAFrequency = f; setFreq((unsigned long)f); }
-	uint8_t m = (uint8_t)(p & 0x3); if(m <= 2) mode = m;
+	uint8_t m = (uint8_t)(p & 0x3); modeSet(m);
 	int flo = (int)((p >> 8) & 0xFF), fhi = (int)((p >> 16) & 0xFF);
 	if(fhi > flo && fhi <= 128) { filterLowerLimit = (int16_t)flo; filterUpperLimit = (int16_t)fhi; }
 	populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
@@ -2634,8 +2656,7 @@ void updateMenu()
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
-			mode = (mode + (encoderLastPos - encoderPos)) % 3;
-			populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
+			modeSet((uint8_t)((mode + (encoderLastPos - encoderPos)) & 3));   /* LSB, USB, AM, wideband FM */
 			encoderLastPos = encoderPos;
 
 			//TODO: CHANGE THE FILTER SO IT MAKES SENSE!
@@ -2689,6 +2710,7 @@ void updateMenu()
 float am_meter_rms(void)
 {
 	float32_t r;
+	if(mode == 3) { arm_sqrt_f32(g_wfmPower, &r); return r; }   /* wideband FM: total signal level at the ADC */
 	arm_sqrt_f32(amChPower, &r);
 	return r * AM_METER_SCALE;
 }
@@ -3034,6 +3056,13 @@ void updateDisplay(uint8_t force)
 		case AM:
 			Adafruit_GFX_drawColorBitmap(196, 91, bitmapAM, 28, 9, menuPos == modeMenuItem ? MASKRED : MASKWHITE);
 			break;
+		case 3:   /* wideband FM: no hand-drawn bitmap yet, so plain text */
+			Adafruit_GFX_fillRect(196, 91, 28, 9, ILI9340_BLACK);
+			Adafruit_GFX_setTextSize(1);
+			Adafruit_GFX_setTextColor(menuPos == modeMenuItem ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
+			Adafruit_GFX_setCursor(197, 92);
+			for(const char *t = "WFM"; *t; t++) Adafruit_GFX_write(*t);
+			break;
 		}
 
 		modeLast = mode;
@@ -3207,7 +3236,7 @@ void processStream()
 			   here): taking |z| per FFT block then overlap-saving is nonlinear and
 			   corrupts the reconstruction. Keep the bank linear (complex). */
 
-			passBandRms = (mode == 2) ? am_meter_rms() : calculateRmsOfSample(samplesA, FFT_BUFFER_SIZE);
+			passBandRms = (mode >= 2) ? am_meter_rms() : calculateRmsOfSample(samplesA, FFT_BUFFER_SIZE);
 
 			sampleBankAReady = 0;
 		}
@@ -3231,7 +3260,7 @@ void processStream()
 
 			/* AM envelope done at the output tap - keep the bank linear (complex). */
 
-			passBandRms = (mode == 2) ? am_meter_rms() : calculateRmsOfSample(samplesB, FFT_BUFFER_SIZE);
+			passBandRms = (mode >= 2) ? am_meter_rms() : calculateRmsOfSample(samplesB, FFT_BUFFER_SIZE);
 
 			sampleBankBReady = 0;
 
@@ -3260,7 +3289,7 @@ void processStream()
 
 			/* AM envelope done at the output tap - keep the bank linear (complex). */
 
-			passBandRms = (mode == 2) ? am_meter_rms() : calculateRmsOfSample(samplesC, FFT_BUFFER_SIZE);
+			passBandRms = (mode >= 2) ? am_meter_rms() : calculateRmsOfSample(samplesC, FFT_BUFFER_SIZE);
 
 			sampleBankCReady = 0;
 

@@ -12,6 +12,8 @@ The firmware is being actively worked on again. `master` now holds the current S
 
 - **Working HMC1023 low-pass filter / RF preamp path**, with an on-device **LPF** setting: Bypass, 0 dB or +20 dB. *(Needs a small hardware modification: one wire to give U287 pin 28, `VDDBG`, its 5 V. Without it, leave the setting on Bypass, which is the default.)*
 - **AM reception that works**, on the built-in speaker and over USB.
+- **Wideband FM (broadcast band) reception**, mono, as a fourth mode. New and only bench-tested so far; strong stations only.
+- **Tunes from 2.5 MHz to 175 MHz** on receive and transmit (the 2 m band included).
 - **USB composite device**: plug the radio into a PC and you get
   - a **serial console** for control and diagnostics,
   - **"PSDR Demod"**, a sound card carrying the demodulated audio, and

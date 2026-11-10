@@ -116,6 +116,8 @@ static void handle_cmd(char *s)
 		unsigned long rms_u = (unsigned long)(passBandRms * 1000000.0f);
 		int bar = (int)(10.0 * log((double)passBandRms * 1000000.0 + 1.0));
 		usb_printf("rms=%lu bar=%d\r\n", rms_u, bar);
+		if (mode == 3) { extern volatile float g_wfmDiscHz, g_wfmAudio;   /* wideband FM: where the carrier sits */
+		                 usb_printf("wfm: disc=%ld Hz\r\n", (long)g_wfmDiscHz); }
 	} break;
 	case 'f': g_filter_in = (s[1] == '1'); usb_printf("filter %s\r\n", g_filter_in ? "IN (B4)" : "BYPASS (B2)"); break;
 	case 'a': g_amp_in = (s[1] == '1'); usb_printf("amp %s\r\n", g_amp_in ? "ON + inserted" : "off"); break;
@@ -289,9 +291,8 @@ static void handle_cmd(char *s)
 	            usb_printf("iq_c1=%d/1000\r\n", (int)(iq_c1 * 1000.0f)); } break;
 	case 'U': { iq_c2 = (float)atof(s + 1) / 1000.0f;   /* manual amplitude term x1000 */
 	            usb_printf("iq_c2=%d/1000\r\n", (int)(iq_c2 * 1000.0f)); } break;
-	case 'D': { int m = atoi(s + 1); if (m < 0) m = 0; if (m > 2) m = 2; mode = (uint8_t)m;
-	            populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
-	            usb_printf("mode=%d (%s)\r\n", mode, mode==0?"LSB":mode==1?"USB":"AM"); } break;
+	case 'D': { extern void modeSet(uint8_t m); int m = atoi(s + 1); if (m < 0) m = 0; if (m > 3) m = 3; modeSet((uint8_t)m);
+	            usb_printf("mode=%d (%s)\r\n", mode, mode==0?"LSB":mode==1?"USB":mode==2?"AM":"WFM"); } break;
 	case 'K': {   /* K <lo> <hi> : DSP filter edges in FFT bins (HPF, LPF); ~93.75 Hz/bin @ 48k */
 	            char *p = s + 1; long lo = strtol(p, &p, 10); long hi = strtol(p, &p, 10);
 	            if (lo < 0) lo = 0; if (hi > 128) hi = 128; if (hi <= lo) hi = lo + 1;
