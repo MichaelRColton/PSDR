@@ -164,6 +164,10 @@ static void handle_cmd(char *s)
 	            g_txKeyTone = tb; g_txKeyAmp = amp ? 1 : 0;
 	            g_txKeyUntil = HAL_GetTick() + (uint32_t)ms;
 	            usb_printf("tx key %d ms tone=%d (%d Hz) amp=%d\r\n", ms, tb, tb * 1875 / 10, g_txKeyAmp); } break;
+	case 'O': {   /* transmit drive (DAC scale while transmitting); O alone reports it */
+	            extern volatile float txDrive;
+	            if (s[1]) { float d = (float)atof(s + 1); if (d < 0.0f) d = 0.0f; if (d > 500.0f) d = 500.0f; txDrive = d; }
+	            usb_printf("txdrive=%d/100\r\n", (int)(txDrive * 100.0f)); } break;
 	case 'J': {   /* frequency calibration: J<ppb> sets + saves the reference error, J alone reports it */
 	            extern long g_freqCalPpb; extern void freqCalSet(long ppb); extern void freqcal_save(void);
 	            if (s[1] == '-' || (s[1] >= '0' && s[1] <= '9')) {

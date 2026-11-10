@@ -170,7 +170,11 @@ int transmitting = 0;
    through / powers the HMC482 (signalPath transmit_with_amp_no_filter). */
 volatile uint32_t g_txKeyUntil = 0;
 volatile int      g_txKeyTone  = 0;
-volatile int      g_txKeyAmp   = 0;
+volatile int      g_txKeyAmp   = 0;   /* 0 = no amp, 1 = through the HMC482 (transmit_with_amp_no_filter) */
+/* Transmit drive: scale from DSP samples to DAC counts while transmitting. It
+   used to be the speaker volume (afGain), so the volume knob set the output
+   power. Now independent: console 'O<drive>'. */
+volatile float txDrive = 8.0f;
 unsigned int tone = 0;
 
 volatile uint8_t displayUpdating = 0;   /* ISR/main handshake - see menuPos note above; must be volatile */
@@ -794,7 +798,8 @@ void Encoder(void)
 					if(g_tonePhase >= 6.2831853f) g_tonePhase -= 6.2831853f;
 					amAudio = g_testAmp * sinf(g_tonePhase);
 				}
-				int amPath = (mode == 2 || g_testTone > 0.0f);   /* use the anti-phase amAudio DAC path */
+				int amPath = (mode == 2 || g_testTone > 0.0f) && (transmitting == 0);   /* anti-phase amAudio DAC path (receive only) */
+				float dacGain = transmitting ? txDrive : afGain;   /* TX drive is not the volume knob */
 
 				switch (sampleBank)
 				{
@@ -823,8 +828,8 @@ void Encoder(void)
 
 					/* speaker is bridge-tied (DAC1-DAC2); AM must drive the two DACs
 					   anti-phase or they cancel to silence. SSB uses real/imag as-is. */
-					dac1OutVal = (amPath ? amAudio *  1.5f : samplesB[(sampleIndex)*2]) * 4096 * afGain + 2048;
-					dac2OutVal = (amPath ? amAudio * -1.5f : samplesB[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+					dac1OutVal = (amPath ? amAudio *  1.5f : samplesB[(sampleIndex)*2]) * 4096 * dacGain + 2048;
+					dac2OutVal = (amPath ? amAudio * -1.5f : samplesB[(sampleIndex)*2+1]) * 4096 * dacGain + 2048;
 
 					if(transmitting == 1)
 					{
@@ -872,8 +877,8 @@ void Encoder(void)
 						//dac1SetValue(samplesC[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesC[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = (amPath ? amAudio *  1.5f : samplesC[(sampleIndex)*2]) * 4096 * afGain + 2048;
-						dac2OutVal = (amPath ? amAudio * -1.5f : samplesC[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+						dac1OutVal = (amPath ? amAudio *  1.5f : samplesC[(sampleIndex)*2]) * 4096 * dacGain + 2048;
+						dac2OutVal = (amPath ? amAudio * -1.5f : samplesC[(sampleIndex)*2+1]) * 4096 * dacGain + 2048;
 
 						if(transmitting == 1)
 						{
@@ -919,8 +924,8 @@ void Encoder(void)
 						//dac1SetValue(samplesA[(sampleIndex)*2] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 						//dac2SetValue(samplesA[(sampleIndex)*2+1] /*/ (agcLevel * agcScale)*/ * 4096 * afGain + 2048);
 
-						dac1OutVal = (amPath ? amAudio *  1.5f : samplesA[(sampleIndex)*2]) * 4096 * afGain + 2048;
-						dac2OutVal = (amPath ? amAudio * -1.5f : samplesA[(sampleIndex)*2+1]) * 4096 * afGain + 2048;
+						dac1OutVal = (amPath ? amAudio *  1.5f : samplesA[(sampleIndex)*2]) * 4096 * dacGain + 2048;
+						dac2OutVal = (amPath ? amAudio * -1.5f : samplesA[(sampleIndex)*2+1]) * 4096 * dacGain + 2048;
 
 						if(transmitting == 1)
 						{
@@ -1802,8 +1807,8 @@ void signalPath(int signalPath)
       HAL_GPIO_WritePin (FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 1); //1 is on.
 
       //Amp relay set to on
-      HAL_GPIO_WritePin (AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 0); // 0 to bypass (I think!)
-      HAL_GPIO_WritePin (AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 1); //always reverse of above.
+      HAL_GPIO_WritePin (AMP_SWITCH_A.port, AMP_SWITCH_A.pin, 1); // 1 = through the HMC482. Measured 2026-11-09: A=0/B=1 here LOST 10 dB; A=1/B=0 gives about +16 dB.
+      HAL_GPIO_WritePin (AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 0); //always reverse of above.
 
       //Impedance bridge relay set to bypass
       HAL_GPIO_WritePin (IMP_BRIDGE_SWITCH_A.port, IMP_BRIDGE_SWITCH_A.pin, 0); //0 to bypass
@@ -2064,6 +2069,9 @@ setFreq(vfoAFrequency);
 		{
 			transmitting = 1;
 			signalPath((consoleKey && g_txKeyAmp) ? transmit_with_amp_no_filter : transmit_no_amp_no_filter);
+			/* Speaker off while transmitting: the DACs carry the TX signal, and it
+			   was coming out of the speaker too. (A CW sidetone can re-enable it.) */
+			HAL_GPIO_WritePin(AUDIO_AMP_NSHTDWN.port, AUDIO_AMP_NSHTDWN.pin, 0);
 //	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
 ////	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
 ////	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
@@ -2074,6 +2082,7 @@ setFreq(vfoAFrequency);
 	        tone = consoleKey ? (unsigned int)g_txKeyTone : 0;
 		} else {
 			transmitting = 0;
+			HAL_GPIO_WritePin(AUDIO_AMP_NSHTDWN.port, AUDIO_AMP_NSHTDWN.pin, 1);   /* speaker back on */
 			signalPath(recieve_no_filter);
 			rx_route_apply();   // force the HMC1023 RX routing on top of signalPath's bypass
 //	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
@@ -3185,15 +3194,26 @@ void initDac1()
 	}
 }
 
+/* The callers pass an int that can be negative or above 4095 when overdriven.
+   Converted to uint16_t, a negative arrives as a large number, so anything in
+   the upper half means "below zero" -> clamp to 0; otherwise clamp to 4095.
+   (The old "& 0x0FFF" wrapped around, turning overdrive into full-scale jumps.) */
+static uint16_t dacClamp(uint16_t value)
+{
+	if(value > 0x7FFF) return 0;
+	if(value > 4095)   return 4095;
+	return value;
+}
+
 void dac1SetValue(uint16_t value)
 {
-	value = value & 0b0000111111111111;
+	value = dacClamp(value);
 	HAL_DAC_SetValue(&DacHandle, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
 }
 
 void dac2SetValue(uint16_t value)
 {
-	value = value & 0b0000111111111111;
+	value = dacClamp(value);
 	HAL_DAC_SetValue(&DacHandle, DAC_CHANNEL_2, DAC_ALIGN_12B_R, value);
 }
 
