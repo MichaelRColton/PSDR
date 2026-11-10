@@ -165,11 +165,16 @@ int transmitting = 0;
 /* Console-keyed transmit for bench testing (console 'X'). The radio transmits
    while HAL_GetTick() is before g_txKeyUntil, exactly as if the paddles were
    squeezed, then drops back to receive on its own - so a lost USB connection
-   can never leave it keyed. g_txKeyTone = FFT bin of a test tone (x 187.5 Hz)
-   to send instead of the microphone, 0 = microphone. g_txKeyAmp = 1 routes
+   can never leave it keyed. g_txKeyTone = frequency in Hz of a test tone that
+   replaces the microphone samples (0 = microphone). The tone is generated in
+   the time domain, sample by sample, so it goes through the same FFT sideband
+   filter and overlap handling as speech would. g_txKeyAmp = 1 routes
    through / powers the HMC482 (signalPath transmit_with_amp_no_filter). */
 volatile uint32_t g_txKeyUntil = 0;
 volatile int      g_txKeyTone  = 0;
+volatile int      g_txToneOn   = 0;      /* set by the main loop while console-keyed with a tone */
+float             g_txTonePhase = 0.0f;
+#define TX_TONE_AMPLITUDE 0.01f           /* as a fraction of ADC full scale, like a quiet microphone */
 volatile int      g_txKeyAmp   = 0;   /* 0 = no amp, 1 = through the HMC482 (transmit_with_amp_no_filter) */
 /* Transmit drive: scale from DSP samples to DAC counts while transmitting. It
    used to be the speaker volume (afGain), so the volume knob set the output
@@ -237,6 +242,71 @@ void polarToRect(float m, float a, float32_t* x, float32_t* y)
 
 float am_meter_rms(void);
 
+/* Turn the 0/1 pass-band mask in fftFilterCoeficient[] into the spectrum of a
+   SHORT filter kernel.
+
+   Why: the DSP filters by FFT -> multiply -> inverse FFT on 256-sample blocks,
+   keeping only samples 100..255 of each result and overlapping the next block by
+   100 samples ("overlap-save"). That is only exact if the filter's impulse
+   response is no longer than 101 samples. Multiplying by a raw 0/1 mask is a
+   filter whose impulse response is as long as the whole block, so its tail wraps
+   around inside every block and lands on the samples we keep. The error is
+   different in each block, so the output has a small step at every block seam:
+   every 156 samples = 3.25 ms = 308 Hz. On the air that is a comb of spurs
+   every 308 Hz around the signal (measured -31 dBc on transmit) and a faint
+   308 Hz buzz in receive audio.
+
+   Fix (DSP Guide ch. 17/18, the steps the original code skipped): inverse-FFT
+   the mask to get its impulse response, keep the 101 samples around its centre,
+   taper them with a Kaiser window, and FFT that back. The result is a filter
+   with slightly softer edges that fits the overlap exactly, so the seams
+   vanish. It adds 50 samples (1 ms) of delay. Each bin is then scaled by (1+j)
+   because the old mask stored 1 in both the real and imaginary slot; keeping
+   that factor leaves every level in the radio unchanged. */
+static float kaiserI0(float x)
+{
+	float sum = 1.0f, term = 1.0f, h = x * 0.5f;
+	for(int k = 1; k < 20; k++) { term *= (h / k) * (h / k); sum += term; }
+	return sum;
+}
+
+void kernelFromMask(void)
+{
+	static float buf[FFT_BUFFER_SIZE];
+	static float ker[FFT_BUFFER_SIZE];
+	arm_cfft_radix4_instance_f32 inst;
+	const int M = 101;                 /* kernel length = overlap + 1 */
+	const int C = (M - 1) / 2;         /* its centre */
+	int k, n;
+
+	for(k = 0; k < FFT_SIZE; k++)      /* desired response: real 0/1 per bin */
+	{
+		buf[k * 2]     = fftFilterCoeficient[k * 2];
+		buf[k * 2 + 1] = 0.0f;
+	}
+	arm_cfft_radix4_init_f32(&inst, FFT_SIZE, 1, 1);
+	arm_cfft_radix4_f32(&inst, buf);   /* impulse response, centred on sample 0 (wraps) */
+
+	for(n = 0; n < FFT_BUFFER_SIZE; n++) ker[n] = 0.0f;
+	float i0b = kaiserI0(4.0f);
+	for(n = 0; n < M; n++)
+	{
+		int src = (n - C) & (FFT_SIZE - 1);                    /* shift the centre to sample C */
+		float r = (float)(n - C) / (float)C;
+		float w = kaiserI0(4.0f * sqrtf(1.0f - r * r)) / i0b;  /* Kaiser window, beta = 4 */
+		ker[n * 2]     = buf[src * 2] * w;
+		ker[n * 2 + 1] = buf[src * 2 + 1] * w;
+	}
+	arm_cfft_radix4_init_f32(&inst, FFT_SIZE, 0, 1);
+	arm_cfft_radix4_f32(&inst, ker);   /* spectrum of the short kernel */
+
+	for(k = 0; k < FFT_SIZE; k++)      /* times (1+j): re - im, re + im */
+	{
+		fftFilterCoeficient[k * 2]     = ker[k * 2] - ker[k * 2 + 1];
+		fftFilterCoeficient[k * 2 + 1] = ker[k * 2] + ker[k * 2 + 1];
+	}
+}
+
 void populateCoeficients(int bandwidth, int sideband, int offset)
 {
 	//Chapter 17 of DSP Guide* //TODO: Make a bibliography!
@@ -291,7 +361,8 @@ void populateCoeficients(int bandwidth, int sideband, int offset)
 	fftFilterCoeficient[FFT_BUFFER_SIZE / 2] = 0;
 	fftFilterCoeficient[FFT_BUFFER_SIZE - 1] = 0;
 
-	return; //Skipping all the later stuff doesn't seem to make a huge difference yet...
+	kernelFromMask();
+	return;
 
 	//2:
 //	float x, y;
@@ -356,7 +427,9 @@ void applyCoeficient(float *samples, int shift)
 	for(i = 0; i < FFT_SIZE; i++)
 	{
 		filterTemp[i * 2] = samples[i * 2] * fftFilterCoeficient[i * 2] - samples[i * 2 + 1] * fftFilterCoeficient[i * 2 + 1];
-		filterTemp[i * 2 + 1] = samples[i * 2 + 1] * fftFilterCoeficient[i * 2 + 1] + samples[i * 2] * fftFilterCoeficient[i * 2];
+		/* imaginary part of (a+jb)(c+jd) is ad + bc. The old line computed bd + ac,
+		   which only happened to be right while every coefficient had c == d. */
+		filterTemp[i * 2 + 1] = samples[i * 2] * fftFilterCoeficient[i * 2 + 1] + samples[i * 2 + 1] * fftFilterCoeficient[i * 2];
 	}
 
 	//int shifter;
@@ -800,6 +873,14 @@ void Encoder(void)
 				}
 				int amPath = (mode == 2 || g_testTone > 0.0f) && (transmitting == 0);   /* anti-phase amAudio DAC path (receive only) */
 				float dacGain = transmitting ? txDrive : afGain;   /* TX drive is not the volume knob */
+				/* transmit input: the microphone, or the console test tone */
+				float micIn = (uhADCxConvertedValue1 - dcOffset1) / 4096.0f;
+				if(g_txToneOn)
+				{
+					g_txTonePhase += 6.2831853f * (float)g_txKeyTone / 48000.0f;
+					if(g_txTonePhase >= 6.2831853f) g_txTonePhase -= 6.2831853f;
+					micIn = TX_TONE_AMPLITUDE * sinf(g_txTonePhase);
+				}
 
 				switch (sampleBank)
 				{
@@ -809,8 +890,8 @@ void Encoder(void)
 						samplesA[sampleIndex*2] = ((uhADCxConvertedValue3 - dcOffset3)/4096.0); // - 2048;
 						samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
 					} else {
-						samplesA[sampleIndex*2] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;
-						samplesA[sampleIndex*2 + 1] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;//0.0;
+						samplesA[sampleIndex*2] = micIn;
+						samplesA[sampleIndex*2 + 1] = micIn;
 					}
 
 					if(uhADCxConvertedValue1 > maxAmplitude) maxAmplitude = uhADCxConvertedValue1;
@@ -837,8 +918,8 @@ void Encoder(void)
 						if(dac2OutVal > txDacOutValMax) txDacOutValMax = dac2OutVal;
 					}
 
-						dac1SetValue(dac1OutVal);
-						dac2SetValue(dac2OutVal);
+						dac1SetValue(transmitting ? dac2OutVal : dac1OutVal);   /* TX: I/Q swapped so LSB/USB come out on the labelled side (measured 2026-11-09) */
+						dac2SetValue(transmitting ? dac1OutVal : dac2OutVal);
 //					}
 
 
@@ -858,8 +939,8 @@ void Encoder(void)
 						samplesB[sampleIndex*2] = ((uhADCxConvertedValue3 - dcOffset3)/4096.0); // - 2048;
 						samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
 					} else {
-						samplesB[sampleIndex*2] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;
-						samplesB[sampleIndex*2 + 1] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;//0.0;
+						samplesB[sampleIndex*2] = micIn;
+						samplesB[sampleIndex*2 + 1] = micIn;
 					}
 
 					if(uhADCxConvertedValue1 > maxAmplitude) maxAmplitude = uhADCxConvertedValue1;
@@ -886,8 +967,8 @@ void Encoder(void)
 							if(dac2OutVal > txDacOutValMax) txDacOutValMax = dac2OutVal;
 						}
 
-							dac1SetValue(dac1OutVal);
-							dac2SetValue(dac2OutVal);
+							dac1SetValue(transmitting ? dac2OutVal : dac1OutVal);   /* TX: I/Q swapped so LSB/USB come out on the labelled side (measured 2026-11-09) */
+							dac2SetValue(transmitting ? dac1OutVal : dac2OutVal);
 
 //					}
 
@@ -905,8 +986,8 @@ void Encoder(void)
 						samplesC[sampleIndex*2] = ((uhADCxConvertedValue3 - dcOffset3)/4096.0); // - 2048;
 						samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue2 - dcOffset2)/4096.0); // - 2048;//0.0;
 					} else {
-						samplesC[sampleIndex*2] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;
-						samplesC[sampleIndex*2 + 1] = ((uhADCxConvertedValue1 - dcOffset1)/4096.0); // - 2048;//0.0;
+						samplesC[sampleIndex*2] = micIn;
+						samplesC[sampleIndex*2 + 1] = micIn;
 					}
 
 					if(uhADCxConvertedValue1 > maxAmplitude) maxAmplitude = uhADCxConvertedValue1;
@@ -933,8 +1014,8 @@ void Encoder(void)
 							if(dac2OutVal > txDacOutValMax) txDacOutValMax = dac2OutVal;
 						}
 
-							dac1SetValue(dac1OutVal);
-							dac2SetValue(dac2OutVal);
+							dac1SetValue(transmitting ? dac2OutVal : dac1OutVal);   /* TX: I/Q swapped so LSB/USB come out on the labelled side (measured 2026-11-09) */
+							dac2SetValue(transmitting ? dac1OutVal : dac2OutVal);
 
 
 //					}
@@ -2079,9 +2160,11 @@ setFreq(vfoAFrequency);
 //	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 0); //always reverse of above.
 //	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 0); //0 is on.
 //	        //tone = 200;
-	        tone = consoleKey ? (unsigned int)g_txKeyTone : 0;
+	        tone = 0;
+	        g_txToneOn = (consoleKey && g_txKeyTone > 0);
 		} else {
 			transmitting = 0;
+			g_txToneOn = 0;
 			HAL_GPIO_WritePin(AUDIO_AMP_NSHTDWN.port, AUDIO_AMP_NSHTDWN.pin, 1);   /* speaker back on */
 			signalPath(recieve_no_filter);
 			rx_route_apply();   // force the HMC1023 RX routing on top of signalPath's bypass
