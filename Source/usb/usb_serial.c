@@ -234,6 +234,7 @@ static void handle_cmd(char *s)
 	            extern volatile int g_txDacMid, g_txDacMidFixed; int v = atoi(s + 1);
 	            if (s[1] && (v == 0 || (v >= 64 && v <= 2048))) g_txDacMidFixed = v;
 	            usb_printf("txdacmid: fixed=%d now=%d\r\n", g_txDacMidFixed, g_txDacMid); } break;
+	case 'S': { extern void sd_probe(void); sd_probe(); } break;   /* microSD: identify the card and read sector 0 (read-only) */
 	case 'N': {   /* GPS: N = report; Np0 / Np1 = power pin level; Nr = reset pulse; Nb<baud> = serial speed */
 	            extern void gps_report(void); extern void gps_power(int level); extern void gps_reset_pulse(void);
 	            extern void gps_set_baud(uint32_t baud);
