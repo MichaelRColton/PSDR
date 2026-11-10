@@ -162,6 +162,20 @@ static void handle_cmd(char *s)
 	            usb_printf("vfo=%ld\r\n", vfoAFrequency); } break;
 	case 'G': { int v = atoi(s + 1); if (v < 0) v = 0; if (v > 255) v = 255; g_gain_pot = (uint16_t)v;
 	            setGainPot((uint8_t)v, (uint8_t)v); usb_printf("gainpot=%u\r\n", g_gain_pot); } break;
+	case 'E': {   /* display speed test: 4 full-screen fills + one forced full redraw, in ms */
+	            extern void Adafruit_ILI9340_fillScreen(uint16_t color);
+	            extern void updateDisplay(uint8_t force);
+	            uint32_t t0 = HAL_GetTick();
+	            for (int i = 0; i < 4; i++) Adafruit_ILI9340_fillScreen((i & 1) ? 0x001F : 0x0000);
+	            uint32_t t1 = HAL_GetTick();
+	            Adafruit_ILI9340_fillScreen(0x0000);
+	            uint32_t t2 = HAL_GetTick();
+	            updateDisplay(1);
+	            uint32_t t3 = HAL_GetTick();
+	            extern volatile uint32_t g_lcdDmaErr;
+	            usb_printf("disp: fill4=%lu ms (%lu ms/frame) redraw=%lu ms dmaerr=%lu\r\n",
+	                       (unsigned long)(t1 - t0), (unsigned long)((t1 - t0) / 4), (unsigned long)(t3 - t2),
+	                       (unsigned long)g_lcdDmaErr); } break;
 	case 'l': lpfModeSet(atoi(s + 1));   /* LPF mode: l0 = bypass, l1 = 0 dB, l2 = +20 dB (same as the menu) */
 	          usb_printf("lpf=%d\r\n", g_lpfMode); break;
 	case 'M': g_filt_ch = (s[1] - '0') & 3; usb_printf("mux ch=%d (S1=%d S0=%d) %s\r\n", g_filt_ch,

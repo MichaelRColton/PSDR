@@ -66,6 +66,139 @@
 	uint16_t rxBuf[10];
 	uint16_t txBuf[2];
 
+/* --- Buffered pixel stream over SPI1 TX DMA ---------------------------------
+   The original driver sent every pixel as its own 2-byte blocking
+   HAL_SPI_Transmit() call, so a full-screen fill took ~540 ms although the bus
+   could move it in ~25 ms. Pixel runs (fills, lines, bitmaps, waterfall rows)
+   now go through a small buffer that is handed to DMA2 Stream 3 (SPI1_TX) in
+   one piece:
+
+     Adafruit_ILI9340_setAddrWindow(...);
+     lcd_stream_begin();          // DC = data, CS low
+     lcd_stream_px(color); ...    // or lcd_stream_fill(color, count)
+     lcd_stream_end();            // flush, CS high
+
+   The caller still waits for each chunk to finish (the main loop is the only
+   display user and the DSP runs from interrupts, so nothing else is held up);
+   the gain is that the bytes go out back-to-back with no per-pixel call
+   overhead. Two details matter for a clean picture:
+     - DMA "transfer complete" fires when the last byte is WRITTEN to the SPI
+       data register, not when it has been shifted out, so we also wait for the
+       SPI BSY flag to clear before touching CS/DC or reusing the buffer.
+     - The D-cache is off in this build. If it is ever re-enabled, lcdBuf needs
+       cache maintenance (or a non-cacheable MPU region) or DMA will send stale
+       data. */
+#define LCD_BUF_BYTES 2048
+static uint8_t  lcdBuf[LCD_BUF_BYTES] __attribute__((aligned(4)));
+static uint16_t lcdBufN = 0;
+static DMA_HandleTypeDef hdmaLcdTx;
+static uint8_t  lcdDmaReady = 0;
+volatile uint32_t g_lcdDmaErr = 0;   /* count of DMA start failures / timeouts (0 = healthy) */
+
+void DMA2_Stream3_IRQHandler(void) { HAL_DMA_IRQHandler(&hdmaLcdTx); }
+
+/* Call once after spi_init(). Until then (or if it fails) the stream falls back
+   to blocking transfers, which are still buffered and much faster than before. */
+void lcd_dma_init(void)
+{
+	__HAL_RCC_DMA2_CLK_ENABLE();
+	hdmaLcdTx.Instance                 = DMA2_Stream3;       /* SPI1_TX: DMA2 Stream 3, channel 3 */
+	hdmaLcdTx.Init.Channel             = DMA_CHANNEL_3;
+	hdmaLcdTx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
+	hdmaLcdTx.Init.PeriphInc           = DMA_PINC_DISABLE;
+	hdmaLcdTx.Init.MemInc              = DMA_MINC_ENABLE;
+	hdmaLcdTx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+	hdmaLcdTx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+	hdmaLcdTx.Init.Mode                = DMA_NORMAL;
+	hdmaLcdTx.Init.Priority            = DMA_PRIORITY_LOW;   /* the ADC capture streams outrank the display */
+	hdmaLcdTx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+	if(HAL_DMA_Init(&hdmaLcdTx) != HAL_OK) { g_lcdDmaErr++; return; }
+	__HAL_LINKDMA(&SpiHandle, hdmatx, hdmaLcdTx);
+	HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 7, 0);           /* below ADC capture (1) and USB (6) */
+	HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
+	lcdDmaReady = 1;
+}
+
+static void lcd_wait_idle(void)
+{
+	for(uint32_t i = 0; (SpiHandle.Instance->SR & SPI_SR_BSY) && i < 200000u; i++) { }
+}
+
+static void lcd_tx(uint8_t *d, uint16_t n)
+{
+	if(n == 0) return;
+	if(!lcdDmaReady || n < 32)
+	{
+		HAL_SPI_Transmit(&SpiHandle, d, n, 20);
+		lcd_wait_idle();
+		return;
+	}
+	if(HAL_SPI_Transmit_DMA(&SpiHandle, d, n) != HAL_OK)
+	{
+		g_lcdDmaErr++;
+		HAL_SPI_Transmit(&SpiHandle, d, n, 100);
+		lcd_wait_idle();
+		return;
+	}
+	uint32_t t0 = HAL_GetTick();
+	while(HAL_SPI_GetState(&SpiHandle) != HAL_SPI_STATE_READY)
+	{
+		if(HAL_GetTick() - t0 > 100)      /* should take well under 1 ms; never hang the UI */
+		{
+			g_lcdDmaErr++;
+			HAL_DMA_Abort(&hdmaLcdTx);
+			CLEAR_BIT(SpiHandle.Instance->CR2, SPI_CR2_TXDMAEN);
+			SpiHandle.State = HAL_SPI_STATE_READY;
+			break;
+		}
+	}
+	lcd_wait_idle();
+}
+
+void lcd_stream_begin(void)
+{
+	lcdBufN = 0;
+	HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
+	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
+}
+
+void lcd_stream_flush(void)
+{
+	lcd_tx(lcdBuf, lcdBufN);
+	lcdBufN = 0;
+}
+
+void lcd_stream_px(uint16_t color)
+{
+	lcdBuf[lcdBufN++] = (uint8_t)(color >> 8);
+	lcdBuf[lcdBufN++] = (uint8_t)(color & 0xFF);
+	if(lcdBufN >= LCD_BUF_BYTES) lcd_stream_flush();
+}
+
+/* count pixels of one colour: fill the buffer once, then resend it */
+void lcd_stream_fill(uint16_t color, uint32_t count)
+{
+	lcd_stream_flush();
+	uint32_t inBuf = (count < LCD_BUF_BYTES / 2) ? count : LCD_BUF_BYTES / 2;
+	for(uint32_t i = 0; i < inBuf; i++)
+	{
+		lcdBuf[i * 2]     = (uint8_t)(color >> 8);
+		lcdBuf[i * 2 + 1] = (uint8_t)(color & 0xFF);
+	}
+	while(count)
+	{
+		uint32_t n = (count < inBuf) ? count : inBuf;
+		lcd_tx(lcdBuf, (uint16_t)(n * 2));
+		count -= n;
+	}
+}
+
+void lcd_stream_end(void)
+{
+	lcd_stream_flush();
+	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
+}
+
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
 void Adafruit_ILI9340_Adafruit_ILI9340(uint8_t cs, uint8_t dc, uint8_t rst) /*: Adafruit_GFX(ILI9340_TFTWIDTH, ILI9340_TFTHEIGHT) */ {
@@ -477,34 +610,14 @@ void Adafruit_ILI9340_drawFastVLine(int16_t x, int16_t y, int16_t h,
 
   // Rudimentary clipping
   if((x >= _width) || (y >= _height)) return;
-
   if((y+h-1) >= _height)
     h = _height-y;
+  if(h <= 0) return;
 
   Adafruit_ILI9340_setAddrWindow(x, y, x, y+h-1);
-
-  //uint8_t hi = color >> 8, lo = color;
-
-  //SET_BIT(dcport, dcpinmask);
-  HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
-  //digitalWrite(_dc, HIGH);
-  //CLEAR_BIT(csport, cspinmask);
-  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
-  //digitalWrite(_cs, LOW);
-
-	//uint8_t rxBuf[10];
-	//uint8_t txBuf[2];
-  while (h--) {
-    //spiwrite(hi);
-    //spiwrite(lo);
-	//txBuf[0] = hi;
-	//txBuf[1] = lo;
-txBuf[0] = color;
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
-  }
-  //SET_BIT(csport, cspinmask);
-  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
-  //digitalWrite(_cs, HIGH);
+  lcd_stream_begin();
+  lcd_stream_fill(color, (uint32_t)h);
+  lcd_stream_end();
 }
 
 
@@ -514,27 +627,12 @@ void Adafruit_ILI9340_drawFastHLine(int16_t x, int16_t y, int16_t w,
   // Rudimentary clipping
   if((x >= _width) || (y >= _height)) return;
   if((x+w-1) >= _width)  w = _width-x;
+  if(w <= 0) return;
+
   Adafruit_ILI9340_setAddrWindow(x, y, x+w-1, y);
-
-  //uint8_t hi = color >> 8, lo = color;
-  //SET_BIT(dcport, dcpinmask);
-  HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
-  //CLEAR_BIT(csport, cspinmask);
-  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
-  //digitalWrite(_dc, HIGH);
-  //digitalWrite(_cs, LOW);
-
-  while (w--) {
-    //spiwrite(hi);
-    //spiwrite(lo);
-	//txBuf[0] = hi;
-	//txBuf[1] = lo;
-	  txBuf[0] = color;
-	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
-  }
-  //SET_BIT(csport, cspinmask);
-  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
-  //digitalWrite(_cs, HIGH);
+  lcd_stream_begin();
+  lcd_stream_fill(color, (uint32_t)w);
+  lcd_stream_end();
 }
 
 void Adafruit_ILI9340_fillScreen(uint16_t color) {
@@ -549,33 +647,12 @@ void Adafruit_ILI9340_fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   if((x >= _width) || (y >= _height)) return;
   if((x + w - 1) >= _width)  w = _width  - x;
   if((y + h - 1) >= _height) h = _height - y;
+  if(w <= 0 || h <= 0) return;
 
   Adafruit_ILI9340_setAddrWindow(x, y, x+w-1, y+h-1);
-
- // uint8_t hi = color >> 8, lo = color;
-
-  //SET_BIT(dcport, dcpinmask);
-  HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
-  //digitalWrite(_dc, HIGH);
-  //CLEAR_BIT(csport, cspinmask);
-  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
-  //digitalWrite(_cs, LOW);
-
-  for(y=h; y>0; y--) {
-    for(x=w; x>0; x--) {
-      //spiwrite(hi);
-      //spiwrite(lo);
-  	//txBuf[0] = hi;
-  	//txBuf[1] = lo;
-    	txBuf[0] = color;
-
-  	spi_readWrite(SpiHandle, rxBuf, txBuf, 1);
-  	//HAL_SPI_TransmitReceive(&SpiHandle, (uint8_t*)txBuf, (uint8_t*)rxBuf, 2, 1000);
-    }
-  }
-  //digitalWrite(_cs, HIGH);
-  //SET_BIT(csport, cspinmask);
-  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
+  lcd_stream_begin();
+  lcd_stream_fill(color, (uint32_t)w * (uint32_t)h);
+  lcd_stream_end();
 }
 
 

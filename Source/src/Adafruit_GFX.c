@@ -393,44 +393,16 @@ void Adafruit_GFX_drawBitmap(int16_t x, int16_t y,
 #endif
 void Adafruit_GFX_drawColorBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h, uint16_t tintMask)
 {
-	int16_t i; //, j, bmIndex;
+	extern void lcd_stream_begin(void);
+	extern void lcd_stream_px(uint16_t color);
+	extern void lcd_stream_end(void);
+	int32_t i, n = (int32_t)w * (int32_t)h;
 
 	Adafruit_ILI9340_setAddrWindow(x,y,x+w-1, y+h-1);
-
-	//i = 0;
-	HAL_GPIO_WritePin(LCD_DC.port, LCD_DC.pin, 1);
-	HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 0);
-
-//	if(tintMask == 0xFFFF)
-//	{
-//		HAL_SPI_Transmit(&SpiHandle, bitmap, h*w*2, 1); //When you do it this way, the bytes are swapped. Hmmm
-//		//So it looks weird.
-//	} else {
-{
-		uint8_t txBuf[10];
-
-		//HAL_SPI_Transmit(&SpiHandle, bitmap, 1 /*cnt * 2*/, 1);
-		for(i = 0; i < w*h; i++)
-		{
-			txBuf[0] = (bitmap[i] & tintMask ) >> 8;
-			txBuf[1] = (bitmap[i] & tintMask ) & 0xFF;
-				//spi_readWrite(SpiHandle, rxBuf, bitmap, w*h);
-				HAL_SPI_Transmit(&SpiHandle, txBuf, 2 /*cnt * 2*/, 1);
-				//HAL_SPI_Transmit(&SpiHandle, bitmap[i+1], 1 /*cnt * 2*/, 1);
-			  //}
-			  //SET_BIT(csport, cspinmask);
-		}
-	}
-		  HAL_GPIO_WritePin(LCD_NSS.port, LCD_NSS.pin, 1);
-
-
-
-//	for(j=0; j<h; j++) {
-//		for(i=0; i<w; i++) {
-//			bmIndex = i+w*j;
-//			Adafruit_ILI9340_drawPixel(x+i, y+j, bitmap[bmIndex] & tintMask);
-//		}
-//	}
+	lcd_stream_begin();
+	for(i = 0; i < n; i++)
+		lcd_stream_px(bitmap[i] & tintMask);
+	lcd_stream_end();
 }
 
 #if ARDUINO >= 100

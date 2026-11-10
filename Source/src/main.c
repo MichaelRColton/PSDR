@@ -1879,6 +1879,7 @@ setFreq(vfoAFrequency);
 	initDac1();
 	Encoder();
 
+	{ extern void lcd_dma_init(void); lcd_dma_init(); }   /* SPI1 TX DMA for pixel runs (before the first draw) */
 	Adafruit_ILI9340_begin();
 	Adafruit_ILI9340_setRotation(1);
 	//Adafruit_GFX_fillScreen(ILI9340_BLACK);
@@ -2477,6 +2478,11 @@ void updateDisplay(uint8_t force)
 }
 
 int newWaterFallData = 0;
+extern void lcd_dma_init(void);
+extern void lcd_stream_begin(void);
+extern void lcd_stream_px(uint16_t color);
+extern void lcd_stream_end(void);
+
 void drawWaterfall(void)
 {
   if(newWaterFallData == 1)
@@ -2520,22 +2526,24 @@ void drawWaterfall(void)
       //			Will that be better when I lower the sample frequency? Maybe I should do that next.
 
       Adafruit_ILI9340_setAddrWindow(waterfallScanLine, 0, waterfallScanLine, 120);
+      lcd_stream_begin();   /* one buffered DMA transfer per waterfall half-row */
       for(i = 120; i != 0; i--)
       {
         mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100; //Log needs to be at least 1 right? We could do a + (1-fftMin) maybe? Worth it?
         //mags = magnitudes[i] / fftMaxMax * 32;
-        //Adafruit_ILI9340_drawPixel(waterfallScanLine, (120 - i), gradient[(uint8_t) mags]);
-        Adafruit_ILI9340_pushColor(gradient[(uint8_t) mags]);
+        lcd_stream_px(gradient[(uint8_t) mags]);
       }
+      lcd_stream_end();
 
       Adafruit_ILI9340_setAddrWindow(waterfallScanLine, 120, waterfallScanLine, 239);
+      lcd_stream_begin();
       for(i = 255; i > 135; i--)
       {
         mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100;
         //mags = magnitudes[i] / fftMaxMax * 32;
-        //Adafruit_ILI9340_drawPixel(waterfallScanLine, 359 - (i - 15), gradient[(uint8_t) mags]);
-        Adafruit_ILI9340_pushColor(gradient[(uint8_t) mags]);
+        lcd_stream_px(gradient[(uint8_t) mags]);
       }
+      lcd_stream_end();
 
       waterfallScanLine++;
       if(waterfallScanLine > 119) waterfallScanLine = 0;
