@@ -768,7 +768,7 @@ void Encoder(void)
 
 
 
-					if(sampleIndex >= FFT_SIZE - filterKernelLength - 1)
+					if(sampleIndex >= FFT_SIZE - filterKernelLength)   /* was "- 1": wrote samplesOverlap[-2..-1], corrupting the variables in front of it */
 					{
 						samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength))*2] = samplesA[sampleIndex*2];
 						samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength)) * 2 +1] = samplesA[sampleIndex*2+1];
@@ -816,7 +816,7 @@ void Encoder(void)
 
 //					}
 
-						if(sampleIndex >= FFT_SIZE - filterKernelLength - 1)
+						if(sampleIndex >= FFT_SIZE - filterKernelLength)   /* was "- 1": wrote samplesOverlap[-2..-1], corrupting the variables in front of it */
 						{
 							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength))*2] = samplesB[sampleIndex*2];
 							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength)) * 2 +1] = samplesB[sampleIndex*2+1];
@@ -864,7 +864,7 @@ void Encoder(void)
 
 //					}
 
-						if(sampleIndex >= FFT_SIZE - filterKernelLength - 1)
+						if(sampleIndex >= FFT_SIZE - filterKernelLength)   /* was "- 1": wrote samplesOverlap[-2..-1], corrupting the variables in front of it */
 						{
 							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength))*2] = samplesC[sampleIndex*2];
 							samplesOverlap[(sampleIndex - (FFT_SIZE - filterKernelLength)) * 2 +1] = samplesC[sampleIndex*2+1];
