@@ -154,6 +154,16 @@ static void handle_cmd(char *s)
 	case 'W': {   /* audio self-test amplitude W<x1000> (pre-afGain) */
 	            float a = (float)atof(s + 1) / 1000.0f; if (a < 0.0f) a = 0.0f; if (a > 0.5f) a = 0.5f;
 	            g_testAmp = a; usb_printf("testamp=%d/1000\r\n", (int)(g_testAmp * 1000.0f)); } break;
+	case 'X': {   /* timed transmit for bench tests: X<ms> [tone bin] [amp 0/1]; X0 = unkey now.
+	                 Tone bin n sends a test tone at n x 187.5 Hz instead of the mic. Max 10 s. */
+	            extern volatile uint32_t g_txKeyUntil; extern volatile int g_txKeyTone, g_txKeyAmp;
+	            int ms = 0, tb = 0, amp = 0;
+	            sscanf(s + 1, "%d %d %d", &ms, &tb, &amp);
+	            if (ms < 0) ms = 0; if (ms > 10000) ms = 10000;
+	            if (tb < 0) tb = 0; if (tb > 120) tb = 120;
+	            g_txKeyTone = tb; g_txKeyAmp = amp ? 1 : 0;
+	            g_txKeyUntil = HAL_GetTick() + (uint32_t)ms;
+	            usb_printf("tx key %d ms tone=%d (%d Hz) amp=%d\r\n", ms, tb, tb * 1875 / 10, g_txKeyAmp); } break;
 	case 'J': {   /* frequency calibration: J<ppb> sets + saves the reference error, J alone reports it */
 	            extern long g_freqCalPpb; extern void freqCalSet(long ppb); extern void freqcal_save(void);
 	            if (s[1] == '-' || (s[1] >= '0' && s[1] <= '9')) {

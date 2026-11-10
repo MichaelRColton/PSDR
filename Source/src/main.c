@@ -162,6 +162,15 @@ float fftMaxMaxMax = 20;
 float fftMaxMaxMin = 0.2;
 
 int transmitting = 0;
+/* Console-keyed transmit for bench testing (console 'X'). The radio transmits
+   while HAL_GetTick() is before g_txKeyUntil, exactly as if the paddles were
+   squeezed, then drops back to receive on its own - so a lost USB connection
+   can never leave it keyed. g_txKeyTone = FFT bin of a test tone (x 187.5 Hz)
+   to send instead of the microphone, 0 = microphone. g_txKeyAmp = 1 routes
+   through / powers the HMC482 (signalPath transmit_with_amp_no_filter). */
+volatile uint32_t g_txKeyUntil = 0;
+volatile int      g_txKeyTone  = 0;
+volatile int      g_txKeyAmp   = 0;
 unsigned int tone = 0;
 
 volatile uint8_t displayUpdating = 0;   /* ISR/main handshake - see menuPos note above; must be volatile */
@@ -2049,12 +2058,12 @@ setFreq(vfoAFrequency);
 
 		HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, HAL_GPIO_ReadPin(GPS_PPS.port, GPS_PPS.pin));
 
-		if(!HAL_GPIO_ReadPin(PADDLE_THUMB_NO.port, PADDLE_THUMB_NO.pin) && !HAL_GPIO_ReadPin(PADDLE_INDEX_NO.port, PADDLE_INDEX_NO.pin))
+		int consoleKey = ((int32_t)(g_txKeyUntil - HAL_GetTick()) > 0);   /* console 'X' timed key-down */
+		if(consoleKey || (!HAL_GPIO_ReadPin(PADDLE_THUMB_NO.port, PADDLE_THUMB_NO.pin) && !HAL_GPIO_ReadPin(PADDLE_INDEX_NO.port, PADDLE_INDEX_NO.pin)))
 		//if(1) //I am locking it in transmit for some testing.
 		{
 			transmitting = 1;
-			signalPath(transmit_no_amp_no_filter);
-			//signalPath(transmit_with_amp_no_filter);
+			signalPath((consoleKey && g_txKeyAmp) ? transmit_with_amp_no_filter : transmit_no_amp_no_filter);
 //	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 1); //0 = speaker/earphone. 1=TX Drivers
 ////	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 1); //Active Low
 ////	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 0); //Active Low
@@ -2062,7 +2071,7 @@ setFreq(vfoAFrequency);
 //	        HAL_GPIO_WritePin(AMP_SWITCH_B.port, AMP_SWITCH_B.pin, 0); //always reverse of above.
 //	        HAL_GPIO_WritePin(AMP_POWER.port, AMP_POWER.pin, 0); //0 is on.
 //	        //tone = 200;
-	        tone = 0;
+	        tone = consoleKey ? (unsigned int)g_txKeyTone : 0;
 		} else {
 			transmitting = 0;
 			signalPath(recieve_no_filter);
