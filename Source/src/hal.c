@@ -188,6 +188,9 @@ const Gpio_Pin FILTER_S0 =
 const Gpio_Pin FILTER_S1 =
     { GPIOD, GPIO_PIN_8  }; //2.5
 
+const Gpio_Pin LPF_POWER =
+    { GPIOE, GPIO_PIN_11 }; // HMC1023 LPF 5V switch (Q208 gate); LOW = rail on
+
 const Gpio_Pin TRX_SWITCH =
     { GPIOC, GPIO_PIN_3  }; //2.5
 
@@ -201,6 +204,12 @@ const Gpio_Pin FLIP_FLOP_ENABLE =
 
 const Gpio_Pin RED_LED =
     { GPIOE, GPIO_PIN_13 };
+
+const Gpio_Pin FIVE_VOLT_REGULATOR_ENABLE =
+    { GPIOE, GPIO_PIN_2 };
+
+const Gpio_Pin CHARGE_POWER_SOURCE =
+    { GPIOB, GPIO_PIN_8 };
 
 //// timer pins
 //const Timer_Pin LED_G =
@@ -386,18 +395,18 @@ hal_setupPins (void)
 
   //ADC1
   gpioInitStructure.Pin = RX_Q.pin;
-  gpioInitStructure.Speed = GPIO_SPEED_FAST;
+  //gpioInitStructure.Speed = GPIO_SPEED_FAST;
   gpioInitStructure.Mode = GPIO_MODE_ANALOG;
   gpioInitStructure.Pull = GPIO_NOPULL;
-  gpioInitStructure.Alternate = 0;
+  //gpioInitStructure.Alternate = 0;
   HAL_GPIO_Init (RX_Q.port, &gpioInitStructure);
 
   //ADC2
   gpioInitStructure.Pin = RX_I.pin;
-  gpioInitStructure.Speed = GPIO_SPEED_FAST;
+  //gpioInitStructure.Speed = GPIO_SPEED_FAST;
   gpioInitStructure.Mode = GPIO_MODE_ANALOG;
   gpioInitStructure.Pull = GPIO_NOPULL;
-  gpioInitStructure.Alternate = 0;
+  //gpioInitStructure.Alternate = 0;
   HAL_GPIO_Init (RX_I.port, &gpioInitStructure);
 
   //DDS Pins
@@ -571,9 +580,9 @@ hal_setupPins (void)
   gpioInitStructure.Pin = AMP_POWER.pin;
   gpioInitStructure.Mode = GPIO_MODE_OUTPUT_OD;
   gpioInitStructure.Speed = GPIO_SPEED_LOW;
-  gpioInitStructure.Pull = GPIO_PULLUP;
+  gpioInitStructure.Pull = GPIO_NOPULL;
   HAL_GPIO_Init (AMP_POWER.port, &gpioInitStructure);
-  HAL_GPIO_WritePin (AMP_POWER.port, AMP_POWER.pin, 1); //1 is off.
+  HAL_GPIO_WritePin (AMP_POWER.port, AMP_POWER.pin, 0); //1 is off.
 
   gpioInitStructure.Pin = FILTER_GAIN_POT_MOSI.pin;
   gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
@@ -853,6 +862,16 @@ hal_setupPins (void)
   HAL_GPIO_Init (FILTER_S1.port, &gpioInitStructure);
   HAL_GPIO_WritePin (FILTER_S1.port, FILTER_S1.pin, 0);
 
+  // Power the HMC1023 LPF/VGA: drive LPF_POWER (PE11) low to turn on Q208 -> LPF_5V.
+  // Needs the VDDBG blue-wire mod (C292 -> LPF_5V) for the chip's bias supply.
+  // (Mux is left on bypass here; filter path + SPI config come next.)
+  gpioInitStructure.Pin = LPF_POWER.pin;
+  gpioInitStructure.Speed = GPIO_SPEED_LOW;
+  gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioInitStructure.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init (LPF_POWER.port, &gpioInitStructure);
+  HAL_GPIO_WritePin (LPF_POWER.port, LPF_POWER.pin, 0);
+
   gpioInitStructure.Pin = TRX_SWITCH.pin;
   gpioInitStructure.Speed = GPIO_SPEED_LOW;
   gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
@@ -868,6 +887,20 @@ hal_setupPins (void)
   gpioInitStructure.Pull = GPIO_NOPULL;
   HAL_GPIO_Init (FLIP_FLOP_ENABLE.port, &gpioInitStructure);
   HAL_GPIO_WritePin (FLIP_FLOP_ENABLE.port, TRX_SWITCH.pin, 0);
+
+  gpioInitStructure.Pin = FIVE_VOLT_REGULATOR_ENABLE.pin;
+  gpioInitStructure.Speed = GPIO_SPEED_LOW;
+  gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioInitStructure.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init (FIVE_VOLT_REGULATOR_ENABLE.port, &gpioInitStructure);
+  HAL_GPIO_WritePin (FIVE_VOLT_REGULATOR_ENABLE.port, FIVE_VOLT_REGULATOR_ENABLE.pin, 0);
+
+  gpioInitStructure.Pin = CHARGE_POWER_SOURCE.pin;
+  gpioInitStructure.Speed = GPIO_SPEED_LOW;
+  gpioInitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+  gpioInitStructure.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init (CHARGE_POWER_SOURCE.port, &gpioInitStructure);
+  HAL_GPIO_WritePin (CHARGE_POWER_SOURCE.port, CHARGE_POWER_SOURCE.pin, 1); //High is for high current charging (I think 1A) Low is for 0.5A I think.
 }
 
 //

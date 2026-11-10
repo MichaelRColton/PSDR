@@ -22,6 +22,11 @@
 #ifdef PSDR2
 	#include "stm32f429xx.h"
 #endif
+
+
+#ifdef PSDR257
+#include "stm32f746xx.h"
+#endif
 #include <stdbool.h>
 #include <Adafruit_GFX.h>
 
@@ -172,3 +177,10 @@
 //};
 
 #endif
+
+/* Function declarations to keep the compiler happy */
+void Adafruit_ILI9340_setVerticalScrollDefinition(uint16_t topFixedArea,
+  		uint16_t verticalScrollArea, uint16_t bottomFixedArea);
+void Adafruit_ILI9340_setVerticalScrollStartAddress(uint16_t address);
+
+

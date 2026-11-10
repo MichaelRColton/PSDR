@@ -31,6 +31,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <stdlib.h>
+#include <stdbool.h>
+
 #include "Adafruit_GFX.h"
 #include "glcdfont.c"
 #ifdef __AVR__
@@ -379,10 +382,18 @@ void Adafruit_GFX_drawBitmap(int16_t x, int16_t y,
 //#include "Adafruit_ILI9340.h"
 //#include "spi.h"
 #include "hal.h"
+
+
+#ifdef PSDR2
 #include "stm32f4xx_hal_spi.h"
+#endif
+
+#ifdef PSDR257
+#include "stm32f7xx_hal_spi.h"
+#endif
 void Adafruit_GFX_drawColorBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h, uint16_t tintMask)
 {
-	int16_t i, j, bmIndex;
+	int16_t i; //, j, bmIndex;
 
 	Adafruit_ILI9340_setAddrWindow(x,y,x+w-1, y+h-1);
 

@@ -11,13 +11,23 @@
 //#include <stm32f415xx.h>
 #ifdef PSDR2
 #include "stm32f429xx.h"
-#endif
 #include <stm32f4xx_hal_gpio.h>
-//    #include <stm32f10x_gpio.h>
-#include <uart.h>
 #include "stm32f4xx_hal_dma.h"
 #include "stm32f4xx_hal_usart.h"
 #include "stm32f4xx_hal_i2c.h"
+#endif
+
+//    #include <stm32f10x_gpio.h>
+
+#ifdef PSDR257
+#include "stm32f746xx.h"
+#include <stm32f7xx_hal_gpio.h>
+#include "stm32f7xx_hal_dma.h"
+#include "stm32f7xx_hal_usart.h"
+#include "stm32f7xx_hal_i2c.h"
+#endif
+
+//#include <uart.h>
 
 typedef struct _Gpio_Pin
 {
@@ -153,6 +163,10 @@ extern const Gpio_Pin FLIP_FLOP_ENABLE;
 
 extern const Gpio_Pin RED_LED;
 
+extern const Gpio_Pin CHARGE_POWER_SOURCE;
+
+extern const Gpio_Pin FIVE_VOLT_REGULATOR_ENABLE;
+
 //    extern const Gpio_Pin NC_1;
 //    extern const Gpio_Pin DAC_SWITCHES;
 //    extern const Gpio_Pin GSM_PWRKEY;
@@ -171,8 +185,8 @@ extern const Gpio_Pin RED_LED;
 //    extern const Timer_Pin SERVO1;
 //    extern const Timer_Pin SERVO2;
 
-extern inline bool
-hal_checkTimeout (uint32_t startTime_ms, uint32_t interval_ms);
+//extern inline bool
+//hal_checkTimeout (uint32_t startTime_ms, uint32_t interval_ms);
 // returns true if the interval has timed out
 
 int

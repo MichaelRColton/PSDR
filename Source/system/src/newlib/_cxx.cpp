@@ -10,7 +10,7 @@
 
 // ----------------------------------------------------------------------------
 
-#include <cstdlib>
+#include <stdlib.h>
 #include <sys/types.h>
 #include "diag/Trace.h"
 

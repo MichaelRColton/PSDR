@@ -24,7 +24,14 @@
 #include <stdbool.h>
 //#include <stm32f4xx_hal.h>
 
+
+#ifdef PSDR2
 #include "stm32f4xx_hal_spi.h"
+#endif
+
+#ifdef PSDR257
+#include "stm32f7xx_hal_spi.h"
+#endif
 
 #if defined(__SAM3X8E__)
 #include <include/pio.h>
@@ -578,7 +585,7 @@ uint16_t Adafruit_ILI9340_Color565(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 
-void Adafruit_ILI9340_setVertialScrollStartAddress(uint16_t address)
+void Adafruit_ILI9340_setVerticalScrollStartAddress(uint16_t address)
 {
 	Adafruit_ILI9340_writecommand(ILI9340_VSCRSADD);
 	Adafruit_ILI9340_writedata((address >> 8) & 0xFF);

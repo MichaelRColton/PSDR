@@ -25,3 +25,5 @@ timer_sleep (timer_ticks_t ticks);
 // ----------------------------------------------------------------------------
 
 #endif // TIMER_H_
+
+void timer_tick (void);
