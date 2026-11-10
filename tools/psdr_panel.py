@@ -116,7 +116,7 @@ STATUS_RE = re.compile(
     r"\s+amp=(\d+)/pol(\d+)\s+trx=(\d+)\s+txrf=(\d+)\s+imp=(\d+)\s+reg2=([0-9A-Fa-f]+)"
     r"(?:\s+mode=(\d+)\s+flo=(-?\d+)\s+fhi=(-?\d+))?"
 )
-MODE_NAMES = {0: "LSB", 1: "USB", 2: "AM"}
+MODE_NAMES = {0: "LSB", 1: "USB", 2: "AM", 3: "WFM", 4: "NFM"}
 LPF_MODES = ["Bypass", "0 dB", "+20 dB"]
 LPF_CORNERS = ["auto", "5 MHz", "7 MHz", "10 MHz", "14 MHz", "20 MHz", "28 MHz", "40 MHz", "50 MHz", "72 MHz", "off"]
 LPFC_RE = re.compile(r"lpfcorner=(-?\d+) coarse=(-?\d+) ontx=(\d)")

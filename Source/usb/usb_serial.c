@@ -126,6 +126,11 @@ static void handle_cmd(char *s)
 		if (s[1]) { char *e; g_wfmEqHz[0] = (float)strtol(s + 1, &e, 10); g_wfmEqHz[1] = (float)strtol(e, 0, 10); }
 		usb_printf("wfm eq %ld %ld Hz\r\n", (long)g_wfmEqHz[0], (long)g_wfmEqHz[1]);
 	} break;
+	case 'u': {   /* narrow FM squelch: u<noise level, Hz rms> mutes above it, u0 = open; u alone reports */
+		extern volatile float g_nfmSquelch, g_nfmNoise, g_nfmDiscHz; extern volatile int g_nfmOpen;
+		if (s[1]) g_nfmSquelch = (float)atoi(s + 1);
+		usb_printf("nfm squelch=%ld noise=%ld disc=%ld Hz %s\r\n", (long)g_nfmSquelch, (long)g_nfmNoise, (long)g_nfmDiscHz, g_nfmOpen ? "open" : "muted");
+	} break;
 	case 'f': g_filter_in = (s[1] == '1'); usb_printf("filter %s\r\n", g_filter_in ? "IN (B4)" : "BYPASS (B2)"); break;
 	case 'a': g_amp_in = (s[1] == '1'); usb_printf("amp %s\r\n", g_amp_in ? "ON + inserted" : "off"); break;
 	case 'A': g_amp_pol = (s[1] == '1'); usb_printf("amp switch pol=%d\r\n", g_amp_pol); break;
@@ -298,8 +303,8 @@ static void handle_cmd(char *s)
 	            usb_printf("iq_c1=%d/1000\r\n", (int)(iq_c1 * 1000.0f)); } break;
 	case 'U': { iq_c2 = (float)atof(s + 1) / 1000.0f;   /* manual amplitude term x1000 */
 	            usb_printf("iq_c2=%d/1000\r\n", (int)(iq_c2 * 1000.0f)); } break;
-	case 'D': { extern void modeSet(uint8_t m); int m = atoi(s + 1); if (m < 0) m = 0; if (m > 3) m = 3; modeSet((uint8_t)m);
-	            usb_printf("mode=%d (%s)\r\n", mode, mode==0?"LSB":mode==1?"USB":mode==2?"AM":"WFM"); } break;
+	case 'D': { extern void modeSet(uint8_t m); int m = atoi(s + 1); if (m < 0) m = 0; if (m > 4) m = 4; modeSet((uint8_t)m);
+	            usb_printf("mode=%d (%s)\r\n", mode, mode==0?"LSB":mode==1?"USB":mode==2?"AM":mode==3?"WFM":"NFM"); } break;
 	case 'K': {   /* K <lo> <hi> : DSP filter edges in FFT bins (HPF, LPF); ~93.75 Hz/bin @ 48k */
 	            char *p = s + 1; long lo = strtol(p, &p, 10); long hi = strtol(p, &p, 10);
 	            if (lo < 0) lo = 0; if (hi > 128) hi = 128; if (hi <= lo) hi = lo + 1;
@@ -307,7 +312,7 @@ static void handle_cmd(char *s)
 	            populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 	            usb_printf("filt lo=%d hi=%d (~%ld..%ld Hz)\r\n", filterLowerLimit, filterUpperLimit,
 	                       lo * 46L, hi * 46L); } break;
-	default:  usb_printf("cmds: s | F<hz> | f | a | A | t | x | b | r<reg><hex> | R<reg> | m | v<g> | D<0-2 mode> | K<lo> <hi> filt\r\n"); break;
+	default:  usb_printf("cmds: s | F<hz> | f | a | A | t | x | b | r<reg><hex> | R<reg> | m | v<g> | D<0-4 mode> | K<lo> <hi> filt\r\n"); break;
 	}
 }
 

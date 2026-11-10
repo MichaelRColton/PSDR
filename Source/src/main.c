@@ -432,7 +432,7 @@ float am_meter_rms(void);
 extern volatile float g_wfmAudio, g_wfmPower, g_wfmDiscHz;   /* wideband FM (wfm.c) */
 void setGainPot(uint8_t a, uint8_t b);
 
-/* Change the receive mode: 0 LSB, 1 USB, 2 AM, 3 wideband FM.
+/* Change the receive mode: 0 LSB, 1 USB, 2 AM, 3 wideband FM, 4 narrow FM.
    Wideband FM needs the baseband in-amps to pass +/-75 kHz or more. Their
    bandwidth is 5 MHz divided by their gain, so the gain pot is turned down
    (80 -> gain about 32 -> about 150 kHz) in that mode and put back to the
@@ -462,7 +462,7 @@ void modeSet(uint8_t m)
 {
 	extern uint8_t mode;
 	extern int16_t filterUpperLimit, filterLowerLimit;
-	if(m > 3) m = 0;
+	if(m > 4) m = 0;
 	uint8_t was = mode;
 	mode = m;
 	populateCoeficients(filterUpperLimit - filterLowerLimit, m > 2 ? 2 : m, filterLowerLimit);
@@ -1103,7 +1103,23 @@ void Encoder(void)
 					amAudio = g_testAmp * sinf(g_tonePhase);
 				}
 				if(mode == 3 && transmitting == 0) amAudio = g_wfmAudio;   /* wideband FM audio comes from wfm.c */
-				int amPath = (mode == 2 || mode == 3 || g_testTone > 0.0f) && (transmitting == 0);   /* anti-phase amAudio DAC path (receive only) */
+				if(mode == 4 && transmitting == 0)
+				{
+					/* narrow FM: same DC blockers and channel filter as AM, fixed at 7.5 kHz
+					   (80 bins), then the detector in wfm.c */
+					extern float nfm_sample(float i, float q);
+					float qi = (uhADCxConvertedValue2 - dcOffset2) / 4096.0f;
+					float qq = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
+					amDcI += 0.0008f * (qi - amDcI);
+					amDcQ += 0.0008f * (qq - amDcQ);
+					float ii = qi - amDcI, qa = qq - amDcQ;
+					if(amChBins != 80) am_channel_design(80);
+					ii = am_channel_run(ii, amChI);
+					qa = am_channel_run(qa, amChQ);
+					amChPower += 0.0005f * (ii * ii + qa * qa - amChPower);   /* S-meter */
+					amAudio = nfm_sample(ii, qa);
+				}
+				int amPath = (mode >= 2 || g_testTone > 0.0f) && (transmitting == 0);   /* anti-phase amAudio DAC path (receive only) */
 				float dacGain = transmitting ? txDrive : afGain;   /* TX drive is not the volume knob */
 				/* receive input with the DC offset tracked out (see rxDcI/rxDcQ) */
 				float rxQ = (uhADCxConvertedValue3 - dcOffset3) / 4096.0f;
@@ -2051,7 +2067,7 @@ void freqcal_restore(void)
 void state_save(void)
 {
 	RTC->BKP1R = (uint32_t)vfoAFrequency;
-	RTC->BKP2R = ((uint32_t)(mode & 0x3))
+	RTC->BKP2R = ((uint32_t)(mode & 0x7))                       /* bits 0-2 (bit 2 was always 0 before narrow FM) */
 	           | (((uint32_t)(filterLowerLimit & 0xFF)) << 8)
 	           | (((uint32_t)(filterUpperLimit & 0xFF)) << 16)
 	           | (((uint32_t)(g_lpfMode & 0x3)) << 24)
@@ -2066,7 +2082,7 @@ void state_restore(void)
 	long f = (long)RTC->BKP1R;
 	uint32_t p = RTC->BKP2R;
 	if(f >= 2500000L && f <= 175000000L) { vfoAFrequency = f; setFreq((unsigned long)f); }
-	uint8_t m = (uint8_t)(p & 0x3); modeSet(m);
+	uint8_t m = (uint8_t)(p & 0x7); modeSet(m);
 	int flo = (int)((p >> 8) & 0xFF), fhi = (int)((p >> 16) & 0xFF);
 	if(fhi > flo && fhi <= 128) { filterLowerLimit = (int16_t)flo; filterUpperLimit = (int16_t)fhi; }
 	populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
@@ -2676,7 +2692,7 @@ void updateMenu()
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
-			modeSet((uint8_t)((mode + (encoderLastPos - encoderPos)) & 3));   /* LSB, USB, AM, wideband FM */
+			modeSet((uint8_t)(((mode + (encoderLastPos - encoderPos)) % 5 + 5) % 5));   /* LSB, USB, AM, wideband FM, narrow FM */
 			encoderLastPos = encoderPos;
 
 			//TODO: CHANGE THE FILTER SO IT MAKES SENSE!
@@ -3082,6 +3098,13 @@ void updateDisplay(uint8_t force)
 			Adafruit_GFX_setTextColor(menuPos == modeMenuItem ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
 			Adafruit_GFX_setCursor(197, 92);
 			for(const char *t = "WFM"; *t; t++) Adafruit_GFX_write(*t);
+			break;
+		case 4:   /* narrow FM */
+			Adafruit_GFX_fillRect(196, 91, 28, 9, ILI9340_BLACK);
+			Adafruit_GFX_setTextSize(1);
+			Adafruit_GFX_setTextColor(menuPos == modeMenuItem ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
+			Adafruit_GFX_setCursor(197, 92);
+			for(const char *t = "NFM"; *t; t++) Adafruit_GFX_write(*t);
 			break;
 		}
 
