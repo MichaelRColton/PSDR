@@ -26,7 +26,8 @@ HEIGHT = 240
 BAND_ROWS = 60
 BANDS = HEIGHT // BAND_ROWS
 ROW_BYTES = WIDTH * 2
-VID_PID = ("0483", "5740")
+VID_PID = ("0483", "5750")
+OLD_PID = "5740"                     # firmware before 2026-11-10
 
 IMG_HEADER = re.compile(r"^IMG (\d+) (\d+) 565 (\d+)$")
 
@@ -80,7 +81,7 @@ def find_port():
     import serial.tools.list_ports
     for p in serial.tools.list_ports.comports():
         hwid = (p.hwid or "").upper()
-        if VID_PID[0] in hwid and VID_PID[1] in hwid:
+        if VID_PID[0] in hwid and (VID_PID[1] in hwid or OLD_PID in hwid):
             return p.device
     return None
 
@@ -124,13 +125,13 @@ def capture(ser):
 def main():
     import serial
     ap = argparse.ArgumentParser(description="Save the PSDR's screen as a PNG.")
-    ap.add_argument("-p", "--port", help="COM port (default: auto-detect VID 0483 / PID 5740)")
+    ap.add_argument("-p", "--port", help="COM port (default: auto-detect VID 0483 / PID 5750)")
     ap.add_argument("-o", "--out", help="output file (default: psdr-<date>-<time>.png)")
     args = ap.parse_args()
 
     port = args.port or find_port()
     if not port:
-        sys.exit("No PSDR found (VID 0483 / PID 5740). Plug it in or pass -p COMx.")
+        sys.exit("No PSDR found (VID 0483 / PID 5750). Plug it in or pass -p COMx.")
     out = args.out or time.strftime("psdr-%Y%m%d-%H%M%S.png")
     with serial.Serial(port, 115200, timeout=0.5, write_timeout=1.0) as ser:
         ser.dtr = True

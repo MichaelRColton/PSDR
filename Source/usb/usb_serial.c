@@ -117,7 +117,14 @@ static void handle_cmd(char *s)
 		int bar = (int)(10.0 * log((double)passBandRms * 1000000.0 + 1.0));
 		usb_printf("rms=%lu bar=%d\r\n", rms_u, bar);
 		if (mode == 3) { extern volatile float g_wfmDiscHz, g_wfmAudio;   /* wideband FM: where the carrier sits */
-		                 usb_printf("wfm: disc=%ld Hz\r\n", (long)g_wfmDiscHz); }
+		                 extern volatile float g_wfmNoise; extern int g_wfmPot;
+		                 extern volatile float g_wfmRipple;
+		                 usb_printf("wfm: disc=%ld Hz noise=%ld pot=%d ripple=%ld\r\n", (long)g_wfmDiscHz, (long)(g_wfmNoise * 100.0f), g_wfmPot, (long)(g_wfmRipple * 1000.0f)); }
+	} break;
+	case 'j': {   /* wideband FM equaliser: j<corner Hz> [second corner Hz], 0 = off; j alone reports */
+		extern volatile float g_wfmEqHz[2];
+		if (s[1]) { char *e; g_wfmEqHz[0] = (float)strtol(s + 1, &e, 10); g_wfmEqHz[1] = (float)strtol(e, 0, 10); }
+		usb_printf("wfm eq %ld %ld Hz\r\n", (long)g_wfmEqHz[0], (long)g_wfmEqHz[1]);
 	} break;
 	case 'f': g_filter_in = (s[1] == '1'); usb_printf("filter %s\r\n", g_filter_in ? "IN (B4)" : "BYPASS (B2)"); break;
 	case 'a': g_amp_in = (s[1] == '1'); usb_printf("amp %s\r\n", g_amp_in ? "ON + inserted" : "off"); break;

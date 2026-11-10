@@ -8,7 +8,7 @@ diagnostics the firmware streams back (the real S-meter bar, VFO, mux/switch
 state, HMC1023 reg2).
 
 Pairs with the `fix/hmc1023-lpf` console build (commands: s P f a A m v F g M L H
-t x b r R G D K p). Talk is 115200 8N1 over the CDC port (VID 0483 / PID 5740).
+t x b r R G D K p). Talk is 115200 8N1 over the CDC port (VID 0483 / PID 5750).
 "Listen on PC speakers" plays the PSDR USB audio mic out the default output via
 ffplay (install ffmpeg for that button; everything else needs only pyserial).
 
@@ -108,7 +108,8 @@ class AudioListen:
                 pass
             self.proc = None
 
-VID_PID = ("0483", "5740")           # STM32 CDC
+VID_PID = ("0483", "5750")           # the radio's USB ID
+OLD_PID = "5740"                     # firmware before 2026-11-10
 BAUD = 115200
 STATUS_RE = re.compile(
     r"rms=(\d+)\s+bar=(-?\d+)\s+S=(\d+)\s+vfo=(-?\d+)\s+filt=(\d+)\s+mux=(\d+)"
@@ -144,8 +145,7 @@ class SerialLink:
     def auto_port(self):
         for p in serial.tools.list_ports.comports():
             hwid = (p.hwid or "").upper()
-            if f"VID:PID={VID_PID[0]}:{VID_PID[1]}" in hwid or (
-                VID_PID[0] in hwid and VID_PID[1] in hwid):
+            if VID_PID[0] in hwid and (VID_PID[1] in hwid or OLD_PID in hwid):
                 return p.device
         return None
 

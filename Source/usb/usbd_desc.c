@@ -4,7 +4,14 @@
 #include "usbd_conf.h"
 
 #define USBD_VID            0x0483
-#define USBD_PID            0x5740
+/* Was 0x5740, ST's own "Virtual COM Port" product ID. On a PC that has ST's VCP
+   driver installed (it comes with ST's tools) Windows matches that driver to the
+   whole device by VID/PID and the two sound-card interfaces never appear. With a
+   product ID no driver package claims, Windows treats the radio as the composite
+   device it is: in-box serial port + two USB audio devices. This is still a
+   borrowed vendor ID; a properly allocated VID/PID is a to-do before anyone
+   ships these. */
+#define USBD_PID            0x5750
 #define USBD_LANGID         0x0409
 #define USBD_MANUF_STR      "PortableSDR"
 #define USBD_PRODUCT_STR    "PSDR Serial Console"
@@ -25,7 +32,7 @@ __ALIGN_BEGIN static uint8_t USBD_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END = {
 	USB_MAX_EP0_SIZE,           /* bMaxPacketSize0 */
 	LOBYTE(USBD_VID), HIBYTE(USBD_VID),
 	LOBYTE(USBD_PID), HIBYTE(USBD_PID),
-	0x05, 0x02,                 /* bcdDevice 2.05 (bumped to force a fresh devnode after the DMA rework) */
+	0x06, 0x02,                 /* bcdDevice 2.06 */
 	USBD_IDX_MFC_STR,           /* iManufacturer */
 	USBD_IDX_PRODUCT_STR,       /* iProduct */
 	USBD_IDX_SERIAL_STR,        /* iSerialNumber */

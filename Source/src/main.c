@@ -438,6 +438,25 @@ void setGainPot(uint8_t a, uint8_t b);
    (80 -> gain about 32 -> about 150 kHz) in that mode and put back to the
    normal 200 otherwise. Broadcast signals are strong, so the lost gain does
    not matter. */
+/* Wideband FM gain: start at maximum (weak stations need every dB over the ADC's
+   own noise) and back off only when the ADCs get close to clipping. Called from
+   the main loop. */
+int g_wfmPot = 255;
+void wfmGainFollow(void)
+{
+	static uint32_t last = 0;
+	extern uint8_t mode;
+	if(mode != 3 || HAL_GetTick() - last < 200) return;
+	last = HAL_GetTick();
+	float32_t rms; arm_sqrt_f32(g_wfmPower, &rms);          /* fraction of ADC full scale */
+	int pot = g_wfmPot;
+	if(rms > 0.25f) pot -= 25;                              /* a sine clips at 0.35 */
+	else if(rms < 0.08f && pot < 255) pot += 10;
+	if(pot < 20) pot = 20;
+	if(pot > 255) pot = 255;
+	if(pot != g_wfmPot) { g_wfmPot = pot; setGainPot((uint8_t)pot, (uint8_t)pot); }
+}
+
 void populateCoeficients(int bandwidth, int sideband, int offset);
 void modeSet(uint8_t m)
 {
@@ -447,7 +466,7 @@ void modeSet(uint8_t m)
 	uint8_t was = mode;
 	mode = m;
 	populateCoeficients(filterUpperLimit - filterLowerLimit, m > 2 ? 2 : m, filterLowerLimit);
-	if(m == 3 && was != 3) setGainPot(80, 80);
+	if(m == 3 && was != 3) { g_wfmPot = 255; setGainPot(255, 255); }
 	if(m != 3 && was == 3) setGainPot(200, 200);
 }
 
@@ -2537,6 +2556,7 @@ setFreq(vfoAFrequency);
 			signalPath(recieve_no_filter);
 			rx_route_apply();   // force the HMC1023 RX routing on top of signalPath's bypass
 			lpfCornerFollow();  // auto corner: re-pick when the dial has moved
+			wfmGainFollow();    // wideband FM: keep the baseband gain as high as the ADCs allow
 //	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
 ////	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
 ////	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low

@@ -39,7 +39,7 @@ STEPS = 5
 def find_port():
     for p in serial.tools.list_ports.comports():
         hwid = (p.hwid or "").upper()
-        if "0483" in hwid and "5740" in hwid:
+        if "0483" in hwid and ("5750" in hwid or "5740" in hwid):   # 5740 = firmware before 2026-11-10
             return p.device
     return None
 
