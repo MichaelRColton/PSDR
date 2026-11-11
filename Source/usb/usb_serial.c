@@ -72,18 +72,24 @@ void usb_serial_init(void)
 
 void usb_printf(const char *fmt, ...)
 {
-	char buf[128];
+	char buf[200];   /* the 's' status line is about 140 characters; at 128 it lost its end and its line ending */
 	va_list ap; va_start(ap, fmt);
 	int n = vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
 	if (n <= 0) return;
-	if (n > (int)sizeof(buf)) n = (int)sizeof(buf);
+	if (n > (int)sizeof(buf) - 1) n = (int)sizeof(buf) - 1;   /* vsnprintf returns the untruncated length */
 	/* A reply whose length is an exact multiple of the 64-byte USB packet size never
 	   reaches the PC's serial port until more data follows (the host waits for a short
 	   packet to mark the end). Pad such a line with one space before its line ending. */
 	if ((n % 64) == 0 && n >= 2 && n < (int)sizeof(buf) && buf[n - 2] == '\r' && buf[n - 1] == '\n')
 	{ buf[n - 2] = ' '; buf[n - 1] = '\r'; buf[n] = '\n'; n++; }
-	for (int tries = 0; tries < 4000; tries++)
+	/* Wait for the port to come free: up to 50 ms by the clock. (This used to be
+	   4000 quick tries, a fraction of a millisecond, so a reply that collided with
+	   a waterfall line still on its way out was silently dropped - including the
+	   "IMG" header of a screenshot band, which made the panel's screenshot time
+	   out.) The try count is a backstop in case the tick is not running. */
+	uint32_t t0 = HAL_GetTick();
+	for (long tries = 0; tries < 3000000L && (HAL_GetTick() - t0) < 50U; tries++)
 		if (usb_cdc_tx((uint8_t *)buf, (uint16_t)n) == USBD_OK) return;
 }
 

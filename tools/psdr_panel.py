@@ -666,6 +666,8 @@ class Panel(tk.Tk):
         self._shot_bands = {}
         self._shot_next = 0
         self.shot_btn.config(state="disabled")
+        if self._wf_win is not None:
+            self.link.write("o0")                # pause the waterfall stream while the bands come in
         self._shot_request()
 
     def _shot_request(self):
@@ -687,6 +689,8 @@ class Panel(tk.Tk):
 
     def _shot_end(self, text):
         self._shot_bands = None
+        if self._wf_win is not None:
+            self.link.write("o1")                # waterfall window is open: resume its stream
         self.shot_btn.config(state="normal")
         self.shot_lbl.config(text=text)
 
@@ -1255,6 +1259,12 @@ class Panel(tk.Tk):
 
     def destroy(self):
         self.audio.stop()
+        if self._wf_win is not None and self.link.ser:
+            try:                                 # closing the app with the waterfall open: stop the stream
+                self.link.ser.write(b"o0\r\n")
+                self.link.ser.flush()
+            except Exception:
+                pass
         self.link.close()
         super().destroy()
 
