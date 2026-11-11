@@ -73,6 +73,17 @@ static float wfmEqC[3] = { 1.0f, 0.0f, 0.0f };     /* the two stages multiplied 
 static float wfmEqI[2], wfmEqQ[2];                 /* the previous two input samples */
 static float wfmEp = 0.0f, wfmEp2 = 0.0f;
 
+/* Wide waterfall: on request from the main loop, keep 256 consecutive I/Q
+   samples at 240 kHz (just over 1 ms) for it to FFT. These are the samples
+   before the equaliser, so the display shows what the ADCs really see: the
+   station is brightest at the centre and fades toward the edges where the
+   anti-aliasing filter cuts in. Stored as Q, I pairs like the main receive
+   buffers, so left and right on the screen come out the same way round. */
+#define WFM_CAP_N 256
+float g_wfmCap[WFM_CAP_N * 2];
+volatile int g_wfmCapState = 0;            /* 0 idle, 1 = fill it please, 2 = full */
+static int wfmCapIdx = 0;
+
 static float wfmPrevI = 0.0f, wfmPrevQ = 1.0f;
 static float wfmDc = 0.0f, wfmDeemph = 0.0f;
 static float wfmD1 = 0.0f, wfmD2 = 0.0f;   /* previous detector outputs, for the noise measure */
@@ -177,12 +188,14 @@ void wfm_block(const volatile uint16_t *ibuf, const volatile uint16_t *qbuf, int
 	float as1 = wfmLp[0].s1, as2 = wfmLp[0].s2, bs1 = wfmLp[1].s1, bs2 = wfmLp[1].s2;
 	float sum = 0.0f, pw = 0.0f, nz = 0.0f, lp = 0.0f, ep = 0.0f, ep2 = 0.0f;
 	int groups = n / 3;
+	int cap = (g_wfmCapState == 1) ? wfmCapIdx : -1;
 	for(int g = 0; g < groups; g++)
 	{
 		const volatile uint16_t *pi = ibuf + g * 3, *pq = qbuf + g * 3;
 		float xi = (float)(int)(pi[0] + pi[1] + pi[2]) - offI;     /* 3x the ADC value; the scale only matters for the two power sums */
 		float xq = (float)(int)(pq[0] + pq[1] + pq[2]) - offQ;
 		pw += xi * xi + xq * xq;                   /* level at the ADC, before the equaliser (for the gain control) */
+		if(cap >= 0 && cap < WFM_CAP_N) { g_wfmCap[cap * 2] = xq; g_wfmCap[cap * 2 + 1] = xi; cap++; }
 		float i = c0 * xi + c1 * xi1 + c2 * xi2;   /* equaliser */
 		float q = c0 * xq + c1 * xq1 + c2 * xq2;
 		xi2 = xi1; xi1 = xi; xq2 = xq1; xq1 = xq;
@@ -210,6 +223,8 @@ void wfm_block(const volatile uint16_t *ibuf, const volatile uint16_t *qbuf, int
 	wfmEqI[0] = xi1; wfmEqI[1] = xi2; wfmEqQ[0] = xq1; wfmEqQ[1] = xq2;
 	wfmPrevI = prevI; wfmPrevQ = prevQ; wfmD1 = d1; wfmD2 = d2;
 	wfmLp[0].s1 = as1; wfmLp[0].s2 = as2; wfmLp[1].s1 = bs1; wfmLp[1].s2 = bs2;
+	if(cap >= WFM_CAP_N) { wfmCapIdx = 0; g_wfmCapState = 2; }
+	else if(cap >= 0) wfmCapIdx = cap;
 	pw *= (1.0f / 9.0f);                                           /* back to plain ADC counts squared */
 	float k = WFM_FS / 6.2831853f;                                 /* radians per sample -> Hz */
 	g_wfmDiscHz += 0.002f * ((sum / (float)groups) * k - g_wfmDiscHz);

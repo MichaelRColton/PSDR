@@ -300,7 +300,11 @@ void initAdc()
 
 		/* Only ADC2 (I) drives captureSamples -> only its DMA stream gets a NVIC IRQ.
 		   ADC1/ADC3 DMA run circular without ISRs; their buffers just stay fresh. */
-		HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 1, 0);
+		/* Highest priority (0), above the 1 ms tick (1). The tick handler takes close to a
+		   whole sample period now and then; when it could interrupt this one, a sample
+		   was sometimes lost. SSB and AM hardly notice a missing sample, but in FM it is a
+		   jump in phase, i.e. a click, up to a thousand times a second. */
+		HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
 		HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
 
 		/* TIM6: 108 MHz / 150 = 720 kHz = 48 kHz * 15, TRGO on update */

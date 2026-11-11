@@ -140,7 +140,9 @@ static void handle_cmd(char *s)
 	case 'u': {   /* narrow FM squelch: u<noise level, Hz rms> mutes above it, u0 = open; u alone reports */
 		extern volatile float g_nfmSquelch, g_nfmNoise, g_nfmDiscHz; extern volatile int g_nfmOpen;
 		if (s[1]) g_nfmSquelch = (float)atoi(s + 1);
-		usb_printf("nfm squelch=%ld noise=%ld disc=%ld Hz %s\r\n", (long)g_nfmSquelch, (long)g_nfmNoise, (long)g_nfmDiscHz, g_nfmOpen ? "open" : "muted");
+		{ extern float g_nfmRawPower; extern int g_wfmPot;
+		  usb_printf("nfm squelch=%ld noise=%ld disc=%ld Hz %s level=%ld/1000 pot=%d\r\n", (long)g_nfmSquelch, (long)g_nfmNoise, (long)g_nfmDiscHz, g_nfmOpen ? "open" : "muted",
+		             (long)(sqrtf(g_nfmRawPower) * 1000.0f), g_wfmPot); }
 	} break;
 	case 'f': g_filter_in = (s[1] == '1'); usb_printf("filter %s\r\n", g_filter_in ? "IN (B4)" : "BYPASS (B2)"); break;
 	case 'a': g_amp_in = (s[1] == '1'); usb_printf("amp %s\r\n", g_amp_in ? "ON + inserted" : "off"); break;

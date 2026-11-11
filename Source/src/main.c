@@ -438,23 +438,29 @@ void setGainPot(uint8_t a, uint8_t b);
    (80 -> gain about 32 -> about 150 kHz) in that mode and put back to the
    normal 200 otherwise. Broadcast signals are strong, so the lost gain does
    not matter. */
-/* Wideband FM gain: start at maximum (weak stations need every dB over the ADC's
-   own noise) and back off only when the ADCs get close to clipping. Called from
-   the main loop. */
+/* FM gain control (both FM modes). Called from the main loop.
+   Wideband: start at maximum (weak stations need every dB over the ADC's own
+   noise) and back off only when the ADCs get close to clipping.
+   Narrow: start at the normal setting (200) and back off the same way. This
+   matters more than it sounds: when I and Q clip, the signal's phase can only
+   take a few values, so the detector output turns into a train of pulses and
+   speech becomes unintelligible. A handheld a few metres away does that easily. */
 int g_wfmPot = 255;
 float g_wfmHi = 0.25f, g_wfmLo = 0.08f;   /* gain control window, fraction of ADC full scale (rms) */
+float g_nfmRawPower = 0.0f;               /* narrow FM: I^2+Q^2 before the channel filter, smoothed */
 void wfmGainFollow(void)
 {
 	static uint32_t last = 0;
 	extern uint8_t mode;
-	if(mode != 3 || HAL_GetTick() - last < 200) return;
+	if((mode != 3 && mode != 4) || HAL_GetTick() - last < 100) return;
 	last = HAL_GetTick();
-	float32_t rms; arm_sqrt_f32(g_wfmPower, &rms);          /* fraction of ADC full scale */
+	float32_t rms; arm_sqrt_f32(mode == 3 ? g_wfmPower : g_nfmRawPower, &rms);   /* fraction of ADC full scale */
+	int top = (mode == 3) ? 255 : 200;
 	int pot = g_wfmPot;
-	if(rms > g_wfmHi) pot -= 25;
-	else if(rms < g_wfmLo && pot < 255) pot += 10;
-	if(pot < 20) pot = 20;
-	if(pot > 255) pot = 255;
+	if(rms > g_wfmHi) pot -= (pot > 60) ? 25 : 8;           /* smaller steps at the bottom, where each one is a bigger change */
+	else if(rms < g_wfmLo && pot < top) pot += 10;
+	if(pot < 2) pot = 2;
+	if(pot > top) pot = top;
 	if(pot != g_wfmPot) { g_wfmPot = pot; setGainPot((uint8_t)pot, (uint8_t)pot); }
 }
 
@@ -468,7 +474,7 @@ void modeSet(uint8_t m)
 	mode = m;
 	populateCoeficients(filterUpperLimit - filterLowerLimit, m > 2 ? 2 : m, filterLowerLimit);
 	if(m == 3 && was != 3) { g_wfmPot = 255; setGainPot(255, 255); }
-	if(m != 3 && was == 3) setGainPot(200, 200);
+	if(m != 3 && (was == 3 || was == 4 || m == 4)) { g_wfmPot = 200; setGainPot(200, 200); }   /* the FM modes move the gain; put it back */
 }
 
 /* Turn the 0/1 pass-band mask in fftFilterCoeficient[] into the spectrum of a
@@ -1114,6 +1120,7 @@ void Encoder(void)
 					amDcI += 0.0008f * (qi - amDcI);
 					amDcQ += 0.0008f * (qq - amDcQ);
 					float ii = qi - amDcI, qa = qq - amDcQ;
+					g_nfmRawPower += 0.002f * (ii * ii + qa * qa - g_nfmRawPower);   /* for the gain control */
 					if(amChBins != 80) am_channel_design(80);
 					ii = am_channel_run(ii, amChI);
 					qa = am_channel_run(qa, amChQ);
@@ -3136,12 +3143,50 @@ extern void lcd_stream_end(void);
    folded into a per-bin peak hold, and one line is drawn from that hold every
    WATERFALL_LINE_MS, so the scroll rate is steady and nothing is missed. */
 #define WATERFALL_LINE_MS 50
+
+/* Wideband FM: the waterfall shows the 240 kHz stream instead of the usual
+   48 kHz one, so the screen spans about +/-112 kHz (937.5 Hz per pixel) and a
+   broadcast station looks like a station rather than a full-width smear.
+   wfm.c hands over 256 samples at a time; this windows them, takes the FFT and
+   returns the magnitudes in the same bin order the normal waterfall uses. */
+static int wfmSpectrum(float *mag)
+{
+  extern float g_wfmCap[]; extern volatile int g_wfmCapState;
+  static float buf[FFT_BUFFER_SIZE];
+  static float win[FFT_SIZE];
+  static int winReady = 0;
+  if(g_wfmCapState == 0) { g_wfmCapState = 1; return 0; }
+  if(g_wfmCapState != 2) return 0;
+  if(!winReady)
+  {
+    for(int k = 0; k < FFT_SIZE; k++) win[k] = (0.5f - 0.5f * cosf(6.2831853f * (float)k / (float)FFT_SIZE)) * (1.0f / (3.0f * 4096.0f));   /* Hann, and 3x ADC counts -> fraction of full scale */
+    winReady = 1;
+  }
+  for(int k = 0; k < FFT_SIZE; k++) { buf[k * 2] = g_wfmCap[k * 2] * win[k]; buf[k * 2 + 1] = g_wfmCap[k * 2 + 1] * win[k]; }
+  g_wfmCapState = 1;                       /* ask for the next one straight away */
+  arm_cfft_radix4_instance_f32 inst;
+  arm_cfft_radix4_init_f32(&inst, FFT_SIZE, 0, 1);
+  arm_cfft_radix4_f32(&inst, buf);
+  arm_cmplx_mag_f32(buf, mag, FFT_SIZE);
+  return 1;
+}
+
 void drawWaterfall(void)
 {
   static float wfHold[FFT_SIZE];
   static uint32_t wfLastLine = 0;
   static uint8_t wfHave = 0;
-  if(newWaterFallData == 1)
+  if(mode == 3 && transmitting == 0)
+    {
+      static float wfMag[FFT_SIZE];
+      if(wfmSpectrum(wfMag))
+        {
+          for(int k = 0; k < FFT_SIZE; k++) if(wfMag[k] > wfHold[k]) wfHold[k] = wfMag[k];
+          wfHave = 1;
+        }
+      newWaterFallData = 0;
+    }
+  else if(newWaterFallData == 1)
     {
       static float wfMag[FFT_SIZE];
       arm_cmplx_mag_f32(samplesDisplay, wfMag, FFT_SIZE);
