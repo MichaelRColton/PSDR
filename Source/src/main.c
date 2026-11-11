@@ -448,17 +448,49 @@ void setGainPot(uint8_t a, uint8_t b);
 int g_wfmPot = 255;
 float g_wfmHi = 0.25f, g_wfmLo = 0.08f;   /* gain control window, fraction of ADC full scale (rms) */
 float g_nfmRawPower = 0.0f;               /* narrow FM: I^2+Q^2 before the channel filter, smoothed */
+/* When the baseband gain is already at its minimum and the signal is still too
+   big, the +20 dB stage in the HMC1023 is switched out as well (LPF setting
+   "+20dB" -> "0dB", shown on the display), and put back once the signal has
+   gone. g_fmAtten = 1 while that automatic reduction is in force, so the
+   user's own setting is what gets remembered at power-off. */
+int g_fmAtten = 0;
+void lpfModeSet(int m);
+extern int g_lpfMode;
 void wfmGainFollow(void)
 {
 	static uint32_t last = 0;
 	extern uint8_t mode;
-	if((mode != 3 && mode != 4) || HAL_GetTick() - last < 100) return;
+	if((mode != 3 && mode != 4) || HAL_GetTick() - last < 50) return;
 	last = HAL_GetTick();
 	float32_t rms; arm_sqrt_f32(mode == 3 ? g_wfmPower : g_nfmRawPower, &rms);   /* fraction of ADC full scale */
 	int top = (mode == 3) ? 255 : 200;
 	int pot = g_wfmPot;
-	if(rms > g_wfmHi) pot -= (pot > 60) ? 25 : 8;           /* smaller steps at the bottom, where each one is a bigger change */
-	else if(rms < g_wfmLo && pot < top) pot += 10;
+	if(rms > g_wfmHi)
+	{
+		if(pot > 2)
+		{
+			/* too strong: go most of the way in one step (gain is roughly proportional to the pot setting) */
+			int want = (int)((float)pot * (0.5f * (g_wfmHi + g_wfmLo)) / rms);
+			if(want > pot - 8) want = pot - 8;
+			pot = want;
+		}
+		else if(g_lpfMode == 2 /* LPF_20DB */)
+		{
+			lpfModeSet(1 /* LPF_0DB */);
+			g_fmAtten = 1;
+			pot = 20;                       /* 20 dB less in front, about 20 dB more here: carry on from the same level */
+		}
+	}
+	else if(rms < g_wfmLo)
+	{
+		if(pot < top) pot += 10;
+		else if(g_fmAtten && g_lpfMode == 1)
+		{
+			lpfModeSet(2);
+			g_fmAtten = 0;
+			pot = top / 8;
+		}
+	}
 	if(pot < 2) pot = 2;
 	if(pot > top) pot = top;
 	if(pot != g_wfmPot) { g_wfmPot = pot; setGainPot((uint8_t)pot, (uint8_t)pot); }
@@ -475,6 +507,7 @@ void modeSet(uint8_t m)
 	populateCoeficients(filterUpperLimit - filterLowerLimit, m > 2 ? 2 : m, filterLowerLimit);
 	if(m == 3 && was != 3) { g_wfmPot = 255; setGainPot(255, 255); }
 	if(m != 3 && (was == 3 || was == 4 || m == 4)) { g_wfmPot = 200; setGainPot(200, 200); }   /* the FM modes move the gain; put it back */
+	if(g_fmAtten && m != was) { g_fmAtten = 0; if(g_lpfMode == 1) lpfModeSet(2); }                     /* and the +20 dB stage */
 }
 
 /* Turn the 0/1 pass-band mask in fftFilterCoeficient[] into the spectrum of a
@@ -2078,7 +2111,7 @@ void state_save(void)
 	RTC->BKP2R = ((uint32_t)(mode & 0x7))                       /* bits 0-2 (bit 2 was always 0 before narrow FM) */
 	           | (((uint32_t)(filterLowerLimit & 0xFF)) << 8)
 	           | (((uint32_t)(filterUpperLimit & 0xFF)) << 16)
-	           | (((uint32_t)(g_lpfMode & 0x3)) << 24)
+	           | (((uint32_t)((g_fmAtten ? LPF_20DB : g_lpfMode) & 0x3)) << 24)   /* the user's setting, not a temporary automatic reduction */
 	           | (((uint32_t)((g_txPower + 1) & 0x7)) << 26);
 	RTC->BKP4R = (uint32_t)(afGain * 10.0f + 0.5f);   /* volume, 0..250 */
 	RTC->BKP3R = STATE_MAGIC;
@@ -2730,6 +2763,7 @@ void updateMenu()
 		if(encoderPos != encoderLastPos)
 		{
 			/* step Bypass <-> 0 dB <-> +20 dB (stops at the ends) */
+			g_fmAtten = 0;   /* the user is choosing: stop managing it automatically */
 			lpfModeSet(g_lpfMode + ((encoderLastPos - encoderPos) > 0 ? 1 : -1));
 			encoderLastPos = encoderPos;
 		}

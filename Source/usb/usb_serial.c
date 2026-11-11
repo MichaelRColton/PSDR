@@ -78,6 +78,11 @@ void usb_printf(const char *fmt, ...)
 	va_end(ap);
 	if (n <= 0) return;
 	if (n > (int)sizeof(buf)) n = (int)sizeof(buf);
+	/* A reply whose length is an exact multiple of the 64-byte USB packet size never
+	   reaches the PC's serial port until more data follows (the host waits for a short
+	   packet to mark the end). Pad such a line with one space before its line ending. */
+	if ((n % 64) == 0 && n >= 2 && n < (int)sizeof(buf) && buf[n - 2] == '\r' && buf[n - 1] == '\n')
+	{ buf[n - 2] = ' '; buf[n - 1] = '\r'; buf[n] = '\n'; n++; }
 	for (int tries = 0; tries < 4000; tries++)
 		if (usb_cdc_tx((uint8_t *)buf, (uint16_t)n) == USBD_OK) return;
 }
@@ -221,7 +226,8 @@ static void handle_cmd(char *s)
 	                setFreq((unsigned long)vfoAFrequency);   /* actually retune the LO, not just the display */
 	            }
 	            usb_printf("vfo=%ld\r\n", vfoAFrequency); } break;
-	case 'G': { int v = atoi(s + 1); if (v < 0) v = 0; if (v > 255) v = 255; g_gain_pot = (uint16_t)v;
+	case 'G': { if (!s[1]) { usb_printf("gainpot=%u\r\n", g_gain_pot); break; }   /* G alone just reports */
+	            int v = atoi(s + 1); if (v < 0) v = 0; if (v > 255) v = 255; g_gain_pot = (uint16_t)v;
 	            setGainPot((uint8_t)v, (uint8_t)v); usb_printf("gainpot=%u\r\n", g_gain_pot); } break;
 	case 'E': {   /* display speed test: 4 full-screen fills + one forced full redraw, in ms */
 	            extern void Adafruit_ILI9340_fillScreen(uint16_t color);
@@ -288,7 +294,8 @@ static void handle_cmd(char *s)
 	            extern int txPowerCalDirty, g_txPower; extern void txPowerSet(int idx);
 	            if (s[1] == '0' || s[1] == '1') { g_lpfOnTx = s[1] - '0'; lpfcorner_save(); txPowerSet(g_txPower); txPowerCalDirty = 1; }
 	            usb_printf("lpfontx=%d\r\n", g_lpfOnTx); } break;
-	case 'l': lpfModeSet(atoi(s + 1));   /* LPF mode: l0 = bypass, l1 = 0 dB, l2 = +20 dB (same as the menu) */
+	case 'l': { extern int g_fmAtten; g_fmAtten = 0; }
+	          if (s[1]) lpfModeSet(atoi(s + 1));   /* (l alone just reports) LPF mode: l0 = bypass, l1 = 0 dB, l2 = +20 dB (same as the menu) */
 	          usb_printf("lpf=%d\r\n", g_lpfMode); break;
 	case 'M': g_filt_ch = (s[1] - '0') & 3; usb_printf("mux ch=%d (S1=%d S0=%d) %s\r\n", g_filt_ch,
 	          (g_filt_ch >> 1) & 1, g_filt_ch & 1,
