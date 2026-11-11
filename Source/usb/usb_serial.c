@@ -145,12 +145,18 @@ static void handle_cmd(char *s)
 	case 'u': {   /* narrow FM squelch: u<0-168> = S-meter position it opens at (0 = off, same as the SQL menu item);
 	                 un<level> = extra noise squelch (mutes above that detector noise, 0 = off); u alone reports */
 		extern volatile float g_nfmSquelch, g_nfmNoise, g_nfmDiscHz; extern volatile int g_nfmOpen, g_sqlOpen;
-		extern int g_sqlBar; extern void squelchSet(int v);
+		extern int g_sqlBar; extern void squelchSet(int v);   /* u1 = Auto (detector noise) */
 		if (s[1] == 'n') g_nfmSquelch = (float)atoi(s + 2);
 		else if (s[1]) squelchSet(atoi(s + 1));
 		{ extern float g_nfmRawPower; extern int g_wfmPot;
 		  usb_printf("nfm sql=%d %s noisesq=%ld noise=%ld disc=%ld Hz level=%ld/1000 pot=%d\r\n", g_sqlBar, (g_nfmOpen && g_sqlOpen) ? "open" : "muted",
 		             (long)g_nfmSquelch, (long)g_nfmNoise, (long)g_nfmDiscHz, (long)(sqrtf(g_nfmRawPower) * 1000.0f), g_wfmPot); }
+	} break;
+	case 'o': {   /* waterfall: o1 / o0 = stream each line to the PC on / off; ow<ms> = time between lines (5..500); o = report */
+		extern volatile uint8_t g_wfStream; extern int g_wfLineMs;
+		if (s[1] == 'w') { int v = atoi(s + 2); if (v < 5) v = 5; if (v > 500) v = 500; g_wfLineMs = v; }
+		else if (s[1]) g_wfStream = (s[1] == '1');
+		usb_printf("wfstream=%d ms=%d\r\n", (int)g_wfStream, g_wfLineMs);
 	} break;
 	case 'f': g_filter_in = (s[1] == '1'); usb_printf("filter %s\r\n", g_filter_in ? "IN (B4)" : "BYPASS (B2)"); break;
 	case 'a': g_amp_in = (s[1] == '1'); usb_printf("amp %s\r\n", g_amp_in ? "ON + inserted" : "off"); break;

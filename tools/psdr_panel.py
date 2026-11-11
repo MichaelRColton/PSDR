@@ -18,6 +18,7 @@ The Screenshot button reads the device's LCD back (console p) and shows it in
 a window; it uses tools/shot.py, which also works standalone.
 Only one program can hold the COM port at once (audio is a separate USB function).
 """
+import collections
 import glob
 import os
 import queue
@@ -130,6 +131,45 @@ COARSE_MHZ = ["5", "7", "10", "14", "20", "28", "40", "50", "72"]
 BG = "#10141c"; PANEL = "#1b2230"; INK = "#e6ecf5"; MUTE = "#5d6b82"
 ACCENT = "#46b1ff"; HOT = "#ff6b6b"; GOOD = "#4fd08a"; WIRE = "#3a4559"
 
+# --- waterfall viewer (console 'o1' streams one "~" + 240 chars line per radio line) ---
+WF_FLIP = True        # True: reverse the 240 values left-to-right (check on air which way is right)
+WF_W = 240            # pixels per line from the radio
+WF_XZ = 3             # horizontal zoom on screen
+WF_H = 300            # lines of history
+WF_PAL_STEP = 4       # palette index = value (0..63) * WF_PAL_STEP, clamped to the table length
+WF_HZ_PX = 187.5      # Hz per pixel (937.5 in wideband FM, mode 3)
+# The radio's 'WebSdr' gradient, RGB565 (bitmapWebSdrGradient[] in images.c; 128 entries there).
+WF_PAL565 = [
+    0x0001, 0x0001, 0x0001, 0x0001, 0x0002, 0x0002, 0x0003, 0x0003,
+    0x0004, 0x0004, 0x0005, 0x0005, 0x0006, 0x0006, 0x0007, 0x0007,
+    0x0008, 0x0008, 0x0009, 0x0009, 0x000A, 0x080A, 0x080B, 0x080B,
+    0x100C, 0x100D, 0x180D, 0x180E, 0x200E, 0x280F, 0x280F, 0x3010,
+    0x3010, 0x3811, 0x3811, 0x4012, 0x4012, 0x4012, 0x4813, 0x4813,
+    0x4813, 0x4813, 0x5013, 0x5014, 0x5014, 0x5014, 0x5814, 0x5814,
+    0x5814, 0x5814, 0x6014, 0x6015, 0x6015, 0x6835, 0x6855, 0x6875,
+    0x7095, 0x70B5, 0x70D5, 0x7915, 0x7955, 0x8175, 0x81B5, 0x89D5,
+    0x8A15, 0x9235, 0x9275, 0x92B5, 0x9AD4, 0x9B14, 0x9B34, 0xA354,
+    0xA394, 0xA3B4, 0xABD4, 0xABF4, 0xAC13, 0xAC33, 0xB453, 0xB473,
+    0xB492, 0xB4B2, 0xB4B2, 0xBCD1, 0xBCF1, 0xBD10, 0xBD30, 0xBD30,
+    0xBD4F, 0xBD6F, 0xBD6E, 0xBD8E, 0xC58E, 0xC5AE, 0xC5AD, 0xC5CD,
+    0xC5CD, 0xC5ED, 0xC5ED, 0xC5ED, 0xC60D, 0xC60D, 0xC60D, 0xC62E,
+    0xC62E, 0xC62F, 0xC62F, 0xCE30, 0xCE30, 0xCE51, 0xCE51, 0xCE52,
+    0xCE53, 0xCE53, 0xCE54, 0xCE54, 0xCE55, 0xCE55, 0xCE56, 0xCE56,
+    0xCE56, 0xCE57, 0xCE57, 0xCE57, 0xCE58, 0xCE58, 0xCE58, 0xCE58,
+]
+
+
+def _rgb565_hex(v):
+    r, g, b = (v >> 11) & 31, (v >> 5) & 63, v & 31
+    return "#%02x%02x%02x" % (r << 3 | r >> 2, g << 2 | g >> 4, b << 3 | b >> 2)
+
+
+# One table entry per possible character ('0'..'o' = 0..63): the pixel's colour repeated
+# WF_XZ times, so a whole zoomed row is one join() of 240 strings.
+WF_PIX = {chr(48 + v): (_rgb565_hex(WF_PAL565[min(v * WF_PAL_STEP, len(WF_PAL565) - 1)]) + " ") * WF_XZ
+          for v in range(64)}
+WF_RE = re.compile(r"wfstream=(\d+) ms=(\d+)")
+
 
 # --------------------------------------------------------------------------- #
 # Serial link: a reader thread feeds decoded lines into a queue.
@@ -141,6 +181,7 @@ class SerialLink:
         self.tx = queue.Queue(maxsize=256)   # commands; drained by a writer thread
         self._stop = threading.Event()
         self._buf = b""
+        self.wf = collections.deque(maxlen=120)   # raw waterfall lines (thread-safe append/popleft)
 
     def auto_port(self):
         for p in serial.tools.list_ports.comports():
@@ -200,6 +241,11 @@ class SerialLink:
                         break
                     line, self._buf = self._buf.split(b"\n", 1)
                     text = line.decode(errors="replace").strip()
+                    if text.startswith("~"):
+                        # waterfall line: straight to the deque (bounded, drops oldest),
+                        # never into the log queue or the status parser
+                        self.wf.append(text[1:])
+                        continue
                     m = shot.IMG_HEADER.match(text)
                     if m:
                         self._read_band(int(m.group(2)), int(m.group(3)))
@@ -278,6 +324,9 @@ class Panel(tk.Tk):
         self._shot_next = 0      # next band index to request
         self._shot_t0 = 0.0      # when the current band was requested (timeout)
         self._shot_rgb = None    # last complete frame (RGB bytes)
+        self._wf_win = None      # waterfall window
+        self._wf_after = None    # its draw timer
+        self._wf_speed_after = None   # debounce timer for the Speed control
         self._shot_win = None    # viewer window
         self._shot_img = None    # tk.PhotoImage shown in the viewer (keep a reference)
 
@@ -579,7 +628,12 @@ class Panel(tk.Tk):
         g.pack(fill="x", pady=3)
         self.shot_btn = tk.Button(g, text="Screenshot  (p)", command=self.take_screenshot,
                                   bg=BG, fg=GOOD)
-        self.shot_btn.grid(row=0, column=0, columnspan=2, sticky="we", pady=2)
+        self.shot_btn.grid(row=0, column=0, sticky="we", pady=2)
+        self.wf_btn = tk.Button(g, text="Waterfall  (o1)", command=self.open_waterfall,
+                                bg=BG, fg=ACCENT)
+        self.wf_btn.grid(row=0, column=1, sticky="we", pady=2, padx=(4, 0))
+        g.columnconfigure(0, weight=1)
+        g.columnconfigure(1, weight=1)
         self.shot_lbl = tk.Label(g, text="(reads the LCD back and shows it)", bg=PANEL, fg=MUTE)
         self.shot_lbl.grid(row=1, column=0, columnspan=2, sticky="w")
 
@@ -672,6 +726,125 @@ class Panel(tk.Tk):
             self._shot_saved.config(text="saved " + os.path.basename(path))
         except Exception as e:
             self._shot_saved.config(text=f"save failed: {e}")
+
+    # ---- waterfall ----------------------------------------------------- #
+    # The radio streams "~" + 240 chars (value = ord - 48, 0..63) while 'o1' is on.
+    # The reader thread parks those lines in link.wf; _wf_tick (30 ms timer) draws them.
+    # Scrolling: one PhotoImage 2*WF_H rows tall; every line is written twice (row r and
+    # r+WF_H) and the canvas shows a WF_H window of it. The newest line goes to row r-1
+    # (wrapping), and the image item is moved to y=-r, so a new line costs two small put()s
+    # and one canvas move - the old rows are never copied.
+    def open_waterfall(self):
+        if self._wf_win is not None and self._wf_win.winfo_exists():
+            self._wf_win.lift()
+            return
+        if not self.link.ser:
+            self.shot_lbl.config(text="not connected - click Connect first")
+            return
+        w = self._wf_win = tk.Toplevel(self)
+        w.title("PSDR waterfall")
+        w.configure(bg=BG)
+        w.protocol("WM_DELETE_WINDOW", self._wf_close)
+        pw = WF_W * WF_XZ
+        self._wf_img = tk.PhotoImage(width=pw, height=2 * WF_H)
+        self._wf_img.put("#000000", to=(0, 0, pw, 2 * WF_H))
+        self._wf_r = 0
+        cv = self._wf_cv = tk.Canvas(w, width=pw, height=WF_H, bg="#000000",
+                                     highlightthickness=0, bd=0)
+        cv.pack(padx=10, pady=(10, 4))
+        self._wf_item = cv.create_image(0, 0, image=self._wf_img, anchor="nw")
+        self._wf_axis_lbl = tk.Label(w, text="", bg=BG, fg=INK, font=("Consolas", 10))
+        self._wf_axis_lbl.pack()
+        bar = tk.Frame(w, bg=BG)
+        bar.pack(fill="x", padx=10, pady=(4, 10))
+        tk.Label(bar, text="Speed (ms/line)", bg=BG, fg=MUTE).pack(side="left")
+        self._wf_sync = False            # True while the scale is being set from a reply
+        self._wf_scale = tk.Scale(bar, from_=5, to=200, orient="horizontal", length=360,
+                                  bg=BG, fg=INK, troughcolor=PANEL, highlightthickness=0,
+                                  command=self._wf_speed_changed)
+        self._wf_scale.set(25)
+        self._wf_scale.pack(side="left", padx=8)
+        self._wf_lines = 0
+        self._wf_axis_txt = None
+        self.link.wf.clear()
+        self.link.write("o1")
+        self._wf_tick()
+
+    def _wf_close(self):
+        if self._wf_after is not None:
+            self.after_cancel(self._wf_after)
+            self._wf_after = None
+        if self._wf_speed_after is not None:
+            self.after_cancel(self._wf_speed_after)
+            self._wf_speed_after = None
+        self.link.write("o0")
+        if self._wf_win is not None:
+            self._wf_win.destroy()
+        self._wf_win = None
+
+    def _wf_tick(self):
+        try:
+            if self._wf_win is None or not self._wf_win.winfo_exists():
+                return
+            lines = []
+            try:
+                while True:
+                    lines.append(self.link.wf.popleft())
+            except IndexError:
+                pass
+            for s in lines[-40:]:        # behind? drop the oldest rather than fall further back
+                self._wf_line(s)
+            self._wf_axis()
+        except Exception as e:
+            try: self._log("  [waterfall err] " + str(e), "err")
+            except Exception: pass
+        finally:
+            if self._wf_win is not None:
+                self._wf_after = self.after(30, self._wf_tick)
+
+    def _wf_line(self, s):
+        # Draw one line (the 240 chars after "~"). Bad length / characters: ignore silently.
+        if len(s) != WF_W:
+            return
+        if WF_FLIP:
+            s = s[::-1]
+        try:
+            row = "{" + "".join([WF_PIX[c] for c in s]) + "}"
+        except KeyError:
+            return
+        self._wf_r = r = (self._wf_r - 1) % WF_H
+        self._wf_img.put(row, to=(0, r))
+        self._wf_img.put(row, to=(0, r + WF_H))
+        self._wf_cv.coords(self._wf_item, 0, -r)
+        self._wf_lines += 1
+
+    def _wf_axis(self):
+        # Frequency labels under the image: low edge | centre | high edge (low on the left).
+        span = WF_W * (WF_HZ_PX * 5 if self.mode_i == 3 else WF_HZ_PX)
+        c = self.vfo_hz
+        txt = f"{(c - span / 2) / 1e6:.4f} MHz | {c / 1e6:.4f} | {(c + span / 2) / 1e6:.4f} MHz"
+        if txt != self._wf_axis_txt:
+            self._wf_axis_txt = txt
+            self._wf_axis_lbl.config(text=txt)
+
+    def _wf_speed_changed(self, v):
+        if self._wf_sync:
+            return
+        if self._wf_speed_after is not None:       # debounce a slider drag
+            self.after_cancel(self._wf_speed_after)
+        self._wf_speed_after = self.after(150, self._wf_speed_send)
+
+    def _wf_speed_send(self):
+        self._wf_speed_after = None
+        if self._wf_win is not None:
+            self.link.write(f"ow{int(self._wf_scale.get())}")
+
+    def _wf_speed_from_radio(self, ms):
+        # reply "wfstream=<0|1> ms=<n>": keep the control in sync without echoing a command
+        if self._wf_win is not None and self._wf_speed_after is None:
+            self._wf_sync = True
+            self._wf_scale.set(ms)
+            self._wf_sync = False
 
     def _build_diag(self, parent):
         col = tk.Frame(parent, bg=BG)
@@ -952,6 +1125,8 @@ class Panel(tk.Tk):
             return
         self.conn_btn.config(text="Disconnect")
         self.status_lbl.config(text=f"connected {port}", fg=GOOD)
+        if self._wf_win is not None:
+            self.link.write("o1")                 # waterfall window still open: restart the stream
 
     def _log(self, text, tag="rx"):
         self.log.insert("end", text + "\n", tag)
@@ -1010,7 +1185,13 @@ class Panel(tk.Tk):
             self.after(120, self._pump)
 
     def _parse(self, line):
-        if line.startswith("rtc:"):          # live device clock (from the 'c' poll)
+        if line.startswith("~"):             # waterfall line (normally filtered in the reader)
+            return
+        m = WF_RE.search(line)               # reply to o / ow
+        if m:
+            self._wf_speed_from_radio(int(m.group(2)))
+            return
+        if line.startswith("rtc:"):         # live device clock (from the 'c' poll)
             self.clock_lbl.config(text="device: " + line[4:].strip())
             return
         m = LPFC_RE.search(line)             # reply to k / the periodic k poll

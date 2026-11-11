@@ -310,7 +310,7 @@ float nfm_sample(float i, float q)
 		nfmLpS2 = b2 * x - a2 * y;
 		x = y;
 	}
-	x *= 0.10f * nfmGate;                              /* same scale as the AM path */
+	x *= 0.16f * nfmGate;                              /* AM-path scale; set so ordinary speech (about 3 kHz deviation) uses most of the range */
 	if(x > 0.10f) x = 0.10f; else if(x < -0.10f) x = -0.10f;
 	return x;
 }

@@ -2107,6 +2107,7 @@ void freqcal_restore(void)
 
 #define SQL_MAX 168                 /* squelch setting range (S-meter pixels); see squelchSet() */
 extern int g_sqlBar;
+extern int g_wfLineMs;
 void squelchSet(int v);
 void state_save(void)
 {
@@ -2117,7 +2118,8 @@ void state_save(void)
 	           | (((uint32_t)((g_fmAtten ? LPF_20DB : g_lpfMode) & 0x3)) << 24)   /* the user's setting, not a temporary automatic reduction */
 	           | (((uint32_t)((g_txPower + 1) & 0x7)) << 26);
 	RTC->BKP4R = ((uint32_t)(afGain * 10.0f + 0.5f) & 0xFF)   /* volume, 0..250 */
-	           | (((uint32_t)g_sqlBar & 0xFF) << 8);            /* squelch, 0..168 */
+	           | (((uint32_t)g_sqlBar & 0xFF) << 8)             /* squelch, 0..168 */
+	           | (((uint32_t)(g_wfLineMs > 250 ? 250 : g_wfLineMs) & 0xFF) << 16);   /* waterfall line period, ms */
 	RTC->BKP3R = STATE_MAGIC;
 }
 void state_restore(void)
@@ -2133,6 +2135,7 @@ void state_restore(void)
 	populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
 	uint32_t v = RTC->BKP4R & 0xFF; if(v <= 250) afGain = (float)v / 10.0f;   /* volume */
 	{ uint32_t q = (RTC->BKP4R >> 8) & 0xFF; if(q <= SQL_MAX) squelchSet((int)q); }
+	{ uint32_t w = (RTC->BKP4R >> 16) & 0xFF; if(w >= 5) g_wfLineMs = (int)w; }
 	{ int tp = (int)((p >> 26) & 0x7); txPowerSet(tp ? tp - 1 : TX_POWER_DEFAULT); }
 	if(magic == STATE_MAGIC) lpfModeSet((int)((p >> 24) & 0x3));
 	else lpfModeSet(((p >> 24) & 1) ? LPF_20DB : LPF_0DB);   /* old layout: that build always ran through the chip */
@@ -2638,26 +2641,42 @@ int lastSMeterBarWidth = 0;
    (0 = off): the audio is muted until the bar reaches the marker. A small
    marker above the bar shows where it is set, green while the squelch is open
    and yellow while it is holding the audio off. Opens at the marker, closes 3
-   pixels (about 2.6 dB) below it, and hangs on for 0.3 s so speech pauses do
+   pixels (about 2.6 dB) below it, and hangs on for about a tenth of a second so speech pauses do
    not chop. Menu item "SQL"; console u<0-168>. */
 int g_sqlBar = 0;
 extern volatile int g_sqlOpen;
 static int sMeterWidth(void) { return (int)(10*log((passBandRms * 1000000) + 1)); }
+/* Setting 1 is "Auto": instead of the S-meter level it uses the FM detector's
+   own noise (wfm.c). A carrier quiets the detector long before it moves the
+   S-meter, so this opens on weaker signals and reacts within a few hundredths
+   of a second. Settings from 2 up are S-meter positions as before. */
+#define SQL_AUTO 1
+#define SQL_AUTO_NOISE 2600.0f      /* detector noise: about 4200 with no signal, 3700 at -100 dBm, 130 on a strong one */
+extern volatile float g_nfmSquelch;
 void squelchSet(int v)
 {
 	if(v < 0) v = 0;
 	if(v > SQL_MAX) v = SQL_MAX;
 	g_sqlBar = v;
+	g_nfmSquelch = (v == SQL_AUTO) ? SQL_AUTO_NOISE : 0.0f;
+}
+/* one click of the knob: Off <-> Auto <-> 60, 62, 64 ... (the meter never reads below about 60) */
+void squelchStep(int up)
+{
+	int v = g_sqlBar;
+	if(up) v = (v == 0) ? SQL_AUTO : (v == SQL_AUTO) ? 60 : v + 2;
+	else   v = (v == 0) ? 0 : (v == SQL_AUTO) ? 0 : (v <= 60) ? SQL_AUTO : v - 2;
+	squelchSet(v);
 }
 void squelchUpdate(void)
 {
 	static uint32_t lastAbove = 0;
-	if(mode != 4 || g_sqlBar == 0) { g_sqlOpen = 1; return; }
+	if(mode != 4 || g_sqlBar <= SQL_AUTO) { g_sqlOpen = 1; return; }
 	int w = sMeterWidth();
 	uint32_t now = HAL_GetTick();
 	if(w >= g_sqlBar) { g_sqlOpen = 1; lastAbove = now; }
 	else if(w >= g_sqlBar - 3) { if(g_sqlOpen) lastAbove = now; }      /* inside the hysteresis band: stay as we are */
-	else if(now - lastAbove > 300) g_sqlOpen = 0;
+	else if(now - lastAbove > 120) g_sqlOpen = 0;
 }
 
 void drawSMeter(void)
@@ -2674,7 +2693,7 @@ void drawSMeter(void)
 	lastSMeterBarWidth = width;
 
 	/* squelch marker: a 3x3 block just above the bar */
-	int want = (mode == 4 && g_sqlBar > 0) ? g_sqlBar : -1;
+	int want = (mode == 4 && g_sqlBar > SQL_AUTO) ? g_sqlBar : -1;
 	int col = g_sqlOpen ? ILI9340_GREEN : ILI9340_YELLOW;
 	if(want != markAt || (want >= 0 && col != markCol))
 	{
@@ -2817,7 +2836,7 @@ void updateMenu()
 		encoderPos = getPos();
 		if(encoderPos != encoderLastPos)
 		{
-			squelchSet(g_sqlBar + ((encoderLastPos - encoderPos) > 0 ? 2 : -2));
+			squelchStep((encoderLastPos - encoderPos) > 0);
 			encoderLastPos = encoderPos;
 		}
 		break;
@@ -3093,6 +3112,7 @@ void updateDisplay(uint8_t force)
 		{
 			char sb[16], ss[16];
 			if(g_sqlBar == 0) snprintf(sb, sizeof(sb), "SQL Off");
+			else if(g_sqlBar == SQL_AUTO) snprintf(sb, sizeof(sb), "SQL Auto");
 			else snprintf(sb, sizeof(sb), "SQL %d", g_sqlBar);
 			snprintf(ss, sizeof(ss), "%-9s", sb);
 			Adafruit_GFX_setTextSize(1);
@@ -3247,7 +3267,14 @@ extern void lcd_stream_end(void);
    lines was simply dropped, which made short signals flicker. Now every FFT is
    folded into a per-bin peak hold, and one line is drawn from that hold every
    WATERFALL_LINE_MS, so the scroll rate is steady and nothing is missed. */
-#define WATERFALL_LINE_MS 25    /* 40 lines a second (was 50 ms = 20 a second) */
+int g_wfLineMs = 25;                /* time between waterfall lines, ms (console ow<ms>, saved) */
+/* Waterfall stream for the PC control panel (console o1 / o0). Every line drawn
+   on the screen is also sent as one line of text: '~' then 240 characters, one
+   per pixel from the top of the screen down, each '0' + (colour index / 4).
+   243 bytes a line, about 10 kB/s at 40 lines a second. If the USB port is
+   busy the line is simply skipped; the display never waits for the PC. */
+volatile uint8_t g_wfStream = 0;
+extern uint8_t usb_cdc_tx(uint8_t *buf, uint16_t len);
 
 /* Wideband FM: the waterfall shows the 240 kHz stream instead of the usual
    48 kHz one, so the screen spans about +/-112 kHz (937.5 Hz per pixel) and a
@@ -3264,7 +3291,7 @@ static int wfmSpectrum(float *mag)
   if(g_wfmCapState != 2) return 0;
   if(!winReady)
   {
-    for(int k = 0; k < FFT_SIZE; k++) win[k] = (0.5f - 0.5f * cosf(6.2831853f * (float)k / (float)FFT_SIZE)) * (1.0f / (3.0f * 4096.0f));   /* Hann, and 3x ADC counts -> fraction of full scale */
+    for(int k = 0; k < FFT_SIZE; k++) win[k] = (0.5f - 0.5f * cosf(6.2831853f * (float)k / (float)FFT_SIZE)) * (0.25f / (3.0f * 4096.0f));   /* Hann; 3x ADC counts -> fraction of full scale; x0.25 because the colour scale below is brightest for peaks near 1 */
     winReady = 1;
   }
   for(int k = 0; k < FFT_SIZE; k++) { buf[k * 2] = g_wfmCap[k * 2] * win[k]; buf[k * 2 + 1] = g_wfmCap[k * 2 + 1] * win[k]; }
@@ -3299,7 +3326,7 @@ void drawWaterfall(void)
       wfHave = 1;
       newWaterFallData = 0;
     }
-  if(!wfHave || (HAL_GetTick() - wfLastLine) < WATERFALL_LINE_MS) return;
+  if(!wfHave || (HAL_GetTick() - wfLastLine) < (uint32_t)g_wfLineMs) return;
   wfLastLine = HAL_GetTick();
   wfHave = 0;
     {
@@ -3342,11 +3369,15 @@ void drawWaterfall(void)
 
       Adafruit_ILI9340_setAddrWindow(waterfallScanLine, 0, waterfallScanLine, 120);
       lcd_stream_begin();   /* one buffered DMA transfer per waterfall half-row */
+      static uint8_t wfLine[244];
+      int wfN = 1;
+      wfLine[0] = '~';
       for(i = 120; i != 0; i--)
       {
         mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100; //Log needs to be at least 1 right? We could do a + (1-fftMin) maybe? Worth it?
         //mags = magnitudes[i] / fftMaxMax * 32;
         lcd_stream_px(gradient[(uint8_t) mags]);
+        wfLine[wfN++] = (uint8_t)('0' + ((uint8_t) mags >> 2));
       }
       lcd_stream_end();
 
@@ -3357,8 +3388,14 @@ void drawWaterfall(void)
         mags = (log2(magnitudes[i] + 1)) / fftMaxMax * 100;
         //mags = magnitudes[i] / fftMaxMax * 32;
         lcd_stream_px(gradient[(uint8_t) mags]);
+        wfLine[wfN++] = (uint8_t)('0' + ((uint8_t) mags >> 2));
       }
       lcd_stream_end();
+      if(g_wfStream)
+      {
+        wfLine[wfN++] = '\r'; wfLine[wfN++] = '\n';
+        usb_cdc_tx(wfLine, (uint16_t)wfN);      /* one try: skip the line if the port is busy */
+      }
 
       waterfallScanLine++;
       if(waterfallScanLine > 119) waterfallScanLine = 0;
