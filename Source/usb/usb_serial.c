@@ -142,12 +142,15 @@ static void handle_cmd(char *s)
 		if (s[1]) { char *e; long hi = strtol(s + 1, &e, 10), lo = strtol(e, 0, 10); if (hi > lo && lo > 0) { g_wfmHi = hi / 1000.0f; g_wfmLo = lo / 1000.0f; } }
 		usb_printf("wfm gain window %d..%d /1000, pot %d\r\n", (int)(g_wfmLo * 1000.0f), (int)(g_wfmHi * 1000.0f), g_wfmPot);
 	} break;
-	case 'u': {   /* narrow FM squelch: u<noise level, Hz rms> mutes above it, u0 = open; u alone reports */
-		extern volatile float g_nfmSquelch, g_nfmNoise, g_nfmDiscHz; extern volatile int g_nfmOpen;
-		if (s[1]) g_nfmSquelch = (float)atoi(s + 1);
+	case 'u': {   /* narrow FM squelch: u<0-168> = S-meter position it opens at (0 = off, same as the SQL menu item);
+	                 un<level> = extra noise squelch (mutes above that detector noise, 0 = off); u alone reports */
+		extern volatile float g_nfmSquelch, g_nfmNoise, g_nfmDiscHz; extern volatile int g_nfmOpen, g_sqlOpen;
+		extern int g_sqlBar; extern void squelchSet(int v);
+		if (s[1] == 'n') g_nfmSquelch = (float)atoi(s + 2);
+		else if (s[1]) squelchSet(atoi(s + 1));
 		{ extern float g_nfmRawPower; extern int g_wfmPot;
-		  usb_printf("nfm squelch=%ld noise=%ld disc=%ld Hz %s level=%ld/1000 pot=%d\r\n", (long)g_nfmSquelch, (long)g_nfmNoise, (long)g_nfmDiscHz, g_nfmOpen ? "open" : "muted",
-		             (long)(sqrtf(g_nfmRawPower) * 1000.0f), g_wfmPot); }
+		  usb_printf("nfm sql=%d %s noisesq=%ld noise=%ld disc=%ld Hz level=%ld/1000 pot=%d\r\n", g_sqlBar, (g_nfmOpen && g_sqlOpen) ? "open" : "muted",
+		             (long)g_nfmSquelch, (long)g_nfmNoise, (long)g_nfmDiscHz, (long)(sqrtf(g_nfmRawPower) * 1000.0f), g_wfmPot); }
 	} break;
 	case 'f': g_filter_in = (s[1] == '1'); usb_printf("filter %s\r\n", g_filter_in ? "IN (B4)" : "BYPASS (B2)"); break;
 	case 'a': g_amp_in = (s[1] == '1'); usb_printf("amp %s\r\n", g_amp_in ? "ON + inserted" : "off"); break;

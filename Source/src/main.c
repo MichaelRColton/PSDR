@@ -72,7 +72,7 @@ uint16_t filterKernelLength = 100; //what's a good value? How does it relate to 
 volatile uint16_t menuPos = 0;
 volatile uint16_t menuEncoderTicks = 0;
 volatile uint16_t menuLastPos = 1;
-uint16_t menuCount = 14;   /* number of menu items (see enum menuItems) */
+uint16_t menuCount = 15;   /* number of menu items (see enum menuItems) */
 uint32_t frequencyDialMultiplier = 1;
 
 long vfoAFrequency = 7030000;
@@ -2105,6 +2105,9 @@ void freqcal_restore(void)
 	setFreq((unsigned long)vfoAFrequency);   /* the boot-time tune used the uncalibrated value */
 }
 
+#define SQL_MAX 168                 /* squelch setting range (S-meter pixels); see squelchSet() */
+extern int g_sqlBar;
+void squelchSet(int v);
 void state_save(void)
 {
 	RTC->BKP1R = (uint32_t)vfoAFrequency;
@@ -2113,7 +2116,8 @@ void state_save(void)
 	           | (((uint32_t)(filterUpperLimit & 0xFF)) << 16)
 	           | (((uint32_t)((g_fmAtten ? LPF_20DB : g_lpfMode) & 0x3)) << 24)   /* the user's setting, not a temporary automatic reduction */
 	           | (((uint32_t)((g_txPower + 1) & 0x7)) << 26);
-	RTC->BKP4R = (uint32_t)(afGain * 10.0f + 0.5f);   /* volume, 0..250 */
+	RTC->BKP4R = ((uint32_t)(afGain * 10.0f + 0.5f) & 0xFF)   /* volume, 0..250 */
+	           | (((uint32_t)g_sqlBar & 0xFF) << 8);            /* squelch, 0..168 */
 	RTC->BKP3R = STATE_MAGIC;
 }
 void state_restore(void)
@@ -2127,7 +2131,8 @@ void state_restore(void)
 	int flo = (int)((p >> 8) & 0xFF), fhi = (int)((p >> 16) & 0xFF);
 	if(fhi > flo && fhi <= 128) { filterLowerLimit = (int16_t)flo; filterUpperLimit = (int16_t)fhi; }
 	populateCoeficients(filterUpperLimit - filterLowerLimit, mode, filterLowerLimit);
-	uint32_t v = RTC->BKP4R; if(v <= 250) afGain = (float)v / 10.0f;   /* volume */
+	uint32_t v = RTC->BKP4R & 0xFF; if(v <= 250) afGain = (float)v / 10.0f;   /* volume */
+	{ uint32_t q = (RTC->BKP4R >> 8) & 0xFF; if(q <= SQL_MAX) squelchSet((int)q); }
 	{ int tp = (int)((p >> 26) & 0x7); txPowerSet(tp ? tp - 1 : TX_POWER_DEFAULT); }
 	if(magic == STATE_MAGIC) lpfModeSet((int)((p >> 24) & 0x3));
 	else lpfModeSet(((p >> 24) & 1) ? LPF_20DB : LPF_0DB);   /* old layout: that build always ran through the chip */
@@ -2614,6 +2619,7 @@ setFreq(vfoAFrequency);
 			rx_route_apply();   // force the HMC1023 RX routing on top of signalPath's bypass
 			lpfCornerFollow();  // auto corner: re-pick when the dial has moved
 			wfmGainFollow();    // wideband FM: keep the baseband gain as high as the ADCs allow
+			squelchUpdate();    // narrow FM squelch
 //	        HAL_GPIO_WritePin(DAC_MUX.port, DAC_MUX.pin, 0); //0 = speaker/earphone. 1=TX Drivers
 ////	        HAL_GPIO_WritePin(RX_MUX.port, RX_MUX.pin, 0); //Active Low
 ////	        HAL_GPIO_WritePin(TX_MUX.port, TX_MUX.pin, 1); //Active Low
@@ -2627,17 +2633,55 @@ setFreq(vfoAFrequency);
 
 float passBandRms = 0;
 int lastSMeterBarWidth = 0;
+
+/* Squelch (narrow FM). The setting is a position on the S-meter bar, in pixels
+   (0 = off): the audio is muted until the bar reaches the marker. A small
+   marker above the bar shows where it is set, green while the squelch is open
+   and yellow while it is holding the audio off. Opens at the marker, closes 3
+   pixels (about 2.6 dB) below it, and hangs on for 0.3 s so speech pauses do
+   not chop. Menu item "SQL"; console u<0-168>. */
+int g_sqlBar = 0;
+extern volatile int g_sqlOpen;
+static int sMeterWidth(void) { return (int)(10*log((passBandRms * 1000000) + 1)); }
+void squelchSet(int v)
+{
+	if(v < 0) v = 0;
+	if(v > SQL_MAX) v = SQL_MAX;
+	g_sqlBar = v;
+}
+void squelchUpdate(void)
+{
+	static uint32_t lastAbove = 0;
+	if(mode != 4 || g_sqlBar == 0) { g_sqlOpen = 1; return; }
+	int w = sMeterWidth();
+	uint32_t now = HAL_GetTick();
+	if(w >= g_sqlBar) { g_sqlOpen = 1; lastAbove = now; }
+	else if(w >= g_sqlBar - 3) { if(g_sqlOpen) lastAbove = now; }      /* inside the hysteresis band: stay as we are */
+	else if(now - lastAbove > 300) g_sqlOpen = 0;
+}
+
 void drawSMeter(void)
 {
+	static int markAt = -1, markCol = -1;
 
 	//Adafruit_GFX_fillRect(150, 160, 170, 3, ILI9340_BLACK);
-	int width = 10*log((passBandRms * 1000000) + 1);
+	int width = sMeterWidth();
 	if(width > lastSMeterBarWidth)
 		Adafruit_GFX_fillRect(150 + lastSMeterBarWidth, 156, width - lastSMeterBarWidth, 3, ILI9340_RED);
 	else
 		Adafruit_GFX_fillRect(150 + width, 156, lastSMeterBarWidth - width, 3, ILI9340_BLACK);
 
 	lastSMeterBarWidth = width;
+
+	/* squelch marker: a 3x3 block just above the bar */
+	int want = (mode == 4 && g_sqlBar > 0) ? g_sqlBar : -1;
+	int col = g_sqlOpen ? ILI9340_GREEN : ILI9340_YELLOW;
+	if(want != markAt || (want >= 0 && col != markCol))
+	{
+		if(markAt >= 0) Adafruit_GFX_fillRect(150 + markAt - 1, 152, 3, 3, ILI9340_BLACK);
+		if(want >= 0)   Adafruit_GFX_fillRect(150 + want - 1, 152, 3, 3, col);
+		markAt = want; markCol = col;
+	}
 }
 
 enum menuItems
@@ -2655,6 +2699,7 @@ enum menuItems
   filterHighMenuItem,
   hmcGainMenuItem,
   txPowerMenuItem,
+  squelchMenuItem,
   offMenuItem
 };
 
@@ -2765,6 +2810,14 @@ void updateMenu()
 			/* step Bypass <-> 0 dB <-> +20 dB (stops at the ends) */
 			g_fmAtten = 0;   /* the user is choosing: stop managing it automatically */
 			lpfModeSet(g_lpfMode + ((encoderLastPos - encoderPos) > 0 ? 1 : -1));
+			encoderLastPos = encoderPos;
+		}
+		break;
+	case squelchMenuItem:
+		encoderPos = getPos();
+		if(encoderPos != encoderLastPos)
+		{
+			squelchSet(g_sqlBar + ((encoderLastPos - encoderPos) > 0 ? 2 : -2));
 			encoderLastPos = encoderPos;
 		}
 		break;
@@ -3032,6 +3085,24 @@ void updateDisplay(uint8_t force)
 		txPowerCalDirty = 0;
 	}
 
+	/* Squelch setting, under the TX line */
+	{
+		static int sqlLast = -1;
+		if(force || g_sqlBar != sqlLast
+		    || (menuPos != menuLastPos && (menuPos == squelchMenuItem || menuLastPos == squelchMenuItem)))
+		{
+			char sb[16], ss[16];
+			if(g_sqlBar == 0) snprintf(sb, sizeof(sb), "SQL Off");
+			else snprintf(sb, sizeof(sb), "SQL %d", g_sqlBar);
+			snprintf(ss, sizeof(ss), "%-9s", sb);
+			Adafruit_GFX_setTextSize(1);
+			Adafruit_GFX_setCursor(216, 54);
+			Adafruit_GFX_setTextColor(menuPos == squelchMenuItem ? ILI9340_RED : ILI9340_WHITE, ILI9340_BLACK);
+			for(const char *p = ss; *p; p++) Adafruit_GFX_write(*p);
+			sqlLast = g_sqlBar;
+		}
+	}
+
 	/* Battery line, centered in the right panel (right of the waterfall, x>=121):
 	   "Batt: X.XXv (~Y%)". Samples ADC1's injected LIPO_V channel, smoothed.
 	   Integer formatting (newlib-nano printf has no %f). */
@@ -3176,7 +3247,7 @@ extern void lcd_stream_end(void);
    lines was simply dropped, which made short signals flicker. Now every FFT is
    folded into a per-bin peak hold, and one line is drawn from that hold every
    WATERFALL_LINE_MS, so the scroll rate is steady and nothing is missed. */
-#define WATERFALL_LINE_MS 50
+#define WATERFALL_LINE_MS 25    /* 40 lines a second (was 50 ms = 20 a second) */
 
 /* Wideband FM: the waterfall shows the 240 kHz stream instead of the usual
    48 kHz one, so the screen spans about +/-112 kHz (937.5 Hz per pixel) and a

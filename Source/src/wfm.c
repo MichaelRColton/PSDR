@@ -265,7 +265,8 @@ void wfm_block(const volatile uint16_t *ibuf, const volatile uint16_t *qbuf, int
 volatile float g_nfmNoise = 0.0f;          /* smoothed detector noise above 5.5 kHz, Hz rms */
 volatile float g_nfmDiscHz = 0.0f;         /* where the carrier sits, Hz from the dial */
 volatile float g_nfmSquelch = 0.0f;        /* mute above this noise level; 0 = open */
-volatile int   g_nfmOpen = 0;              /* 1 = squelch open right now */
+volatile int   g_nfmOpen = 0;              /* 1 = noise squelch open right now */
+volatile int   g_sqlOpen = 1;              /* 1 = signal-level squelch open (the "SQL" setting; decided in main.c) */
 
 static float nfmPrevI = 1.0f, nfmPrevQ = 0.0f;
 static float nfmNz2 = 0.0f, nfmDe = 0.0f, nfmHp1 = 0.0f, nfmHp2 = 0.0f, nfmGate = 0.0f;
@@ -294,7 +295,7 @@ float nfm_sample(float i, float q)
 	/* open below the threshold, close 25% above it, so it does not chatter */
 	if(sq <= 0.0f || nz < sq) g_nfmOpen = 1;
 	else if(nz > sq * 1.25f) g_nfmOpen = 0;
-	nfmGate += 0.01f * ((g_nfmOpen ? 1.0f : 0.0f) - nfmGate);  /* ~2 ms fade, no click */
+	nfmGate += 0.01f * (((g_nfmOpen && g_sqlOpen) ? 1.0f : 0.0f) - nfmGate);  /* ~2 ms fade, no click */
 
 	float x = d * (1.0f / 5000.0f);                    /* 1.0 = full deviation */
 	nfmDe += 0.03851f * (x - nfmDe);                   /* de-emphasis: one pole at 300 Hz */
