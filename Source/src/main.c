@@ -157,6 +157,7 @@ volatile float g_testTone = 0.0f;   /* console 'T<hz>' (0 = off) */
 volatile float g_testAmp  = 0.08f;  /* pre-afGain amplitude, ~the AM envelope level */
 float g_tonePhase = 0.0f;
 uint8_t modeLast = 2;
+uint8_t g_si5338_ready = 0;   /* set by the bounded boot probe; 0 = show the fault on screen */
 
 float agcLevel = 0;
 float agcScale = 160; //Higher is lower volume.. for now
@@ -2435,8 +2436,13 @@ if(HAL_I2C_Init(&handleI2C) != HAL_OK)
 
 HAL_StatusTypeDef result = HAL_ERROR;
 
-while(result!= HAL_OK)
-  result = HAL_I2C_IsDeviceReady(&handleI2C, (0x70 << 1), 100, 100); //We need to shift the address to the left for it to work (because of the R/W bit)
+/* Bounded probe. This used to repeat forever, so a missing or wedged Si5338
+   (no ACK, stuck bus, unpopulated U241) hung the boot before the display was
+   even initialized. Try for ~0.5 s total, then continue without the
+   synthesiser and let updateDisplay() show the fault. */
+for(int tries = 0; tries < 5 && result != HAL_OK; tries++)
+  result = HAL_I2C_IsDeviceReady(&handleI2C, (0x70 << 1), 1, 100); //We need to shift the address to the left for it to work (because of the R/W bit)
+g_si5338_ready = (result == HAL_OK);
 
 //HAL_I2C_Master_Transmit(&hi2c, 230, 0x10, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 
@@ -2448,8 +2454,11 @@ while(result!= HAL_OK)
 //HAL_I2C_Master_Transmit(&handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 //HAL_I2C_Master_Transmit(handleI2C, 230, 0x4F, 1, 1000);  //write_Si5338(230, 0x10); //OEB_ALL = 1
 
-i2cSetup();
-setFreq(vfoAFrequency);
+if(g_si5338_ready)
+  {
+  i2cSetup();
+  setFreq(vfoAFrequency);
+  }
 //i2cLoop();
 
 
@@ -3250,6 +3259,23 @@ void updateDisplay(uint8_t force)
 	   volume was non-zero; with it stale, the "redraw the item you left back to
 	   white" guard never fired and items got stuck red. That was the real
 	   stale-red bug. */
+	/* The boot probe could not reach the Si5338: keep the fault visible. The
+	   radio still runs (DDS/VFO path), but the LO outputs and the CLK1A cal
+	   clock from U241 are missing, so RX/TX will be dead or off-frequency. */
+	if(!g_si5338_ready)
+	{
+		static uint8_t si5338WarnDrawn = 0;
+		if(!si5338WarnDrawn || force)
+		{
+			Adafruit_GFX_setTextSize(1);
+			Adafruit_GFX_setTextColor(ILI9340_RED, ILI9340_BLACK);
+			Adafruit_GFX_fillRect(126, 188, 192, 10, ILI9340_BLACK);
+			Adafruit_GFX_setCursor(126, 188);
+			for(const char *p = "No Si5338 ACK (U241)"; *p; p++) Adafruit_GFX_write((uint8_t)*p);
+			si5338WarnDrawn = 1;
+		}
+	}
+
 	menuLastPos = menuPos;
 	#undef menuPos
 	displayUpdating = 0;
